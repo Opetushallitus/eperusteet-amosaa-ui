@@ -61,5 +61,6 @@ Vue.use(VueTutorial, { tutoriaaliStore });
 
 new Vue({
   router,
+  i18n: Kielet.i18n,
   render: h => h(App),
 }).$mount('#app');
