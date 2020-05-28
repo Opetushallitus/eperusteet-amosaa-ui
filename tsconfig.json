@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "jsx": "preserve",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext",
+    "types": [
+      "webpack-env",
+      "jest"
+    ],
+    "paths": {
+      "@shared/*": ["eperusteet-frontend-utils/vue/src/*"],
+      "@/*": ["src/*"],
+      "&/*": ["tests/*"]
+    },
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2015.promise",
+      "esnext",
+      "scripthost"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "eperusteet-frontend-utils"
+  ]
+}
