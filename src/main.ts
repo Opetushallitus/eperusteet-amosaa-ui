@@ -44,9 +44,11 @@ Vue.use(Kielet, {
   messages: {
     fi: {
       ...require('@shared/translations/locale-fi.json'),
+      ...require('@/translations/locale-fi.json'),
     },
     sv: {
       ...require('@shared/translations/locale-sv.json'),
+      ...require('@/translations/locale-sv.json'),
     },
   },
 });
@@ -59,8 +61,12 @@ Vue.use(Oikeustarkastelu, { oikeusProvider: Kayttajat });
 Vue.use(EditointiStore, { router, kayttajaProvider: Kayttajat });
 Vue.use(VueTutorial, { tutoriaaliStore });
 
-new Vue({
-  router,
-  i18n: Kielet.i18n,
-  render: h => h(App),
-}).$mount('#app');
+async function main() {
+  new Vue({
+    router,
+    i18n: Kielet.i18n,
+    render: h => h(App),
+  }).$mount('#app');
+}
+
+main();

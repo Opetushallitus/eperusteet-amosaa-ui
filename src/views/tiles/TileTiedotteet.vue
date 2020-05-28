@@ -1,9 +1,9 @@
 <template>
-  <EpHomeTile icon="opetussuunnitelma"
+  <EpHomeTile icon="muistikirja"
               :route="{ name: 'perusteprojektit' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
-      <span>{{ $t('toteutussuunnitelmat') }}</span>
+      <span>{{ $t('tiedotteet') }}</span>
     </template>
     <template slot="content">
       <p>{{ $t('tile-wip') }}</p>

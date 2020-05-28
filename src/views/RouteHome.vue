@@ -4,13 +4,10 @@
       <div class="container mt-5">
         <div class="container-fluid">
           <div class="row">
-            <!-- <h1>{{ $t('tervetuloa', { nimi }) }}</h1> -->
-            <p>{{ $t('tervetuloa-kuvaus') }}</p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4 mt-2 mb-5">
-            <EpSearch v-model="rajain" />
+            <div class="col">
+              <h1>{{ $t('tervetuloa', { nimi }) }}</h1>
+              <p>{{ $t('tervetuloa-kuvaus') }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -18,7 +15,11 @@
     <div class="container tile-container">
       <div class="d-flex flex-row flex-wrap justify-content-center">
         <TileToteutussuunnitelmat />
-        <!-- <TileTiedotteet :tiedotteetStore="tiedotteetStore" /> -->
+        <TileKoulutustoimijanYhteinenOsuus />
+        <TilePaivitettavatJaSiirrettavatToteutussuunnitelmat />
+        <TileOrganisaationHallinta />
+        <TileTiedotteet :tiedotteetStore="tiedotteetStore" />
+        <TileUkk />
       </div>
     </div>
   </div>
@@ -26,13 +27,22 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import EpSearch from '@shared/components/forms/EpSearch.vue';
+
 import TileToteutussuunnitelmat from './tiles/TileToteutussuunnitelmat.vue';
+import TileKoulutustoimijanYhteinenOsuus from './tiles/TileKoulutustoimijanYhteinenOsuus.vue';
+import TilePaivitettavatJaSiirrettavatToteutussuunnitelmat from './tiles/TilePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
+import TileOrganisaationHallinta from './tiles/TileOrganisaationHallinta.vue';
+import TileTiedotteet from './tiles/TileTiedotteet.vue';
+import TileUkk from './tiles/TileUkk.vue';
 
 @Component({
   components: {
-    EpSearch,
     TileToteutussuunnitelmat,
+    TileKoulutustoimijanYhteinenOsuus,
+    TilePaivitettavatJaSiirrettavatToteutussuunnitelmat,
+    TileOrganisaationHallinta,
+    TileTiedotteet,
+    TileUkk,
   },
 })
 export default class RouteHome extends Vue {

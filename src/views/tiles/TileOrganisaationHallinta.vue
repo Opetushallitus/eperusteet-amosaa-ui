@@ -1,9 +1,9 @@
 <template>
-  <EpHomeTile icon="opetussuunnitelma"
+  <EpHomeTile icon="ryhma"
               :route="{ name: 'perusteprojektit' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
-      <span>{{ $t('toteutussuunnitelmat') }}</span>
+      <span>{{ $t('organisaation-hallinta') }}</span>
     </template>
     <template slot="content">
       <p>{{ $t('tile-wip') }}</p>

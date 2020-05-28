@@ -1,10 +1,14 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+<div>
+  <router-view/>
+  <notifications style="margin-right: 6px; margin-top: 90px;"
+                 position="top right"
+                 :max="3" />
+</div>
 </template>
 
 <style lang="scss">
+@import "~@shared/styles/app";
 
 #nav {
   padding: 30px;

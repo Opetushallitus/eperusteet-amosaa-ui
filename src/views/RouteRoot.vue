@@ -5,6 +5,7 @@
       <PortalTarget ref="innerPortal" name="headerExtension" />
     </div>
     <RouterView />
+    <ep-footer />
   </div>
 </template>
 
@@ -13,10 +14,12 @@ import { Prop, Watch, Component, Vue } from 'vue-property-decorator';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import { KayttajaStore } from '@/stores/kayttaja';
 import Sticky from 'vue-sticky-directive';
+import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 
 @Component({
   components: {
     EpNavbar,
+    EpFooter,
   },
   directives: {
     Sticky,
@@ -42,13 +45,13 @@ export default class RouteRoot extends Vue {
 .home-container {
   .header {
     color: white;
-    background-image: url('~@assets/img/banners/header.svg');
+    background-image: url('../../public/img/banners/header_amosaa.svg');
     background-position: 100% 0;
     background-repeat: none;
-    background-size: cover;
+    background-repeat: no-repeat;
     @media only screen and (min-width: 2503px)  {
+      background-size: 100%;
     }
-    /* background-size: 100%; */
   }
 }
 
