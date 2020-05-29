@@ -1,0 +1,20 @@
+import Vue from 'vue';
+import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
+import { PageOpetussuunnitelmaDto, Opetussuunnitelmat } from '@shared/api/amosaa';
+import _ from 'lodash';
+import { IToteutussuunnitelmaProvider } from '@/components/EpToteutussuunnitelmaListaus/types';
+
+Vue.use(VueCompositionApi);
+
+export class ToteutussuunnitelmatStore implements IToteutussuunnitelmaProvider {
+  private state = reactive({
+    opetussuunnitelmat: null as PageOpetussuunnitelmaDto | null,
+  })
+
+  public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
+
+  public async updateQuery(query: any) {
+    // TODO koulutustoimijavalintahaku oikein
+    this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getAllOpetussuunnitelmatSivutettu('11', undefined, { params: query })).data;
+  }
+}
