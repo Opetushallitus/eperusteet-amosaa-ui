@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import RouteHome from '@/views/RouteHome.vue';
 import RouteRoot from '@/views/RouteRoot.vue';
+import RouteUkk from '@/views/RouteUkk.vue';
 import { stores } from '@/store/index';
 
 Vue.use(VueRouter);
@@ -26,6 +27,11 @@ const router = new VueRouter({
       path: '',
       name: 'home',
       component: RouteHome,
+      props: { ...stores },
+    }, {
+      path: 'ukk',
+      name: 'ukk',
+      component: RouteUkk,
       props: { ...stores },
     }],
   }],
