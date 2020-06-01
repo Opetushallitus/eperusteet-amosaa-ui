@@ -132,16 +132,18 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   } as any;
 
   async mounted() {
-    this.provider.updateQuery(this.query);
+    this.provider.updateQuery(_.toNumber(this.$route.params.koulutustoimijaId), this.query);
   }
 
   @Watch('query', { deep: true, immediate: true })
   async onQueryChange(query: any) {
     this.isLoading = true;
     try {
-      await this.provider.updateQuery({
-        ...query,
-      });
+      await this.provider.updateQuery(
+        _.toNumber(this.$route.params.koulutustoimijaId),
+        {
+          ...query,
+        });
     }
     finally {
       this.isLoading = false;

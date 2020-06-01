@@ -11,7 +11,7 @@
 <script lang="ts">
 import { Prop, Watch, Component, Vue } from 'vue-property-decorator';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
-import { KayttajaStore } from '@/store/kayttaja';
+import { KayttajaStore } from '@/stores/kayttaja';
 import Sticky from 'vue-sticky-directive';
 
 @Component({
