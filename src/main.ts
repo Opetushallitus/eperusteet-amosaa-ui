@@ -21,7 +21,7 @@ import Kaannos from '@shared/plugins/kaannos';
 import { Notifikaatiot } from '@shared/plugins/notifikaatiot';
 import { Kielet } from '@shared/stores/kieli';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { Kayttajat } from '@/store/kayttaja';
+import { Kayttajat } from '@/stores/kayttaja';
 import { VueTutorial } from '@shared/plugins/tutoriaali';
 import { tutoriaaliStore } from '@shared/stores/tutoriaali';
 

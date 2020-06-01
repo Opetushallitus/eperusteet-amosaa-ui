@@ -4,7 +4,9 @@ import RouteHome from '@/views/RouteHome.vue';
 import RouteRoot from '@/views/RouteRoot.vue';
 import RouteUkk from '@/views/RouteUkk.vue';
 import RouteToteutussuunnitelmat from '@/views/RouteToteutussuunnitelmat.vue';
-import { stores } from '@/store/index';
+import RouteYleisnakyma from '@/views/RouteYleisnakyma.vue';
+import RouteToteutussuunnitelma from '@/views/RouteToteutussuunnitelma.vue';
+import { stores } from '@/stores/index';
 
 Vue.use(VueRouter);
 
@@ -39,6 +41,18 @@ const router = new VueRouter({
       name: 'toteutussuunnitelmat',
       component: RouteToteutussuunnitelmat,
       props: { ...stores },
+    }, {
+      path: 'koulutustoimija/:koulutustoimijaId/toteutussuunnitelma/:toteutussuunnitelmaId',
+      component: RouteToteutussuunnitelma,
+      props: {
+        ...stores,
+      },
+      children: [{
+        path: '',
+        name: 'toteutussuunnitelma',
+        component: RouteYleisnakyma,
+        props: { ...stores },
+      }],
     }],
   }],
 });

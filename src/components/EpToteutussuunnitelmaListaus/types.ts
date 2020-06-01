@@ -4,5 +4,5 @@ import { Page } from '@shared/tyypit';
 
 export interface IToteutussuunnitelmaProvider {
   opetussuunnitelmat: Computed<Page<OpetussuunnitelmaDto>>;
-  updateQuery: (query: any) => Promise<void>;
+  updateQuery: (koulutustoimijaId:number, query: any) => Promise<void>;
 }

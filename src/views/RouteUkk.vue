@@ -85,7 +85,7 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 
 import { TutoriaaliStore } from '@shared/stores/tutoriaali';
-import { OhjeetStore } from '@/store/OhjeetStore';
+import { OhjeetStore } from '@/stores/OhjeetStore';
 import { OhjeDto } from '@shared/api/amosaa';
 import { required } from 'vuelidate/lib/validators';
 import { validationMixin } from 'vuelidate';
