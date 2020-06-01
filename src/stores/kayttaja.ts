@@ -1,10 +1,13 @@
 import _ from 'lodash';
 import Vue from 'vue';
 import { Store, Getter, State } from '@shared/stores/store';
-// import { Kayttajat as KayttajatApi, KayttajanTietoDto, Perusteprojektit } from '@shared/api/eperusteet-amosaa';
+import {
+  KayttajaApi
+ } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
 import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composition-api';
 import { IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
+import { EtusivuDto } from '@shared/api/amosaa';
 
 Vue.use(VueCompositionApi);
 
@@ -30,7 +33,7 @@ export function parsiEsitysnimi(tiedot: any): string {
     return tiedot.kutsumanimi + ' ' + tiedot.sukunimi;
   }
   else {
-    return tiedot.oidHenkilo as string;
+    return tiedot.oid as string;
   }
 }
 
@@ -43,8 +46,10 @@ export class KayttajaStore implements IOikeusProvider {
     virkailijat: [] as any[],
     oikeudet: {
     } as Oikeudet,
+    etusivu: null as EtusivuDto | null,
   });
 
+  public readonly etusivu = computed(() => this.state.etusivu);
   public readonly organisaatiot = computed(() => this.state.organisaatiot);
   public readonly tiedot = computed(() => this.state.tiedot);
   public readonly userOid = computed(() => this.state.tiedot.oidHenkilo);
@@ -56,8 +61,8 @@ export class KayttajaStore implements IOikeusProvider {
   public async init() {
     try {
       logger.info('Haetaan käyttäjän tiedot');
-      // this.state.tiedot = (await KayttajatApi.getKirjautunutKayttajat()).data;
-      // logger.info('Käyttäjän tiedot', this.tiedot.value);
+      this.state.tiedot = (await KayttajaApi.getKayttaja()).data;
+      logger.info('Käyttäjän tiedot', this.tiedot.value);
     }
     catch (err) {
       logger.error('Käyttäjän tietojen lataus epäonnistui', err.message);
@@ -75,6 +80,11 @@ export class KayttajaStore implements IOikeusProvider {
 
   public hasOikeus(oikeus: Oikeus, kohde: OikeusKohde = 'peruste') {
     return false;
+  }
+
+  public async fetchEtusivu() {
+    this.state.etusivu = null;
+    this.state.etusivu = (await KayttajaApi.getKayttajanEtusivu()).data;
   }
 
   private vertaa(oikeus: Oikeus, kohde: OikeusKohde = 'peruste') {

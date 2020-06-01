@@ -1,9 +1,9 @@
 <template>
-  <EpHomeTile icon="faq"
+  <EpHomeTile icon="tilasto"
               :route="{ name: 'perusteprojektit' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
-      <span>{{ $t('tile-usein-kysytyt-kysymykset') }}</span>
+      <span>{{ $t('tile-tilastot') }}</span>
     </template>
     <template slot="content">
       <p>{{ $t('tile-wip') }}</p>
@@ -22,6 +22,6 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
     EpSpinner,
   },
 })
-export default class TilePerusteprojektit extends Vue {
+export default class TileTilastot extends Vue {
 }
 </script>
