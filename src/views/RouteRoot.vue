@@ -26,6 +26,7 @@ import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
   },
 })
 export default class RouteRoot extends Vue {
+  
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
 

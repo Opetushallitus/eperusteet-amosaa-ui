@@ -3,7 +3,7 @@
               :route="{ name: 'perusteprojektit' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
-      <span>{{ $t('tiedotteet') }}</span>
+      <span>{{ $t('tile-tiedotteet') }}</span>
     </template>
     <template slot="content">
       <p>{{ $t('tile-wip') }}</p>
