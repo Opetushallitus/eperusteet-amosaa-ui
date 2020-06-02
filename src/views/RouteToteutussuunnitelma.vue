@@ -185,7 +185,13 @@ export default class RouteToteutussuunnitelma extends ToteutussuunnitelmaRoute {
   }
 
   get ratasvalinnat() {
-    return [];
+    return [
+      {
+        text: 'toteutussuunnitelman-tiedot',
+        route: 'toteutussuunnitelmantiedot',
+        icon: 'info',
+      },
+    ];
   }
 }
 </script>
