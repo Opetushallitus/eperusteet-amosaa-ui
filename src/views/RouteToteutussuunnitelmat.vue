@@ -38,7 +38,7 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
     EpButton,
   },
 })
-export default class RoutePerusteprojektit extends Vue {
+export default class RouteToteutussuunnitelmat extends Vue {
   @Prop({ required: true })
   toteutussuunnitelmatStore!: ToteutussuunnitelmatStore;
 }

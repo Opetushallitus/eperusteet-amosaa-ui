@@ -31,4 +31,12 @@ export abstract class ToteutussuunnitelmaRoute extends Vue {
       await this.onProjektiChange(this.koulutustoimijaId, this.toteutussuunnitelmaId);
     }
   }
+
+  get toteutussuunnitelma() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+  }
+
+  get navigation() {
+    return this.toteutussuunnitelmaStore.navigation;
+  }
 }
