@@ -4,7 +4,7 @@
 
     <ep-spinner v-if="!sisaltoviitteet" />
 
-    <div class="box d-inline-flex flex-column align-items-center text-center"
+    <div v-else class="box d-inline-flex flex-column align-items-center text-center"
       v-for="(tutkinnonosa, index) in tutkinnonosat" :key="'tutkinnonosa'+index">
       <div class="count">{{tutkinnonosa.lkm}}</div>
       <div class="topic">{{$t(tutkinnonosa.teksti)}}</div>

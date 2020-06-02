@@ -6,6 +6,8 @@ export abstract class ToteutussuunnitelmaRoute extends Vue {
   @Prop({ required: true })
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
+  private isInitializing = false;
+
   protected get toteutussuunnitelmaId(): number {
     return _.toNumber(this.$route.params.toteutussuunnitelmaId);
   }
@@ -18,17 +20,26 @@ export abstract class ToteutussuunnitelmaRoute extends Vue {
 
   @Watch('toteutussuunnitelmaId', { immediate: true })
   async onToteutussuunnitelmaIdChange(newValue: number, oldValue: number) {
-    if (newValue && newValue !== oldValue) {
-      await this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId);
-      await this.onProjektiChange(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    if (newValue && newValue !== oldValue && !this.isInitializing) {
+      this.fetch();
     }
   }
 
   @Watch('koulutustoimijaId', { immediate: true })
   async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
-    if (newValue && newValue !== oldValue) {
+    if (newValue && newValue !== oldValue && !this.isInitializing) {
+      this.fetch();
+    }
+  }
+
+  async fetch() {
+    this.isInitializing = true;
+    try {
       await this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId);
       await this.onProjektiChange(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    }
+    finally {
+      this.isInitializing = false;
     }
   }
 

@@ -11,7 +11,6 @@
     <div class="col">
       <ep-toteutussuunnitelman-tiedotteet class="info-box" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
       <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma"/>
-      <!-- <ep-peruste-tutkinnon-osat class="info-box" :peruste="peruste" :tutkinnonOsaStore="tutkinnonOsaStore"/> -->
       <ep-toteutussuunnitelman-tutkinnon-osat class="info-box" :sisaltoViiteStore="sisaltoViiteStore" />
     </div>
     <div class="col">
@@ -35,6 +34,7 @@ import { AikatauluStore } from '@/stores/AikatauluStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmaRoute } from '@/views/ToteutussuunnitelmaRoute';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
 @Component({
   components: {
@@ -45,7 +45,10 @@ import { ToteutussuunnitelmaRoute } from '@/views/ToteutussuunnitelmaRoute';
     EpToteutussuunnitelmanTiedotteet,
   },
 })
-export default class RouteYleisnakyma extends ToteutussuunnitelmaRoute {
+export default class RouteYleisnakyma extends Vue {
+  @Prop({ required: true })
+  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+
   @Prop({ required: true })
   private aikatauluStore!: AikatauluStore;
 
@@ -61,12 +64,21 @@ export default class RouteYleisnakyma extends ToteutussuunnitelmaRoute {
   @Prop({ required: false, default: 'peruste' })
   private tyyppi!: 'opas' | 'peruste';
 
-  async onProjektiChange(koulutustoimijaId: number, toteutussuunnitelmaId: number) {
-    if (this.toteutussuunnitelma) {
+  async mounted() {
+    await this.fetch();
+  }
+
+  @Watch('toteutussuunnitelma')
+  async toteutussuunnitelmaChange() {
+    await this.fetch();
+  }
+
+  async fetch() {
+    if (this.toteutussuunnitelma && this.koulutustoimijaId) {
       await Promise.all([
-        this.aikatauluStore.init(koulutustoimijaId, toteutussuunnitelmaId),
-        this.sisaltoViiteStore.init(koulutustoimijaId, toteutussuunnitelmaId),
-        this.muokkaustietoStore.init(koulutustoimijaId, toteutussuunnitelmaId),
+        this.aikatauluStore.init(this.koulutustoimijaId, this.toteutussuunnitelma.id!),
+        this.sisaltoViiteStore.init(this.koulutustoimijaId, this.toteutussuunnitelma.id!),
+        this.muokkaustietoStore.init(this.koulutustoimijaId, this.toteutussuunnitelma.id!),
         this.toteutussuunnitelmaTiedotteetStore.init(this.toteutussuunnitelma.peruste!.perusteId!),
       ]);
     }
@@ -74,6 +86,10 @@ export default class RouteYleisnakyma extends ToteutussuunnitelmaRoute {
 
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+  }
+
+  get koulutustoimijaId() {
+    return this.toteutussuunnitelma!.koulutustoimija!.id;
   }
 }
 </script>

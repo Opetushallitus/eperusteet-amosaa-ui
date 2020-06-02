@@ -13,6 +13,7 @@ import RouteTutkinnonosa from '@/views/RouteTutkinnonosa.vue';
 import RouteSuorituspolut from '@/views/RouteSuorituspolut.vue';
 import RouteSuorituspolku from '@/views/RouteSuorituspolku.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
+import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
 import { stores } from '@/stores/index';
 
 Vue.use(VueRouter);
@@ -79,6 +80,11 @@ const router = new VueRouter({
         component: RouteYleisnakyma,
         props: { ...stores },
       }, {
+        path: 'tiedot',
+        name: 'toteutussuunnitelmantiedot',
+        component: RouteToteutussuunnitelmaTiedot,
+        props: { ...stores },
+      }, {
         path: 'tekstikappale/:id',
         name: 'tekstikappale',
         component: RouteTekstikappale,
@@ -107,6 +113,7 @@ const router = new VueRouter({
         path: 'jarjesta',
         component: RouteJarjestys,
         name: 'jarjesta',
+        props: { ...stores },
       }],
     }],
   }],
