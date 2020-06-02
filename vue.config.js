@@ -10,6 +10,13 @@ const proxy = {
       proxyReq.setHeader('Caller-Id', '1.2.246.562.10.00000000001.eperusteet');
     },
   },
+  '/eperusteet-service': {
+    target: `http://localhost:${process.env.EPERUSTEET_SERVICE_PORT || 8080}`,
+    secure: false,
+    onProxyReq: function(proxyReq, req, res) {
+      proxyReq.setHeader('Caller-Id', '1.2.246.562.10.00000000001.eperusteet');
+    },
+  },
 };
 
 module.exports = {

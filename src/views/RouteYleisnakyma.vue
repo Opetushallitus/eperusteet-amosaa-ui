@@ -7,9 +7,9 @@
     </div>
   </div>
 
-  <div class="row">
+  <div class="row pt-0">
     <div class="col">
-      <!-- <ep-peruste-tiedotteet class="info-box" :peruste="peruste" :tiedotteetStore="tiedotteetStore"/> -->
+      <ep-toteutussuunnitelman-tiedotteet class="info-box" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
       <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma"/>
       <!-- <ep-peruste-tutkinnon-osat class="info-box" :peruste="peruste" :tutkinnonOsaStore="tutkinnonOsaStore"/> -->
       <ep-toteutussuunnitelman-tutkinnon-osat class="info-box" :sisaltoViiteStore="sisaltoViiteStore" />
@@ -28,10 +28,12 @@ import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
 import EpToteutussuunnitelmaAikataulu from '@/components/EpYleisnakyma/EpToteutussuunnitelmaAikataulu.vue';
 import EpToteutussuunnitelmanPerustiedot from '@/components/EpYleisnakyma/EpToteutussuunnitelmanPerustiedot.vue';
 import EpToteutussuunnitelmanTutkinnonOsat from '@/components/EpYleisnakyma/EpToteutussuunnitelmanTutkinnonOsat.vue';
+import EpToteutussuunnitelmanTiedotteet from '@/components/EpYleisnakyma/EpToteutussuunnitelmanTiedotteet.vue';
 import EpViimeaikainenToiminta from '@shared/components/EpViimeaikainenToiminta/EpViimeaikainenToiminta.vue';
 import { MuokkaustietoStore } from '@/stores/MuokkaustietoStore';
 import { AikatauluStore } from '@/stores/AikatauluStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
+import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmaRoute } from '@/views/ToteutussuunnitelmaRoute';
 
 @Component({
@@ -40,6 +42,7 @@ import { ToteutussuunnitelmaRoute } from '@/views/ToteutussuunnitelmaRoute';
     EpToteutussuunnitelmanPerustiedot,
     EpToteutussuunnitelmanTutkinnonOsat,
     EpViimeaikainenToiminta,
+    EpToteutussuunnitelmanTiedotteet,
   },
 })
 export default class RouteYleisnakyma extends ToteutussuunnitelmaRoute {
@@ -52,14 +55,20 @@ export default class RouteYleisnakyma extends ToteutussuunnitelmaRoute {
   @Prop({ required: true })
   private muokkaustietoStore!: MuokkaustietoStore;
 
+  @Prop({ required: true })
+  private toteutussuunnitelmaTiedotteetStore!: ToteutussuunnitelmaTiedotteetStore;
+
   @Prop({ required: false, default: 'peruste' })
   private tyyppi!: 'opas' | 'peruste';
 
   async onProjektiChange(koulutustoimijaId: number, toteutussuunnitelmaId: number) {
     if (this.toteutussuunnitelma) {
-      this.aikatauluStore.init(koulutustoimijaId, toteutussuunnitelmaId);
-      this.sisaltoViiteStore.init(koulutustoimijaId, toteutussuunnitelmaId);
-      this.muokkaustietoStore.init(koulutustoimijaId, toteutussuunnitelmaId);
+      await Promise.all([
+        this.aikatauluStore.init(koulutustoimijaId, toteutussuunnitelmaId),
+        this.sisaltoViiteStore.init(koulutustoimijaId, toteutussuunnitelmaId),
+        this.muokkaustietoStore.init(koulutustoimijaId, toteutussuunnitelmaId),
+        this.toteutussuunnitelmaTiedotteetStore.init(this.toteutussuunnitelma.peruste!.perusteId!),
+      ]);
     }
   }
 
