@@ -13,6 +13,10 @@
         {{$sdt(toteutussuunnitelma.luotu)}}
       </ep-perustieto-data>
     </div>
+
+    <router-link :to="{}">
+      <ep-button variant="link">{{$t('siirra-opetussuunnitelma')}}</ep-button>
+    </router-link>
   </div>
 </template>
 
@@ -49,5 +53,9 @@ export default class EpToteutussuunnitelmanPerustiedot extends Vue {
 @import "@shared/styles/_variables.scss";
 @import "@shared/styles/_mixins.scss";
 @include perustiedot-content;
+
+  ::v-deep .ep-button .teksti {
+    padding-left: 0px !important;
+  }
 
 </style>

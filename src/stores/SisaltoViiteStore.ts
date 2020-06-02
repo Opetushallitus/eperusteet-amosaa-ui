@@ -13,7 +13,6 @@ export class SisaltoViiteStore {
   public readonly sisaltoviitteet = computed(() => this.state.sisaltoviitteet);
 
   public async init(koulutustoimijaId: number, opetussuunnitelmaId: number) {
-    // TODO koulutustoimijavalintahaku oikein
     this.state.sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(opetussuunnitelmaId, _.toString(koulutustoimijaId))).data;
   }
 }
