@@ -18,17 +18,12 @@ const router = new VueRouter({
     path: '/',
     redirect: () => '/fi',
   }, {
-    path: '/:lang',
+    path: '/:lang/koulutustoimija/:koulutustoimijaId',
     component: RouteRoot,
     props: { ...stores },
     children: [{
       path: '',
       name: 'root',
-      component: RouteHome,
-      props: { ...stores },
-    }, {
-      path: '',
-      name: 'home',
       component: RouteHome,
       props: { ...stores },
     }, {
@@ -42,7 +37,7 @@ const router = new VueRouter({
       component: RouteToteutussuunnitelmat,
       props: { ...stores },
     }, {
-      path: 'koulutustoimija/:koulutustoimijaId/toteutussuunnitelma/:toteutussuunnitelmaId',
+      path: 'toteutussuunnitelma/:toteutussuunnitelmaId',
       component: RouteToteutussuunnitelma,
       props: {
         ...stores,

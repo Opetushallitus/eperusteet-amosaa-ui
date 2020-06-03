@@ -1,6 +1,6 @@
 <template>
   <EpHomeTile icon="faq"
-              :route="{ name: 'perusteprojektit' }"
+              :route="{ name: 'ukk' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
       <span>{{ $t('tile-usein-kysytyt-kysymykset') }}</span>

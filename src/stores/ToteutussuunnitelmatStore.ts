@@ -13,7 +13,7 @@ export class ToteutussuunnitelmatStore implements IToteutussuunnitelmaProvider {
 
   public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
 
-  public async updateQuery(koulutustoimijaId:number, query: any) {
+  public async updateQuery(koulutustoimijaId: number, query: any) {
     this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getAllOpetussuunnitelmatSivutettu(_.toString(koulutustoimijaId), undefined, { params: query })).data;
   }
 }

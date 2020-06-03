@@ -1,6 +1,6 @@
 <template>
   <EpHomeTile icon="ryhma"
-              :route="{ name: 'perusteprojektit' }"
+              :route="{ name: 'wip' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
       <span>{{ $t('tile-organisaation-hallinta') }}</span>
