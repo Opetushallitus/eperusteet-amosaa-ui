@@ -1,6 +1,7 @@
 import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
+import VueRouter from 'vue-router';
 import RouteHome from '@/views/RouteHome.vue';
+import RouteLang from '@/views/RouteLang.vue';
 import RouteRoot from '@/views/RouteRoot.vue';
 import RouteUkk from '@/views/RouteUkk.vue';
 import RouteToteutussuunnitelmat from '@/views/RouteToteutussuunnitelmat.vue';
@@ -19,23 +20,47 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   routes: [{
     path: '',
-    redirect: () => '/fi',
-  }, {
-    path: '/',
-    redirect: () => '/fi',
+    alias: '/',
+    component: RouteLang,
+    props: { ...stores },
   }, {
     path: '/:lang/koulutustoimija/:koulutustoimijaId',
     component: RouteRoot,
     props: { ...stores },
     children: [{
       path: '',
-      name: 'root',
+      name: 'home',
       component: RouteHome,
       props: { ...stores },
     }, {
       path: 'ukk',
       name: 'ukk',
       component: RouteUkk,
+      props: { ...stores },
+    }, {
+      path: 'tilastot',
+      name: 'tilastot',
+      // component: ...,
+      props: { ...stores },
+    }, {
+      path: 'tiedotteet',
+      name: 'tiedotteet',
+      // component: ...,
+      props: { ...stores },
+    }, {
+      path: 'organisaatio',
+      name: 'organisaatio',
+      // component: ...,
+      props: { ...stores },
+    }, {
+      path: 'yhteinen',
+      name: 'yhteinen',
+      // component: ...,
+      props: { ...stores },
+    }, {
+      path: 'paivitettavat',
+      name: 'paivitettavat',
+      // component: ...,
       props: { ...stores },
     }, {
       path: 'toteutussuunnitelmat',

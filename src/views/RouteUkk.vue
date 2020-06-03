@@ -32,7 +32,8 @@
               </button>
             </div>
             <div>
-              <div class="text-secondary muokattu pb-1">
+              <div v-if="ohje.muokattu"
+                   class="text-secondary muokattu pb-1">
                 {{ $ago(ohje.muokattu) }}
               </div>
               <h4 v-html="$kaanna(ohje.lokalisoituKysymys)"></h4>

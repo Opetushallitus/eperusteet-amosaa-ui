@@ -1,7 +1,7 @@
 <template>
   <div class="home-container minfull">
     <div class="header" ref="header">
-      <EpNavbar :kayttaja="kayttaja" />
+      <EpNavbar :kayttaja="kayttaja" :koulutustoimijat="koulutustoimijat" />
       <PortalTarget ref="innerPortal" name="headerExtension" />
     </div>
     <RouterView />
@@ -10,6 +10,7 @@
 </template>
 
 <script lang="ts">
+import _ from 'lodash';
 import { Prop, Watch, Component, Vue } from 'vue-property-decorator';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import { KayttajaStore } from '@/stores/kayttaja';
@@ -34,8 +35,8 @@ export default class RouteRoot extends Vue {
     return this.kayttajaStore?.tiedot?.value || null;
   }
 
-  async mounted() {
-    // await Kayttajat.init();
+  get koulutustoimijat() {
+    return this.kayttajaStore?.koulutustoimijat?.value || null;
   }
 }
 </script>
@@ -55,9 +56,5 @@ export default class RouteRoot extends Vue {
     }
   }
 }
-
-// .animate {
-//   transition: max-height 0.2s ease-in-out;
-// }
 
 </style>

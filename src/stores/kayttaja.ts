@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import Vue from 'vue';
-import { Store, Getter, State } from '@shared/stores/store';
 import {
-  KayttajaApi
+  KayttajaApi,
+  KoulutustoimijaBaseDto,
  } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
 import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composition-api';
@@ -47,6 +47,7 @@ export class KayttajaStore implements IOikeusProvider {
     oikeudet: {
     } as Oikeudet,
     etusivu: null as EtusivuDto | null,
+    koulutustoimijat: null as KoulutustoimijaBaseDto[] | null,
   });
 
   public readonly etusivu = computed(() => this.state.etusivu);
@@ -57,11 +58,13 @@ export class KayttajaStore implements IOikeusProvider {
   public readonly oikeudet = computed(() => this.state.oikeudet);
   public readonly nimi = computed(() => parsiEsitysnimi(this.state.tiedot));
   public readonly isAdmin = computed(() => _.includes(this.state.tiedot?.oikeudet || [], 'ROLE_EPERUSTEET_ADMIN'));
+  public readonly koulutustoimijat = computed(() => this.state.koulutustoimijat);
 
   public async init() {
     try {
       logger.info('Haetaan käyttäjän tiedot');
       this.state.tiedot = (await KayttajaApi.getKayttaja()).data;
+      this.state.koulutustoimijat = (await KayttajaApi.getKoulutustoimijat()).data;
       logger.info('Käyttäjän tiedot', this.tiedot.value);
     }
     catch (err) {

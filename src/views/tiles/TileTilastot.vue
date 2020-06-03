@@ -1,6 +1,6 @@
 <template>
   <EpHomeTile icon="tilasto"
-              :route="{ name: 'wip' }"
+              :route="{ name: 'tilastot' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
       <span>{{ $t('tile-tilastot') }}</span>

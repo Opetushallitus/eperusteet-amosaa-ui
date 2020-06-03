@@ -1,6 +1,6 @@
 <template>
   <EpHomeTile icon="osaamisen-arviointi"
-              :route="{ name: 'wip' }"
+              :route="{ name: 'yhteinen' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
       <span>{{ $t('tile-koulutustoimijan-yhteinen-osuus') }}</span>
