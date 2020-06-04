@@ -36,11 +36,9 @@ import { EtusivuDto } from '../../../eperusteet-frontend-utils/vue/src/generated
     EpSpinner,
   },
 })
-export default class TilePerusteprojektit extends Vue {
-
+export default class TileToteutussuunnitelmat extends Vue {
   @Prop({})
   private etusivu!: EtusivuDto | null;
-  
 }
 </script>
 

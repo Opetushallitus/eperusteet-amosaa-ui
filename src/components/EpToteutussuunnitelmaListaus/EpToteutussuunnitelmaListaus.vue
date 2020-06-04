@@ -263,7 +263,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       sortable: true,
       label: this.$t('koulutuskoodi') as string,
       formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
-        if (item.peruste && item.peruste.koulutukset) {
+        if (item.peruste && item.peruste.koulutukset && _.size(item.peruste.koulutukset) > 0) {
           return _.head(item!.peruste!.koulutukset)!['koulutuskoodiArvo'];
         }
       },

@@ -1,7 +1,8 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { SisaltoViiteKevytDto, Sisaltoviitteet } from '@shared/api/amosaa';
+import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
+import { SisaltoViiteKevytDto, Sisaltoviitteet, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import _ from 'lodash';
+import { Computed } from '@shared/utils/interfaces';
 
 Vue.use(VueCompositionApi);
 
@@ -10,9 +11,14 @@ export class SisaltoViiteStore {
     sisaltoviitteet: null as SisaltoViiteKevytDto[] | null,
   })
 
-  public readonly sisaltoviitteet = computed(() => this.state.sisaltoviitteet);
-
-  public async init(koulutustoimijaId: number, opetussuunnitelmaId: number) {
-    this.state.sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(opetussuunnitelmaId, _.toString(koulutustoimijaId))).data;
+  constructor(private opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
   }
+
+  public readonly sisaltoviitteet = computed(() => this.state.sisaltoviitteet);
+  public readonly fetch = watch([this.opetussuunnitelma], async () => {
+    if (this.opetussuunnitelma.value) {
+      this.state.sisaltoviitteet = null;
+      this.state.sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(this.opetussuunnitelma.value.id, _.toString(this.opetussuunnitelma.value.koulutustoimija.id))).data;
+    }
+  });
 }

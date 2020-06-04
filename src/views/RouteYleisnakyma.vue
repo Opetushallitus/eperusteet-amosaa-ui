@@ -64,32 +64,8 @@ export default class RouteYleisnakyma extends Vue {
   @Prop({ required: false, default: 'peruste' })
   private tyyppi!: 'opas' | 'peruste';
 
-  async mounted() {
-    await this.fetch();
-  }
-
-  @Watch('toteutussuunnitelma')
-  async toteutussuunnitelmaChange() {
-    await this.fetch();
-  }
-
-  async fetch() {
-    if (this.toteutussuunnitelma && this.koulutustoimijaId) {
-      await Promise.all([
-        this.aikatauluStore.init(this.koulutustoimijaId, this.toteutussuunnitelma.id!),
-        this.sisaltoViiteStore.init(this.koulutustoimijaId, this.toteutussuunnitelma.id!),
-        this.muokkaustietoStore.init(this.koulutustoimijaId, this.toteutussuunnitelma.id!),
-        this.toteutussuunnitelmaTiedotteetStore.init(this.toteutussuunnitelma.peruste!.perusteId!),
-      ]);
-    }
-  }
-
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
-  get koulutustoimijaId() {
-    return this.toteutussuunnitelma!.koulutustoimija!.id;
   }
 }
 </script>
