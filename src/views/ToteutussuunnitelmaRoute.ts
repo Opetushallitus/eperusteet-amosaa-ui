@@ -6,15 +6,13 @@ export abstract class ToteutussuunnitelmaRoute extends Vue {
   @Prop({ required: true })
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
+  @Prop({ required: true })
+  private toteutussuunnitelmaId!: string | number;
+
+  @Prop({ required: true })
+  private koulutustoimijaId!: string | number;
+
   private isInitializing = false;
-
-  protected get toteutussuunnitelmaId(): number {
-    return _.toNumber(this.$route.params.toteutussuunnitelmaId);
-  }
-
-  protected get koulutustoimijaId(): number {
-    return _.toNumber(this.$route.params.koulutustoimijaId);
-  }
 
   protected abstract onProjektiChange(koulutustoimijaId:number, toteutussuunnitelmaId: number): Promise<any>;
 

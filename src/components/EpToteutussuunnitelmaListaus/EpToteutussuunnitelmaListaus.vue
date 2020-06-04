@@ -42,7 +42,7 @@
           </EpMultiSelect>
         </div>
         <div class="mb-3">
-          <EpSpinner v-if="isLoading" />
+          <ep-spinner v-if="isLoading" />
         </div>
       </div>
 
@@ -59,7 +59,7 @@
       <div v-if="items.data.length > 0">
         <b-table striped hover responsive :items="items.data" :fields="fields">
           <template v-slot:cell(nimi)="data">
-            <router-link :to="{}">
+            <router-link :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: data.item.id } }">
               {{ $kaanna(data.item.nimi) }}
             </router-link>
           </template>
@@ -72,7 +72,7 @@
         {{ $t('ei-hakutuloksia') }}
       </div>
     </div>
-    <EpSpinner v-else />
+    <ep-spinner v-else />
   </div>
 </template>
 
@@ -112,6 +112,9 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   @Prop({ required: false, default: () => ['tyyppi', 'voimassaolo', 'tila'] })
   filters!: ProjektiFilter[];
 
+    @Prop({ required: true })
+  private koulutustoimijaId!: string | number;
+
   private tyyppi: string | null = null;
   private voimassaolo: string | null = null;
   private tila: string[] | null = ['luonnos', 'julkaistu'];
@@ -133,6 +136,18 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
 
   async mounted() {
     this.provider.updateQuery(_.toNumber(this.$route.params.koulutustoimijaId), this.query);
+  }
+
+  @Watch('koulutustoimijaId', { deep: true, immediate: true })
+  async onKoulutustyyppiIdChange(koulutustoimijaId: string | number) {
+    this.isLoading = true;
+    try {
+      this.query.sivu = 0;
+      await this.provider.updateQuery(_.toNumber(koulutustoimijaId), this.query);
+    }
+    finally {
+      this.isLoading = false;
+    }
   }
 
   @Watch('query', { deep: true, immediate: true })
@@ -263,7 +278,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       sortable: true,
       label: this.$t('koulutuskoodi') as string,
       formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
-        if (item.peruste && item.peruste.koulutukset && _.size(item.peruste.koulutukset) > 0) {
+        if (item.peruste && !_.isEmpty(item.peruste.koulutukset)) {
           return _.head(item!.peruste!.koulutukset)!['koulutuskoodiArvo'];
         }
       },

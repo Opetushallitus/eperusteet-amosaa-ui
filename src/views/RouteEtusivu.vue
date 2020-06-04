@@ -1,10 +1,10 @@
 <template>
   <div>
     <Portal to="headerExtension">
-      <div class="container mt-5">
+      <div class="container">
         <div class="container-fluid">
-          <div class="row">
-            <div class="col">
+          <div class="row no-gutters">
+            <div class="col my-4 px-3 px-md-0">
               <h1>{{ $t('amosaa-tervetuloa', { nimi }) }}</h1>
               <p>{{ $t('amosaa-tervetuloa-kuvaus') }}</p>
             </div>
@@ -27,7 +27,8 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Mixins, Prop } from 'vue-property-decorator';
+import _ from 'lodash';
+import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 
 import EpRoute from '@shared/mixins/EpRoute';
 import { EtusivuDto } from '@shared/api/amosaa';
@@ -51,16 +52,27 @@ import TileTilastot from './tiles/TileTilastot.vue';
     TileTilastot,
   },
 })
-export default class RouteHome extends Mixins(EpRoute) {
+export default class RouteEtusivu extends Mixins(EpRoute) {
 
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
 
-  //@Prop({ required: true })
-  //private tiedotteetStore!: TiedotteetStore;
+  @Prop({ required: true })
+  private koulutustoimijaId!: string | number;
+
+  @Watch('koulutustoimijaId', { immediate: true })
+  async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
+    if (newValue && newValue !== oldValue) {
+      this.fetch();
+    }
+  }
 
   async init() {
-    await this.kayttajaStore.fetchEtusivu();
+    this.fetch();
+  }
+
+  async fetch() {
+    await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId);
   }
 
   get nimi() {
