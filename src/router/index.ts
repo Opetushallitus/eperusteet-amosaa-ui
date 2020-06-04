@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import RouteHome from '@/views/RouteHome.vue';
+import RouteVirhe from '@/views/RouteVirhe.vue';
 import RouteLang from '@/views/RouteLang.vue';
 import RouteRoot from '@/views/RouteRoot.vue';
+import RouteEtusivu from '@/views/RouteEtusivu.vue';
 import RouteUkk from '@/views/RouteUkk.vue';
 import RouteToteutussuunnitelmat from '@/views/RouteToteutussuunnitelmat.vue';
 import RouteYleisnakyma from '@/views/RouteYleisnakyma.vue';
@@ -14,109 +15,139 @@ import RouteSuorituspolut from '@/views/RouteSuorituspolut.vue';
 import RouteSuorituspolku from '@/views/RouteSuorituspolku.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
 import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
+
 import { stores } from '@/stores/index';
+import { Virheet } from '@shared/stores/virheet';
+import { SovellusVirhe } from '@shared/tyypit';
+import { createLogger } from '@shared/utils/logger';
 
 Vue.use(VueRouter);
+
+const logger = createLogger('Router');
+
+const props = (route: any) => {
+  return {
+    ...route.params,
+    ...stores,
+  }
+} 
 
 const router = new VueRouter({
   routes: [{
     path: '',
     alias: '/',
+    name: 'root',
     component: RouteLang,
-    props: { ...stores },
+    props,
   }, {
     path: '/:lang/koulutustoimija/:koulutustoimijaId',
     component: RouteRoot,
-    props: { ...stores },
+    props,
     children: [{
+      path: 'virhe',
+      name: 'virhe',
+      component: RouteVirhe,
+    }, {
       path: '',
       name: 'home',
-      component: RouteHome,
-      props: { ...stores },
+      component: RouteEtusivu,
+      props,
     }, {
       path: 'ukk',
       name: 'ukk',
       component: RouteUkk,
-      props: { ...stores },
+      props,
     }, {
       path: 'tilastot',
       name: 'tilastot',
       // component: ...,
-      props: { ...stores },
+      props,
     }, {
       path: 'tiedotteet',
       name: 'tiedotteet',
       // component: ...,
-      props: { ...stores },
+      props,
     }, {
       path: 'organisaatio',
       name: 'organisaatio',
       // component: ...,
-      props: { ...stores },
+      props,
     }, {
       path: 'yhteinen',
       name: 'yhteinen',
       // component: ...,
-      props: { ...stores },
+      props,
     }, {
       path: 'paivitettavat',
       name: 'paivitettavat',
       // component: ...,
-      props: { ...stores },
+      props,
     }, {
       path: 'toteutussuunnitelmat',
       name: 'toteutussuunnitelmat',
       component: RouteToteutussuunnitelmat,
-      props: { ...stores },
+      props,
     }, {
       path: 'toteutussuunnitelma/:toteutussuunnitelmaId',
       component: RouteToteutussuunnitelma,
-      props: {
-        ...stores,
-      },
+      props,
       children: [{
         path: '',
         name: 'toteutussuunnitelma',
         component: RouteYleisnakyma,
-        props: { ...stores },
+        props,
       }, {
         path: 'tiedot',
         name: 'toteutussuunnitelmantiedot',
         component: RouteToteutussuunnitelmaTiedot,
-        props: { ...stores },
+        props,
       }, {
         path: 'tekstikappale/:id',
         name: 'tekstikappale',
         component: RouteTekstikappale,
-        props: { ...stores },
+        props,
       }, {
         path: 'tutkinnonosat/:id',
         name: 'tutkinnonosat',
         component: RouteTutkinnonosat,
-        props: { ...stores },
+        props,
       }, {
         path: 'tutkinnonosa/:id',
         name: 'tutkinnonosa',
         component: RouteTutkinnonosa,
-        props: { ...stores },
+        props,
       }, {
         path: 'suorituspolut/:id',
         name: 'suorituspolut',
         component: RouteSuorituspolut,
-        props: { ...stores },
+        props,
       }, {
         path: 'suorituspolku/:id',
         name: 'suorituspolku',
         component: RouteSuorituspolku,
-        props: { ...stores },
+        props,
       }, {
         path: 'jarjesta',
         component: RouteJarjestys,
         name: 'jarjesta',
-        props: { ...stores },
+        props,
       }],
+    }, {
+      path: '*',
+      redirect: (to) => {
+        logger.error('Unknown route', to);
+        return {
+          name: 'virhe',
+        };
+      },
     }],
   }],
 });
 
 export default router;
+
+Virheet.onError((virhe: SovellusVirhe) => {
+  router.push({
+    name: 'virhe',
+  });
+});

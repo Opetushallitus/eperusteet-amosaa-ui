@@ -1,6 +1,6 @@
 <template>
   <EpMainView>
-    <EpToteutussuunnitelmaListaus :provider="toteutussuunnitelmatStore">
+    <EpToteutussuunnitelmaListaus :provider="toteutussuunnitelmatStore" :koulutustoimija-id="koulutustoimijaId">
       <div slot="header" class="d-flex justify-content-between">
         <h2>{{ $t('toteutussuunnitelmat') }}</h2>
 
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { Prop, Component, Vue } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpToteutussuunnitelmaListaus from '@/components/EpToteutussuunnitelmaListaus/EpToteutussuunnitelmaListaus.vue';
 import EpIcon from '@shared/components/EpIcon/EpIcon.vue';
@@ -39,7 +39,12 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
   },
 })
 export default class RouteToteutussuunnitelmat extends Vue {
+
   @Prop({ required: true })
   toteutussuunnitelmatStore!: ToteutussuunnitelmatStore;
+
+  @Prop({ required: true })
+  private koulutustoimijaId!: string | number;
+
 }
 </script>

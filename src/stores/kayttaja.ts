@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import Vue from 'vue';
-import { KayttajaApi, EtusivuDto, KoulutustoimijaBaseDto } from '@shared/api/amosaa';
+import { KayttajaApi, Koulutustoimijat, EtusivuDto, KoulutustoimijaBaseDto } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
 import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composition-api';
 import { IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
+import { KayttajatApi } from '@shared/generated/eperusteet';
 
 Vue.use(VueCompositionApi);
 
@@ -81,9 +82,9 @@ export class KayttajaStore implements IOikeusProvider {
     return true;
   }
 
-  public async fetchEtusivu() {
+  public async fetchEtusivu(koulutustoimijaId: string | number) {
     this.state.etusivu = null;
-    this.state.etusivu = (await KayttajaApi.getKayttajanEtusivu()).data;
+    this.state.etusivu = (await Koulutustoimijat.getEtusivu(_.toString(koulutustoimijaId))).data;
   }
 
   private vertaa(oikeus: Oikeus, kohde: OikeusKohde = 'peruste') {

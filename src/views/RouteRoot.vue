@@ -12,9 +12,9 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Prop, Watch, Component, Vue } from 'vue-property-decorator';
-import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
-import { KayttajaStore } from '@/stores/kayttaja';
 import Sticky from 'vue-sticky-directive';
+import { KayttajaStore } from '@/stores/kayttaja';
+import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 
 @Component({

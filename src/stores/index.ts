@@ -7,10 +7,12 @@ import { SisaltoViiteStore } from './SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from './ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaTiedotteetStore } from './ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmatStore } from './ToteutussuunnitelmatStore';
+import { TiedotteetStore } from './TiedotteetStore';
 import { tutoriaaliStore } from '@shared/stores/tutoriaali';
 
 const toteutussuunnitelmaStore = new ToteutussuunnitelmaStore();
 const toteutussuunnitelmatStore = new ToteutussuunnitelmatStore();
+const tiedotteetStore = new TiedotteetStore();
 
 const aikatauluStore = new AikatauluStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const sisaltoViiteStore = new SisaltoViiteStore(toteutussuunnitelmaStore.toteutussuunnitelma);
@@ -29,4 +31,5 @@ export const stores = Object.freeze({
   toteutussuunnitelmaTiedotteetStore,
   toteutussuunnitelmatStore,
   tutoriaaliStore,
+  tiedotteetStore,
 });
