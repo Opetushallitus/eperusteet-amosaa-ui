@@ -22,6 +22,6 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
     EpSpinner,
   },
 })
-export default class TilePerusteprojektit extends Vue {
+export default class TileTiedotteet extends Vue {
 }
 </script>

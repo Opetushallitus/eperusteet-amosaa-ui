@@ -9,13 +9,14 @@ import { ToteutussuunnitelmaTiedotteetStore } from './ToteutussuunnitelmaTiedott
 import { ToteutussuunnitelmatStore } from './ToteutussuunnitelmatStore';
 import { tutoriaaliStore } from '@shared/stores/tutoriaali';
 
-const aikatauluStore = new AikatauluStore();
-const muokkaustietoStore = new MuokkaustietoStore();
-const ohjeetStore = new OhjeetStore();
-const sisaltoViiteStore = new SisaltoViiteStore();
 const toteutussuunnitelmaStore = new ToteutussuunnitelmaStore();
-const toteutussuunnitelmaTiedotteetStore = new ToteutussuunnitelmaTiedotteetStore();
 const toteutussuunnitelmatStore = new ToteutussuunnitelmatStore();
+
+const aikatauluStore = new AikatauluStore(toteutussuunnitelmaStore.toteutussuunnitelma);
+const sisaltoViiteStore = new SisaltoViiteStore(toteutussuunnitelmaStore.toteutussuunnitelma);
+const muokkaustietoStore = new MuokkaustietoStore(toteutussuunnitelmaStore.toteutussuunnitelma);
+const toteutussuunnitelmaTiedotteetStore = new ToteutussuunnitelmaTiedotteetStore(toteutussuunnitelmaStore.toteutussuunnitelma);
+const ohjeetStore = new OhjeetStore();
 
 export const stores = Object.freeze({
   aikatauluStore,
