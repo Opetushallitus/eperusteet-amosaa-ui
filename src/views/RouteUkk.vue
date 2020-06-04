@@ -6,13 +6,24 @@
     <template slot="header">
       <div class="text-left">
         <h1>{{ $t('usein-kysytyt-kysymykset') }}</h1>
-        <p>{{ $t('ukk-kuvaus-nakyma-amosaa') }}</p>
+        <p>{{ $t('ukk-kuvaus-nakyma') }}</p>
         <ep-spinner v-if="isLoading"></ep-spinner>
-        <div v-else class="d-flex justify-content-between mb-4">
+        <div v-else>
           <ep-search v-model="rajain"></ep-search>
-          <ep-button class="pt-1" variant="outline-primary" icon="plussa" @click="startKysymysModal(null)">
-            {{ $t('lisaa-uusi-kysymys') }}
-          </ep-button>
+
+            <div class="d-flex justify-content-between align-items-end mb-4 mt-3">
+              <b-form-group :label="$t('nayta-sisalto-jonka-on-luonut')">
+                <b-form-checkbox-group v-model="koulutustoimijaRajaus">
+                  <b-form-checkbox v-for="(koulutustoimija, index) in koulutustoimijat" :key="'ktvalinta'+index" :value="koulutustoimija" >
+                    {{ $kaanna(koulutustoimija.nimi) }}
+                  </b-form-checkbox>
+                </b-form-checkbox-group>
+              </b-form-group>
+
+              <ep-button class="mb-3" variant="outline-primary" icon="plussa" @click="startKysymysModal(null)">
+                {{ $t('lisaa-uusi-kysymys') }}
+              </ep-button>
+            </div>
         </div>
       </div>
     </template>
@@ -61,6 +72,13 @@
           <ep-content v-model="ohje.lokalisoituVastaus" help="kysymys-vastaus-ohje" layout="normal" :validation="$v.ohje.lokalisoituVastaus" :is-editable="true">
           </ep-content>
         </ep-form-content>
+        <ep-form-content name="nayta-organisaatioissa">
+          <b-form-checkbox-group v-model="ohje.koulutustoimijat" stacked>
+            <b-form-checkbox v-for="(koulutustoimija, index) in koulutustoimijat" :key="'modalktvalinta'+index" :value="koulutustoimija">
+              {{ $kaanna(koulutustoimija.nimi) }}
+            </b-form-checkbox>
+          </b-form-checkbox-group>
+        </ep-form-content>
         <template slot="modal-cancel">{{ $t('peruuta') }}</template>
         <template slot="modal-ok">{{ !ohje.id ? $t('lisaa-kysymys') : $t('tallenna') }}</template>
       </b-modal>
@@ -93,6 +111,8 @@ import { validationMixin } from 'vuelidate';
 import { Kielet, UiKielet } from '@shared/stores/kieli';
 import { requiredOneLang, translated } from '@shared/validators/required';
 import { Kieli } from '@shared/tyypit';
+import { KayttajaStore } from '@/stores/kayttaja';
+import { KoulutustoimijaBaseDto } from '../../eperusteet-frontend-utils/vue/src/generated/amosaa';
 
 @Component({
   components: {
@@ -120,11 +140,16 @@ export default class RouteUkk extends Mixins(validationMixin) {
   @Prop({ required: true })
   private ohjeetStore!: OhjeetStore;
 
+  @Prop({ required: true })
+  private kayttajaStore!: KayttajaStore;
+
   private rajain: string = '';
   private ohje: OhjeDto = {};
+  private koulutustoimijaRajaus: KoulutustoimijaBaseDto[] = [];
 
   async mounted() {
     this.ohjeetStore.fetch();
+    this.koulutustoimijaRajaus = _.map(this.koulutustoimijat);
   }
 
   get isLoading() {
@@ -141,6 +166,7 @@ export default class RouteUkk extends Mixins(validationMixin) {
         _.toLower(this.rajain)
       )
       )
+      .filter(ohje => _.isEmpty(this.koulutustoimijaRajaus) || _.some(_.map(this.koulutustoimijaRajaus, 'id'), ktId => _.includes(_.map(ohje.koulutustoimijat, 'id'), ktId)))
       .sortBy((k: any) => -k.muokattu)
       .value();
   }
@@ -160,7 +186,9 @@ export default class RouteUkk extends Mixins(validationMixin) {
       this.ohje = _.cloneDeep(ohje);
     }
     else {
-      this.ohje = {};
+      this.ohje = {
+        koulutustoimijat: [],
+      };
     }
     (this as any).$refs.createUpdateKysymys.show();
   }
@@ -182,6 +210,10 @@ export default class RouteUkk extends Mixins(validationMixin) {
     }
 
     await this.ohjeetStore.delete(this.ohje);
+  }
+
+  get koulutustoimijat() {
+    return this.kayttajaStore.koulutustoimijat.value;
   }
 }
 </script>
