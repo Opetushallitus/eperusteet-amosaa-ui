@@ -17,8 +17,8 @@ export class AikatauluStore {
 
   public readonly aikataulutapahtumat = computed(() => this.state.aikataulutapahtumat);
   public readonly fetch = watch([this.opetussuunnitelma], async () => {
+    this.state.aikataulutapahtumat = null;
     if (this.opetussuunnitelma.value) {
-      this.state.aikataulutapahtumat = null;
       this.state.aikataulutapahtumat = (await Aikataulut.getOpetussuunnitelmanAikataulut(this.opetussuunnitelma.value.koulutustoimija.id, this.opetussuunnitelma.value.id)).data;
     }
   });

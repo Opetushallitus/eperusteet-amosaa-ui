@@ -112,7 +112,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   @Prop({ required: false, default: () => ['tyyppi', 'voimassaolo', 'tila'] })
   filters!: ProjektiFilter[];
 
-    @Prop({ required: true })
+  @Prop({ required: true })
   private koulutustoimijaId!: string | number;
 
   private tyyppi: string | null = null;
@@ -278,7 +278,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       sortable: true,
       label: this.$t('koulutuskoodi') as string,
       formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
-        if (item.peruste && !_.isEmpty(item.peruste.koulutukset)) {
+        if (item.peruste && _.size(item.peruste.koulutukset) > 0) {
           return _.head(item!.peruste!.koulutukset)!['koulutuskoodiArvo'];
         }
       },

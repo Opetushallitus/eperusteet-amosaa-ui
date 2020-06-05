@@ -16,8 +16,8 @@ export class SisaltoViiteStore {
 
   public readonly sisaltoviitteet = computed(() => this.state.sisaltoviitteet);
   public readonly fetch = watch([this.opetussuunnitelma], async () => {
+    this.state.sisaltoviitteet = null;
     if (this.opetussuunnitelma.value) {
-      this.state.sisaltoviitteet = null;
       this.state.sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(this.opetussuunnitelma.value.id, _.toString(this.opetussuunnitelma.value.koulutustoimija.id))).data;
     }
   });

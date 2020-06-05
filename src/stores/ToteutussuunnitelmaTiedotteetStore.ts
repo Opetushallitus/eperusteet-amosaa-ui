@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
-import { Tiedotteet, TiedoteDto } from '@shared/api/eperusteet';
+// import { Tiedotteet, TiedoteDto } from '@shared/api/eperusteet';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
-import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, Ulkopuoliset, TiedoteDto } from '@shared/api/amosaa';
 
 Vue.use(VueCompositionApi);
 
@@ -17,9 +17,9 @@ export class ToteutussuunnitelmaTiedotteetStore {
 
   public readonly tiedotteet = computed(() => this.state.tiedotteet);
   public readonly fetch = watch([this.opetussuunnitelma], async () => {
+    this.state.tiedotteet = null;
     if (this.opetussuunnitelma.value) {
-      this.state.tiedotteet = null;
-      const res = (await Tiedotteet.findTiedotteetBy(
+      const res = (await Ulkopuoliset.getTiedotteetHaku(
         0,
         99999,
         undefined,
@@ -28,8 +28,7 @@ export class ToteutussuunnitelmaTiedotteetStore {
         undefined,
         undefined,
         undefined,
-        undefined,
-        [this.opetussuunnitelma.value.perusteId]
+        this.opetussuunnitelma.value.peruste.id
       )).data as any;
       this.state.tiedotteet = res.data;
     }
