@@ -266,6 +266,9 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       key: 'tyyppi',
       sortable: true,
       label: this.$t('tyyppi') as string,
+      formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
+        return this.$t('amosaa-tyyppi-' + value);
+      },
     }, {
       key: 'tila',
       sortable: true,
