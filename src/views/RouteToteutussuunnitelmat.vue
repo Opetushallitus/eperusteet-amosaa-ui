@@ -5,7 +5,7 @@
         <h2>{{ $t('toteutussuunnitelmat') }}</h2>
 
         <div>
-          <router-link :to="{}">
+          <router-link :to="{name: 'toteutussuunnitelmaLuonti'}">
             <ep-button variant="outline-primary" icon="plussa">
               {{ $t('lisaa-toteutussuunnitelma') }}
             </ep-button>
@@ -39,12 +39,10 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
   },
 })
 export default class RouteToteutussuunnitelmat extends Vue {
-
   @Prop({ required: true })
   toteutussuunnitelmatStore!: ToteutussuunnitelmatStore;
 
   @Prop({ required: true })
   private koulutustoimijaId!: string | number;
-
 }
 </script>

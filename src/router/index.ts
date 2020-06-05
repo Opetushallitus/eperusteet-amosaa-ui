@@ -15,6 +15,7 @@ import RouteSuorituspolut from '@/views/RouteSuorituspolut.vue';
 import RouteSuorituspolku from '@/views/RouteSuorituspolku.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
 import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
+import RouteToteutussuunnitelmaLuonti from '@/views/RouteToteutussuunnitelmaLuonti.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -29,8 +30,8 @@ const props = (route: any) => {
   return {
     ...route.params,
     ...stores,
-  }
-} 
+  };
+};
 
 const router = new VueRouter({
   routes: [{
@@ -86,6 +87,11 @@ const router = new VueRouter({
       path: 'toteutussuunnitelmat',
       name: 'toteutussuunnitelmat',
       component: RouteToteutussuunnitelmat,
+      props,
+    }, {
+      path: 'toteutussuunnitelmat/uusi',
+      name: 'toteutussuunnitelmaLuonti',
+      component: RouteToteutussuunnitelmaLuonti,
       props,
     }, {
       path: 'toteutussuunnitelma/:toteutussuunnitelmaId',
