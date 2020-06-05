@@ -11,7 +11,7 @@
             </ep-button>
           </router-link>
 
-          <router-link :to="{}">
+          <router-link :to="{name: 'jaettuosaLuonti'}">
             <ep-button variant="outline-primary" icon="plussa" >
               {{ $t('lisaa-jaettu-osa') }}
             </ep-button>

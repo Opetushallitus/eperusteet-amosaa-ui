@@ -92,7 +92,26 @@ const router = new VueRouter({
       path: 'toteutussuunnitelmat/uusi',
       name: 'toteutussuunnitelmaLuonti',
       component: RouteToteutussuunnitelmaLuonti,
-      props,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          opetussuunnitelmanTyyppi: 'ops',
+          opetussuunnitelmanSuoritustapa: 'reformi',
+        };
+      },
+    }, {
+      path: 'jaettuosa/uusi',
+      name: 'jaettuosaLuonti',
+      component: RouteToteutussuunnitelmaLuonti,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          opetussuunnitelmanTyyppi: 'yleinen',
+          perusteetStore: null,
+        };
+      },
     }, {
       path: 'toteutussuunnitelma/:toteutussuunnitelmaId',
       component: RouteToteutussuunnitelma,
