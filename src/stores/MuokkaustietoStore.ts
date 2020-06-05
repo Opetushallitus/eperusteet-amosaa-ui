@@ -18,8 +18,8 @@ export class MuokkaustietoStore implements IMuokkaustietoProvider {
   }
 
   public readonly fetch = watch([this.opetussuunnitelma], async () => {
+    this.state.muokkaustiedot = null;
     if (this.opetussuunnitelma.value) {
-      this.state.muokkaustiedot = null;
       await this.update();
     }
   });
