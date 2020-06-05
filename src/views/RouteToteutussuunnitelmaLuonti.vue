@@ -8,12 +8,17 @@
            <div class="row">
             <div class="col-sm-10 mb-4">
               <b-form-group class="mt-4 pt-0 " :label="$t('kayta-pohjana')+' *'">
-                <b-form-radio class="p-2 pl-4 pt-3" v-model="tyyppi" value="peruste" name="tyyppi" :disabled="!perusteet || perusteet.length === 0">{{ $t('perusteprojektia') }}</b-form-radio>
-                <b-form-radio class="p-2 pl-4" v-model="tyyppi" value="toteutussuunnitelma" name="tyyppi" :disabled="!toteutussuunnitelmat || toteutussuunnitelmat.length === 0">{{ $t('toista-toteutussuunnitelmaa') }}</b-form-radio>
+
+                <b-form-radio class="p-2 pl-4 pt-3" v-if="opetussuunnitelmanTyyppi === 'ops'" v-model="pohjanTyyppi" value="peruste" name="pohjanTyyppi" :disabled="!perusteet || perusteet.length === 0">{{ $t('perusteprojektia') }}</b-form-radio>
+                <b-form-radio class="p-2 pl-4" v-if="opetussuunnitelmanTyyppi === 'ops'" v-model="pohjanTyyppi" value="toteutussuunnitelma" name="pohjanTyyppi" :disabled="!toteutussuunnitelmat || toteutussuunnitelmat.length === 0">{{ $t('toista-toteutussuunnitelmaa') }}</b-form-radio>
+
+                <b-form-radio class="p-2 pl-4" v-if="opetussuunnitelmanTyyppi === 'yleinen'" v-model="pohjanTyyppi" value="toteutussuunnitelma" name="pohjanTyyppi" :disabled="!toteutussuunnitelmat || toteutussuunnitelmat.length === 0">{{ $t('toista-jaettua-osaa') }}</b-form-radio>
+                <b-form-radio class="p-2 pl-4" v-if="opetussuunnitelmanTyyppi === 'yleinen'" v-model="pohjanTyyppi" value="uusi" name="pohjanTyyppi">{{ $t('luo-uusi') }}</b-form-radio>
+
               </b-form-group>
 
-              <b-form-group :label="$t('toteutussuunnitelman-pohja')+' *'" v-if="tyyppi">
-                <div v-if="tyyppi === 'peruste'">
+              <b-form-group :label="pohjaOtsikko +' *'" v-if="pohjanTyyppi && pohjanTyyppi !== 'uusi'">
+                <div v-if="pohjanTyyppi === 'peruste'">
                   <EpMultiSelect
                     v-if="perusteet"
                     v-model="peruste"
@@ -31,11 +36,11 @@
                   <EpSpinner v-else />
                 </div>
 
-                <div v-if="tyyppi === 'toteutussuunnitelma'">
+                <div v-if="pohjanTyyppi === 'toteutussuunnitelma'">
                   <EpMultiSelect
                     v-if="toteutussuunnitelmat"
                     v-model="toteutussuunnitelma"
-                    :placeholder="$t('valitse-toteutussuunnitelma')"
+                    :placeholder="pohjaValintaPlaceholder"
                     :is-editing="true"
                     :options="toteutussuunnitelmat"
                     :validation="$v.toteutussuunnitelma">
@@ -51,7 +56,7 @@
 
               </b-form-group>
 
-              <b-form-group :label="$t('toteutussuunnitelman-nimi')+' *'" v-if="tyyppi">
+              <b-form-group :label="nimiOtsikko +' *'" v-if="pohjanTyyppi">
                 <ep-field v-model="nimi" :is-editing="true" :validation="$v.nimi"></ep-field>
               </b-form-group>
 
@@ -60,7 +65,12 @@
         </template>
 
         <template v-slot:luo>
-          {{$t('luo-toteutussuunnitelma')}}
+          <span v-if="opetussuunnitelmanTyyppi === 'ops'">
+            {{$t('luo-toteutussuunnitelma')}}
+          </span>
+          <span v-if="opetussuunnitelmanTyyppi === 'yleinen'">
+            {{$t('luo-jaettu-osa')}}
+          </span>
         </template>
 
       </EpSteps>
@@ -106,13 +116,19 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   @Prop({ required: true })
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   private perusteetStore!: PerusteetStore;
 
   @Prop({ required: true })
   private koulutustoimijaId!: string | number;
 
-  private tyyppi: 'toteutussuunnitelma' | 'peruste' | null = null;
+  @Prop({ required: true })
+  private opetussuunnitelmanTyyppi!: 'ops' | 'yleinen';
+
+  @Prop({ required: false })
+  private opetussuunnitelmanSuoritustapa!: string;
+
+  private pohjanTyyppi: 'toteutussuunnitelma' | 'peruste' | null = null;
 
   private peruste: PerusteDto | null = null;
   private toteutussuunnitelma: OpetussuunnitelmaDto | null = null;
@@ -123,14 +139,16 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       {
         sivukoko: 1000,
         tila: ['poistettu', 'luonnos', 'valmis', 'julkaistu'],
-        tyyppi: ['ops'],
+        tyyppi: [this.opetussuunnitelmanTyyppi],
       });
 
-    this.perusteetStore.updateQuery();
+    if (this.perusteetStore) {
+      this.perusteetStore.updateQuery();
+    }
   }
 
-  @Watch('tyyppi')
-  onTyyppiChange() {
+  @Watch('pohjanTyyppi')
+  onPohjantyyppiChange() {
     this.peruste = null;
     this.toteutussuunnitelma = null;
   }
@@ -139,11 +157,23 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     const self = this;
     return [{
       key: 'toteutussuunnitelma',
-      name: this.$t('uusi-toteutussuunnitelma'),
+      name: this.opetussuunnitelmanTyyppi === 'ops' ? this.$t('uusi-toteutussuunnitelma') : this.$t('uusi-jaettu-osa'),
       isValid() {
         return !self.$v.$invalid;
       },
     }];
+  }
+
+  get pohjaOtsikko() {
+    return this.opetussuunnitelmanTyyppi === 'ops' ? this.$t('toteutussuunnitelman-pohja') : this.$t('jaetun-osan-pohja');
+  }
+
+  get pohjaValintaPlaceholder() {
+    return this.opetussuunnitelmanTyyppi === 'ops' ? this.$t('valitse-toteutussuunnitelma') : this.$t('valitse-jaettu-osa');
+  }
+
+  get nimiOtsikko() {
+    return this.opetussuunnitelmanTyyppi === 'ops' ? this.$t('toteutussuunnitelman-nimi') : this.$t('jaetun-osan-nimi');
   }
 
   async onSave() {
@@ -151,8 +181,8 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       perusteId: this.peruste ? this.peruste.id : undefined,
       perusteDiaarinumero: this.peruste ? this.peruste.diaarinumero : undefined,
       opsId: this.toteutussuunnitelma ? this.toteutussuunnitelma.id : undefined,
-      tyyppi: 'ops' as any,
-      suoritustapa: 'reformi',
+      tyyppi: this.opetussuunnitelmanTyyppi as any,
+      suoritustapa: this.opetussuunnitelmanSuoritustapa,
       nimi: this.nimi,
     });
 
@@ -177,14 +207,14 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       },
     } as any;
 
-    if (this.tyyppi === 'peruste') {
+    if (this.pohjanTyyppi === 'peruste') {
       validation = {
         ...validation,
         peruste: notNull(),
       };
     }
 
-    if (this.tyyppi === 'toteutussuunnitelma') {
+    if (this.pohjanTyyppi === 'toteutussuunnitelma') {
       validation = {
         ...validation,
         toteutussuunnitelma: notNull(),
@@ -201,7 +231,9 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   }
 
   get perusteet() {
-    return this.perusteetStore.perusteet.value;
+    if (this.perusteetStore) {
+      return this.perusteetStore.perusteet.value;
+    }
   }
 }
 </script>
