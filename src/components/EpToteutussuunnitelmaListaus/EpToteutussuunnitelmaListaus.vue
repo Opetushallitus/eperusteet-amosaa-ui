@@ -262,6 +262,10 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       key: 'nimi',
       label: this.$t('nimi') as string,
       sortable: true,
+      sortByFormatted: true,
+      formatter: (value: any, key: string, item: any) => {
+        return this.$kaanna(value);
+      },
     }, {
       key: 'tyyppi',
       sortable: true,

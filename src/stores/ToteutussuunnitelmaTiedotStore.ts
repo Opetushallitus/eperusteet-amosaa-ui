@@ -86,10 +86,10 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
           ...requiredLokalisoituTeksti(),
         },
         voimaantulo: {
-          'min-value': peruste.voimassaoloAlkaa ? minValue(peruste.voimassaoloAlkaa) : '',
+          'min-value': peruste && peruste.voimassaoloAlkaa ? minValue(peruste.voimassaoloAlkaa) : '',
         },
         paatospaivamaara: {
-          'max-value': peruste.voimassaoloLoppuu ? maxValue(peruste.voimassaoloLoppuu) : '',
+          'max-value': peruste && peruste.voimassaoloLoppuu ? maxValue(peruste.voimassaoloLoppuu) : '',
         },
       },
     };
