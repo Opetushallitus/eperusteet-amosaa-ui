@@ -27,7 +27,7 @@ export class ToteutussuunnitelmaTiedotteetStore {
         undefined,
         undefined,
         undefined,
-        this.opetussuunnitelma.value.peruste.id
+        this.opetussuunnitelma.value.peruste.perusteId
       )).data as any;
       this.state.tiedotteet = res.data;
     }
