@@ -87,7 +87,7 @@
 
             <template v-slot:tutkinnonosat="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'tutkinnonosat', params: {id: item.id} }">
+                <router-link :to="{ name: 'tutkinnonosat' }">
                   {{ $t('tutkinnonosat') }}
                 </router-link>
               </div>
@@ -95,7 +95,7 @@
 
             <template v-slot:suorituspolut="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'suorituspolut', params: {id: item.id} }">
+                <router-link :to="{ name: 'suorituspolut' }">
                   {{ $t('suorituspolut') }}
                 </router-link>
               </div>
@@ -103,7 +103,7 @@
 
             <template v-slot:tutkinnonosa="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'tutkinnonosa', params: {id: item.id} }">
+                <router-link :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
               </div>
@@ -111,7 +111,7 @@
 
             <template v-slot:suorituspolku="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'suorituspolku', params: {id: item.id} }">
+                <router-link :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
               </div>
@@ -119,7 +119,7 @@
 
             <template v-slot:tekstikappale="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'tekstikappale', params: {id: item.id} }">
+                <router-link :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
               </div>

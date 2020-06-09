@@ -28,7 +28,7 @@
 
           <b-table striped hover responsive :items="tutkinnonosat" :fields="fields">
             <template v-slot:cell(tutkinnonosaViite.tekstiKappale.nimi)="data">
-              <router-link :to="{ name: 'tutkinnonosa', params: { id: data.item.tutkinnonosaViite.id } }">
+              <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
                 {{ $kaanna(data.item.tutkinnonosaViite.tekstiKappale.nimi) }}
               </router-link>
             </template>
