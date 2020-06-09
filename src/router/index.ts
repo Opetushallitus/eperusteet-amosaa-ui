@@ -128,27 +128,27 @@ const router = new VueRouter({
         component: RouteToteutussuunnitelmaTiedot,
         props,
       }, {
-        path: 'tekstikappale/:id',
+        path: 'tekstikappale/:sisaltoviiteId',
         name: 'tekstikappale',
         component: RouteTekstikappale,
         props,
       }, {
-        path: 'tutkinnonosat/:id',
+        path: 'tutkinnonosat',
         name: 'tutkinnonosat',
         component: RouteTutkinnonosat,
         props,
       }, {
-        path: 'tutkinnonosa/:id',
+        path: 'tutkinnonosa/:sisaltoviiteId',
         name: 'tutkinnonosa',
         component: RouteTutkinnonosa,
         props,
       }, {
-        path: 'suorituspolut/:id',
+        path: 'suorituspolut',
         name: 'suorituspolut',
         component: RouteSuorituspolut,
         props,
       }, {
-        path: 'suorituspolku/:id',
+        path: 'suorituspolku/:sisaltoviiteId',
         name: 'suorituspolku',
         component: RouteSuorituspolku,
         props,

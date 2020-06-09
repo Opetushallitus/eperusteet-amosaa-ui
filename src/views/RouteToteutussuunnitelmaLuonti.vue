@@ -231,9 +231,9 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   }
 
   get perusteet() {
-    if (this.perusteetStore) {
-      return this.perusteetStore.perusteet.value;
-    }
+    return _.sortBy(this.perusteetStore.perusteet.value, [(peruste: any) => {
+      return this.$kaanna(peruste.nimi);
+    }]);
   }
 }
 </script>
