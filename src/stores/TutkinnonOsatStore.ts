@@ -60,4 +60,8 @@ export class TutkinnonOsatStore implements IEditoitava {
 
   async start() {
   }
+
+  public readonly validator = computed(() => {
+    return {};
+  });
 }

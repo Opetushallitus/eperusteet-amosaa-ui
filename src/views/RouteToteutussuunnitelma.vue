@@ -125,14 +125,17 @@
               </div>
             </template>
 
+            <template v-slot:new>
+              <ep-sisalto-lisays
+                :tekstikappaleStore="tekstikappaleStore"
+                :toteutussuunnitelmaId="toteutussuunnitelmaId"
+                :koulutustoimijaId="koulutustoimijaId"
+                :navigation="navigation.value"
+                :updateNavigation="updateNavigation"/>
+            </template>
+
           </EpTreeNavibar>
         </div>
-      </template>
-
-      <template v-slot:new>
-        <ep-button variant="link"> <!-- TODO -->
-          +{{$t('lisaa-sisaltoa')}}
-        </ep-button>
       </template>
 
       <template v-slot:view>
@@ -161,6 +164,10 @@ import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
+import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
+import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
+import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
 @Component({
   components: {
@@ -168,20 +175,68 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
     EpSidebar,
     EpButton,
     EpSearch,
+    EpSisaltoLisays,
   },
 })
-export default class RouteToteutussuunnitelma extends ToteutussuunnitelmaRoute {
+export default class RouteToteutussuunnitelma extends Vue {
+  @Prop({ required: true })
+  private tekstikappaleStore!: TekstikappaleStore;
+
+  @Prop({ required: true })
+  private sisaltoViiteStore!: SisaltoViiteStore;
+
+  @Prop({ required: true })
+  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+
+  @Prop({ required: true })
+  private toteutussuunnitelmaId!: number;
+
+  @Prop({ required: true })
+  private koulutustoimijaId!: string;
+
+  private isInitializing = false;
+
   private naviStore: EpTreeNavibarStore | null = null;
   private query: string = '';
 
-  async onProjektiChange(koulutustoimijaId: number, toteutussuunnitelmaId: number) {
-    if (this.navigation) {
-      this.naviStore = new EpTreeNavibarStore(this.navigation);
+  @Watch('toteutussuunnitelmaId', { immediate: true })
+  async onToteutussuunnitelmaIdChange(newValue: number, oldValue: number) {
+    if (newValue && newValue !== oldValue && !this.isInitializing) {
+      this.fetch();
     }
+  }
+
+  @Watch('koulutustoimijaId', { immediate: true })
+  async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
+    if (newValue && newValue !== oldValue && !this.isInitializing) {
+      this.fetch();
+    }
+  }
+
+  async fetch() {
+    this.isInitializing = true;
+    try {
+      await this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+
+      if (this.navigation) {
+        this.naviStore = new EpTreeNavibarStore(this.navigation);
+      }
+    }
+    finally {
+      this.isInitializing = false;
+    }
+  }
+
+  async updateNavigation() {
+    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
   }
 
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+  }
+
+  get navigation() {
+    return this.toteutussuunnitelmaStore.navigation;
   }
 
   get ratasvalinnat() {

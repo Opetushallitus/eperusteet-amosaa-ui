@@ -14,13 +14,17 @@ export class ToteutussuunnitelmaStore {
   public readonly toteutussuunnitelma = computed(() => this.state.toteutussuunnitelma);
   public readonly navigation = computed(() => this.state.navigation);
 
-  public async init(koulutustoimijaId: number, toteutussuunnitelmaId: number) {
+  public async init(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
     this.state.toteutussuunnitelma = null;
-    this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, _.toString(koulutustoimijaId))).data;
-    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, _.toString(koulutustoimijaId))).data;
+    this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
+    await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
   }
 
   public async create(ktId: string, toteutussuunnitelma: OpetussuunnitelmaLuontiDto) {
     return (await Opetussuunnitelmat.addOpetussuunnitelma(ktId, toteutussuunnitelma)).data;
+  }
+
+  public async initNavigation(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
+    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, koulutustoimijaId)).data;
   }
 }
