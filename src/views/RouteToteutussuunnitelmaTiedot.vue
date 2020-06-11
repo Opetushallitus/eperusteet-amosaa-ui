@@ -1,6 +1,6 @@
 <template>
   <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore">
+    <EpEditointi :store="editointiStore" :versionumero="versionumero">
       <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $t('toteutussuunnitelman-tiedot') }}</h2>
       </template>
@@ -142,7 +142,18 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
   private editointiStore: EditointiStore | null = null;
 
   async mounted() {
-    this.editointiStore = new EditointiStore(new ToteutussuunnitelmaTiedotStore(this.toteutussuunnitelmaId, this.koulutustoimijaId, _.toNumber(this.$route.query.versionumero)));
+    this.fetch();
+  }
+
+  @Watch('versionumero', { immediate: true })
+  versionumeroChange() {
+    this.fetch();
+  }
+
+  fetch() {
+    if (!(this.editointiStore && this.editointiStore.isLoading.value)) {
+      this.editointiStore = new EditointiStore(new ToteutussuunnitelmaTiedotStore(this.toteutussuunnitelmaId, this.koulutustoimijaId, this.versionumero));
+    }
   }
 
   get kielet() {
@@ -155,6 +166,10 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   get koulutustoimijaId(): string {
     return this.$route.params.koulutustoimijaId;
+  }
+
+  get versionumero() {
+    return _.toNumber(this.$route.query.versionumero);
   }
 }
 </script>
