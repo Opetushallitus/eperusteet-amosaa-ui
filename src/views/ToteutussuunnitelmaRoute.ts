@@ -7,14 +7,14 @@ export abstract class ToteutussuunnitelmaRoute extends Vue {
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
   @Prop({ required: true })
-  private toteutussuunnitelmaId!: string | number;
+  private toteutussuunnitelmaId!: number;
 
   @Prop({ required: true })
-  private koulutustoimijaId!: string | number;
+  private koulutustoimijaId!: string;
 
   private isInitializing = false;
 
-  protected abstract onProjektiChange(koulutustoimijaId:number, toteutussuunnitelmaId: number): Promise<any>;
+  protected abstract onProjektiChange(koulutustoimijaId: string, toteutussuunnitelmaId: number): Promise<any>;
 
   @Watch('toteutussuunnitelmaId', { immediate: true })
   async onToteutussuunnitelmaIdChange(newValue: number, oldValue: number) {
@@ -39,6 +39,11 @@ export abstract class ToteutussuunnitelmaRoute extends Vue {
     finally {
       this.isInitializing = false;
     }
+  }
+
+  async updateNavigation() {
+    console.log(this);
+    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
   }
 
   get toteutussuunnitelma() {

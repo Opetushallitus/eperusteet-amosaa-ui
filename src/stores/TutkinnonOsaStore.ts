@@ -1,14 +1,9 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { OpetussuunnitelmaDto, Perusteet, Opetussuunnitelmat, PerusteDto, Sisaltoviitteet, Koodistot, Arviointiasteikot } from '@shared/api/amosaa';
+import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
-import { Kielet } from '@shared/stores/kieli';
 import { Revision, Kieli } from '@shared/tyypit';
-import { requiredLokalisoituTeksti } from '@shared/validators/required';
-import { required, minValue, maxValue } from 'vuelidate/lib/validators';
-import { Matala } from '@shared/generated/amosaa';
 
 Vue.use(VueCompositionApi);
 
