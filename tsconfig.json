@@ -8,9 +8,13 @@
     "jsx": "preserve",
     "module": "esnext",
     "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noImplicitThis": false,
     "sourceMap": true,
     "strict": true,
-    "target": "esnext",
+    "strictPropertyInitialization": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es5",
     "types": [
       "webpack-env",
       "jest"

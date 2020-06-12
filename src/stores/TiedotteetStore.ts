@@ -50,5 +50,11 @@ export class TiedotteetStore implements ITiedotteetProvider {
 
     this.state.tiedotteet = res.data;
   }
-  
+
+  public async save() {
+    // todo
+  }
+  public async delete() {
+    // todo
+  }
 }
