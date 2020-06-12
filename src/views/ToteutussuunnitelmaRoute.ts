@@ -33,8 +33,8 @@ export abstract class ToteutussuunnitelmaRoute extends Vue {
   async fetch() {
     this.isInitializing = true;
     try {
-      await this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId);
-      await this.onProjektiChange(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+      await this.toteutussuunnitelmaStore.init(_.toNumber(this.koulutustoimijaId), _.toNumber(this.toteutussuunnitelmaId));
+      await this.onProjektiChange(_.toNumber(this.koulutustoimijaId), _.toNumber(this.toteutussuunnitelmaId));
     }
     finally {
       this.isInitializing = false;
