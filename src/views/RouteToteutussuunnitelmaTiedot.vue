@@ -118,7 +118,6 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaTiedotStore } from '@/stores/ToteutussuunnitelmaTiedotStore';
-import { ToteutussuunnitelmaRoute } from './ToteutussuunnitelmaRoute';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpField from '@shared/components/forms/EpField.vue';

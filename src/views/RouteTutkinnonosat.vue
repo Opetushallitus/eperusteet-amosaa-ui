@@ -45,7 +45,6 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
-import { ToteutussuunnitelmaRoute } from './ToteutussuunnitelmaRoute';
 import { TutkinnonOsatStore } from '@/stores/TutkinnonOsatStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';

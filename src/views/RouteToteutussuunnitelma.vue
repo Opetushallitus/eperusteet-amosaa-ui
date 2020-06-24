@@ -158,7 +158,6 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Watch, Prop, Component, Vue } from 'vue-property-decorator';
-import { ToteutussuunnitelmaRoute } from './ToteutussuunnitelmaRoute';
 import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
 import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';

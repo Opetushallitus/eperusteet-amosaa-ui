@@ -8,10 +8,10 @@
     <template slot="content">
       <ep-spinner v-if="isLoading"></ep-spinner>
       <div v-else>
-        <div class="tiedotteet" v-if="tiedotteet && tiedotteet.length > 0">
-          <div class="tiedote" v-for="(tiedote, idx) in tiedotteet" :key="idx">
-            <small class="mr-4">{{ $cdt(tiedote.luotu, 'L') }}</small>
-            <span>{{ $kaanna(tiedote.otsikko) }}</span>
+        <div v-if="tiedotteet && tiedotteet.length > 0">
+          <div class="tiedote row justify-content-center text-left" v-for="(tiedote, idx) in tiedotteet" :key="idx">
+            <div class="col-3">{{ $sd(tiedote.luotu) }}</div>
+            <div class="col-7 otsikko">{{ $kaanna(tiedote.otsikko) }}</div>
           </div>
         </div>
         <p v-else>{{ $t('tile-tiedotteet-kuvaus') }}</p>
@@ -22,11 +22,12 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
-import { Ulkopuoliset } from '@shared/api/amosaa';
+import { Tiedotteet, TiedoteDto } from '@shared/api/eperusteet';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+import { julkaisupaikka } from '@shared/utils/tiedote';
 
 @Component({
   components: {
@@ -37,25 +38,35 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 export default class TileTiedotteet extends Vue {
   private isLoading = true;
   private tiedotteet: any[] = [];
-  private sivu = 1;
-  private sivukoko = 4;
+
+  @Prop({ required: true })
+  private kieli!: string;
+
+  @Watch('kieli', { immediate: true })
+  async onSisaltoKieliChange(newValue: string, oldValue: string) {
+    if (newValue && newValue !== oldValue) {
+      this.fetch();
+    }
+  }
 
   async mounted() {
+    this.fetch();
+  }
+
+  async fetch() {
     try {
-      const tiedoteHaku = (await Ulkopuoliset.getTiedotteetHaku(
-        this.sivu - 1,
-        this.sivukoko,
-        undefined, // kieli
-        undefined, // nimi
-        undefined, // perusteId
-        true, // perusteeton
-        true, // julkinen
-        true // yleinen
-      )).data as any;
-      this.tiedotteet = _(tiedoteHaku.data)
-        .sortBy('luotu')
-        .reverse()
-        .value();
+      this.isLoading = true;
+      this.tiedotteet = ((await Tiedotteet.findTiedotteetBy(
+        0,
+        3,
+        [ _.toUpper(this.kieli) ],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [ julkaisupaikka.amosaa ],
+      )).data as any).data;
     }
     catch (err) {
       throw err;
@@ -64,7 +75,6 @@ export default class TileTiedotteet extends Vue {
       this.isLoading = false;
     }
   }
-
 }
 </script>
 
@@ -81,6 +91,12 @@ export default class TileTiedotteet extends Vue {
     small {
       color: #071A58;
     }
+  }
+
+  .otsikko {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 </style>

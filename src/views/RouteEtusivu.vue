@@ -18,7 +18,7 @@
         <TileKoulutustoimijanYhteinenOsuus :etusivu="etusivu" />
         <TilePaivitettavatJaSiirrettavatToteutussuunnitelmat />
         <TileOrganisaationHallinta />
-        <TileTiedotteet />
+        <TileTiedotteet :kieli="sisaltoKieli" />
         <TileUkk />
         <TileTilastot />
       </div>
@@ -41,6 +41,7 @@ import TileOrganisaationHallinta from './tiles/TileOrganisaationHallinta.vue';
 import TileTiedotteet from './tiles/TileTiedotteet.vue';
 import TileUkk from './tiles/TileUkk.vue';
 import TileTilastot from './tiles/TileTilastot.vue';
+import { KieliStore } from '../../eperusteet-frontend-utils/vue/src/stores/kieli';
 
 @Component({
   components: {
@@ -60,6 +61,9 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
 
   @Prop({ required: true })
   private koulutustoimijaId!: string | number;
+
+  @Prop({ required: true })
+  private kieliStore!: KieliStore;
 
   @Watch('koulutustoimijaId', { immediate: true })
   async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
@@ -82,6 +86,10 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
 
   async fetch() {
     await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId);
+  }
+
+  get sisaltoKieli() {
+    return this.kieliStore.getSisaltoKieli.value || null;
   }
 
   get nimi() {

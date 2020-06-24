@@ -3,58 +3,68 @@ import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { TiedoteDto, Tiedotteet } from '@shared/api/eperusteet';
 import { ITiedotteetProvider } from '@shared/stores/types';
+import { TiedoteQuery } from '@shared/api/types';
 
 Vue.use(VueCompositionApi);
 
 export class TiedotteetStore implements ITiedotteetProvider {
   private state = reactive({
+    options: null as TiedoteQuery | null,
     tiedotteet: null as TiedoteDto[] | null,
-    perusteenTiedotteet: null as TiedoteDto[] | null,
-    perusteId: null as number | null,
+    kokonaismaara: null as number | null,
+    isLoading: true,
   })
 
   public readonly tiedotteet = computed(() => this.state.tiedotteet);
-  public readonly perusteenTiedotteet = computed(() => this.state.perusteenTiedotteet);
-  public readonly perusteId = computed(() => this.state.perusteId);
+  public readonly kokonaismaara = computed(() => this.state.kokonaismaara);
+  public readonly options = computed(() => this.state.options);
+  public readonly isLoading = computed(() => this.state.isLoading);
 
-  async init(perusteId: number) {
-    this.state.perusteId = perusteId;
-    this.state.perusteenTiedotteet = null;
-    const res = (await Tiedotteet.findTiedotteetBy(
-      0,
-      99999,
-      undefined, // kieli
-      undefined, // nimi
-      undefined, // perusteId
-      undefined, // perusteeton
-      undefined, // julkinen
-      undefined, // yleinen
-      undefined, // julkaisupaikat
-      [perusteId] // perusteet
-    )).data as any;
+  async init(options: TiedoteQuery) {
+    this.state.options = options;
+    this.fetch();
+  }
 
-    this.state.perusteenTiedotteet = res.data;
+  public async changePage(sivu) {
+    if (this.state.options) {
+      this.state.options!.sivu = sivu;
+      await this.fetch();
+    }
+  }
+
+  public async changeLang(kieli) {
+    if (this.state.options) {
+      this.state.options!.sivu = 0;
+      this.state.options!.kieli = kieli;
+      await this.fetch();
+    }
+  }
+
+  public async changeNimiFilter(nimi) {
+    if (this.state.options) {
+      this.state.options!.nimi = nimi;
+      await this.fetch();
+    }
   }
 
   public async fetch() {
+    this.state.isLoading = true;
     const res = (await Tiedotteet.findTiedotteetBy(
-      0,
-      99999,
-      undefined, // kieli
-      undefined, // nimi
-      undefined, // perusteId
-      undefined, // perusteeton
-      undefined, // julkinen
-      undefined // yleinen
-    )).data as any;
-
-    this.state.tiedotteet = res.data;
+      this.state.options!.sivu,
+      this.state.options!.sivukoko,
+      this.state.options!.kieli,
+      this.state.options!.nimi,
+      this.state.options!.perusteId,
+      this.state.options!.perusteeton,
+      this.state.options!.julkinen,
+      this.state.options!.yleinen,
+      this.state.options!.tiedoteJulkaisuPaikka,
+      this.state.options!.perusteIds,
+      this.state.options!.koulutusTyyppi,
+    )).data;
+    this.state.tiedotteet = (res as any).data;
+    this.state.kokonaismaara = (res as any).kokonaismäärä;
+    this.state.isLoading = false;
   }
 
-  public async save() {
-    // todo
-  }
-  public async delete() {
-    // todo
-  }
 }
