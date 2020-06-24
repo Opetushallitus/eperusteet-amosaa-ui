@@ -33,7 +33,6 @@ import { MuokkaustietoStore } from '@/stores/MuokkaustietoStore';
 import { AikatauluStore } from '@/stores/AikatauluStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
-import { ToteutussuunnitelmaRoute } from '@/views/ToteutussuunnitelmaRoute';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
 @Component({

@@ -7,6 +7,8 @@ import RouteLang from '@/views/RouteLang.vue';
 import RouteRoot from '@/views/RouteRoot.vue';
 import RouteEtusivu from '@/views/RouteEtusivu.vue';
 import RouteUkk from '@/views/RouteUkk.vue';
+import RouteTiedotteet from '@/views/RouteTiedotteet.vue';
+import RouteTiedote from '@/views/RouteTiedote.vue';
 import RouteToteutussuunnitelmat from '@/views/RouteToteutussuunnitelmat.vue';
 import RouteYleisnakyma from '@/views/RouteYleisnakyma.vue';
 import RouteToteutussuunnitelma from '@/views/RouteToteutussuunnitelma.vue';
@@ -73,7 +75,12 @@ const router = new VueRouter({
     }, {
       path: 'tiedotteet',
       name: 'tiedotteet',
-      // component: ...,
+      component: RouteTiedotteet,
+      props,
+    }, {
+      path: 'tiedotteet/:tiedoteId',
+      name: 'tiedote',
+      component: RouteTiedote,
       props,
     }, {
       path: 'organisaatio',
