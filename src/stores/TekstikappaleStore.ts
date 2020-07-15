@@ -98,7 +98,7 @@ export class TekstikappaleStore implements IEditoitava {
     });
   }
 
-  public async add(opsId: number, svId: number, ktId: string, tekstikappale: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
+  public static async add(opsId: number, svId: number, ktId: string, tekstikappale: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
     const added = (await Sisaltoviitteet.addTekstiKappaleLapsi(opsId, svId, ktId, tekstikappale)).data;
     await updateNavigation();
 

@@ -127,7 +127,6 @@
 
             <template v-slot:new>
               <ep-sisalto-lisays
-                :tekstikappaleStore="tekstikappaleStore"
                 :toteutussuunnitelmaId="toteutussuunnitelmaId"
                 :koulutustoimijaId="koulutustoimijaId"
                 :navigation="navigation.value"
@@ -179,9 +178,6 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
   },
 })
 export default class RouteToteutussuunnitelma extends Vue {
-  @Prop({ required: true })
-  private tekstikappaleStore!: TekstikappaleStore;
-
   @Prop({ required: true })
   private sisaltoViiteStore!: SisaltoViiteStore;
 
