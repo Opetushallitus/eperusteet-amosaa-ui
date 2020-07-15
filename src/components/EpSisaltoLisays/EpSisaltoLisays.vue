@@ -37,9 +37,6 @@ import { SisaltoviiteMatalaDto, MatalaTyyppiEnum, SisaltoViiteKevytDtoTyyppiEnum
 })
 export default class EpSisaltoLisays extends Vue {
   @Prop({ required: true })
-  private tekstikappaleStore!: TekstikappaleStore;
-
-  @Prop({ required: true })
   private toteutussuunnitelmaId!: number;
 
   @Prop({ required: true })
@@ -81,7 +78,7 @@ export default class EpSisaltoLisays extends Vue {
       parentId = valittuTekstikappale.id;
     }
 
-    this.tekstikappaleStore.add(
+    TekstikappaleStore.add(
       this.toteutussuunnitelmaId,
       parentId,
       this.koulutustoimijaId,
