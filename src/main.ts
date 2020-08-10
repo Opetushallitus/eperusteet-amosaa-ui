@@ -24,6 +24,7 @@ import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { Kayttajat } from '@/stores/kayttaja';
 import { VueTutorial } from '@shared/plugins/tutoriaali';
 import { tutoriaaliStore } from '@shared/stores/tutoriaali';
+import VueApexCharts from 'vue-apexcharts';
 
 import router from './router';
 
@@ -58,6 +59,8 @@ Vue.use(Notifikaatiot);
 Vue.use(Oikeustarkastelu, { oikeusProvider: Kayttajat });
 Vue.use(EditointiStore, { router, kayttajaProvider: Kayttajat });
 Vue.use(VueTutorial, { tutoriaaliStore });
+Vue.use(VueApexCharts);
+Vue.component('apexchart', VueApexCharts);
 
 async function main() {
   new Vue({

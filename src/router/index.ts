@@ -17,6 +17,7 @@ import RouteTutkinnonosaLuonti from '@/views/RouteTutkinnonosaLuonti.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
 import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
 import RouteToteutussuunnitelmaLuonti from '@/views/RouteToteutussuunnitelmaLuonti.vue';
+import RouteTilastot from '@/views/RouteTilastot.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -62,7 +63,7 @@ const router = new VueRouter({
     }, {
       path: 'tilastot',
       name: 'tilastot',
-      // component: ...,
+      component: RouteTilastot,
       props,
     }, {
       path: 'tiedotteet',
