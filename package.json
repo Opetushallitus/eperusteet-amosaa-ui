@@ -10,6 +10,7 @@
     "test:e2e": "vue-cli-service test:e2e --headless",
     "test:unit": "TZ=Europe/Helsinki vue-cli-service test:unit --ci --coverage --no-cache",
     "test:unit:dev": "TZ=Europe/Helsinki vue-cli-service test:unit --watch --no-cache",
+    "test:unit:dev:notz": "vue-cli-service test:unit --watch --no-cache",
     "test:unit:inspect": "node --inspect-brk ./node_modules/@vue/cli-service/bin/vue-cli-service.js test:unit",
     "test:unit:report": "$BROWSER coverage/lcov-report/index.html"
   },
@@ -41,6 +42,7 @@
     "@vue/eslint-config-typescript": "^4.0.0",
     "@vue/test-utils": "1.0.0-beta.29",
     "animate.css": "^3.7.2",
+    "apexcharts": "^3.15.2",
     "axios": "^0.19.2",
     "bootstrap-vue": "^2.6.1",
     "core-js": "^3.4.4",
@@ -62,6 +64,7 @@
     "typescript": "3.7.5",
     "uuid": "^7.0.2",
     "vue": "^2.6.10",
+    "vue-apexcharts": "^1.5.2",
     "vue-axe": "^1.0.7",
     "vue-class-component": "^7.0.2",
     "vue-i18n": "^8.15.3",
