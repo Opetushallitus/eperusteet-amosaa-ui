@@ -183,7 +183,12 @@ export default class RouteTilastot extends Vue {
   }
 
   get toteutussuunnitelmat() {
-    return this.tilastotStore.opetussuunnitelmat.value;
+    return _.map(this.tilastotStore.opetussuunnitelmat.value, toteutussuunnitelma => {
+      return {
+        ...toteutussuunnitelma,
+        voimassaolo: this.toteutussuunnitelmaVoimassaolo(toteutussuunnitelma),
+      };
+    });
   }
 
   get toteutussuunnitelmatFiltered() {
@@ -191,7 +196,7 @@ export default class RouteTilastot extends Vue {
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutTilat) || _.includes(_.map(this.valitutTilat, 'value'), toteutussuunnitelma.tila))
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutKoulutustyypit) || _.includes(_.map(this.valitutKoulutustyypit, 'value'), toteutussuunnitelma.koulutustyyppi))
       .filter(toteutussuunnitelma => Kielet.search(this.query, toteutussuunnitelma.nimi))
-      .filter(toteutussuunnitelma => _.isEmpty(this.valitutVoimassaolot) || _.includes(_.map(this.valitutVoimassaolot, 'value'), this.toteutussuunnitelmaVoimassaolo(toteutussuunnitelma)))
+      .filter(toteutussuunnitelma => _.isEmpty(this.valitutVoimassaolot) || _.includes(_.map(this.valitutVoimassaolot, 'value'), toteutussuunnitelma.voimassaolo))
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutPerusteet) || _.includes(_.map(this.valitutPerusteet, 'value'), toteutussuunnitelma.perusteId))
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutKoulutustoimijat) || _.includes(_.map(this.valitutKoulutustoimijat, 'value'), toteutussuunnitelma.koulutustoimija!.id))
       .sortBy(toteutussuunnitelma => Kielet.kaanna(toteutussuunnitelma.nimi))
@@ -200,14 +205,14 @@ export default class RouteTilastot extends Vue {
 
   toteutussuunnitelmaVoimassaolo(toteutussuunnitelma) {
     if (toteutussuunnitelma.paatospaivamaara && toteutussuunnitelma.paatospaivamaara < new Date()) {
-      return 'paattynyt';
+      return 'paattyneet';
     }
 
     if (toteutussuunnitelma.voimaantulo > new Date()) {
-      return 'tuleva';
+      return 'tulevat';
     }
 
-    return 'voimassaoleva';
+    return 'voimassaolevat';
   }
 
   get koulutustoimijatFiltered() {
@@ -230,50 +235,40 @@ export default class RouteTilastot extends Vue {
   }
 
   get koulutustyyppiItems() {
-    return _.map(this.toteutussuunnitelmat, toteutussuunnitelma => {
-      return {
-        text: this.$t(toteutussuunnitelma.koulutustyyppi as string),
-        value: toteutussuunnitelma.koulutustyyppi,
-      };
-    });
-  }
-
-  get tilaItems() {
-    return [
-      { text: this.$t('luonnos'), value: 'luonnos' },
-      { text: this.$t('valmis'), value: 'valmis' },
-      { text: this.$t('julkaistu'), value: 'julkaistu' },
-      { text: this.$t('poistettu'), value: 'poistettu' },
-    ];
-  }
-
-  get voimassaoloItems() {
-    return [
-      { text: this.$t('voimassaolevat'), value: 'voimassaoleva' },
-      { text: this.$t('tulevat'), value: 'tuleva' },
-      { text: this.$t('paattyneet'), value: 'paattynyt' },
-    ];
-  }
-
-  get perusteVaihtoehdot() {
     return _.chain(this.toteutussuunnitelmat)
-      .filter('perusteNimi')
       .map(toteutussuunnitelma => {
         return {
-          nimi: toteutussuunnitelma.perusteNimi,
-          id: toteutussuunnitelma.perusteId,
+          text: this.$t(toteutussuunnitelma.koulutustyyppi as string),
+          value: toteutussuunnitelma.koulutustyyppi,
+          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'koulutustyyppi')[toteutussuunnitelma.koulutustyyppi!]) === 0,
         };
       })
       .uniqWith(_.isEqual)
+      .filter('text')
       .value();
   }
 
-  get koulutustoimijaVaihtoehdot() {
+  get tilaItems() {
     return _.chain(this.toteutussuunnitelmat)
       .map(toteutussuunnitelma => {
         return {
-          nimi: toteutussuunnitelma.koulutustoimija!.nimi,
-          id: toteutussuunnitelma.koulutustoimija!.id,
+          text: this.$t(toteutussuunnitelma.tila as string),
+          value: toteutussuunnitelma.tila,
+          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'tila')[toteutussuunnitelma.tila!]) === 0,
+        };
+      })
+      .uniqWith(_.isEqual)
+      .filter('text')
+      .value();
+  }
+
+  get voimassaoloItems() {
+    return _.chain(this.toteutussuunnitelmat)
+      .map(toteutussuunnitelma => {
+        return {
+          text: this.$t(toteutussuunnitelma.voimassaolo as string),
+          value: toteutussuunnitelma.voimassaolo,
+          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'voimassaolo')[toteutussuunnitelma.voimassaolo!]) === 0,
         };
       })
       .uniqWith(_.isEqual)
@@ -281,21 +276,30 @@ export default class RouteTilastot extends Vue {
   }
 
   get koulutustoimijaItems() {
-    return _.map(this.koulutustoimijaVaihtoehdot, koulutustoimija => {
-      return {
-        value: koulutustoimija.id,
-        text: (this as any).$kaanna(koulutustoimija.nimi),
-      };
-    });
+    return _.chain(this.toteutussuunnitelmat)
+      .map(toteutussuunnitelma => {
+        return {
+          value: toteutussuunnitelma.koulutustoimija!.id,
+          text: (this as any).$kaanna(toteutussuunnitelma.koulutustoimija!.nimi),
+          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'koulutustoimija.id')[toteutussuunnitelma.koulutustoimija!.id!]) === 0,
+        };
+      })
+      .uniqWith(_.isEqual)
+      .value();
   }
 
   get perusteItems() {
-    return _.map(this.perusteVaihtoehdot, peruste => {
-      return {
-        value: peruste.id,
-        text: (this as any).$kaanna(peruste.nimi),
-      };
-    });
+    return _.chain(this.toteutussuunnitelmat)
+      .filter('perusteNimi')
+      .map(toteutussuunnitelma => {
+        return {
+          value: toteutussuunnitelma.perusteId,
+          text: (this as any).$kaanna(toteutussuunnitelma.perusteNimi),
+          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'perusteId')[toteutussuunnitelma.perusteId!]) === 0,
+        };
+      })
+      .uniqBy('value')
+      .value();
   }
 
   get statistiikkaData() {
