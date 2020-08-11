@@ -242,7 +242,7 @@ export default class RouteTilastot extends Vue {
         return {
           text: this.$t(toteutussuunnitelma.koulutustyyppi as string),
           value: toteutussuunnitelma.koulutustyyppi,
-          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'koulutustyyppi')[toteutussuunnitelma.koulutustyyppi!]) === 0,
+          // $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'koulutustyyppi')[toteutussuunnitelma.koulutustyyppi!]) === 0,
         };
       })
       .uniqWith(_.isEqual)
@@ -256,7 +256,7 @@ export default class RouteTilastot extends Vue {
         return {
           text: this.$t(toteutussuunnitelma.tila as string),
           value: toteutussuunnitelma.tila,
-          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'tila')[toteutussuunnitelma.tila!]) === 0,
+          // $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'tila')[toteutussuunnitelma.tila!]) === 0,
         };
       })
       .uniqWith(_.isEqual)
@@ -270,7 +270,7 @@ export default class RouteTilastot extends Vue {
         return {
           text: this.$t(toteutussuunnitelma.voimassaolo as string),
           value: toteutussuunnitelma.voimassaolo,
-          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'voimassaolo')[toteutussuunnitelma.voimassaolo!]) === 0,
+          // $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'voimassaolo')[toteutussuunnitelma.voimassaolo!]) === 0,
         };
       })
       .uniqWith(_.isEqual)
@@ -283,7 +283,7 @@ export default class RouteTilastot extends Vue {
         return {
           value: toteutussuunnitelma.koulutustoimija!.id,
           text: (this as any).$kaanna(toteutussuunnitelma.koulutustoimija!.nimi),
-          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'koulutustoimija.id')[toteutussuunnitelma.koulutustoimija!.id!]) === 0,
+          // $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'koulutustoimija.id')[toteutussuunnitelma.koulutustoimija!.id!]) === 0,
         };
       })
       .uniqWith(_.isEqual)
@@ -297,7 +297,7 @@ export default class RouteTilastot extends Vue {
         return {
           value: toteutussuunnitelma.perusteId,
           text: (this as any).$kaanna(toteutussuunnitelma.perusteNimi),
-          $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'perusteId')[toteutussuunnitelma.perusteId!]) === 0,
+          // $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'perusteId')[toteutussuunnitelma.perusteId!]) === 0,
         };
       })
       .uniqBy('value')
