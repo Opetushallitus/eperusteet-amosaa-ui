@@ -17,11 +17,13 @@ import RouteTutkinnonosat from '@/views/RouteTutkinnonosat.vue';
 import RouteTutkinnonosa from '@/views/RouteTutkinnonosa.vue';
 import RouteSuorituspolut from '@/views/RouteSuorituspolut.vue';
 import RouteSuorituspolku from '@/views/RouteSuorituspolku.vue';
+import RouteTutkinnonosaLuonti from '@/views/RouteTutkinnonosaLuonti.vue';
 import RouteOsaSuorituspolku from '@/views/RouteOsaSuorituspolku.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
 import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
 import RouteToteutussuunnitelmaLuonti from '@/views/RouteToteutussuunnitelmaLuonti.vue';
 import RouteTilastot from '@/views/RouteTilastot.vue';
+import RoutePdfLuonti from '@/views/RoutePdfLuonti.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -174,6 +176,16 @@ const router = new VueRouter({
         path: 'jarjesta',
         component: RouteJarjestys,
         name: 'jarjesta',
+        props,
+      }, {
+        path: 'tutkinnonosaluonti/uusi',
+        name: 'tutkinnonosaLuonti',
+        component: RouteTutkinnonosaLuonti,
+        props,
+      }, {
+        path: 'dokumentti',
+        name: 'pdfLuonti',
+        component: RoutePdfLuonti,
         props,
       }],
     }, {
