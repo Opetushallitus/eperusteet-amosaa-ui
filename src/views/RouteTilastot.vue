@@ -183,12 +183,14 @@ export default class RouteTilastot extends Vue {
   }
 
   get toteutussuunnitelmat() {
-    return _.map(this.tilastotStore.opetussuunnitelmat.value, toteutussuunnitelma => {
-      return {
-        ...toteutussuunnitelma,
-        voimassaolo: this.toteutussuunnitelmaVoimassaolo(toteutussuunnitelma),
-      };
-    });
+    if (this.tilastotStore.opetussuunnitelmat.value) {
+      return _.map(this.tilastotStore.opetussuunnitelmat.value, toteutussuunnitelma => {
+        return {
+          ...toteutussuunnitelma,
+          voimassaolo: this.toteutussuunnitelmaVoimassaolo(toteutussuunnitelma),
+        };
+      });
+    }
   }
 
   get toteutussuunnitelmatFiltered() {
