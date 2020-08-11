@@ -258,6 +258,11 @@ export default class RouteToteutussuunnitelma extends Vue {
         route: 'toteutussuunnitelmantiedot',
         icon: 'info',
       },
+      {
+        text: 'luo-pdf',
+        route: 'pdfLuonti',
+        icon: 'luo-pdf',
+      },
     ];
   }
 }
