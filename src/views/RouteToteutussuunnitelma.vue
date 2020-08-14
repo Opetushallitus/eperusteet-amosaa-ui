@@ -230,7 +230,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       await this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId);
 
       if (this.navigation) {
-        this.naviStore = new EpTreeNavibarStore(this.navigation);
+        this.naviStore = new EpTreeNavibarStore(this.navigation, () => null);
       }
     }
     finally {
