@@ -17,7 +17,7 @@ import RouteTutkinnonosat from '@/views/RouteTutkinnonosat.vue';
 import RouteTutkinnonosa from '@/views/RouteTutkinnonosa.vue';
 import RouteSuorituspolut from '@/views/RouteSuorituspolut.vue';
 import RouteSuorituspolku from '@/views/RouteSuorituspolku.vue';
-import RouteTutkinnonosaLuonti from '@/views/RouteTutkinnonosaLuonti.vue';
+import RouteOsaSuorituspolku from '@/views/RouteOsaSuorituspolku.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
 import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
 import RouteToteutussuunnitelmaLuonti from '@/views/RouteToteutussuunnitelmaLuonti.vue';
@@ -166,14 +166,14 @@ const router = new VueRouter({
         component: RouteSuorituspolku,
         props,
       }, {
+        path: 'osasuorituspolku/:sisaltoviiteId',
+        name: 'osasuorituspolku',
+        component: RouteOsaSuorituspolku,
+        props,
+      }, {
         path: 'jarjesta',
         component: RouteJarjestys,
         name: 'jarjesta',
-        props,
-      }, {
-        path: 'tutkinnonosaluonti/uusi',
-        name: 'tutkinnonosaLuonti',
-        component: RouteTutkinnonosaLuonti,
         props,
       }],
     }, {

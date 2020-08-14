@@ -29,7 +29,7 @@
           <b-table striped hover responsive :items="tutkinnonosat" :fields="fields">
             <template v-slot:cell(tutkinnonosaViite.tekstiKappale.nimi)="data">
               <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
-                {{ $kaanna(data.item.tutkinnonosaViite.tekstiKappale.nimi) }}
+                {{ $kaanna(data.item.nimi) }}
               </router-link>
             </template>
           </b-table>
@@ -80,6 +80,12 @@ export default class RouteTutkinnonosat extends Vue {
           _.toLower(_.get(tutkinnonosa, 'tutkinnonosaViite.tekstiKappale.nimi.' + Kielet.getSisaltoKieli.value)),
           _.toLower(this.queryNimi)
         ))
+        .map(tutkinnonosa => {
+          return {
+            ...tutkinnonosa,
+            nimi: _.has(tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi, Kielet.getSisaltoKieli.value) ? tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi : this.$t('uusi-tutkinnonosa'),
+          };
+        })
         .value();
     }
   }

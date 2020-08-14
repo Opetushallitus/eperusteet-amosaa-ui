@@ -130,7 +130,8 @@
                 :toteutussuunnitelmaId="toteutussuunnitelmaId"
                 :koulutustoimijaId="koulutustoimijaId"
                 :navigation="navigation.value"
-                :updateNavigation="updateNavigation"/>
+                :updateNavigation="updateNavigation"
+                :toteutussuunnitelma="toteutussuunnitelma"/>
             </template>
 
           </EpTreeNavibar>

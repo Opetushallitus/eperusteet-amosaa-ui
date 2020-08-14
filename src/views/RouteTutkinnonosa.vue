@@ -6,9 +6,22 @@
       </template>
       <template v-slot:default="{ data, isEditing, validation }">
 
-        <b-form-group :label="$t('laajuus')">
-          <span>{{data.perusteenTutkinnonosaViite.laajuus}} {{$t('osaamispiste')}}</span>
-        </b-form-group>
+        <div class="d-flex justify-content-between">
+
+          <b-form-group class="flex-grow-1 mr-5" :label="$t('tutkinnon-osan-nimi') +' *'"
+            v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta' && isEditing">
+            <ep-field v-model="data.tutkinnonosaViite.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
+          </b-form-group>
+
+          <b-form-group :label="$t('laajuus')">
+            <div class="d-flex">
+              <span v-if="data.tutkinnonosaViite.tosa.tyyppi === 'perusteesta'">{{data.perusteenTutkinnonosaViite.laajuus}}</span>
+              <ep-field v-else type="number" v-model="data.tutkinnonosaViite.tosa.omatutkinnonosa.laajuus" :is-editing="isEditing"></ep-field>
+              <div class="ml-1" :class="{'ml-2 pt-1': isEditing}">{{$t('osaamispiste')}}</div>
+            </div>
+          </b-form-group>
+
+        </div>
 
         <h3 v-if="isEditing">{{$t('tutkinnon-osan-kuvaus')}}</h3>
         <ep-content layout="normal" v-model="data.tutkinnonosaViite.tekstiKappale.teksti" :is-editable="isEditing"> </ep-content>
@@ -128,90 +141,94 @@
 
           <b-tab :title="$t('perusteen-sisalto')">
 
-            <div class="d-flex pt-3">
-              <b-form-group :label="$t('luotu')" class="flex-fill">
-                <span>{{$sdt(data.perusteenTutkinnonosa.luotu)}}</span>
-              </b-form-group>
+            <div v-if="data.tutkinnonosaViite.tosa.tyyppi === 'perusteesta'">
 
-              <b-form-group :label="$t('muokattu-viimeksi')" class="flex-fill">
-                <span>{{$sdt(data.perusteenTutkinnonosa.muokattu)}}</span>
-              </b-form-group>
+              <div class="d-flex pt-3">
+                <b-form-group :label="$t('luotu')" class="flex-fill">
+                  <span>{{$sdt(data.perusteenTutkinnonosa.luotu)}}</span>
+                </b-form-group>
 
-              <div class="flex-fill" />
-            </div>
+                <b-form-group :label="$t('muokattu-viimeksi')" class="flex-fill">
+                  <span>{{$sdt(data.perusteenTutkinnonosa.muokattu)}}</span>
+                </b-form-group>
 
-            <hr/>
+                <div class="flex-fill" />
+              </div>
 
-            <ep-collapse>
-              <h3 slot="header">{{$t('ammattitaitovaatimukset')}}</h3>
-              <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaitovaatimukset" :is-editable="false" />
-            </ep-collapse>
+              <hr/>
 
-            <ep-collapse>
-              <h3 slot="header">{{$t('arviointi')}}</h3>
+              <ep-collapse>
+                <h3 slot="header">{{$t('ammattitaitovaatimukset')}}</h3>
+                <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaitovaatimukset" :is-editable="false" />
+              </ep-collapse>
 
-              <div v-if="data.perusteenTutkinnonosa.arviointi" class="ml-2">
-                <div v-for="(arvioinninKohdealue, index) in data.perusteenTutkinnonosa.arviointi.arvioinninKohdealueet" :key="'aka'+index" class="mb-5">
-                  <h3 class="mt-3">{{$kaanna(arvioinninKohdealue.otsikko)}}</h3>
+              <ep-collapse>
+                <h3 slot="header">{{$t('arviointi')}}</h3>
 
-                  <div v-for="(arvioinninkohde, index) in arvioinninKohdealue.arvioinninKohteet" :key="'arvioinninkohde'+index" class="mr-5">
+                <div v-if="data.perusteenTutkinnonosa.arviointi" class="ml-2">
+                  <div v-for="(arvioinninKohdealue, index) in data.perusteenTutkinnonosa.arviointi.arvioinninKohdealueet" :key="'aka'+index" class="mb-5">
+                    <h3 class="mt-3">{{$kaanna(arvioinninKohdealue.otsikko)}}</h3>
 
-                    <div class="mb-3 mt-4">
-                      <h4>{{$t('arvioinnin-kohde')}}</h4>
-                      <span>{{$kaanna(arvioinninkohde.selite)}}</span>
+                    <div v-for="(arvioinninkohde, index) in arvioinninKohdealue.arvioinninKohteet" :key="'arvioinninkohde'+index" class="mr-5">
+
+                      <div class="mb-3 mt-4">
+                        <h4>{{$t('arvioinnin-kohde')}}</h4>
+                        <span>{{$kaanna(arvioinninkohde.selite)}}</span>
+                      </div>
+
+                      <b-table striped :items="arvioinninkohde.osaamistasonKriteerit" :fields="osaamistasonKriteeritFields">
+                        <template v-slot:cell(osaamistaso)="{item}">
+                          {{$kaanna(item.osaamistaso.otsikko)}}
+                        </template>
+
+                        <template v-slot:cell(kriteerit)="{item}">
+                          <ul>
+                            <li v-for="(kriteeri, index) in item.kriteerit" :key="'kriteeri'+index">
+                              {{$kaanna(kriteeri)}}
+                            </li>
+                          </ul>
+                        </template>
+                      </b-table>
+
                     </div>
-
-                    <b-table striped :items="arvioinninkohde.osaamistasonKriteerit" :fields="osaamistasonKriteeritFields">
-                      <template v-slot:cell(osaamistaso)="{item}">
-                        {{$kaanna(item.osaamistaso.otsikko)}}
-                      </template>
-
-                      <template v-slot:cell(kriteerit)="{item}">
-                        <ul>
-                          <li v-for="(kriteeri, index) in item.kriteerit" :key="'kriteeri'+index">
-                            {{$kaanna(kriteeri)}}
-                          </li>
-                        </ul>
-                      </template>
-                    </b-table>
-
                   </div>
                 </div>
-              </div>
 
-              <div v-if="data.perusteenTutkinnonosa.geneerinenArviointiasteikko" class="ml-2">
+                <div v-if="data.perusteenTutkinnonosa.geneerinenArviointiasteikko" class="ml-2">
 
-                <div class="mb-3 mt-3">
-                  <h4>{{$t('arvioinnin-kohde')}}</h4>
-                  <span>{{$kaanna(data.perusteenTutkinnonosa.geneerinenArviointiasteikko.kohde)}}</span>
+                  <div class="mb-3 mt-3">
+                    <h4>{{$t('arvioinnin-kohde')}}</h4>
+                    <span>{{$kaanna(data.perusteenTutkinnonosa.geneerinenArviointiasteikko.kohde)}}</span>
+                  </div>
+
+                  <b-table striped :items="data.perusteenTutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit" :fields="osaamistasonKriteeritFields">
+                    <template v-slot:cell(osaamistaso)="{item}">
+                      {{$kaanna(item.osaamistaso.otsikko)}}
+                    </template>
+
+                    <template v-slot:cell(kriteerit)="{item}">
+                      <ul>
+                        <li v-for="(kriteeri, index) in item.kriteerit" :key="'kriteeri'+index">
+                          {{$kaanna(kriteeri)}}
+                        </li>
+                      </ul>
+                    </template>
+                  </b-table>
                 </div>
 
-                <b-table striped :items="data.perusteenTutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit" :fields="osaamistasonKriteeritFields">
-                  <template v-slot:cell(osaamistaso)="{item}">
-                    {{$kaanna(item.osaamistaso.otsikko)}}
-                  </template>
+              </ep-collapse>
 
-                  <template v-slot:cell(kriteerit)="{item}">
-                    <ul>
-                      <li v-for="(kriteeri, index) in item.kriteerit" :key="'kriteeri'+index">
-                        {{$kaanna(kriteeri)}}
-                      </li>
-                    </ul>
-                  </template>
-                </b-table>
-              </div>
+              <ep-collapse>
+                <h3 slot="header">{{$t('ammattitaidon-osoittaminen')}}</h3>
+                <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="false" />
+              </ep-collapse>
 
-            </ep-collapse>
+              <ep-collapse v-for="(vapaaTeksti, index) in data.perusteenTutkinnonosa.vapaatTekstit" :key="'vapaaTekstit'+index">
+                <h3 slot="header">{{$kaanna(vapaaTeksti.nimi)}}</h3>
+                <ep-content layout="normal" v-model="vapaaTeksti.teksti" :is-editable="false" />
+              </ep-collapse>
 
-            <ep-collapse>
-              <h3 slot="header">{{$t('ammattitaidon-osoittaminen')}}</h3>
-              <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="false" />
-            </ep-collapse>
-
-            <ep-collapse v-for="(vapaaTeksti, index) in data.perusteenTutkinnonosa.vapaatTekstit" :key="'vapaaTekstit'+index">
-              <h3 slot="header">{{$kaanna(vapaaTeksti.nimi)}}</h3>
-              <ep-content layout="normal" v-model="vapaaTeksti.teksti" :is-editable="false" />
-            </ep-collapse>
+            </div>
 
           </b-tab>
 
@@ -328,8 +345,13 @@ export default class RouteTutkinnonosa extends Vue {
           _.toNumber(this.sisaltoviiteId),
           this.perusteId!,
           this.versionumero,
-          this));
+          this,
+          this.uusi));
     }
+  }
+
+  get uusi() {
+    return this.$route.query && _.has(this.$route.query, 'uusi');
   }
 
   get versionumero() {

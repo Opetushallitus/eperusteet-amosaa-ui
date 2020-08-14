@@ -1,6 +1,6 @@
 <template>
 <div >
-RouteTutkinnonosaLuonti
+RouteOsaSuorituspolku
 </div>
 </template>
 
@@ -9,7 +9,7 @@ import _ from 'lodash';
 import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
 
 @Component
-export default class RouteTutkinnonosaLuonti extends Vue {
+export default class RouteOsaSuorituspolku extends Vue {
 
 }
 </script>
