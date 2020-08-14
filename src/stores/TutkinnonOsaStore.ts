@@ -56,6 +56,11 @@ export class TutkinnonOsaStore implements IEditoitava {
       this.setArvioinnit(tutkinnonosaViite.tosa.omatutkinnonosa, arviointiasteikot);
     }
 
+    if (tutkinnonosaViite.perusteentutkinnonosa) {
+      perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(this.perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
+      perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(this.perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
+    }
+
     const tutkintonimikeKoodit = _.map(await Promise.all(_.chain(peruste.tutkintonimikkeet)
       .map('tutkintonimikeUri')
       .map((tutkintonimikeUri: string) => Koodistot.getKoodistoKoodiByUri(tutkintonimikeUri))
