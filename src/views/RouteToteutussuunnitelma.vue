@@ -130,7 +130,8 @@
                 :toteutussuunnitelmaId="toteutussuunnitelmaId"
                 :koulutustoimijaId="koulutustoimijaId"
                 :navigation="navigation.value"
-                :updateNavigation="updateNavigation"/>
+                :updateNavigation="updateNavigation"
+                :toteutussuunnitelma="toteutussuunnitelma"/>
             </template>
 
           </EpTreeNavibar>
@@ -215,7 +216,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       await this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId);
 
       if (this.navigation) {
-        this.naviStore = new EpTreeNavibarStore(this.navigation);
+        this.naviStore = new EpTreeNavibarStore(this.navigation, () => null);
       }
     }
     finally {

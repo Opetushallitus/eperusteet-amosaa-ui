@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot } from '@shared/api/amosaa';
-import _ from 'lodash';
+import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
+import _, { toSafeInteger } from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, Kieli } from '@shared/tyypit';
 
@@ -14,7 +14,8 @@ export class TutkinnonOsaStore implements IEditoitava {
     private tutkinnonosaId: number,
     private perusteId: number,
     private versionumero: number,
-    private el: any) {
+    private el: any,
+    private uusi: boolean) {
   }
 
   async acquire() {
@@ -25,7 +26,7 @@ export class TutkinnonOsaStore implements IEditoitava {
   }
 
   async editAfterLoad() {
-    return false;
+    return this.uusi;
   }
 
   async history() {
@@ -35,20 +36,21 @@ export class TutkinnonOsaStore implements IEditoitava {
     let tutkinnonosaViite: any;
     let peruste: any;
     let arviointiasteikot: any;
+    let perusteenTutkinnonosaViite;
+    let perusteenTutkinnonosa;
+
     [tutkinnonosaViite, peruste, arviointiasteikot] = _.map(await (Promise.all([
       this.getTutkinnonosaViite(),
       Perusteet.getPeruste(this.perusteId),
       Arviointiasteikot.getAllArviointiasteikot(),
     ])), 'data');
-    const perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(this.perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
-    const perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(this.perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
 
-    const tutkintonimikeKoodit = _.map(await Promise.all(_.chain(peruste.tutkintonimikkeet)
-      .map('tutkintonimikeUri')
-      .map((tutkintonimikeUri: string) => Koodistot.getKoodistoKoodiByUri(tutkintonimikeUri))
-      .value()), 'data');
+    if (tutkinnonosaViite.perusteentutkinnonosa) {
+      perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(this.perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
+      perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(this.perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
+    }
 
-    if (perusteenTutkinnonosa.arviointi) {
+    if (perusteenTutkinnonosa && perusteenTutkinnonosa.arviointi) {
       perusteenTutkinnonosa.arviointi.arvioinninKohdealueet = _.map(perusteenTutkinnonosa.arviointi.arvioinninKohdealueet, arvKohdealue => {
         return {
           ...arvKohdealue,
@@ -69,7 +71,7 @@ export class TutkinnonOsaStore implements IEditoitava {
       });
     }
 
-    if (perusteenTutkinnonosa.geneerinenArviointiasteikko) {
+    if (perusteenTutkinnonosa && perusteenTutkinnonosa.geneerinenArviointiasteikko) {
       const arviointiAsteikko = _.keyBy(arviointiasteikot, 'id')[perusteenTutkinnonosa.geneerinenArviointiasteikko._arviointiAsteikko];
       const osaamistasot = _.keyBy(arviointiAsteikko.osaamistasot, 'id');
       perusteenTutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit = _.map(perusteenTutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit, otKriteeri => {
@@ -80,8 +82,19 @@ export class TutkinnonOsaStore implements IEditoitava {
       });
     }
 
+    const tutkintonimikeKoodit = _.map(await Promise.all(_.chain(peruste.tutkintonimikkeet)
+      .map('tutkintonimikeUri')
+      .map((tutkintonimikeUri: string) => Koodistot.getKoodistoKoodiByUri(tutkintonimikeUri))
+      .value()), 'data');
+
     return {
-      tutkinnonosaViite,
+      tutkinnonosaViite: {
+        ...tutkinnonosaViite,
+        tosa: {
+          ...tutkinnonosaViite.tosa,
+          ...(tutkinnonosaViite.tosa.tyyppi === 'oma' && !_.has(tutkinnonosaViite.tosa, 'omatutkinnonosa') && { omatutkinnonosa: {} }),
+        },
+      },
       perusteenTutkinnonosaViite,
       perusteenTutkinnonosa,
       osaamisalat: peruste.osaamisalat,

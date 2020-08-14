@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
-import { SisaltoViiteKevytDto, Sisaltoviitteet, OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { SisaltoViiteKevytDto, Sisaltoviitteet, OpetussuunnitelmaDto, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
 
@@ -21,4 +21,19 @@ export class SisaltoViiteStore {
       this.state.sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(this.opetussuunnitelma.value.id, _.toString(this.opetussuunnitelma.value.koulutustoimija.id))).data;
     }
   });
+
+  public static async add(opsId: number, svId: number, ktId: string, sisaltoviite: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
+    const added = (await Sisaltoviitteet.addTekstiKappaleLapsi(opsId, svId, ktId, sisaltoviite)).data;
+    await updateNavigation();
+
+    el.$router.push({
+      name: _.toLower(sisaltoviite.tyyppi),
+      params: {
+        sisaltoviiteId: '' + added.id,
+      },
+      query: {
+        uusi: true,
+      },
+    });
+  }
 }
