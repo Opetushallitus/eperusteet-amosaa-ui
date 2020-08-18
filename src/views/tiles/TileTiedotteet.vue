@@ -38,7 +38,7 @@ export default class TileTiedotteet extends Vue {
   private isLoading = true;
   private tiedotteet: any[] = [];
   private sivu = 1;
-  private sivukoko = 5;
+  private sivukoko = 4;
 
   async mounted() {
     try {
@@ -72,6 +72,8 @@ export default class TileTiedotteet extends Vue {
 .tiedotteet {
   text-align: left;
   display: grid;
+  padding: 1rem;
+  padding-bottom: 0;
   .tiedote {
     white-space: nowrap;
     overflow-x: hidden;

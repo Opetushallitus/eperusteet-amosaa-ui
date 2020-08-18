@@ -156,6 +156,7 @@
 </template>
 
 <script lang="ts">
+import _ from 'lodash';
 import { Watch, Prop, Component, Vue } from 'vue-property-decorator';
 import { ToteutussuunnitelmaRoute } from './ToteutussuunnitelmaRoute';
 import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
@@ -167,6 +168,7 @@ import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { Meta } from '@shared/utils/decorators';
 
 @Component({
   components: {
@@ -194,6 +196,20 @@ export default class RouteToteutussuunnitelma extends Vue {
 
   private naviStore: EpTreeNavibarStore | null = null;
   private query: string = '';
+
+  @Meta
+  getMetaInfo() {
+    if (this.toteutussuunnitelmaStore
+    && this.toteutussuunnitelmaStore.toteutussuunnitelma
+    && this.toteutussuunnitelmaStore.toteutussuunnitelma.value
+    && this.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi
+    && !_.isEmpty(this.$kaanna(this.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi))) {
+      return {
+        title: this.$kaanna(this.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi),
+        titleTemplate: '%s - ' + this.$t('eperusteet-amosaa'),
+      };
+    }
+  }
 
   @Watch('toteutussuunnitelmaId', { immediate: true })
   async onToteutussuunnitelmaIdChange(newValue: number, oldValue: number) {

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuelidate from 'vuelidate';
+import VueApexCharts from 'vue-apexcharts';
 
 import App from './App.vue';
 import '@shared/config/bootstrap';
@@ -24,7 +25,7 @@ import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { Kayttajat } from '@/stores/kayttaja';
 import { VueTutorial } from '@shared/plugins/tutoriaali';
 import { tutoriaaliStore } from '@shared/stores/tutoriaali';
-import VueApexCharts from 'vue-apexcharts';
+import { registerIconColorSchemeChange } from '@shared/utils/icon';
 
 import router from './router';
 
@@ -63,6 +64,7 @@ Vue.use(VueApexCharts);
 Vue.component('apexchart', VueApexCharts);
 
 async function main() {
+  registerIconColorSchemeChange();
   new Vue({
     router,
     i18n: Kielet.i18n,
