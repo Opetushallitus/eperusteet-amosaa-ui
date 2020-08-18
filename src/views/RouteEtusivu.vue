@@ -33,6 +33,7 @@ import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import EpRoute from '@shared/mixins/EpRoute';
 import { EtusivuDto } from '@shared/api/amosaa';
 import { KayttajaStore } from '@/stores/kayttaja';
+import { Meta } from '@shared/utils/decorators';
 import TileToteutussuunnitelmat from './tiles/TileToteutussuunnitelmat.vue';
 import TileKoulutustoimijanYhteinenOsuus from './tiles/TileKoulutustoimijanYhteinenOsuus.vue';
 import TilePaivitettavatJaSiirrettavatToteutussuunnitelmat from './tiles/TilePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
@@ -65,6 +66,14 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
     if (newValue && newValue !== oldValue) {
       this.fetch();
     }
+  }
+
+  @Meta
+  getMetaInfo() {
+    return {
+      title: this.$t('eperusteet-amosaa'),
+      titleTemplate: null,
+    };
   }
 
   async init() {
