@@ -13,16 +13,18 @@
 
             <EpSearch v-model="queryNimi" :placeholder="$t('etsi')"/>
 
-            <div>
+            <div class="d-flex">
               <router-link :to="{name: 'tutkinnonosaLuonti'}">
                 <ep-button variant="outline-primary" icon="plussa">
                   {{ $t('lisaa-tutkinnon-osa') }}
                 </ep-button>
               </router-link>
 
-              <ep-button variant="outline-primary" icon="plussa" >
-                {{ $t('tuo-tutkinnon-osa') }}
-              </ep-button>
+              <ep-tutkinnonosa-tuonti
+                :toteutussuunnitelmaId="toteutussuunnitelmaId"
+                :koulutustoimijaId="koulutustoimijaId"
+                :updateNavigation="updateNavigation" />
+
             </div>
           </div>
 
@@ -52,6 +54,8 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+import EpTutkinnonosaTuonti from '@/components/EpSisaltoLisays/EpTutkinnonosaTuonti.vue';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
 @Component({
   components: {
@@ -59,11 +63,21 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
     EpButton,
     EpSearch,
     EpSpinner,
+    EpTutkinnonosaTuonti,
   },
 })
 export default class RouteTutkinnonosat extends Vue {
   @Prop({ required: true })
   private tutkinnonOsatStore!: TutkinnonOsatStore;
+
+  @Prop({ required: true })
+  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+
+  @Prop({ required: true })
+  private toteutussuunnitelmaId!: number;
+
+  @Prop({ required: true })
+  private koulutustoimijaId!: string;
 
   private editointiStore: EditointiStore | null = null;
 
@@ -118,6 +132,10 @@ export default class RouteTutkinnonosat extends Vue {
         return this.$sdt(item.tutkinnonosaViite.tosa.muokattu);
       },
     }];
+  }
+
+  async updateNavigation() {
+    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
   }
 }
 </script>

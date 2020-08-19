@@ -141,97 +141,74 @@
 
           <b-tab :title="$t('perusteen-sisalto')">
 
-            <div v-if="data.tutkinnonosaViite.tosa.tyyppi === 'perusteesta'">
+            <div class="d-flex pt-3" v-if="tutkinnonosaPerusteesta">
+              <b-form-group :label="$t('luotu')" class="flex-fill">
+                <span>{{$sdt(data.perusteenTutkinnonosa.luotu)}}</span>
+              </b-form-group>
 
-              <div class="d-flex pt-3">
-                <b-form-group :label="$t('luotu')" class="flex-fill">
-                  <span>{{$sdt(data.perusteenTutkinnonosa.luotu)}}</span>
-                </b-form-group>
+              <b-form-group :label="$t('muokattu-viimeksi')" class="flex-fill">
+                <span>{{$sdt(data.perusteenTutkinnonosa.muokattu)}}</span>
+              </b-form-group>
 
-                <b-form-group :label="$t('muokattu-viimeksi')" class="flex-fill">
-                  <span>{{$sdt(data.perusteenTutkinnonosa.muokattu)}}</span>
-                </b-form-group>
+              <div class="flex-fill" />
+            </div>
 
-                <div class="flex-fill" />
+            <hr/>
+
+            <ep-collapse>
+              <h3 slot="header">{{$t('ammattitaitovaatimukset')}}</h3>
+              <ep-content v-if="tutkinnonosaPerusteesta" layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaitovaatimukset" :is-editable="false" />
+            </ep-collapse>
+
+            <ep-collapse>
+              <h3 slot="header">{{$t('arviointi')}}</h3>
+
+              <ep-ammatillinen-arvioinnin-kohdealueet v-if="tutkinnonosaPerusteesta" :showHeader="false"
+                :arvioinninKohdealueet="data.perusteenTutkinnonosa.arviointi.arvioinninKohdealueet"
+                :arviointiasteikot="data.arviointiasteikot"/>
+
+              <ep-ammatillinen-arvioinnin-kohdealueet v-else :showHeader="false"
+                :arvioinninKohdealueet="data.omaTutkinnonosa.arviointi.arvioinninKohdealueet"
+                :arviointiasteikot="data.arviointiasteikot" />
+
+              <div v-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.geneerinenArviointiasteikko" class="ml-2">
+
+                <div class="mb-3 mt-3">
+                  <h4>{{$t('arvioinnin-kohde')}}</h4>
+                  <span>{{$kaanna(data.perusteenTutkinnonosa.geneerinenArviointiasteikko.kohde)}}</span>
+                </div>
+
+                <b-table striped :items="data.perusteenTutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit" :fields="osaamistasonKriteeritFields">
+                  <template v-slot:cell(osaamistaso)="{item}">
+                    {{$kaanna(item.osaamistaso.otsikko)}}
+                  </template>
+
+                  <template v-slot:cell(kriteerit)="{item}">
+                    <ul>
+                      <li v-for="(kriteeri, index) in item.kriteerit" :key="'kriteeri'+index">
+                        {{$kaanna(kriteeri)}}
+                      </li>
+                    </ul>
+                  </template>
+                </b-table>
               </div>
 
-              <hr/>
+            </ep-collapse>
 
-              <ep-collapse>
-                <h3 slot="header">{{$t('ammattitaitovaatimukset')}}</h3>
-                <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaitovaatimukset" :is-editable="false" />
-              </ep-collapse>
+            <ep-collapse>
+              <h3 slot="header">{{$t('ammattitaidon-osoittaminen')}}</h3>
+              <ep-content layout="normal" v-if="tutkinnonosaPerusteesta" v-model="data.perusteenTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="false" />
+              <ep-content layout="normal" v-else v-model="data.omaTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="isEditing" />
+            </ep-collapse>
 
-              <ep-collapse>
-                <h3 slot="header">{{$t('arviointi')}}</h3>
-
-                <div v-if="data.perusteenTutkinnonosa.arviointi" class="ml-2">
-                  <div v-for="(arvioinninKohdealue, index) in data.perusteenTutkinnonosa.arviointi.arvioinninKohdealueet" :key="'aka'+index" class="mb-5">
-                    <h3 class="mt-3">{{$kaanna(arvioinninKohdealue.otsikko)}}</h3>
-
-                    <div v-for="(arvioinninkohde, index) in arvioinninKohdealue.arvioinninKohteet" :key="'arvioinninkohde'+index" class="mr-5">
-
-                      <div class="mb-3 mt-4">
-                        <h4>{{$t('arvioinnin-kohde')}}</h4>
-                        <span>{{$kaanna(arvioinninkohde.selite)}}</span>
-                      </div>
-
-                      <b-table striped :items="arvioinninkohde.osaamistasonKriteerit" :fields="osaamistasonKriteeritFields">
-                        <template v-slot:cell(osaamistaso)="{item}">
-                          {{$kaanna(item.osaamistaso.otsikko)}}
-                        </template>
-
-                        <template v-slot:cell(kriteerit)="{item}">
-                          <ul>
-                            <li v-for="(kriteeri, index) in item.kriteerit" :key="'kriteeri'+index">
-                              {{$kaanna(kriteeri)}}
-                            </li>
-                          </ul>
-                        </template>
-                      </b-table>
-
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="data.perusteenTutkinnonosa.geneerinenArviointiasteikko" class="ml-2">
-
-                  <div class="mb-3 mt-3">
-                    <h4>{{$t('arvioinnin-kohde')}}</h4>
-                    <span>{{$kaanna(data.perusteenTutkinnonosa.geneerinenArviointiasteikko.kohde)}}</span>
-                  </div>
-
-                  <b-table striped :items="data.perusteenTutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit" :fields="osaamistasonKriteeritFields">
-                    <template v-slot:cell(osaamistaso)="{item}">
-                      {{$kaanna(item.osaamistaso.otsikko)}}
-                    </template>
-
-                    <template v-slot:cell(kriteerit)="{item}">
-                      <ul>
-                        <li v-for="(kriteeri, index) in item.kriteerit" :key="'kriteeri'+index">
-                          {{$kaanna(kriteeri)}}
-                        </li>
-                      </ul>
-                    </template>
-                  </b-table>
-                </div>
-
-              </ep-collapse>
-
-              <ep-collapse>
-                <h3 slot="header">{{$t('ammattitaidon-osoittaminen')}}</h3>
-                <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="false" />
-              </ep-collapse>
-
+            <div v-if="tutkinnonosaPerusteesta" >
               <ep-collapse v-for="(vapaaTeksti, index) in data.perusteenTutkinnonosa.vapaatTekstit" :key="'vapaaTekstit'+index">
                 <h3 slot="header">{{$kaanna(vapaaTeksti.nimi)}}</h3>
                 <ep-content layout="normal" v-model="vapaaTeksti.teksti" :is-editable="false" />
               </ep-collapse>
-
             </div>
 
           </b-tab>
-
         </b-tabs>
 
       </template>
@@ -288,6 +265,8 @@ import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto } from '@shared/api/amosaa';
 import draggable from 'vuedraggable';
+import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
+import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillinenArvioinninKohdealueet/EpAmmatillinenArvioinninKohdealueet.vue';
 
 @Component({
   components: {
@@ -299,6 +278,8 @@ import draggable from 'vuedraggable';
     EpCollapse,
     EpField,
     draggable,
+    EpAmmattitaitovaatimukset,
+    EpAmmatillinenArvioinninKohdealueet,
   },
 })
 export default class RouteTutkinnonosa extends Vue {
@@ -364,6 +345,12 @@ export default class RouteTutkinnonosa extends Vue {
 
   get perusteId() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value!.peruste!.id;
+  }
+
+  get tutkinnonosaPerusteesta() {
+    if (this.editointiStore && this.editointiStore.data.value) {
+      return this.editointiStore.data.value.tutkinnonosaViite.tosa.tyyppi === 'perusteesta';
+    }
   }
 
   tutkintonimiketaulu(koodit: string[]) {
