@@ -21,6 +21,7 @@
               </router-link>
 
               <ep-tutkinnonosa-tuonti
+                :tutkinnonosatTuontiStore="tutkinnonosatTuontiStore"
                 :toteutussuunnitelmaId="toteutussuunnitelmaId"
                 :koulutustoimijaId="koulutustoimijaId"
                 :updateNavigation="updateNavigation" />
@@ -56,6 +57,7 @@ import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpTutkinnonosaTuonti from '@/components/EpSisaltoLisays/EpTutkinnonosaTuonti.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 
 @Component({
   components: {
@@ -72,6 +74,9 @@ export default class RouteTutkinnonosat extends Vue {
 
   @Prop({ required: true })
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+
+  @Prop({ required: true })
+  private tutkinnonosatTuontiStore!: TutkinnonosatTuontiStore;
 
   @Prop({ required: true })
   private toteutussuunnitelmaId!: number;
