@@ -17,7 +17,6 @@ import RouteTutkinnonosat from '@/views/RouteTutkinnonosat.vue';
 import RouteTutkinnonosa from '@/views/RouteTutkinnonosa.vue';
 import RouteSuorituspolut from '@/views/RouteSuorituspolut.vue';
 import RouteSuorituspolku from '@/views/RouteSuorituspolku.vue';
-import RouteTutkinnonosaLuonti from '@/views/RouteTutkinnonosaLuonti.vue';
 import RouteOsaSuorituspolku from '@/views/RouteOsaSuorituspolku.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
 import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
@@ -176,11 +175,6 @@ const router = new VueRouter({
         path: 'jarjesta',
         component: RouteJarjestys,
         name: 'jarjesta',
-        props,
-      }, {
-        path: 'tutkinnonosaluonti/uusi',
-        name: 'tutkinnonosaLuonti',
-        component: RouteTutkinnonosaLuonti,
         props,
       }, {
         path: 'dokumentti',
