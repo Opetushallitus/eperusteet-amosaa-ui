@@ -158,7 +158,7 @@ const router = new VueRouter({
         component: RouteTutkinnonosa,
         props,
       }, {
-        path: 'suorituspolut',
+        path: 'suorituspolut/:sisaltoviiteId',
         name: 'suorituspolut',
         component: RouteSuorituspolut,
         props,

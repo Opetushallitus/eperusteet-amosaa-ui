@@ -95,7 +95,7 @@
 
             <template v-slot:suorituspolut="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'suorituspolut' }">
+                <router-link :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }">
                   {{ $t('suorituspolut') }}
                 </router-link>
               </div>
