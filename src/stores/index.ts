@@ -12,6 +12,7 @@ import { TiedotteetStore } from './TiedotteetStore';
 import { tutoriaaliStore } from '@shared/stores/tutoriaali';
 import { TutkinnonOsatStore } from '@/stores/TutkinnonOsatStore';
 import { TilastotStore } from '@/stores/TilastotStore';
+import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 
 const toteutussuunnitelmaStore = new ToteutussuunnitelmaStore();
 const toteutussuunnitelmatStore = new ToteutussuunnitelmatStore();
@@ -26,6 +27,7 @@ const toteutussuunnitelmaTiedotteetStore = new ToteutussuunnitelmaTiedotteetStor
 const tutkinnonOsatStore = new TutkinnonOsatStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const ohjeetStore = new OhjeetStore();
 const tilastotStore = new TilastotStore();
+const tutkinnonosatTuontiStore = new TutkinnonosatTuontiStore();
 
 export const stores = Object.freeze({
   aikatauluStore,
@@ -43,4 +45,5 @@ export const stores = Object.freeze({
   perusteetStore,
   tutkinnonOsatStore,
   tilastotStore,
+  tutkinnonosatTuontiStore,
 });

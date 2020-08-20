@@ -1,10 +1,11 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
+import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto, Sisaltoviitteet, PageSisaltoviiteLaajaDto, Perusteet, SisaltoviiteLaajaDto } from '@shared/api/amosaa';
 import { Debounced } from '@shared/utils/delay';
 import { perusteenSuoritustapa } from '@shared/utils/perusteet';
 import * as _ from 'lodash';
 import { Page } from '@shared/tyypit';
+import { Computed } from '@shared/utils/interfaces';
 
 Vue.use(VueCompositionApi);
 
@@ -14,20 +15,17 @@ export class TutkinnonosatTuontiStore {
     tutkinnonosatPage: null as Page<SisaltoviiteLaajaDto> | null,
   })
 
-  constructor(private opetusuunnitelmaId: number, private koulutustoimijaId: string) {
-  }
-
   public readonly tutkinnonosatPage = computed(() => this.state.tutkinnonosatPage);
   public readonly toteutussuunnitelmat = computed(() => this.state.toteutussuunnitelmat);
 
-  public async fetchOpetussuunnitelmat() {
-    this.state.toteutussuunnitelmat = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId)).data;
+  public async fetchOpetussuunnitelmat(koulutustoimijaId: string) {
+    this.state.toteutussuunnitelmat = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(koulutustoimijaId)).data;
   }
 
   @Debounced(300)
-  public async fetch(query) {
+  public async fetch(toteutussuunnitelmaId: number, koulutustoimijaId: string, query) {
     this.state.tutkinnonosatPage = null;
-    const sisaltoviitteet = (await Sisaltoviitteet.getSisaltoviitteet(this.opetusuunnitelmaId, this.koulutustoimijaId, undefined, { params: query })).data as Page<SisaltoviiteLaajaDto>;
+    const sisaltoviitteet = (await Sisaltoviitteet.getSisaltoviitteet(toteutussuunnitelmaId, koulutustoimijaId, undefined, { params: query })).data as Page<SisaltoviiteLaajaDto>;
 
     const perusteIdt = _.chain(_.get(sisaltoviitteet, 'data'))
       .map(tutkinnonosa => {
@@ -73,8 +71,8 @@ export class TutkinnonosatTuontiStore {
     } as any;
   }
 
-  public async tuoSisaltoa(sisaltoIdt: number[]) {
-    await Sisaltoviitteet.copyMultipleSisaltoviite(this.opetusuunnitelmaId, this.koulutustoimijaId, sisaltoIdt);
+  public async tuoSisaltoa(toteutussuunnitelmaId: number, koulutustoimijaId: string, sisaltoIdt: number[]) {
+    await Sisaltoviitteet.copyMultipleSisaltoviite(toteutussuunnitelmaId, koulutustoimijaId, sisaltoIdt);
   }
 
   clear() {

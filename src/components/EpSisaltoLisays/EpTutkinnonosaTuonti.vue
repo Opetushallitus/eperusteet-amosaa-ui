@@ -104,25 +104,22 @@ import { Page } from '@shared/tyypit';
 })
 export default class EpTutkinnonosaTuonti extends Vue {
   @Prop({ required: true })
+  private tutkinnonosatTuontiStore!: TutkinnonosatTuontiStore;
+
+  @Prop({ required: true })
+  private updateNavigation!: Function;
+
+  @Prop({ required: true })
   private toteutussuunnitelmaId!: number;
 
   @Prop({ required: true })
   private koulutustoimijaId!: string;
 
-  @Prop({ required: true })
-  private updateNavigation!: Function;
-
   private query = {} as any;
   private sivu = 0;
   private sisaltoSivuKoko = 10;
 
-  private tutkinnonosatTuontiStore: TutkinnonosatTuontiStore | null = null;
   private selectedTutkinnonosat: SisaltoviiteLaajaDto[] = [];
-  private fetching = false;
-
-  mounted() {
-    this.tutkinnonosatTuontiStore = new TutkinnonosatTuontiStore(this.toteutussuunnitelmaId, this.koulutustoimijaId);
-  }
 
   defaults() {
     this.query = {
@@ -135,20 +132,15 @@ export default class EpTutkinnonosaTuonti extends Vue {
     } as any;
 
     this.page = 0;
-    this.query.toteutussuunnitelma = null;
     this.selectedTutkinnonosat = [];
   }
 
   get toteutussuunnitelmat() {
-    if (this.tutkinnonosatTuontiStore) {
-      return this.tutkinnonosatTuontiStore.toteutussuunnitelmat.value;
-    }
+    return this.tutkinnonosatTuontiStore?.toteutussuunnitelmat.value || null;
   }
 
   get tutkinnonosat() {
-    if (this.tutkinnonosatTuontiStore && this.tutkinnonosatTuontiStore.tutkinnonosatPage.value) {
-      return this.tutkinnonosatTuontiStore.tutkinnonosatPage.value.data;
-    }
+    return this.tutkinnonosatTuontiStore?.tutkinnonosatPage?.value?.data || null;
   }
 
   get tutkinnonosatWithSelected() {
@@ -161,16 +153,13 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   get tutkinnonosatPage() {
-    if (this.tutkinnonosatTuontiStore) {
-      return this.tutkinnonosatTuontiStore.tutkinnonosatPage.value;
-    }
+    return this.tutkinnonosatTuontiStore?.tutkinnonosatPage.value || null;
   }
 
   async openModal() {
     (this as any).$bvModal.show('tuotutkinnonosa');
     this.defaults();
-    await this.tutkinnonosatTuontiStore!.fetchOpetussuunnitelmat();
-    await this.queryFetch();
+    await this.tutkinnonosatTuontiStore!.fetchOpetussuunnitelmat(this.koulutustoimijaId);
   }
 
   @Watch('query', { deep: true })
@@ -185,11 +174,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   async queryFetch() {
-    if (!this.fetching) {
-      this.fetching = true;
-      await this.tutkinnonosatTuontiStore!.fetch({ ...this.query, sivu: this.sivu });
-      this.fetching = false;
-    }
+    await this.tutkinnonosatTuontiStore!.fetch(this.toteutussuunnitelmaId, this.koulutustoimijaId, { ...this.query, sivu: this.sivu });
   }
 
   get totalRows() {
@@ -205,7 +190,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   async save() {
-    await this.tutkinnonosatTuontiStore!.tuoSisaltoa(_.map(this.selectedTutkinnonosat, 'id') as number[]);
+    await this.tutkinnonosatTuontiStore!.tuoSisaltoa(this.toteutussuunnitelmaId, this.koulutustoimijaId, _.map(this.selectedTutkinnonosat, 'id') as number[]);
     this.tutkinnonosatTuontiStore!.clear();
     this.$success(this.$t('tutkinnon-osat-tuotu-onnistuneesti') as string);
     await this.updateNavigation();
@@ -242,19 +227,19 @@ export default class EpTutkinnonosaTuonti extends Vue {
   get tutkinnonosatFields() {
     return [{
       key: 'tekstiKappale.nimi',
-      label: this.$t('nimi') as string,
+      label: this.$t('nimi'),
       sortable: true,
       thStyle: { width: '40%' },
     }, {
       key: 'opetussuunnitelma.voimaantulo',
-      label: this.$t('voimaantulo') as string,
+      label: this.$t('voimaantulo'),
       sortable: false,
       formatter: (value: any, key: string, item: any) => {
         return value ? this.$sd(value) : '';
       },
     }, {
       key: 'laajuus',
-      label: this.$t('laajuus') as string,
+      label: this.$t('laajuus'),
       sortable: false,
       formatter: (value: any, key: string, item: any) => {
         if (item.tosa.omatutkinnonosa && item.tosa.omatutkinnonosa.laajuus) {
@@ -269,7 +254,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
       },
     }, {
       key: 'opetussuunnitelma.nimi',
-      label: this.$t('opetussuunnitelma') as string,
+      label: this.$t('opetussuunnitelma'),
       sortable: false,
       formatter: (value: any, key: string, item: any) => {
         return this.$kaanna(value);
@@ -280,7 +265,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
   get valittuFields() {
     return [{
       key: 'tekstiKappale.nimi',
-      label: this.$t('nimi') as string,
+      label: this.$t('nimi'),
       sortable: true,
       sortByFormatted: true,
       formatter: (value: any, key: string, item: any) => {
