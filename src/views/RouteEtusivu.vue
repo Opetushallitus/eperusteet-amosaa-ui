@@ -16,7 +16,8 @@
       <div class="d-flex flex-row flex-wrap justify-content-center">
         <TileToteutussuunnitelmat :etusivu="etusivu" />
         <TileKoulutustoimijanYhteinenOsuus :etusivu="etusivu" />
-        <TilePaivitettavatJaSiirrettavatToteutussuunnitelmat />
+        <TilePaivitettavatJaSiirrettavatToteutussuunnitelmat
+          :paivitettavatJaSiirrettavatTotsStore="paivitettavatJaSiirrettavatTotsStore"/>
         <TileOrganisaationHallinta />
         <TileTiedotteet :kieli="sisaltoKieli" />
         <TileUkk />
@@ -41,7 +42,8 @@ import TileOrganisaationHallinta from './tiles/TileOrganisaationHallinta.vue';
 import TileTiedotteet from './tiles/TileTiedotteet.vue';
 import TileUkk from './tiles/TileUkk.vue';
 import TileTilastot from './tiles/TileTilastot.vue';
-import { KieliStore } from '../../eperusteet-frontend-utils/vue/src/stores/kieli';
+import { KieliStore } from '@shared/stores/kieli';
+import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 
 @Component({
   components: {
@@ -59,12 +61,15 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
   private kayttajaStore!: KayttajaStore;
 
   @Prop({ required: true })
-  private koulutustoimijaId!: string | number;
+  private koulutustoimijaId!: string;
 
   @Prop({ required: true })
   private kieliStore!: KieliStore;
 
-  @Watch('koulutustoimijaId', { immediate: true })
+  @Prop({ required: true })
+  private paivitettavatJaSiirrettavatTotsStore!: PaivitettavatJaSiirrettavatTotsStore;
+
+  @Watch('koulutustoimijaId')
   async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
     if (newValue && newValue !== oldValue) {
       this.fetch();
@@ -85,6 +90,7 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
 
   async fetch() {
     await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId);
+    await this.paivitettavatJaSiirrettavatTotsStore.fetch(this.koulutustoimijaId);
   }
 
   get sisaltoKieli() {
