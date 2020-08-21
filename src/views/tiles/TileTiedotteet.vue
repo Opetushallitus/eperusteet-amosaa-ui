@@ -1,7 +1,8 @@
 <template>
   <EpHomeTile icon="muistikirja"
               :route="{ name: 'tiedotteet' }"
-              :header-bg-color="{ top: '#009700', bottom: '#007500' }">
+              :header-bg-color="{ top: '#009700', bottom: '#007500' }"
+              :count="uudetTiedotteetCount">
     <template slot="header">
       <span>{{ $t('tile-tiedotteet') }}</span>
     </template>
@@ -9,9 +10,9 @@
       <ep-spinner v-if="isLoading"></ep-spinner>
       <div v-else>
         <div v-if="tiedotteet && tiedotteet.length > 0">
-          <div class="tiedote row justify-content-center text-left" v-for="(tiedote, idx) in tiedotteet" :key="idx">
+          <div class="tiedote row justify-content-center text-left" v-for="(tiedote, idx) in tiedotteetFormatted" :key="idx">
             <div class="col-3">{{ $sd(tiedote.luotu) }}</div>
-            <div class="col-7 otsikko">{{ $kaanna(tiedote.otsikko) }}</div>
+            <div class="col-7 otsikko" :class="{'font-weight-bold': tiedote.uusi}">{{ $kaanna(tiedote.otsikko) }}</div>
           </div>
         </div>
         <p v-else>{{ $t('tile-tiedotteet-kuvaus') }}</p>
@@ -27,7 +28,7 @@ import { TiedotteetStore } from '@/stores/TiedotteetStore';
 import { Tiedotteet, TiedoteDto } from '@shared/api/eperusteet';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { julkaisupaikka } from '@shared/utils/tiedote';
+import { julkaisupaikka, onkoUusi } from '@shared/utils/tiedote';
 
 @Component({
   components: {
@@ -74,6 +75,19 @@ export default class TileTiedotteet extends Vue {
     finally {
       this.isLoading = false;
     }
+  }
+
+  get tiedotteetFormatted() {
+    return _.map(this.tiedotteet, tiedote => {
+      return {
+        ...tiedote,
+        uusi: onkoUusi(tiedote.luotu),
+      };
+    });
+  }
+
+  get uudetTiedotteetCount() {
+    return _.size(_.filter(this.tiedotteetFormatted, 'uusi'));
   }
 }
 </script>

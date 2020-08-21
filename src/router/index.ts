@@ -24,6 +24,7 @@ import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTied
 import RouteToteutussuunnitelmaLuonti from '@/views/RouteToteutussuunnitelmaLuonti.vue';
 import RouteTilastot from '@/views/RouteTilastot.vue';
 import RoutePdfLuonti from '@/views/RoutePdfLuonti.vue';
+import RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat from '@/views/RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -97,7 +98,7 @@ const router = new VueRouter({
     }, {
       path: 'paivitettavat',
       name: 'paivitettavat',
-      // component: ...,
+      component: RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat,
       props,
     }, {
       path: 'toteutussuunnitelmat',
