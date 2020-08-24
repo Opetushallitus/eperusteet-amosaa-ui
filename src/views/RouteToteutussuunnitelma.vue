@@ -263,6 +263,11 @@ export default class RouteToteutussuunnitelma extends Vue {
         route: 'pdfLuonti',
         icon: 'luo-pdf',
       },
+      {
+        text: 'poistetut-sisallot',
+        route: 'poistetutsisallot',
+        icon: 'roskalaatikko',
+      },
     ];
   }
 }
