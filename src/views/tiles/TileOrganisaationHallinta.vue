@@ -6,7 +6,7 @@
       <span>{{ $t('tile-organisaation-hallinta') }}</span>
     </template>
     <template slot="content">
-      <p>{{ $t('tile-wip') }}</p>
+      <p>{{ $t('tile-organisaatio-yhteistyo-kuvaus') }}</p>
     </template>
   </EpHomeTile>
 </template>
