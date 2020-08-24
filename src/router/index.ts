@@ -25,6 +25,7 @@ import RouteToteutussuunnitelmaLuonti from '@/views/RouteToteutussuunnitelmaLuon
 import RouteTilastot from '@/views/RouteTilastot.vue';
 import RoutePdfLuonti from '@/views/RoutePdfLuonti.vue';
 import RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat from '@/views/RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
+import RoutePoistetutSisallot from '@/views/RoutePoistetutSisallot.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -182,6 +183,11 @@ const router = new VueRouter({
         path: 'dokumentti',
         name: 'pdfLuonti',
         component: RoutePdfLuonti,
+        props,
+      }, {
+        path: 'poistetut',
+        name: 'poistetutsisallot',
+        component: RoutePoistetutSisallot,
         props,
       }],
     }, {
