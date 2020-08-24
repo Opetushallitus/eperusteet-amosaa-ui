@@ -55,7 +55,6 @@ import { KieliStore } from '../../eperusteet-frontend-utils/vue/src/stores/kieli
   },
 })
 export default class RouteEtusivu extends Mixins(EpRoute) {
-
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
 
@@ -99,7 +98,6 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
   get etusivu() {
     return this.kayttajaStore?.etusivu?.value || null;
   }
-
 }
 </script>
 

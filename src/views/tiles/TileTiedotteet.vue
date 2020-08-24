@@ -59,13 +59,13 @@ export default class TileTiedotteet extends Vue {
       this.tiedotteet = ((await Tiedotteet.findTiedotteetBy(
         0,
         3,
-        [ _.toUpper(this.kieli) ],
+        [_.toUpper(this.kieli)],
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        [ julkaisupaikka.amosaa ],
+        [julkaisupaikka.amosaa],
       )).data as any).data;
     }
     catch (err) {

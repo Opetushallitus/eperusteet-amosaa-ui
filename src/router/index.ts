@@ -9,6 +9,7 @@ import RouteEtusivu from '@/views/RouteEtusivu.vue';
 import RouteUkk from '@/views/RouteUkk.vue';
 import RouteTiedotteet from '@/views/RouteTiedotteet.vue';
 import RouteTiedote from '@/views/RouteTiedote.vue';
+import RouteOrganisaatio from '@/views/RouteOrganisaatio.vue';
 import RouteToteutussuunnitelmat from '@/views/RouteToteutussuunnitelmat.vue';
 import RouteYleisnakyma from '@/views/RouteYleisnakyma.vue';
 import RouteToteutussuunnitelma from '@/views/RouteToteutussuunnitelma.vue';
@@ -86,7 +87,7 @@ const router = new VueRouter({
     }, {
       path: 'organisaatio',
       name: 'organisaatio',
-      // component: ...,
+      component: RouteOrganisaatio,
       props,
     }, {
       path: 'yhteinen',
