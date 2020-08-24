@@ -51,19 +51,19 @@ const virhekuva = require('@assets/img/images/virhe.png');
   },
 })
 export default class RouteLang extends Vue {
-  
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
 
   mounted() {
     // Ohjataan käyttäjän koulutustoimijan etusivulle
     const koulutustoimijat = this.kayttajaStore?.koulutustoimijat?.value || null;
-    if(!_.isEmpty(koulutustoimijat)) {
+    if (!_.isEmpty(koulutustoimijat)) {
       const koulutustoimija = getItem('koulutustoimija');
       let koulutustoimijaId;
       if (koulutustoimija && _.includes(_.map(koulutustoimijat, 'id'), koulutustoimija)) {
         koulutustoimijaId = _.toString(koulutustoimija);
-      } else {
+      }
+      else {
         const id = koulutustoimijat![0].id;
         koulutustoimijaId = _.toString(id);
         setItem('koulutustoimija', id);
@@ -90,7 +90,6 @@ export default class RouteLang extends Vue {
   get nimi() {
     return this.kayttajaStore?.nimi?.value || null;
   }
-
 }
 </script>
 

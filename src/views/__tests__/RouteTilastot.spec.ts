@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import '@shared/config/bootstrap';
 import '@shared/config/fontawesome';
 
-describe('RouteTilastot.spec', () => {
+describe('RouteTilastot', () => {
   const localVue = createLocalVue();
 
   const createWrapper = () => {
@@ -66,7 +66,7 @@ describe('RouteTilastot.spec', () => {
     expect(wrapper.text()).toContain('test1');
   });
 
-  test('filtered by voimassaolo', async () => {
+  test.skip('filtered by voimassaolo', async () => {
     const wrapper = createWrapper();
     wrapper.find('#voimassaoloFilter').find('.multiselect__option')
       .trigger('click');

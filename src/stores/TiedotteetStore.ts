@@ -66,5 +66,4 @@ export class TiedotteetStore implements ITiedotteetProvider {
     this.state.kokonaismaara = (res as any).kokonaismäärä;
     this.state.isLoading = false;
   }
-
 }

@@ -35,7 +35,6 @@
                     align="center" />
     </div>
 
-
   </ep-main-view>
 </template>
 
@@ -156,7 +155,6 @@ export default class RouteTiedotteet extends Vue {
       },
     }];
   }
-
 }
 </script>
 
