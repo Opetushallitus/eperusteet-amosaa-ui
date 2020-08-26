@@ -4,7 +4,7 @@
                         :is-editing="isEditing"
                         :yhteistyo-map="yhteistyoMap" />
   <div v-if="hasChildren" class="tree">
-    <ul style="list-style-type: none;">
+    <ul>
       <ep-organization-tree v-for="(node, idx) in children"
                             :key="idx"
                             :value="node"
@@ -24,7 +24,9 @@ import EpOrganizationNode from '@/components/EpOrganizationTree/EpOrganizationNo
 @Component({
   components: {
     EpOrganizationNode,
+    EpOrganizationTree,
   },
+  name: 'EpOrganizationTree',
 })
 export default class EpOrganizationTree extends Vue {
   @Prop({ required: true })
