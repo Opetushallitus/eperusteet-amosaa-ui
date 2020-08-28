@@ -103,9 +103,7 @@
 
         <h3>{{$t('toiminnot')}}</h3>
 
-        <ep-button class="siirra-opetussuunnitelma" variant="link">
-          {{$t('siirra-opetussuunnitelma')}}
-        </ep-button>
+        <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="editointiStore.data.value.opetussuunnitelma"></ep-siirto-modal>
 
       </template>
     </EpEditointi>
@@ -115,17 +113,21 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
+
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { ToteutussuunnitelmaTiedotStore } from '@/stores/ToteutussuunnitelmaTiedotStore';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { UiKielet } from '@shared/stores/kieli';
+
+import { ToteutussuunnitelmaTiedotStore } from '@/stores/ToteutussuunnitelmaTiedotStore';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+
+import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpField from '@shared/components/forms/EpField.vue';
-import { UiKielet } from '@shared/stores/kieli';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+
+import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
 
 @Component({
   components: {
@@ -134,7 +136,7 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
     EpField,
     EpDatepicker,
     EpExternalLink,
-    EpButton,
+    EpSiirtoModal,
   },
 })
 export default class RouteToteutussuunnitelmaTiedot extends Vue {

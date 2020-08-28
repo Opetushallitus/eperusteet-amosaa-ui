@@ -14,9 +14,7 @@
       </ep-perustieto-data>
     </div>
 
-    <router-link :to="{}">
-      <ep-button variant="link">{{$t('siirra-opetussuunnitelma')}}</ep-button>
-    </router-link>
+    <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="toteutussuunnitelma"></ep-siirto-modal>
   </div>
 </template>
 
@@ -24,17 +22,21 @@
 import _ from 'lodash';
 import { Vue, Component, Prop } from 'vue-property-decorator';
 
+import { Kielet } from '@shared/stores/kieli';
+import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
+
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpPerustietoData from '@shared/components/EpPerustietoData/EpPerustietoData.vue';
-import { Kielet } from '@shared/stores/kieli';
-import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
+
+import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
 
 @Component({
   components: {
     EpSpinner,
     EpButton,
     EpPerustietoData,
+    EpSiirtoModal,
   },
 })
 export default class EpToteutussuunnitelmanPerustiedot extends Vue {
@@ -45,6 +47,10 @@ export default class EpToteutussuunnitelmanPerustiedot extends Vue {
     if (this.toteutussuunnitelma) {
       return _.map(this.toteutussuunnitelma.julkaisukielet, (kieli) => Kielet.kaannaOlioTaiTeksti(kieli)).join(', ');
     }
+  }
+
+  get koulutustoimijaId(): string {
+    return this.$route.params.koulutustoimijaId;
   }
 }
 </script>

@@ -24,7 +24,6 @@ import EpOrganizationNode from '@/components/EpOrganizationTree/EpOrganizationNo
 @Component({
   components: {
     EpOrganizationNode,
-    EpOrganizationTree,
   },
   name: 'EpOrganizationTree',
 })
