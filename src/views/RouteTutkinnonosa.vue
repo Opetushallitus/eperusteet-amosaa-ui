@@ -157,6 +157,7 @@
 
                 <div class="flex-fill" />
               </div>
+            </div>
 
             <ep-collapse>
               <h3 slot="header">{{$t('ammattitaitovaatimukset')}}</h3>
