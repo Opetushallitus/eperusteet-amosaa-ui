@@ -57,7 +57,16 @@
       </div>
 
       <div v-if="items.data.length > 0">
-        <b-table striped hover responsive :items="items.data" :fields="fields">
+        <b-table
+          striped
+          hover
+          responsive
+          :items="items.data"
+          :fields="fields"
+          no-local-sorting
+          @sort-changed="sortingChanged"
+          :sort-by.sync="sort.sortBy"
+          :sort-desc.sync="sort.sortDesc">
           <template v-slot:cell(nimi)="data">
             <router-link :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: data.item.id } }">
               {{ $kaanna(data.item.nimi) }}
@@ -119,6 +128,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   private voimassaolo: string | null = null;
   private tila: string[] | null = ['luonnos', 'julkaistu'];
   private isLoading = false;
+  private sort = {};
 
   private query = {
     sivu: 0,
@@ -168,6 +178,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   @Watch('voimassaolo')
   onChangeVoimassaolo(tila: string) {
     const defaults = {
+      ...this.query,
       voimassaolo: false,
       siirtyma: false,
       tuleva: false,
@@ -207,7 +218,20 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
 
   @Watch('tyyppi')
   onTyyppiChange(tyyppi: string) {
-    this.query.tyyppi = [tyyppi];
+    this.query = {
+      ...this.query,
+      tyyppi: [tyyppi],
+    };
+  }
+
+  sortingChanged(sort) {
+    this.sort = sort;
+    this.query = {
+      ...this.query,
+      sivu: 0,
+      jarjestys: sort.sortBy,
+      jarjestysNouseva: !sort.sortDesc,
+    };
   }
 
   get vaihtoehdotTyypit() {
@@ -282,8 +306,9 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       },
     }, {
       key: 'koulutuskoodi',
-      sortable: true,
+      sortable: false,
       label: this.$t('koulutuskoodi') as string,
+      thStyle: { borderBottom: '0px' },
       formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
         if (item.peruste && _.size(item.peruste.koulutukset) > 0) {
           return _.head(item!.peruste!.koulutukset)!['koulutuskoodiArvo'];
