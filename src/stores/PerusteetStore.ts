@@ -1,19 +1,24 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { PerusteDto, Ulkopuoliset, PerusteDtoKoulutustyyppiEnum } from '@shared/api/amosaa';
+import { PerusteDto, Ulkopuoliset, PerusteDtoKoulutustyyppiEnum, PerusteKevytDto } from '@shared/api/amosaa';
 import _ from 'lodash';
 
 Vue.use(VueCompositionApi);
 
 export class PerusteetStore {
   private state = reactive({
-    perusteet: null as PerusteDto[] | null,
+    perusteetKevyt: null as PerusteKevytDto[] | null,
   })
 
-  public readonly perusteet = computed(() => _.filter(this.state.perusteet, peruste =>
-    !_.includes([PerusteDtoKoulutustyyppiEnum.TELMA, PerusteDtoKoulutustyyppiEnum.VALMA], _.toUpper(peruste.koulutustyyppi))));
+  public readonly perusteetKevyt = computed(() => {
+    if (this.state.perusteetKevyt) {
+      return _.filter(this.state.perusteetKevyt, peruste =>
+        !_.includes([PerusteDtoKoulutustyyppiEnum.TELMA, PerusteDtoKoulutustyyppiEnum.VALMA], _.toUpper(peruste.koulutustyyppi)));
+    }
+    return null;
+  });
 
-  public async updateQuery() {
-    this.state.perusteet = (await Ulkopuoliset.getJulkaistutPerusteet()).data;
+  public async fetchJulkaistutPerusteet() {
+    this.state.perusteetKevyt = (await Ulkopuoliset.getJulkaistutPerusteetKevyt()).data;
   }
 }

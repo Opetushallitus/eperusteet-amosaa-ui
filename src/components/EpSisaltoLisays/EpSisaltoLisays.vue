@@ -5,35 +5,35 @@
     </template>
 
     <b-dropdown-item>
-
       <ep-tekstikappale-lisays :tekstikappaleet="tekstikappaleet" :paatasovalinta="true" @save="lisaaUusiTekstikappale">
         <span slot="lisays-btn">{{$t('uusi-tekstikappale')}}</span>
         <template v-slot:default="{tekstikappale}">
           {{$kaanna(tekstikappale.label)}}
         </template>
       </ep-tekstikappale-lisays>
-
     </b-dropdown-item>
 
-    <b-dropdown-item>
-      <span @click="lisaaUusiTutkinnonosa">{{$t('uusi-tutkinnon-osa')}}</span>
-    </b-dropdown-item>
+    <div v-if="!opsYhteinenOsuus">
+      <b-dropdown-item>
+        <span @click="lisaaUusiTutkinnonosa">{{$t('uusi-tutkinnon-osa')}}</span>
+      </b-dropdown-item>
 
-    <hr class="mt-1 mb-1"/>
+      <hr class="mt-1 mb-1"/>
 
-    <b-dropdown-item>
-      <span @click="lisaaUusiSuorituspolku">{{$t('uusi-suorituspolku')}}</span>
-    </b-dropdown-item>
+      <b-dropdown-item>
+        <span @click="lisaaUusiSuorituspolku">{{$t('uusi-suorituspolku')}}</span>
+      </b-dropdown-item>
 
-    <b-dropdown-item>
-      <span @click="lisaaUusiOsaSuorituspolku">{{$t('uusi-osasuorituspolku')}}</span>
-    </b-dropdown-item>
+      <b-dropdown-item>
+        <span @click="lisaaUusiOsaSuorituspolku">{{$t('uusi-osasuorituspolku')}}</span>
+      </b-dropdown-item>
 
-    <hr class="mt-1 mb-1"/>
+      <hr class="mt-1 mb-1"/>
 
-    <b-dropdown-item>
-      <ep-sisallon-tuonti :opetussuunnitelmaId="toteutussuunnitelma.id" :koulutustoimijaId="koulutustoimijaId" :updateNavigation="updateNavigation"/>
-    </b-dropdown-item>
+      <b-dropdown-item>
+        <ep-sisallon-tuonti :opetussuunnitelmaId="toteutussuunnitelma.id" :koulutustoimijaId="koulutustoimijaId" :updateNavigation="updateNavigation"/>
+      </b-dropdown-item>
+    </div>
 
   </b-dropdown>
 </template>
@@ -47,7 +47,7 @@ import EpSelect from '@shared/components/forms/EpSelect.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
-import { SisaltoviiteMatalaDto, MatalaTyyppiEnum, SisaltoViiteKevytDtoTyyppiEnum, NavigationNodeDto, OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { SisaltoviiteMatalaDto, MatalaTyyppiEnum, SisaltoViiteKevytDtoTyyppiEnum, NavigationNodeDto, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import EpSisallonTuonti from '@/components/EpSisaltoLisays/EpSisallonTuonti.vue';
 
@@ -167,6 +167,10 @@ export default class EpSisaltoLisays extends Vue {
       } as SisaltoviiteMatalaDto,
       this,
       this.updateNavigation);
+  }
+
+  get opsYhteinenOsuus() {
+    return this.toteutussuunnitelma.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
   }
 }
 
