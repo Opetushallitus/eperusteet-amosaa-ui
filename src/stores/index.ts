@@ -15,12 +15,16 @@ import { TilastotStore } from '@/stores/TilastotStore';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { PoistetutStore } from '@/stores/PoistetutStore';
+import { YhteisetOsuudetStore } from '@/stores/YhteisetOsuudetStore';
+import { OphPohjatStore } from '@/stores/OphPohjatStore';
 
 const toteutussuunnitelmaStore = new ToteutussuunnitelmaStore();
 const toteutussuunnitelmatStore = new ToteutussuunnitelmatStore();
+const yhteisetOsuudetStore = new YhteisetOsuudetStore();
 const toteutussuunnitelmaPohjatStore = new ToteutussuunnitelmatStore();
 const tiedotteetStore = new TiedotteetStore();
 const perusteetStore = new PerusteetStore();
+const ophPohjatStore = new OphPohjatStore();
 
 const aikatauluStore = new AikatauluStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const sisaltoViiteStore = new SisaltoViiteStore(toteutussuunnitelmaStore.toteutussuunnitelma);
@@ -52,4 +56,6 @@ export const stores = Object.freeze({
   tutkinnonosatTuontiStore,
   paivitettavatJaSiirrettavatTotsStore,
   poistetutStore,
+  yhteisetOsuudetStore,
+  ophPohjatStore,
 });

@@ -7,43 +7,41 @@
 
            <div class="row">
             <div class="col-sm-10 mb-4">
-              <b-form-group class="mt-4 pt-0 " :label="$t('kayta-pohjana')+' *'">
-
-                <b-form-radio class="p-2 pl-4 pt-3" v-if="opetussuunnitelmanTyyppi === 'ops'" v-model="pohjanTyyppi" value="peruste" name="pohjanTyyppi" :disabled="!perusteet || perusteet.length === 0">{{ $t('perusteprojektia') }}</b-form-radio>
-                <b-form-radio class="p-2 pl-4" v-if="opetussuunnitelmanTyyppi === 'ops'" v-model="pohjanTyyppi" value="toteutussuunnitelma" name="pohjanTyyppi" :disabled="!toteutussuunnitelmat || toteutussuunnitelmat.length === 0">{{ $t('toista-toteutussuunnitelmaa') }}</b-form-radio>
-
-                <b-form-radio class="p-2 pl-4" v-if="opetussuunnitelmanTyyppi === 'yleinen'" v-model="pohjanTyyppi" value="toteutussuunnitelma" name="pohjanTyyppi" :disabled="!toteutussuunnitelmat || toteutussuunnitelmat.length === 0">{{ $t('toista-jaettua-osaa') }}</b-form-radio>
-                <b-form-radio class="p-2 pl-4" v-if="opetussuunnitelmanTyyppi === 'yleinen'" v-model="pohjanTyyppi" value="uusi" name="pohjanTyyppi">{{ $t('luo-uusi') }}</b-form-radio>
-
+              <b-form-group class="mt-4 pt-2 " :label="$t('kayta-pohjana')+' *'">
+                <b-form-radio v-for="(radiobutton, index) in tyypinRadioButtons" :key="'radiobutton'+index" class="p-2 pl-4" v-model="pohjanTyyppi" :value="radiobutton.value" :disabled="radiobutton.disabled">
+                  {{$t(radiobutton.text)}}
+                </b-form-radio>
               </b-form-group>
 
-              <b-form-group :label="pohjaOtsikko +' *'" v-if="pohjanTyyppi && pohjanTyyppi !== 'uusi'">
+              <b-form-group :label="$t(kaannokset[pohjanTyyppi].pohjaLabel) +' *'" v-if="pohjanTyyppi && pohjanTyyppi !== 'uusi'">
                 <div v-if="pohjanTyyppi === 'peruste'">
                   <EpMultiSelect
                     v-if="perusteet"
                     v-model="peruste"
-                    :placeholder="$t('valitse-perusteprojekti')"
+                    :placeholder="$t(kaannokset[pohjanTyyppi].pohjaValintaPlaceHolder)"
                     :is-editing="true"
                     :options="perusteet"
-                    :validation="$v.peruste">
+                    :validation="$v.peruste"
+                    :search-identity="nimiSearchIdentity">
                     <template slot="singleLabel" slot-scope="{ option }">
-                      {{ $kaanna(option.nimi) }}
+                      {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}, {{$sd(option.voimassaoloAlkaa)}})
                     </template>
                     <template slot="option" slot-scope="{ option }">
-                      {{ $kaanna(option.nimi) }}
+                      {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}, {{$sd(option.voimassaoloAlkaa)}})
                     </template>
                   </EpMultiSelect>
                   <EpSpinner v-else />
                 </div>
 
-                <div v-if="pohjanTyyppi === 'toteutussuunnitelma'">
+                <div v-if="pohjanTyyppi === 'toteutussuunnitelma' || pohjanTyyppi === 'ophPohja'">
                   <EpMultiSelect
-                    v-if="toteutussuunnitelmat"
+                    v-if="pohjat"
                     v-model="toteutussuunnitelma"
-                    :placeholder="pohjaValintaPlaceholder"
+                    :placeholder="$t(kaannokset[pohjanTyyppi].pohjaValintaPlaceHolder)"
                     :is-editing="true"
-                    :options="toteutussuunnitelmat"
-                    :validation="$v.toteutussuunnitelma">
+                    :options="pohjat"
+                    :validation="$v.toteutussuunnitelma"
+                    :search-identity="nimiSearchIdentity">
                     <template slot="singleLabel" slot-scope="{ option }">
                       {{ $kaanna(option.nimi) }}
                     </template>
@@ -56,7 +54,7 @@
 
               </b-form-group>
 
-              <b-form-group :label="nimiOtsikko +' *'" v-if="pohjanTyyppi">
+              <b-form-group :label="$t(kaannokset.nimiLabel) +' *'" v-if="pohjanTyyppi">
                 <ep-field v-model="nimi" :is-editing="true" :validation="$v.nimi"></ep-field>
               </b-form-group>
 
@@ -65,11 +63,8 @@
         </template>
 
         <template v-slot:luo>
-          <span v-if="opetussuunnitelmanTyyppi === 'ops'">
-            {{$t('luo-toteutussuunnitelma')}}
-          </span>
-          <span v-if="opetussuunnitelmanTyyppi === 'yleinen'">
-            {{$t('luo-jaettu-osa')}}
+          <span>
+            {{$t(kaannokset.luoLabel)}}
           </span>
         </template>
 
@@ -92,8 +87,47 @@ import { ToteutussuunnitelmatStore } from '@/stores/ToteutussuunnitelmatStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
+import { OphPohjatStore } from '@/stores/OphPohjatStore';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
+
+const kielistykset = {
+  'ops': {
+    stepName: 'uusi-toteutussuunnitelma',
+    peruste: {
+      pohjaLabel: 'toteutussuunnitelman-pohja',
+      pohjaValintaPlaceHolder: 'valitse-perusteprojekti',
+    },
+    toteutussuunnitelma: {
+      pohjaLabel: 'toteutussuunnitelman-pohja',
+      pohjaValintaPlaceHolder: 'valitse-toteutussuunnitelma',
+    },
+    nimiLabel: 'toteutussuunnitelman-nimi',
+    luoLabel: 'luo-toteutussuunnitelma',
+  },
+  'yleinen': {
+    stepName: 'uusi-jaettu-osa',
+    toteutussuunnitelma: {
+      pohjaLabel: 'jaetun-osan-pohja',
+      pohjaValintaPlaceHolder: 'valitse-jaettu-osa',
+    },
+    nimiLabel: 'jaetun-osan-nimi',
+    luoLabel: 'luo-jaettu-osa',
+  },
+  'yhteinen': {
+    stepName: 'uusi-yhteinen-osa',
+    toteutussuunnitelma: {
+      pohjaLabel: 'koulutustoimijan-yhteinen-osuus',
+      pohjaValintaPlaceHolder: 'valitse-yhteinen-osuus',
+    },
+    ophPohja: {
+      pohjaLabel: 'suunnitelman-pohja',
+      pohjaValintaPlaceHolder: 'valitse-pohja',
+    },
+    nimiLabel: 'toteutussuunnitelman-nimi',
+    luoLabel: 'luo-suunnitelma',
+  },
+};
 
 @Component({
   components: {
@@ -119,16 +153,19 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   @Prop({ required: false })
   private perusteetStore!: PerusteetStore;
 
+  @Prop({ required: false })
+  private ophPohjatStore!: OphPohjatStore;
+
   @Prop({ required: true })
   private koulutustoimijaId!: string | number;
 
   @Prop({ required: true })
-  private opetussuunnitelmanTyyppi!: 'ops' | 'yleinen';
+  private opetussuunnitelmanTyyppi!: 'ops' | 'yleinen' | 'yhteinen';
 
   @Prop({ required: false })
   private opetussuunnitelmanSuoritustapa!: string;
 
-  private pohjanTyyppi: 'toteutussuunnitelma' | 'peruste' | null = null;
+  private pohjanTyyppi: 'toteutussuunnitelma' | 'peruste' | 'uusi' | 'ophPohja' | null = null;
 
   private peruste: PerusteDto | null = null;
   private toteutussuunnitelma: OpetussuunnitelmaDto | null = null;
@@ -143,8 +180,16 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       });
 
     if (this.perusteetStore) {
-      this.perusteetStore.updateQuery();
+      this.perusteetStore.fetchJulkaistutPerusteet();
     }
+
+    if (this.ophPohjatStore) {
+      await this.ophPohjatStore.fetch();
+    }
+  }
+
+  get kaannokset() {
+    return kielistykset[this.opetussuunnitelmanTyyppi];
   }
 
   @Watch('pohjanTyyppi')
@@ -157,23 +202,50 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     const self = this;
     return [{
       key: 'toteutussuunnitelma',
-      name: this.opetussuunnitelmanTyyppi === 'ops' ? this.$t('uusi-toteutussuunnitelma') : this.$t('uusi-jaettu-osa'),
+      name: this.$t(this.kaannokset.stepName),
       isValid() {
         return !self.$v.$invalid;
       },
     }];
   }
 
-  get pohjaOtsikko() {
-    return this.opetussuunnitelmanTyyppi === 'ops' ? this.$t('toteutussuunnitelman-pohja') : this.$t('jaetun-osan-pohja');
+  get tyypinRadioButtons() {
+    return this.radioButtons[this.opetussuunnitelmanTyyppi];
   }
 
-  get pohjaValintaPlaceholder() {
-    return this.opetussuunnitelmanTyyppi === 'ops' ? this.$t('valitse-toteutussuunnitelma') : this.$t('valitse-jaettu-osa');
-  }
-
-  get nimiOtsikko() {
-    return this.opetussuunnitelmanTyyppi === 'ops' ? this.$t('toteutussuunnitelman-nimi') : this.$t('jaetun-osan-nimi');
+  get radioButtons() {
+    return {
+      ops: [
+        {
+          value: 'peruste',
+          text: 'perusteprojektia',
+        },
+        {
+          value: 'toteutussuunnitelma',
+          text: 'toista-toteutussuunnitelmaa',
+        },
+      ],
+      yleinen: [
+        {
+          value: 'toteutussuunnitelma',
+          text: 'toista-jaettua-osaa',
+        },
+        {
+          value: 'uusi',
+          text: 'luo-uusi',
+        },
+      ],
+      yhteinen: [
+        {
+          value: 'ophPohja',
+          text: 'suunnitelman-pohjaa',
+        },
+        {
+          value: 'toteutussuunnitelma',
+          text: 'koulutustoimijan-yhteista-osuutta',
+        },
+      ],
+    };
   }
 
   async onSave() {
@@ -214,7 +286,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       };
     }
 
-    if (this.pohjanTyyppi === 'toteutussuunnitelma') {
+    if (this.pohjanTyyppi === 'toteutussuunnitelma' || this.pohjanTyyppi === 'ophPohja') {
       validation = {
         ...validation,
         toteutussuunnitelma: notNull(),
@@ -228,12 +300,36 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     if (this.toteutussuunnitelmaPohjatStore.opetussuunnitelmat.value) {
       return (this.toteutussuunnitelmaPohjatStore.opetussuunnitelmat.value as any).data;
     }
+
+    return undefined;
+  }
+
+  get pohjat() {
+    if (this.pohjanTyyppi === 'toteutussuunnitelma') {
+      return this.toteutussuunnitelmat;
+    }
+
+    if (this.pohjanTyyppi === 'ophPohja') {
+      return this.ophPohjat;
+    }
   }
 
   get perusteet() {
-    return _.sortBy(this.perusteetStore.perusteet.value, [(peruste: any) => {
-      return this.$kaanna(peruste.nimi);
-    }]);
+    if (this.perusteetStore && this.perusteetStore.perusteetKevyt.value) {
+      return _.sortBy(this.perusteetStore.perusteetKevyt.value, [(peruste: any) => {
+        return this.$kaanna(peruste.nimi);
+      }]);
+    }
+
+    return undefined;
+  }
+
+  get ophPohjat() {
+    return this.ophPohjatStore?.pohjat.value || undefined;
+  }
+
+  nimiSearchIdentity(tietue: any) {
+    return _.toLower(this.$kaanna(tietue.nimi));
   }
 }
 </script>

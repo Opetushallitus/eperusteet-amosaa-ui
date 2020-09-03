@@ -26,6 +26,7 @@ import RouteTilastot from '@/views/RouteTilastot.vue';
 import RoutePdfLuonti from '@/views/RoutePdfLuonti.vue';
 import RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat from '@/views/RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
 import RoutePoistetutSisallot from '@/views/RoutePoistetutSisallot.vue';
+import RouteYhteiset from '@/views/RouteYhteiset.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -94,7 +95,7 @@ const router = new VueRouter({
     }, {
       path: 'yhteinen',
       name: 'yhteinen',
-      // component: ...,
+      component: RouteYhteiset,
       props,
     }, {
       path: 'paivitettavat',
@@ -116,6 +117,7 @@ const router = new VueRouter({
           ...stores,
           opetussuunnitelmanTyyppi: 'ops',
           opetussuunnitelmanSuoritustapa: 'reformi',
+          ophPohjatStore: null,
         };
       },
     }, {
@@ -127,6 +129,19 @@ const router = new VueRouter({
           ...route.params,
           ...stores,
           opetussuunnitelmanTyyppi: 'yleinen',
+          perusteetStore: null,
+          ophPohjatStore: null,
+        };
+      },
+    }, {
+      path: 'yhteinenLuonti/uusi',
+      name: 'yhteinenLuonti',
+      component: RouteToteutussuunnitelmaLuonti,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          opetussuunnitelmanTyyppi: 'yhteinen',
           perusteetStore: null,
         };
       },

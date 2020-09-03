@@ -7,17 +7,17 @@
     </div>
 
     <div class="filters" v-if="items">
-      <div class="d-lg-flex align-items-end">
-        <div class="mt-2 mb-2 mr-2 flex-fill">
-          <EpSearch v-model="query.nimi" :placeholder="$t('etsi-toteutussuunnitelmaa-tai-jaettua-osaa')"/>
+      <div class="row align-items-end">
+        <div class="col-12 col-md-3 mt-2 mb-2 mr-2">
+          <EpSearch v-model="query.nimi" :placeholder="$t('etsi-toteutussuunnitelmaa-tai-jaettua-osaa')" :maxWidth="true"/>
         </div>
-        <div class="m-2 flex-fill" v-if="filtersInclude('tyyppi')">
+        <div class="col-12 col-lg-3 col-md-4 m-2" v-if="filtersInclude('tyyppi')">
           <label>{{ $t('tyyppi') }}</label>
           <EpMultiSelect v-model="tyyppi"
                     :enable-empty-option="true"
                     :placeholder="$t('kaikki')"
                     :is-editing="true"
-                    :options="vaihtoehdotTyypit">
+                    :options="tyypit">
             <template slot="singleLabel" slot-scope="{ option }">
               {{ $t('amosaa-tyyppi-' + option) }}
             </template>
@@ -26,7 +26,7 @@
             </template>
           </EpMultiSelect>
         </div>
-        <div class="m-2 flex-fill" v-if="filtersInclude('voimassaolo')">
+        <div class="col-12 col-lg-3 col-md-4 m-2" v-if="filtersInclude('voimassaolo')">
           <label>{{ $t('voimassaolo') }}</label>
           <EpMultiSelect v-model="voimassaolo"
                     :enable-empty-option="true"
@@ -46,8 +46,8 @@
         </div>
       </div>
 
-      <div class="d-lg-flex align-items-end">
-        <div class="m-2" v-if="filtersInclude('tila')">
+      <div class="row align-items-end">
+        <div class="col m-2" v-if="filtersInclude('tila')">
           <b-form-checkbox-group v-model="tila">
             <b-form-checkbox v-for="tila in vaihtoehdotTilat" :key="tila" :value="tila">
               {{ $t('tila-' + tila.toLowerCase()) }}
@@ -123,6 +123,9 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
 
   @Prop({ required: true })
   private koulutustoimijaId!: string | number;
+
+  @Prop({ required: true })
+  private tyypit!: string[];
 
   private tyyppi: string | null = null;
   private voimassaolo: string | null = null;
@@ -232,10 +235,6 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       jarjestys: sort.sortBy,
       jarjestysNouseva: !sort.sortDesc,
     };
-  }
-
-  get vaihtoehdotTyypit() {
-    return ['pohja', 'ops', 'yleinen', 'yhteinen'];
   }
 
   get vaihtoehdotVoimassaolo() {
