@@ -14,21 +14,20 @@
       </ep-perustieto-data>
     </div>
 
-    <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="toteutussuunnitelma"></ep-siirto-modal>
+    <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="toteutussuunnitelma"
+      v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }"
+      />
   </div>
 </template>
 
 <script lang="ts">
 import _ from 'lodash';
 import { Vue, Component, Prop } from 'vue-property-decorator';
-
 import { Kielet } from '@shared/stores/kieli';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
-
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpPerustietoData from '@shared/components/EpPerustietoData/EpPerustietoData.vue';
-
 import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
 
 @Component({
@@ -49,8 +48,12 @@ export default class EpToteutussuunnitelmanPerustiedot extends Vue {
     }
   }
 
-  get koulutustoimijaId(): string {
-    return this.$route.params.koulutustoimijaId;
+  get koulutustoimijaId() {
+    return this.toteutussuunnitelma.koulutustoimija!.id;
+  }
+
+  get toteutussuunnitelmaId() {
+    return this.toteutussuunnitelma.id;
   }
 }
 </script>

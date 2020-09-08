@@ -12,6 +12,7 @@ Vue.use(VueCompositionApi);
 export type Oikeus = 'luku' | 'kommentointi' | 'muokkaus' | 'luonti' | 'poisto' | 'tilanvaihto' | 'hallinta';
 export interface KoulutustoimijaOikeudet {[key: string]: Oikeus};
 export interface ToteutussuunnitelmaOikeudet {[key: number]: Oikeus};
+export interface OikeusKohde {koulutustoimijaId: string, toteutussuunnitelmaId?: number};
 
 function getOikeusArvo(oikeus: Oikeus) {
   switch (oikeus) {
@@ -103,9 +104,9 @@ export class KayttajaStore implements IOikeusProvider {
     }
   }
 
-  public hasOikeus(oikeus: Oikeus, kohdeKt: string, kohdeOps?: number) {
-    const kt = kohdeKt || getItem('koulutustoimija') as string;
-    return this.vertaa(oikeus, kt, kohdeOps);
+  public hasOikeus(oikeus: Oikeus, kohde: OikeusKohde) {
+    const kt = kohde.koulutustoimijaId || getItem('koulutustoimija') as string;
+    return this.vertaa(oikeus, kt, kohde.toteutussuunnitelmaId);
   }
 
   public getOikeus(kohde: string) {

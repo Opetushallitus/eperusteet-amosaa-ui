@@ -99,12 +99,12 @@
           </b-row>
         </b-container>
 
-        <hr/>
 
-        <h3>{{$t('toiminnot')}}</h3>
-
-        <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="editointiStore.data.value.opetussuunnitelma"></ep-siirto-modal>
-
+        <div v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }">
+          <hr/>
+          <h3>{{$t('toiminnot')}}</h3>
+          <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="editointiStore.data.value.opetussuunnitelma"></ep-siirto-modal>
+        </div>
       </template>
     </EpEditointi>
   </div>

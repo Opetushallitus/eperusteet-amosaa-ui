@@ -48,7 +48,8 @@
                   <fas icon="ratas" class="hallinta" />
                 </template>
 
-                <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index">
+                <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index"
+                  v-oikeustarkastelu="{ oikeus: ratasvalinta.oikeus, kohde: { koulutustoimijaId, toteutussuunnitelmaId } }">
 
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
 
@@ -127,6 +128,7 @@
 
             <template v-slot:new>
               <ep-sisalto-lisays
+                v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }"
                 :toteutussuunnitelmaId="toteutussuunnitelmaId"
                 :koulutustoimijaId="koulutustoimijaId"
                 :navigation="navigation.value"
@@ -144,7 +146,7 @@
 
       <template v-slot:bottom>
         <div class="menu-item bottom-menu-item">
-          <router-link :to="{ name: 'jarjesta' }">
+          <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }">
             <span class="text-nowrap">
               <fas icon="jarjesta" fixed-width />
               {{ $t('muokkaa-rakennetta') }}
@@ -257,21 +259,25 @@ export default class RouteToteutussuunnitelma extends Vue {
         text: 'toteutussuunnitelman-tiedot',
         route: 'toteutussuunnitelmantiedot',
         icon: 'info',
+        oikeus: 'luku',
       },
       {
         text: 'kayttooikeudet',
         route: 'oikeudet',
         icon: 'kaytto-oikeus',
+        oikeus: 'hallinta',
       },
       {
         text: 'luo-pdf',
         route: 'pdfLuonti',
         icon: 'luo-pdf',
+        oikeus: 'hallinta',
       },
       {
         text: 'poistetut-sisallot',
         route: 'poistetutsisallot',
         icon: 'roskalaatikko',
+        oikeus: 'hallinta',
       },
     ];
   }
