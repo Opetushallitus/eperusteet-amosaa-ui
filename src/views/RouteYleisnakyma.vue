@@ -8,7 +8,7 @@
   </div>
 
   <div class="row pt-0">
-    <div class="col">
+    <div class="col" v-if="toteutussuunnitelma">
       <ep-toteutussuunnitelman-tiedotteet class="info-box" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
       <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma"/>
       <ep-toteutussuunnitelman-tutkinnon-osat class="info-box" :sisaltoViiteStore="sisaltoViiteStore" />
