@@ -27,6 +27,7 @@ import RoutePdfLuonti from '@/views/RoutePdfLuonti.vue';
 import RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat from '@/views/RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
 import RoutePoistetutSisallot from '@/views/RoutePoistetutSisallot.vue';
 import RouteYhteiset from '@/views/RouteYhteiset.vue';
+import RouteKayttooikeudet from '@/views/RouteKayttooikeudet.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -204,7 +205,13 @@ const router = new VueRouter({
         name: 'poistetutsisallot',
         component: RoutePoistetutSisallot,
         props,
-      }],
+      }, {
+        path: 'oikeudet',
+        name: 'oikeudet',
+        component: RouteKayttooikeudet,
+        props,
+      },
+      ],
     }, {
       path: '*',
       redirect: (to) => {
