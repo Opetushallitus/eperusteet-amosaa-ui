@@ -2,8 +2,12 @@ import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { OpetussuunnitelmaDto, Opetussuunnitelmat, NavigationNodeDto, OpetussuunnitelmaLuontiDto } from '@shared/api/amosaa';
 import _ from 'lodash';
+import { createLogger } from '@shared/utils/logger';
+import { Virheet } from '@shared/stores/virheet';
 
 Vue.use(VueCompositionApi);
+
+const logger = createLogger('Toteutussuunnitelma');
 
 export class ToteutussuunnitelmaStore {
   private state = reactive({
@@ -16,8 +20,14 @@ export class ToteutussuunnitelmaStore {
 
   public async init(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
     this.state.toteutussuunnitelma = null;
-    this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
-    await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
+    try {
+      this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
+      await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
+    }
+    catch (e) {
+      logger.error(e);
+      Virheet.lisaaVirhe({});
+    }
   }
 
   public async create(ktId: string, toteutussuunnitelma: OpetussuunnitelmaLuontiDto) {

@@ -71,7 +71,8 @@
           <ep-button v-if="!isEditing"
                      variant="primary"
                      @click="$refs['laheta-yhteistyopyynto-modal'].show()"
-                     :show-spinner="!hasYhteistyoKoulutustoimijatFormatted">
+                     :show-spinner="!yhteistyoKoulutustoimijat"
+                     v-oikeustarkastelu="{ oikeus: 'hallinta' }">
             {{ $t('laheta-yhteistyopyynto') }}
           </ep-button>
 
@@ -97,7 +98,8 @@
                 <div class="float-right">
                   <ep-button v-if="row.item.status"
                              variant="link"
-                             disabled>
+                             disabled
+                             v-oikeustarkastelu="{ oikeus: 'hallinta' }">
                       <span v-if="row.item.status === 'oma'">{{ $t('oma-organisaatio') }}</span>
                       <span v-else-if="row.item.status === 'odotetaan'">{{ $t('yhteistyo-kysytty') }}</span>
                       <span v-else-if="row.item.status === 'pyynto'">{{ $t('yhteistyo-odottaa-hyvaksymista') }}</span>
@@ -105,7 +107,8 @@
                   </ep-button>
                   <ep-button v-else
                              variant="link"
-                             @click="lahetaYhteistyopyynto(row.item)">
+                             @click="lahetaYhteistyopyynto(row.item)"
+                             v-oikeustarkastelu="{ oikeus: 'hallinta' }">
                       {{ $t('laheta-yhteistyopyynto') }}
                   </ep-button>
                 </div>

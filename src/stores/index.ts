@@ -17,6 +17,7 @@ import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSi
 import { PoistetutStore } from '@/stores/PoistetutStore';
 import { YhteisetOsuudetStore } from '@/stores/YhteisetOsuudetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
+import { KayttoOikeudetStore } from '@/stores/KayttoOikeudetStore';
 
 const toteutussuunnitelmaStore = new ToteutussuunnitelmaStore();
 const toteutussuunnitelmatStore = new ToteutussuunnitelmatStore();
@@ -32,6 +33,7 @@ const muokkaustietoStore = new MuokkaustietoStore(toteutussuunnitelmaStore.toteu
 const toteutussuunnitelmaTiedotteetStore = new ToteutussuunnitelmaTiedotteetStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const tutkinnonOsatStore = new TutkinnonOsatStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const poistetutStore = new PoistetutStore(toteutussuunnitelmaStore.toteutussuunnitelma);
+const kayttoOikeudetStore = new KayttoOikeudetStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const ohjeetStore = new OhjeetStore();
 const tilastotStore = new TilastotStore();
 const tutkinnonosatTuontiStore = new TutkinnonosatTuontiStore();
@@ -58,4 +60,5 @@ export const stores = Object.freeze({
   poistetutStore,
   yhteisetOsuudetStore,
   ophPohjatStore,
+  kayttoOikeudetStore,
 });
