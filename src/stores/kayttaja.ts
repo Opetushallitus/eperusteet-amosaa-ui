@@ -1,10 +1,9 @@
 import _ from 'lodash';
 import Vue from 'vue';
-import { KayttajaApi, Koulutustoimijat, EtusivuDto, KoulutustoimijaBaseDto, Kayttajaoikeudet } from '@shared/api/amosaa';
+import { KayttajaApi, Koulutustoimijat, EtusivuDto, KoulutustoimijaBaseDto, Kayttajaoikeudet, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
 import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composition-api';
 import { IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
-import { getItem } from '@shared/utils/localstorage';
 
 Vue.use(VueCompositionApi);
 
@@ -12,7 +11,8 @@ Vue.use(VueCompositionApi);
 export type Oikeus = 'luku' | 'kommentointi' | 'muokkaus' | 'luonti' | 'poisto' | 'tilanvaihto' | 'hallinta';
 export interface KoulutustoimijaOikeudet {[key: string]: Oikeus};
 export interface ToteutussuunnitelmaOikeudet {[key: number]: Oikeus};
-export interface OikeusKohde {koulutustoimijaId: string, toteutussuunnitelmaId?: number};
+export type OikeusKohde = 'koulutustoimija' | 'toteutussuunnitelma' | 'oph';
+export const OphOrgOid = '1.2.246.562.10.00000000001';
 
 function getOikeusArvo(oikeus: Oikeus) {
   switch (oikeus) {
@@ -40,17 +40,19 @@ const logger = createLogger('Kayttaja');
 
 export class KayttajaStore implements IOikeusProvider {
   public state = reactive({
-    organisaatiot: [] as any[],
+    koulutustoimijaOikeudet: {} as { [key: string]: Array<KoulutustoimijaBaseDto>},
     tiedot: {} as any,
     virkailijat: [] as any[],
     organisaatioOikeudet: {} as KoulutustoimijaOikeudet,
     toteutussuunnitelmaOikeudet: {} as ToteutussuunnitelmaOikeudet,
     etusivu: null as EtusivuDto | null,
     koulutustoimijat: null as KoulutustoimijaBaseDto[] | null,
+    koulutustoimijaId: null as string | null,
+    toteutussuunnitelmaId: null as number | null,
   });
 
   public readonly etusivu = computed(() => this.state.etusivu);
-  public readonly organisaatiot = computed(() => this.state.organisaatiot);
+  public readonly koulutustoimijaOikeudet = computed(() => this.state.koulutustoimijaOikeudet);
   public readonly tiedot = computed(() => this.state.tiedot);
   public readonly userOid = computed(() => this.state.tiedot.oidHenkilo);
   public readonly virkailijat = computed(() => this.state.virkailijat);
@@ -80,33 +82,39 @@ export class KayttajaStore implements IOikeusProvider {
       this.state.toteutussuunnitelmaOikeudet[_.get(tyoryhmaOikeus, '_opetussuunnitelma')] = (tyoryhmaOikeus.oikeus as any);
     });
 
-    const organisaatioOikeudet = (await Kayttajaoikeudet.getOikeudet()).data;
+    this.state.koulutustoimijaOikeudet = (await Kayttajaoikeudet.getKoulutustoimijaOikeudet()).data;
 
-    const setOikeudet = (ktIds, oikeus) => {
-      _.forEach(ktIds, ktId => {
-        this.state.organisaatioOikeudet[ktId] = oikeus;
+    const setOikeudet = (koulutustoimijat, oikeus) => {
+      _.forEach(koulutustoimijat, koulutustoimija => {
+        this.state.organisaatioOikeudet[koulutustoimija.id] = oikeus;
       });
     };
 
-    setOikeudet(organisaatioOikeudet['READ'], 'luku');
-    setOikeudet(organisaatioOikeudet['READ_UPDATE'], 'muokkaus');
-    setOikeudet(organisaatioOikeudet['CRUD'], 'luonti');
-    setOikeudet(organisaatioOikeudet['ADMIN'], 'hallinta');
+    setOikeudet(this.state.koulutustoimijaOikeudet['READ'], 'luku');
+    setOikeudet(this.state.koulutustoimijaOikeudet['READ_UPDATE'], 'muokkaus');
+    setOikeudet(this.state.koulutustoimijaOikeudet['CRUD'], 'luonti');
+    setOikeudet(this.state.koulutustoimijaOikeudet['ADMIN'], 'hallinta');
   }
 
   public async clear() {
     try {
       this.state.organisaatioOikeudet = {};
       this.state.toteutussuunnitelmaOikeudet = {};
+      this.state.koulutustoimijaId = null;
+      this.state.toteutussuunnitelmaId = null;
     }
     catch (err) {
       logger.error('Ei oikeuksia', err.message);
     }
   }
 
-  public hasOikeus(oikeus: Oikeus, kohde: OikeusKohde) {
-    const kt = kohde.koulutustoimijaId || getItem('koulutustoimija') as string;
-    return this.vertaa(oikeus, kt, kohde.toteutussuunnitelmaId);
+  public hasOikeus(oikeus: Oikeus, kohde: OikeusKohde = 'koulutustoimija') {
+    let koulutustoimijaId = this.state.koulutustoimijaId!;
+    if (kohde === 'oph') {
+      koulutustoimijaId = this.getOphKtId() || '0';
+    }
+
+    return this.vertaa(oikeus, koulutustoimijaId, kohde === 'toteutussuunnitelma' ? this.state.toteutussuunnitelmaId! : 0);
   }
 
   public getOikeus(kohde: string) {
@@ -130,8 +138,21 @@ export class KayttajaStore implements IOikeusProvider {
     }
   }
 
-  public hasHallintaoikeus(kohdeKt: string, kohdeOps?: number) {
-    return this.vertaa('hallinta', kohdeKt, kohdeOps);
+  private getOphKtId() {
+    const oikeudet = _.chain(this.state.koulutustoimijaOikeudet)
+      .keys()
+      .map(oikeus => this.state.koulutustoimijaOikeudet[oikeus])
+      .flatMap()
+      .value();
+    return _.toString(_.get(_.find(oikeudet, oikeus => oikeus.organisaatio === OphOrgOid), 'id'));
+  }
+
+  public setKoulutustoimijaId(koulutustoimijaId: string) {
+    this.state.koulutustoimijaId = koulutustoimijaId;
+  }
+
+  public setToteutussuunnitelmaId(toteutussuunnitelmaId: number) {
+    this.state.toteutussuunnitelmaId = toteutussuunnitelmaId;
   }
 }
 

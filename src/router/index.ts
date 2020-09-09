@@ -231,3 +231,27 @@ Virheet.onError((virhe: SovellusVirhe) => {
     name: 'virhe',
   });
 });
+
+router.beforeEach(async (to, from, next) => {
+  const koulutustoimijaId = String(to.params.koulutustoimijaId);
+  const toteutussuunntelmaId = Number(to.params.toteutussuunnitelmaId);
+  const oldkoulutustoimijaId = String(from.params.koulutustoimijaId);
+  const oldtoteutussuunntelmaId = Number(from.params.toteutussuunnitelmaId);
+  if (!koulutustoimijaId) {
+    stores.kayttajaStore.clear();
+    next();
+  }
+  else if (koulutustoimijaId === oldkoulutustoimijaId && toteutussuunntelmaId && oldtoteutussuunntelmaId) {
+    next();
+  }
+  else {
+    try {
+      stores.kayttajaStore.setKoulutustoimijaId(koulutustoimijaId);
+      stores.kayttajaStore.setToteutussuunnitelmaId(toteutussuunntelmaId);
+      next();
+    }
+    catch (err) {
+      throw new Error(err);
+    }
+  }
+});

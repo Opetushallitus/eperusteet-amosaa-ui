@@ -14,14 +14,14 @@
     </Portal>
     <div class="container tile-container">
       <div class="d-flex flex-row flex-wrap justify-content-center">
-        <TileToteutussuunnitelmat :etusivu="etusivu" />
-        <TileKoulutustoimijanYhteinenOsuus :etusivu="etusivu" />
-        <TilePaivitettavatJaSiirrettavatToteutussuunnitelmat
+        <TileToteutussuunnitelmat :etusivu="etusivu" v-oikeustarkastelu="{ oikeus: 'luku'}"/>
+        <TileKoulutustoimijanYhteinenOsuus :etusivu="etusivu" v-oikeustarkastelu="{ oikeus: 'luku'}"/>
+        <TilePaivitettavatJaSiirrettavatToteutussuunnitelmat v-oikeustarkastelu="{ oikeus: 'hallinta'}"
           :paivitettavatJaSiirrettavatTotsStore="paivitettavatJaSiirrettavatTotsStore"/>
-        <TileOrganisaationHallinta />
-        <TileTiedotteet :kieli="sisaltoKieli" />
+        <TileOrganisaationHallinta v-oikeustarkastelu="{ oikeus: 'hallinta'}" />
+        <TileTiedotteet :kieli="sisaltoKieli" v-oikeustarkastelu="{ oikeus: 'luku'}"/>
         <TileUkk />
-        <TileTilastot />
+        <TileTilastot v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'oph'}"/>
       </div>
     </div>
   </div>

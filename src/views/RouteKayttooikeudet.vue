@@ -193,7 +193,7 @@ export default class RouteKayttooikeudet extends Vue {
   }
 
   get hallintaOikeus() {
-    return this.kayttajaStore.hasHallintaoikeus(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    return this.$hasOikeus('hallinta', 'koulutustoimija');
   }
 
   get currentKoulutustoimijaOikeus() {

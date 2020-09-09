@@ -49,7 +49,7 @@
                 </template>
 
                 <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index"
-                  v-oikeustarkastelu="{ oikeus: ratasvalinta.oikeus, kohde: { koulutustoimijaId, toteutussuunnitelmaId } }">
+                  v-oikeustarkastelu="{ oikeus: ratasvalinta.oikeus, kohde: 'toteutussuunnitelma' }">
 
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
 
@@ -128,7 +128,7 @@
 
             <template v-slot:new>
               <ep-sisalto-lisays
-                v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }"
+                v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }"
                 :toteutussuunnitelmaId="toteutussuunnitelmaId"
                 :koulutustoimijaId="koulutustoimijaId"
                 :navigation="navigation.value"
@@ -146,7 +146,7 @@
 
       <template v-slot:bottom>
         <div class="menu-item bottom-menu-item">
-          <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }">
+          <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
             <span class="text-nowrap">
               <fas icon="jarjesta" fixed-width />
               {{ $t('muokkaa-rakennetta') }}

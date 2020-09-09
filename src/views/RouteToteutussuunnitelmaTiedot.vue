@@ -100,7 +100,7 @@
         </b-container>
 
 
-        <div v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }">
+        <div v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
           <hr/>
           <h3>{{$t('toiminnot')}}</h3>
           <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="editointiStore.data.value.opetussuunnitelma"></ep-siirto-modal>
