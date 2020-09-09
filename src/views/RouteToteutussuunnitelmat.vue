@@ -5,13 +5,13 @@
         <h2>{{ $t('toteutussuunnitelmat') }}</h2>
 
         <div>
-          <router-link :to="{name: 'toteutussuunnitelmaLuonti'}">
+          <router-link :to="{name: 'toteutussuunnitelmaLuonti'}" v-oikeustarkastelu="{ oikeus: 'hallinta'}">
             <ep-button variant="outline-primary" icon="plussa">
               {{ $t('lisaa-toteutussuunnitelma') }}
             </ep-button>
           </router-link>
 
-          <router-link :to="{name: 'jaettuosaLuonti'}">
+          <router-link :to="{name: 'jaettuosaLuonti'}" v-oikeustarkastelu="{ oikeus: 'hallinta'}">
             <ep-button variant="outline-primary" icon="plussa" >
               {{ $t('lisaa-jaettu-osa') }}
             </ep-button>

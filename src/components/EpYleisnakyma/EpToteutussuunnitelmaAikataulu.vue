@@ -13,7 +13,7 @@
 
     <div v-else-if="aikataulut.length === 0" class="text-center">
       <ep-button @click="otaAikatauluKayttoon" buttonClass="pl-5 pr-5"
-        v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }">
+        v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
         <span>{{ $t('ota-kayttoon') }}</span>
       </ep-button>
     </div>
@@ -65,14 +65,6 @@ export default class EpToteutussuunnitelmaAikataulu extends Vue {
   async tallenna(aikataulut: Tapahtuma[]) {
     await this.aikatauluStore.saveAikataulut(aikataulut);
     this.$success(this.$t('aikataulu-tallennettu') as string);
-  }
-
-  get koulutustoimijaId() {
-    return this.toteutussuunnitelma?.koulutustoimija?.id || '0';
-  }
-
-  get toteutussuunnitelmaId() {
-    return this.toteutussuunnitelma?.id || 0;
   }
 }
 </script>

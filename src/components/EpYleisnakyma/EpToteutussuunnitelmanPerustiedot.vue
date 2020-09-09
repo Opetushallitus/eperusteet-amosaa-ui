@@ -15,7 +15,7 @@
     </div>
 
     <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="toteutussuunnitelma"
-      v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: { koulutustoimijaId, toteutussuunnitelmaId } }"
+      v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }"
       />
   </div>
 </template>
@@ -48,12 +48,8 @@ export default class EpToteutussuunnitelmanPerustiedot extends Vue {
     }
   }
 
-  get koulutustoimijaId() {
-    return this.toteutussuunnitelma.koulutustoimija!.id;
-  }
-
-  get toteutussuunnitelmaId() {
-    return this.toteutussuunnitelma.id;
+  get koulutustoimijaId(): string {
+    return this.$route.params.koulutustoimijaId;
   }
 }
 </script>
