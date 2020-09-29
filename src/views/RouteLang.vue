@@ -41,6 +41,7 @@ import { setItem, getItem } from '@shared/utils/localstorage';
 
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
+import { getCasKayttajaKieli } from '@shared/api/common';
 
 const virhekuva = require('@assets/img/images/virhe.png');
 
@@ -54,7 +55,7 @@ export default class RouteLang extends Vue {
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
 
-  mounted() {
+  async mounted() {
     // Ohjataan käyttäjän koulutustoimijan etusivulle
     const koulutustoimijat = this.kayttajaStore?.koulutustoimijat?.value || null;
     if (!_.isEmpty(koulutustoimijat)) {
@@ -72,7 +73,7 @@ export default class RouteLang extends Vue {
       this.$router.replace({
         name: 'home',
         params: {
-          lang: 'fi',
+          lang: await getCasKayttajaKieli(),
           koulutustoimijaId,
         },
       });

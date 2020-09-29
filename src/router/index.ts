@@ -33,6 +33,7 @@ import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
 import { SovellusVirhe } from '@shared/tyypit';
 import { createLogger } from '@shared/utils/logger';
+import { changeLang } from '@shared/utils/router';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -254,4 +255,9 @@ router.beforeEach(async (to, from, next) => {
       throw new Error(err);
     }
   }
+});
+
+router.beforeEach((to, from, next) => {
+  changeLang(to, from);
+  next();
 });
