@@ -121,9 +121,9 @@ export class KayttajaStore implements IOikeusProvider {
     return this.organisaatioOikeudet.value[kohde];
   }
 
-  public async fetchEtusivu(koulutustoimijaId: string | number) {
+  public async fetchEtusivu(koulutustoimijaId: string | number, koulutustyypit: [string]) {
     this.state.etusivu = null;
-    this.state.etusivu = (await Koulutustoimijat.getEtusivu(_.toString(koulutustoimijaId))).data;
+    this.state.etusivu = (await Koulutustoimijat.getEtusivu(koulutustyypit, _.toString(koulutustoimijaId))).data;
   }
 
   private vertaa(oikeus: Oikeus, kohdeKt: string, kohdeOps?: number) {

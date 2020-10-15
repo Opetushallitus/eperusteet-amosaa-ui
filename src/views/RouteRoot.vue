@@ -1,7 +1,7 @@
 <template>
   <div class="home-container minfull">
-    <div class="header" ref="header">
-      <EpNavbar :kayttaja="kayttaja" :koulutustoimijat="koulutustoimijat" />
+    <div class="header" ref="header" :style="headerStyle">
+      <EpNavbar :kayttaja="kayttaja" :koulutustoimijat="koulutustoimijat" :rootNavigation="rootNavigation" />
       <PortalTarget ref="innerPortal" name="headerExtension" />
     </div>
     <RouterView />
@@ -19,6 +19,7 @@ import { Meta } from '@shared/utils/decorators';
 
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
+import { toteutusBanner } from '@shared/utils/bannerIcons';
 
 @Component({
   components: {
@@ -32,6 +33,9 @@ import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 export default class RouteRoot extends Vue {
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
+
+  @Prop({ required: false, default: 'ammatillinen' })
+  private toteutus!: string;
 
   private height = null as number | null;
 
@@ -87,6 +91,19 @@ export default class RouteRoot extends Vue {
   get koulutustoimijat() {
     return this.kayttajaStore?.koulutustoimijat?.value || null;
   }
+
+  get headerStyle() {
+    return toteutusBanner(this.toteutus);
+  }
+
+  get rootNavigation() {
+    return {
+      name: 'root',
+      params: {
+        toteutus: this.toteutus,
+      },
+    };
+  }
 }
 </script>
 
@@ -96,7 +113,6 @@ export default class RouteRoot extends Vue {
 .home-container {
   .header {
     color: white;
-    background-image: url('../../public/img/banners/header_amosaa.svg');
     background-position: 100% 0;
     background-repeat: none;
     background-repeat: no-repeat;

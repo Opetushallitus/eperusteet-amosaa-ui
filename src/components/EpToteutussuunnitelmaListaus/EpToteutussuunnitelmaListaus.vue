@@ -148,33 +148,33 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   } as any;
 
   async mounted() {
-    this.provider.updateQuery(_.toNumber(this.$route.params.koulutustoimijaId), this.query);
+    await this.fetch(_.toNumber(this.$route.params.koulutustoimijaId), this.query);
   }
 
   @Watch('koulutustoimijaId', { deep: true, immediate: true })
   async onKoulutustyyppiIdChange(koulutustoimijaId: string | number) {
-    this.isLoading = true;
-    try {
-      this.query.sivu = 0;
-      await this.provider.updateQuery(_.toNumber(koulutustoimijaId), this.query);
-    }
-    finally {
-      this.isLoading = false;
-    }
+    await this.fetch(koulutustoimijaId, this.query);
   }
 
   @Watch('query', { deep: true, immediate: true })
   async onQueryChange(query: any) {
-    this.isLoading = true;
-    try {
-      await this.provider.updateQuery(
-        _.toNumber(this.$route.params.koulutustoimijaId),
-        {
-          ...query,
-        });
-    }
-    finally {
-      this.isLoading = false;
+    await this.fetch(_.toNumber(this.$route.params.koulutustoimijaId), query);
+  }
+
+  async fetch(koulutustoimijaId, query) {
+    if (!this.isLoading) {
+      this.isLoading = true;
+      try {
+        this.query.sivu = 0;
+        await this.provider.updateQuery(
+          _.toNumber(koulutustoimijaId),
+          this.$route.params.toteutus,
+          query,
+        );
+      }
+      finally {
+        this.isLoading = false;
+      }
     }
   }
 

@@ -75,7 +75,6 @@
         </div>
         <div class="navigation">
           <EpTreeNavibar :store="naviStore">
-
             <template v-slot:header>
               <div class="heading">
                 <div class="menu-item">
@@ -121,6 +120,14 @@
             <template v-slot:tekstikappale="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }">
+                  {{ $kaanna(item.label) }}
+                </router-link>
+              </div>
+            </template>
+
+            <template v-slot:opintokokonaisuus="{ item }">
+              <div class="menu-item">
+                <router-link :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
               </div>
@@ -311,8 +318,13 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   .upper-left {
-    min-width: $sidebar-width;
-    max-width: $sidebar-width;
+    @media (max-width: 991.98px) {
+      padding: 10px 30px;
+    }
+    @media (min-width: 992px) {
+      min-width: $sidebar-width;
+      max-width: $sidebar-width;
+    }
   }
 }
 
@@ -321,28 +333,30 @@ export default class RouteToteutussuunnitelma extends Vue {
 }
 
 .heading {
-  margin-left: 22px;
+  margin-left: 28px;
+  margin-right: 28px;
+  border-bottom: 1px solid rgb(216, 216, 216);
 }
 
 .menu-item {
-  font-size: 0.8rem;
+  font-size: 14px;
+  padding: 7px 10px 7px 10px;
 
   a {
     color: #000;
 
-    &.router-link-active {
+    &.router-link-exact-active {
       font-weight: 600;
     }
   }
 }
 
-.navigation ::v-deep .ep-button .btn{
-  font-size: 0.8rem;
+.navigation ::v-deep .ep-button .btn {
+  font-size: 14px;
 }
 
 .bottom-menu-item {
   margin-left: 20px;
   margin-bottom: 10px;
 }
-
 </style>
