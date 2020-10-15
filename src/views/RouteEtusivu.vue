@@ -14,14 +14,11 @@
     </Portal>
     <div class="container tile-container">
       <div class="d-flex flex-row flex-wrap justify-content-center">
-        <TileToteutussuunnitelmat :etusivu="etusivu" v-oikeustarkastelu="{ oikeus: 'luku'}"/>
-        <TileKoulutustoimijanYhteinenOsuus :etusivu="etusivu" v-oikeustarkastelu="{ oikeus: 'luku'}"/>
-        <TilePaivitettavatJaSiirrettavatToteutussuunnitelmat v-oikeustarkastelu="{ oikeus: 'hallinta'}"
-          :paivitettavatJaSiirrettavatTotsStore="paivitettavatJaSiirrettavatTotsStore"/>
-        <TileOrganisaationHallinta v-oikeustarkastelu="{ oikeus: 'hallinta'}" />
-        <TileTiedotteet :kieli="sisaltoKieli" v-oikeustarkastelu="{ oikeus: 'luku'}"/>
-        <TileUkk />
-        <TileTilastot v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'oph'}"/>
+        <component v-for="(tile, index) in tiles[toteutus]" :key="'tile'+index"
+          :is="tile.component"
+          v-bind="tile.props"
+          v-oikeustarkastelu="tile.oikeustarkastelu"
+        />
       </div>
     </div>
   </div>
@@ -44,6 +41,8 @@ import TileUkk from './tiles/TileUkk.vue';
 import TileTilastot from './tiles/TileTilastot.vue';
 import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
+import TileVstToteutussuunnitelmat from './vst/TileVstToteutussuunnitelmat.vue';
+import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 
 @Component({
   components: {
@@ -69,11 +68,92 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
   @Prop({ required: true })
   private paivitettavatJaSiirrettavatTotsStore!: PaivitettavatJaSiirrettavatTotsStore;
 
+  @Prop({ required: true })
+  private toteutus!: string;
+
   @Watch('koulutustoimijaId')
   async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
     if (newValue && newValue !== oldValue) {
-      this.fetch();
+      await this.fetch();
     }
+  }
+
+  get tiles() {
+    return {
+      'ammatillinen': this.ammatillinenTiles,
+      'vapaasivistystyo': this.vapaasivistystyoTiles,
+    };
+  }
+
+  get ammatillinenTiles() {
+    return [
+      {
+        component: TileToteutussuunnitelmat,
+        props: {
+          etusivu: this.etusivu,
+        },
+        oikeustarkastelu: {
+          oikeus: 'luku',
+        },
+      },
+      {
+        component: TileKoulutustoimijanYhteinenOsuus,
+        props: {
+          etusivu: this.etusivu,
+        },
+        oikeustarkastelu: {
+          oikeus: 'luku',
+        },
+      },
+      {
+        component: TilePaivitettavatJaSiirrettavatToteutussuunnitelmat,
+        props: {
+          paivitettavatJaSiirrettavatTotsStore: this.paivitettavatJaSiirrettavatTotsStore,
+        },
+        oikeustarkastelu: {
+          oikeus: 'hallinta',
+        },
+      },
+      {
+        component: TileOrganisaationHallinta,
+        oikeustarkastelu: {
+          oikeus: 'hallinta',
+        },
+      },
+      {
+        component: TileTiedotteet,
+        props: {
+          kieli: this.sisaltoKieli,
+        },
+        oikeustarkastelu: {
+          oikeus: 'hallinta',
+        },
+      },
+      {
+        component: TileUkk,
+      },
+      {
+        component: TileTilastot,
+        oikeustarkastelu: {
+          oikeus: 'hallinta',
+          kohde: 'oph',
+        },
+      },
+    ];
+  }
+
+  get vapaasivistystyoTiles() {
+    return [
+      {
+        component: TileVstToteutussuunnitelmat,
+        props: {
+          etusivu: this.etusivu,
+        },
+        oikeustarkastelu: {
+          oikeus: 'luku',
+        },
+      },
+    ];
   }
 
   @Meta
@@ -89,8 +169,11 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
   }
 
   async fetch() {
-    await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId);
-    await this.paivitettavatJaSiirrettavatTotsStore.fetch(this.koulutustoimijaId);
+    await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId, EperusteetKoulutustyyppiRyhmat[this.toteutus]);
+
+    if (this.toteutus === 'ammatillinen') {
+      await this.paivitettavatJaSiirrettavatTotsStore.fetch(this.koulutustoimijaId);
+    }
   }
 
   get sisaltoKieli() {

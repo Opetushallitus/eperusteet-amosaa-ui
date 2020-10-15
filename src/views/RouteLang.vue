@@ -1,6 +1,6 @@
 <template>
   <div class="home-container minfull">
-    <div class="header" ref="header">
+    <div class="header" ref="header" :style="headerStyle">
       <EpNavbar :kayttaja="kayttaja" />
       <div class="container">
         <div class="container-fluid">
@@ -15,7 +15,11 @@
     </div>
     <div>
     <div class="container my-5">
-      <div class="px-3 px-md-0">
+      <div v-if="!koulutustoimijaId">
+        <EpSpinner />
+      </div>
+
+      <div class="px-3 px-md-0" v-if="koulutustoimijaId === 0">
           <h2>{{ $t('kayttajalla-ei-koulutustoimijaa') }}</h2>
           <div class="virhekuva">
             <img :src="virhekuva" :alt="$t('virhe-kuva-teksti')">
@@ -38,10 +42,11 @@ import _ from 'lodash';
 import { Prop, Watch, Component, Vue } from 'vue-property-decorator';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { setItem, getItem } from '@shared/utils/localstorage';
-
+import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { getCasKayttajaKieli } from '@shared/api/common';
+import { toteutusBanner } from '@shared/utils/bannerIcons';
 
 const virhekuva = require('@assets/img/images/virhe.png');
 
@@ -49,11 +54,14 @@ const virhekuva = require('@assets/img/images/virhe.png');
   components: {
     EpNavbar,
     EpFooter,
+    EpSpinner,
   },
 })
 export default class RouteLang extends Vue {
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
+
+  private koulutustoimijaId: null | number = null;
 
   async mounted() {
     // Ohjataan käyttäjän koulutustoimijan etusivulle
@@ -70,13 +78,16 @@ export default class RouteLang extends Vue {
         setItem('koulutustoimija', id);
       }
 
-      this.$router.replace({
-        name: 'home',
-        params: {
-          lang: await getCasKayttajaKieli(),
-          koulutustoimijaId,
-        },
+      const toteutus = this.toteutus;
+      const lang = await getCasKayttajaKieli();
+      this.koulutustoimijaId = koulutustoimijaId;
+
+      this.$router.push({
+        path: `/${toteutus}/${lang}/koulutustoimija/${koulutustoimijaId}`,
       });
+    }
+    else {
+      this.koulutustoimijaId = 0;
     }
   }
 
@@ -91,6 +102,14 @@ export default class RouteLang extends Vue {
   get nimi() {
     return this.kayttajaStore?.nimi?.value || null;
   }
+
+  get toteutus() {
+    return _.has(this.$route.params, 'toteutus') ? _.get(this.$route.params, 'toteutus') : 'ammatillinen';
+  }
+
+  get headerStyle() {
+    return toteutusBanner(this.toteutus);
+  }
 }
 </script>
 
@@ -100,7 +119,6 @@ export default class RouteLang extends Vue {
 .home-container {
   .header {
     color: white;
-    background-image: url('../../public/img/banners/header_amosaa.svg');
     background-position: 100% 0;
     background-repeat: none;
     background-repeat: no-repeat;

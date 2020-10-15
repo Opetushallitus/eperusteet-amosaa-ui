@@ -165,6 +165,9 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   @Prop({ required: false })
   private opetussuunnitelmanSuoritustapa!: string;
 
+  @Prop({ required: true })
+  private toteutus!: string;
+
   private pohjanTyyppi: 'toteutussuunnitelma' | 'peruste' | 'uusi' | 'ophPohja' | null = null;
 
   private peruste: PerusteDto | null = null;
@@ -172,7 +175,9 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private nimi: any | null = null;
 
   async mounted() {
-    this.toteutussuunnitelmaPohjatStore.updateQuery(_.toNumber(this.koulutustoimijaId),
+    this.toteutussuunnitelmaPohjatStore.updateQuery(
+      _.toNumber(this.koulutustoimijaId),
+      this.toteutus,
       {
         sivukoko: 1000,
         tila: ['poistettu', 'luonnos', 'valmis', 'julkaistu'],

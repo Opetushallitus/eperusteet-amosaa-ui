@@ -18,8 +18,13 @@ script:
   - cd eperusteet-amosaa/eperusteet && mvn dependency:resolve --batch-mode && cd ../..
   - echo -en 'travis_fold:end:deps\\r'
 
+  - yarn install --silent
+
   - cd eperusteet-frontend-utils/vue
-  - yarn install --silent && yarn gen:api:amosaa && rm -rf node_modules && cd ../..
+  - yarn install --silent
+  - yarn gen:api
+  - rm -rf node_modules
+  - cd ../..
   - yarn install --silent
   - yarn test:unit
   - yarn build

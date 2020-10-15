@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueMeta from 'vue-meta';
+import * as _ from 'lodash';
 
 import RouteVirhe from '@/views/RouteVirhe.vue';
 import RouteLang from '@/views/RouteLang.vue';
@@ -28,6 +29,7 @@ import RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat from '@/views/RouteP
 import RoutePoistetutSisallot from '@/views/RoutePoistetutSisallot.vue';
 import RouteYhteiset from '@/views/RouteYhteiset.vue';
 import RouteKayttooikeudet from '@/views/RouteKayttooikeudet.vue';
+import RouteOpintokokonaisuus from '@/views/RouteOpintokokonaisuus.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -57,7 +59,7 @@ const router = new VueRouter({
     component: RouteLang,
     props,
   }, {
-    path: '/:lang/koulutustoimija/:koulutustoimijaId',
+    path: '/:toteutus/:lang/koulutustoimija/:koulutustoimijaId/',
     component: RouteRoot,
     props,
     children: [{
@@ -192,6 +194,11 @@ const router = new VueRouter({
         component: RouteOsaSuorituspolku,
         props,
       }, {
+        path: 'opintokokonaisuus/:sisaltoviiteId',
+        name: 'opintokokonaisuus',
+        component: RouteOpintokokonaisuus,
+        props,
+      }, {
         path: 'jarjesta',
         component: RouteJarjestys,
         name: 'jarjesta',
@@ -259,5 +266,10 @@ router.beforeEach(async (to, from, next) => {
 
 router.beforeEach((to, from, next) => {
   changeLang(to, from);
+  next();
+});
+
+router.beforeEach((to, from, next) => {
+  stores.perusteetStore.init(to.params.toteutus);
   next();
 });
