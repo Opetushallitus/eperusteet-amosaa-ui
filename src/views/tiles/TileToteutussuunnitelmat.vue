@@ -28,7 +28,9 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { EtusivuDto } from '../../../eperusteet-frontend-utils/vue/src/generated/amosaa';
+import { KayttajaStore } from '@/stores/kayttaja';
+import { EtusivuDto } from '@shared/api/amosaa';
+import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 
 @Component({
   components: {
@@ -37,8 +39,22 @@ import { EtusivuDto } from '../../../eperusteet-frontend-utils/vue/src/generated
   },
 })
 export default class TileToteutussuunnitelmat extends Vue {
-  @Prop({})
-  private etusivu!: EtusivuDto | null;
+  @Prop({ required: true })
+  private kayttajaStore!: KayttajaStore;
+
+  @Prop({ required: true })
+  private koulutustoimijaId!: string;
+
+  @Prop({ required: true })
+  private toteutus!: string;
+
+  async mounted() {
+    await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId, EperusteetKoulutustyyppiRyhmat[this.toteutus]);
+  }
+
+  get etusivu() {
+    return this.kayttajaStore?.etusivu?.value || null;
+  }
 }
 </script>
 

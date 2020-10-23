@@ -5,8 +5,8 @@
         <div class="container-fluid">
           <div class="row no-gutters">
             <div class="col my-4 px-3 px-md-0">
-              <h1>{{ $t('amosaa-tervetuloa', { nimi }) }}</h1>
-              <p>{{ $t('amosaa-tervetuloa-kuvaus') }}</p>
+              <h1>{{ $t(tervetuloaTeksti, { nimi }) }}</h1>
+              <p>{{ $t(tervetuloaTekstiKuvaus) }}</p>
             </div>
           </div>
         </div>
@@ -14,7 +14,7 @@
     </Portal>
     <div class="container tile-container">
       <div class="d-flex flex-row flex-wrap justify-content-center">
-        <component v-for="(tile, index) in tiles[toteutus]" :key="'tile'+index"
+        <component v-for="(tile, index) in tiles" :key="'tile'+index"
           :is="tile.component"
           v-bind="tile.props"
           v-oikeustarkastelu="tile.oikeustarkastelu"
@@ -71,90 +71,14 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
   @Prop({ required: true })
   private toteutus!: string;
 
-  @Watch('koulutustoimijaId')
-  async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
-    if (newValue && newValue !== oldValue) {
-      await this.fetch();
-    }
-  }
+  @Prop({ required: true })
+  private tervetuloaTeksti!: string;
 
-  get tiles() {
-    return {
-      'ammatillinen': this.ammatillinenTiles,
-      'vapaasivistystyo': this.vapaasivistystyoTiles,
-    };
-  }
+  @Prop({ required: true })
+  private tervetuloaTekstiKuvaus!: string;
 
-  get ammatillinenTiles() {
-    return [
-      {
-        component: TileToteutussuunnitelmat,
-        props: {
-          etusivu: this.etusivu,
-        },
-        oikeustarkastelu: {
-          oikeus: 'luku',
-        },
-      },
-      {
-        component: TileKoulutustoimijanYhteinenOsuus,
-        props: {
-          etusivu: this.etusivu,
-        },
-        oikeustarkastelu: {
-          oikeus: 'luku',
-        },
-      },
-      {
-        component: TilePaivitettavatJaSiirrettavatToteutussuunnitelmat,
-        props: {
-          paivitettavatJaSiirrettavatTotsStore: this.paivitettavatJaSiirrettavatTotsStore,
-        },
-        oikeustarkastelu: {
-          oikeus: 'hallinta',
-        },
-      },
-      {
-        component: TileOrganisaationHallinta,
-        oikeustarkastelu: {
-          oikeus: 'hallinta',
-        },
-      },
-      {
-        component: TileTiedotteet,
-        props: {
-          kieli: this.sisaltoKieli,
-        },
-        oikeustarkastelu: {
-          oikeus: 'hallinta',
-        },
-      },
-      {
-        component: TileUkk,
-      },
-      {
-        component: TileTilastot,
-        oikeustarkastelu: {
-          oikeus: 'hallinta',
-          kohde: 'oph',
-        },
-      },
-    ];
-  }
-
-  get vapaasivistystyoTiles() {
-    return [
-      {
-        component: TileVstToteutussuunnitelmat,
-        props: {
-          etusivu: this.etusivu,
-        },
-        oikeustarkastelu: {
-          oikeus: 'luku',
-        },
-      },
-    ];
-  }
+  @Prop({ required: true })
+  private tiles!: any;
 
   @Meta
   getMetaInfo() {
@@ -164,28 +88,8 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
     };
   }
 
-  async init() {
-    this.fetch();
-  }
-
-  async fetch() {
-    await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId, EperusteetKoulutustyyppiRyhmat[this.toteutus]);
-
-    if (this.toteutus === 'ammatillinen') {
-      await this.paivitettavatJaSiirrettavatTotsStore.fetch(this.koulutustoimijaId);
-    }
-  }
-
-  get sisaltoKieli() {
-    return this.kieliStore.getSisaltoKieli.value || null;
-  }
-
   get nimi() {
     return this.kayttajaStore?.nimi?.value || null;
-  }
-
-  get etusivu() {
-    return this.kayttajaStore?.etusivu?.value || null;
   }
 }
 </script>
