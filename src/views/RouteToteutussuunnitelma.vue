@@ -134,13 +134,25 @@
             </template>
 
             <template v-slot:new>
-              <ep-sisalto-lisays
+              <EpSisaltoLisays
+                v-if="toteutusTyyppi === 'ammatillinen'"
                 v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }"
                 :toteutussuunnitelmaId="toteutussuunnitelmaId"
                 :koulutustoimijaId="koulutustoimijaId"
                 :navigation="navigation.value"
                 :updateNavigation="updateNavigation"
                 :toteutussuunnitelma="toteutussuunnitelma"/>
+
+              <EpTekstikappaleLisays
+                v-if="toteutusTyyppi === 'vapaasivistystyo'"
+                @save="tallennaUusiTekstikappale"
+                :tekstikappaleet="perusteenOsat"
+                :paatasovalinta="true">
+                <template v-slot:default="{tekstikappale}">
+                  <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                  {{ $kaanna(tekstikappale.label) }}
+                </template>
+              </EpTekstikappaleLisays>
             </template>
 
           </EpTreeNavibar>
@@ -173,11 +185,14 @@ import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
+import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
 import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { Meta } from '@shared/utils/decorators';
+import { NavigationNodeDtoTypeEnum } from '@shared/api/eperusteet';
+import { MatalaTyyppiEnum, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -186,6 +201,7 @@ import { Meta } from '@shared/utils/decorators';
     EpButton,
     EpSearch,
     EpSisaltoLisays,
+    EpTekstikappaleLisays,
   },
 })
 export default class RouteToteutussuunnitelma extends Vue {
@@ -201,8 +217,10 @@ export default class RouteToteutussuunnitelma extends Vue {
   @Prop({ required: true })
   private koulutustoimijaId!: string;
 
-  private isInitializing = false;
+  @Prop({ required: true })
+  private toteutus!: string;
 
+  private isInitializing = false;
   private naviStore: EpTreeNavibarStore | null = null;
   private query: string = '';
 
@@ -252,6 +270,26 @@ export default class RouteToteutussuunnitelma extends Vue {
     await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
   }
 
+  async tallennaUusiTekstikappale(otsikko, valittuTekstikappale) {
+    let parentId = this.navigation.value!.id!;
+    if (valittuTekstikappale && valittuTekstikappale.id) {
+      parentId = valittuTekstikappale.id;
+    }
+
+    SisaltoViiteStore.add(
+      this.toteutussuunnitelmaId,
+      parentId,
+      this.koulutustoimijaId,
+      {
+        tyyppi: _.toLower(MatalaTyyppiEnum.TEKSTIKAPPALE),
+        tekstiKappale: {
+          nimi: otsikko,
+        },
+      } as SisaltoviiteMatalaDto,
+      this,
+      this.updateNavigation);
+  }
+
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
   }
@@ -287,6 +325,25 @@ export default class RouteToteutussuunnitelma extends Vue {
         oikeus: 'hallinta',
       },
     ];
+  }
+
+  get toteutusTyyppi() {
+    return this.toteutus;
+  }
+
+  get tekstikappaleet() {
+    return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Viite);
+  }
+
+  get opintokokonaisuudet() {
+    return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Opintokokonaisuus);
+  }
+
+  get perusteenOsat() {
+    return _.sortBy([
+      ...this.tekstikappaleet,
+      ...this.opintokokonaisuudet,
+    ], 'chapter');
   }
 }
 </script>
