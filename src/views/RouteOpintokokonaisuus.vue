@@ -30,7 +30,7 @@
           </b-col>
         </b-row>
         <hr/>
-        <h3>{{ $t('opetuksen-tavoitteet') }}</h3>
+        <h3 class="pt-3">{{ $t('opetuksen-tavoitteet') }}</h3>
         <b-row>
           <b-col md="10">
             <b-form-group :label="$t('tavoitteiden-otsikko')  + (isEditing ? ' *' : '')" required>
@@ -74,34 +74,31 @@
           </b-col>
         </b-row>
         <hr/>
+        <h3 class="pt-3">{{ $t('keskeiset-sisallot') }}</h3>
         <b-row>
-          <b-col class="py-3">
-            <h3>{{ $t('keskeiset-sisallot') }}</h3>
-            <b-row  class="py-3">
-              <b-col>
-                <p v-if="data.opintokokonaisuus.keskeisetSisallot">Content</p>
-                <p v-else>{{ $t('ei-sisaltoa') }}</p>
-              </b-col>
-            </b-row>
+          <b-col>
+            <b-form-group v-if="isEditing || data.opintokokonaisuus.keskeisetSisallot && !isEditing">
+              <EpContent
+                v-model="data.opintokokonaisuus.keskeisetSisallot"
+                layout="normal"
+                :is-editable="isEditing"/>
+            </b-form-group>
+            <p v-if="!data.opintokokonaisuus.keskeisetSisallot && !isEditing">{{ $t('ei-sisaltoa') }}</p>
           </b-col>
         </b-row>
         <hr/>
+        <h3 class="pt-3">{{ $t('arviointi') }}</h3>
         <b-row>
           <b-col class="py-3">
-            <h3>{{ $t('arviointi') }}</h3>
-            <b-row  class="py-3">
-              <b-col>
-                <h4>{{ $t('arvioinnin-kuvaus') }}</h4>
-                <p v-if="data.opintokokonaisuus.arvioinninKuvaus">Content</p>
-                <p v-else>{{ $t('ei-sisaltoa') }}</p>
-                <h4>{{ $t('opiskelijan-osaamisen-arvioinnin-kohteet') }}</h4>
-                <ul>
-                  <li v-for="arviointiItem in data.opintokokonaisuus.arvioinnit" :key="arviointiItem.id">
-                    {{$kaanna(arviointiItem.arviointi)}}
-                  </li>
-                </ul>
-              </b-col>
-            </b-row>
+            <h4>{{ $t('arvioinnin-kuvaus') }}</h4>
+            <p v-if="data.opintokokonaisuus.arvioinninKuvaus">Content</p>
+            <p v-else>{{ $t('ei-sisaltoa') }}</p>
+            <h4>{{ $t('opiskelijan-osaamisen-arvioinnin-kohteet') }}</h4>
+            <ul>
+              <li v-for="arviointiItem in data.opintokokonaisuus.arvioinnit" :key="arviointiItem.id">
+                {{$kaanna(arviointiItem.arviointi)}}
+              </li>
+            </ul>
           </b-col>
         </b-row>
       </template>
