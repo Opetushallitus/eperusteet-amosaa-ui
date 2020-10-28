@@ -4,48 +4,73 @@
       <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
       </template>
-
       <template v-slot:default="{ data, isEditing, validation }">
-
-        <!-- <div class="container">
-          <b-form-group :label="$t('otsikko')" v-if="isEditing">
-            <ep-field v-model="data.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
-          </b-form-group>
-
-          <b-form-group :label="$t('kappaleen-teksti')" :label-sr-only="!isEditing">
-            <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing" />
-          </b-form-group>
-        </div> -->
         <b-row>
-          <b-col md="8" class="d-flex flex-column py-3">
-            <h4>{{ $t('opintokokonaisuuden-nimi') }}</h4>
-            {{ $kaanna(data.tekstiKappale.nimi) }}
+          <b-col md="7">
+            <b-form-group :label="$t('opintokokonaisuuden-nimi') + (isEditing ? ' *' : '')" required>
+              <EpField v-model="data.tekstiKappale.nimi" :is-editing="isEditing"/>
+            </b-form-group>
           </b-col>
-          <b-col md="2" class="d-flex flex-column py-3">
-            <h4>{{ $t('minimilaajuus') }}</h4>
-            {{ data.opintokokonaisuus.minimilaajuus }} {{ $t('opintopiste') }}
+          <b-col md="3">
+            <b-form-group :label="$t('minimilaajuus') + (isEditing ? ' *' : '')" required>
+              <EpLaajuusInput v-model="data.opintokokonaisuus.minimilaajuus" :is-editing="isEditing">
+                {{$t('opintopiste')}}
+              </EpLaajuusInput>
+            </b-form-group>
           </b-col>
         </b-row>
-        <b-row class="py-3">
-          <b-col>
-             <h4>{{ $t('kuvaus') }}</h4>
-             <div v-html="$kaanna(data.opintokokonaisuus.kuvaus)"></div>
+        <b-row>
+          <b-col md="10">
+            <b-form-group :label="$t('kuvaus')  + (isEditing ? ' *' : '')" required>
+              <EpContent
+                v-model="data.opintokokonaisuus.kuvaus"
+                layout="normal"
+                :is-editable="isEditing"/>
+            </b-form-group>
           </b-col>
         </b-row>
         <hr/>
+        <h3>{{ $t('opetuksen-tavoitteet') }}</h3>
         <b-row>
-          <b-col class="py-3">
-            <h3>{{ $t('opetuksen-tavoitteet') }}</h3>
-            <b-row  class="py-3">
-              <b-col>
-                <h4>{{ $kaanna(data.opintokokonaisuus.opetuksenTavoiteOtsikko) }}</h4>
+          <b-col md="10">
+            <b-form-group :label="$t('tavoitteiden-otsikko')  + (isEditing ? ' *' : '')" required>
+              <EpInput
+                v-model="data.opintokokonaisuus.opetuksenTavoiteOtsikko"
+                :is-editing="isEditing"/>
+            </b-form-group>
+            <b-form-group :label="$t('tavoitteet')  + (isEditing ? ' *' : '')" required>
+              <div v-if="isEditing">
+                <draggable
+                  v-bind="tavoitteetOptions"
+                  tag="div"
+                  v-model="data.opintokokonaisuus.tavoitteet">
+
+                  <b-row v-for="tavoiteItem in data.opintokokonaisuus.tavoitteet" :key="tavoiteItem.id" class="pb-2">
+                    <b-col cols="10" lg="8">
+                      <EpInput v-model="tavoiteItem.tavoite" :is-editing="isEditing" :disabled="tavoiteItem.uri !== undefined">
+                        <div class="order-handle m-2" slot="left">
+                          <fas icon="grip-vertical"></fas>
+                        </div>
+                      </EpInput>
+                    </b-col>
+                    <b-col cols="1" v-if="isEditing">
+                      <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"/>
+                    </b-col>
+                  </b-row>
+                </draggable>
+
+                <EpButton variant="outline" icon="plus" @click="onAddListItem('tavoitteet')" v-if="isEditing">
+                  {{ $t('lisaa-tavoite') }}
+                </EpButton>
+              </div>
+              <div v-else>
                 <ul>
                   <li v-for="tavoiteItem in data.opintokokonaisuus.tavoitteet" :key="tavoiteItem.id">
                     {{ $kaanna(tavoiteItem.tavoite)}}
                   </li>
                 </ul>
-              </b-col>
-            </b-row>
+              </div>
+            </b-form-group>
           </b-col>
         </b-row>
         <hr/>
@@ -80,7 +105,6 @@
           </b-col>
         </b-row>
       </template>
-
     </EpEditointi>
   </div>
 </template>
@@ -88,21 +112,29 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+import draggable from 'vuedraggable';
 
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
+import EpLaajuusInput from '@shared/components/forms/EpLaajuusInput.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
+import EpInput from '@shared/components/forms/EpInput.vue';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
 
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
+import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 
 @Component({
   components: {
     EpEditointi,
     EpField,
     EpContent,
+    EpLaajuusInput,
+    EpInput,
+    EpButton,
+    draggable,
   },
 })
 export default class RouteOpintokokonaisuus extends Vue {
@@ -132,7 +164,7 @@ export default class RouteOpintokokonaisuus extends Vue {
 
   fetch() {
     this.editointiStore = new EditointiStore(
-      new TekstikappaleStore(
+      new OpintokokonaisuusStore(
         this.toteutussuunnitelmaId,
         this.koulutustoimijaId,
         this.sisaltoviiteId,
@@ -141,8 +173,50 @@ export default class RouteOpintokokonaisuus extends Vue {
         () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId)));
   }
 
+  onAddListItem(array: string) {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opintokokonaisuus: {
+        ...this.editointiStore?.data.value.opintokokonaisuus,
+        [array]: [
+          ..._.get(this.editointiStore?.data.value.opintokokonaisuus, array),
+          { perusteesta: false },
+        ],
+      },
+    });
+  }
+
+  onRemoveListItem(poistettavaRivi: { [key: string]: any }, array: string) {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opintokokonaisuus: {
+        ...this.editointiStore?.data.value.opintokokonaisuus,
+        [array]: _.filter(_.get(this.editointiStore?.data.value.opintokokonaisuus, array), rivi => rivi !== poistettavaRivi),
+      },
+    });
+  }
+
   get versionumero() {
     return _.toNumber(this.$route.query.versionumero);
+  }
+
+  get defaultDragOptions() {
+    return {
+      animation: 300,
+      emptyInsertThreshold: 10,
+      handle: '.order-handle',
+      disabled: !this.editointiStore!.isEditing,
+      ghostClass: 'dragged',
+    };
+  }
+
+  get tavoitteetOptions() {
+    return {
+      ...this.defaultDragOptions,
+      group: {
+        name: 'tavoitteet',
+      },
+    };
   }
 }
 </script>
