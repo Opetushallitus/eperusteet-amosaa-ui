@@ -128,7 +128,7 @@
             <template v-slot:opintokokonaisuus="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }">
-                  {{ $kaanna(item.label) }}
+                  {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
                 </router-link>
               </div>
             </template>
@@ -153,6 +153,31 @@
                   {{ $kaanna(tekstikappale.label) }}
                 </template>
               </EpTekstikappaleLisays>
+
+              <EpTekstikappaleLisays
+                  v-if="toteutusTyyppi === 'vapaasivistystyo'"
+                  @save="tallennaUusiOpintokokonaisuus"
+                  :tekstikappaleet="perusteenOsat"
+                  :paatasovalinta="true"
+                  :otsikkoRequired="false"
+                  modalId="opintokokonaisuusLisays">
+                  <template v-slot:lisays-btn-text>
+                    {{$t('uusi-opintokokonaisuus')}}
+                  </template>
+                  <template v-slot:modal-title>
+                    {{$t('uusi-opintokokonaisuus')}}
+                  </template>
+                  <template v-slot:footer-lisays-btn-text>
+                    {{$t('lisaa-opintokokonaisuus')}}
+                  </template>
+                  <template v-slot:header>
+                    {{$t('opintokokonaisuuden-sijainti')}}
+                  </template>
+                  <template v-slot:default="{tekstikappale}">
+                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                    {{ $kaanna(tekstikappale.label) }}
+                  </template>
+                </EpTekstikappaleLisays>
             </template>
 
           </EpTreeNavibar>
@@ -190,6 +215,7 @@ import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
 import { NavigationNodeDtoTypeEnum } from '@shared/api/eperusteet';
 import { MatalaTyyppiEnum, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
@@ -205,9 +231,6 @@ import { MatalaTyyppiEnum, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
   },
 })
 export default class RouteToteutussuunnitelma extends Vue {
-  @Prop({ required: true })
-  private sisaltoViiteStore!: SisaltoViiteStore;
-
   @Prop({ required: true })
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
@@ -271,12 +294,9 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   async tallennaUusiTekstikappale(otsikko, valittuTekstikappale) {
-    let parentId = this.navigation.value!.id!;
-    if (valittuTekstikappale && valittuTekstikappale.id) {
-      parentId = valittuTekstikappale.id;
-    }
+    const parentId = valittuTekstikappale?.id ? valittuTekstikappale.id : this.navigation.value!.id!;
 
-    SisaltoViiteStore.add(
+    TekstikappaleStore.add(
       this.toteutussuunnitelmaId,
       parentId,
       this.koulutustoimijaId,
@@ -285,6 +305,21 @@ export default class RouteToteutussuunnitelma extends Vue {
         tekstiKappale: {
           nimi: otsikko,
         },
+      } as SisaltoviiteMatalaDto,
+      this,
+      this.updateNavigation);
+  }
+
+  async tallennaUusiOpintokokonaisuus(otsikko, valittuOpintokokonaisuus) {
+    const parentId = valittuOpintokokonaisuus?.id ? valittuOpintokokonaisuus.id : this.navigation.value!.id!;
+
+    OpintokokonaisuusStore.add(
+      this.toteutussuunnitelmaId,
+      parentId,
+      this.koulutustoimijaId,
+      {
+        tyyppi: _.toLower(MatalaTyyppiEnum.OPINTOKOKONAISUUS),
+        opintokokonaisuus: {},
       } as SisaltoviiteMatalaDto,
       this,
       this.updateNavigation);
@@ -332,7 +367,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get tekstikappaleet() {
-    return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Viite);
+    return _.filter(this.naviStore!.connected.value, node => node.type === (NavigationNodeDtoTypeEnum.Tekstikappale as string));
   }
 
   get opintokokonaisuudet() {
