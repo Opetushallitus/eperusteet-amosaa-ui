@@ -55,13 +55,16 @@
 
                   <b-row v-for="tavoiteItem in data.opintokokonaisuus.tavoitteet" :key="tavoiteItem.id" class="pb-2">
                     <b-col cols="10" lg="8">
-                      <EpInput v-model="tavoiteItem.tavoite" :is-editing="isEditing" :disabled="tavoiteItem.uri !== undefined">
+                      <EpInput
+                        v-model="tavoiteItem.tavoite"
+                        :is-editing="isEditing"
+                        :disabled="tavoiteItem.perusteesta">
                         <div class="order-handle m-2" slot="left">
                           <fas icon="grip-vertical"></fas>
                         </div>
                       </EpInput>
                     </b-col>
-                    <b-col cols="1" v-if="isEditing">
+                    <b-col cols="1" v-if="isEditing && !tavoiteItem.perusteesta">
                       <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"/>
                     </b-col>
                   </b-row>
@@ -116,13 +119,16 @@
 
                   <b-row v-for="arviointiItem in data.opintokokonaisuus.arvioinnit" :key="arviointiItem.id" class="pb-2">
                     <b-col cols="10" lg="8">
-                      <EpInput v-model="arviointiItem.arviointi" :is-editing="isEditing" :disabled="arviointiItem.uri !== undefined">
+                      <EpInput
+                        v-model="arviointiItem.arviointi"
+                        :is-editing="isEditing"
+                        :disabled="arviointiItem.perusteesta">
                         <div class="order-handle m-2" slot="left">
                           <fas icon="grip-vertical"></fas>
                         </div>
                       </EpInput>
                     </b-col>
-                    <b-col cols="1" v-if="isEditing">
+                    <b-col cols="1" v-if="isEditing && !arviointiItem.perusteesta">
                       <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(arviointiItem, 'arvioinnit')"/>
                     </b-col>
                   </b-row>
