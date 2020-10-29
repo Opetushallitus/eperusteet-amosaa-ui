@@ -38,6 +38,14 @@
                 v-model="data.opintokokonaisuus.opetuksenTavoiteOtsikko"
                 :is-editing="isEditing"/>
             </b-form-group>
+            <h4>{{ $t('tavoitteiden-kuvaus') }}</h4>
+            <b-form-group v-if="isEditing || data.opintokokonaisuus.tavoitteidenKuvaus && !isEditing">
+              <EpContent
+                v-model="data.opintokokonaisuus.tavoitteidenKuvaus"
+                layout="normal"
+                :is-editable="isEditing"/>
+            </b-form-group>
+            <p v-if="!data.opintokokonaisuus.tavoitteidenKuvaus && !isEditing">{{ $t('ei-sisaltoa') }}</p>
             <b-form-group :label="$t('tavoitteet')  + (isEditing ? ' *' : '')" required>
               <div v-if="isEditing">
                 <draggable
