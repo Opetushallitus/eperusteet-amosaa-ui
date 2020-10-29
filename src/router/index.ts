@@ -114,7 +114,14 @@ const router = new VueRouter({
       path: 'yhteinen',
       name: 'yhteinen',
       component: RouteYhteiset,
-      props,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          tyypit: stores.kayttajaStore.ophSelected.value ? ['pohja'] : ['yhteinen'],
+          storeProvider: stores.kayttajaStore.ophSelected.value ? stores.ophPohjatStore : stores.yhteisetOsuudetStore,
+        };
+      },
     }, {
       path: 'paivitettavat',
       name: 'paivitettavat',
@@ -159,7 +166,7 @@ const router = new VueRouter({
         return {
           ...route.params,
           ...stores,
-          opetussuunnitelmanTyyppi: 'yhteinen',
+          opetussuunnitelmanTyyppi: stores.kayttajaStore.ophSelected.value ? 'pohja' : 'yhteinen',
           perusteetStore: null,
         };
       },

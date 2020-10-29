@@ -60,7 +60,7 @@
                 </div>
               </b-dropdown>
             </h1>
-            <div class="diaarinumero">
+            <div class="diaarinumero" v-if="toteutussuunnitelma.peruste">
               {{ $kaanna(toteutussuunnitelma.peruste.nimi) }} | {{ toteutussuunnitelma.peruste.diaarinumero }}
             </div>
           </div>
@@ -220,6 +220,8 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
 import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum } from '@shared/api/amosaa';
+import { Murupolku } from '@shared/stores/murupolku';
+import { OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -242,11 +244,15 @@ export default class RouteToteutussuunnitelma extends Vue {
   private koulutustoimijaId!: string;
 
   @Prop({ required: true })
-  private toteutus!: string;
 
+  private toteutus!: Toteutus;
   private isInitializing = false;
   private naviStore: EpTreeNavibarStore | null = null;
   private query: string = '';
+
+  mounted() {
+    Murupolku.aseta('toteutussuunnitelma', this.$t(OpetussuunnitelmaTyyppi[this.toteutus]));
+  }
 
   @Meta
   getMetaInfo() {

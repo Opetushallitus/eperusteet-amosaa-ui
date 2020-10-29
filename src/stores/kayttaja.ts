@@ -4,6 +4,7 @@ import { KayttajaApi, Koulutustoimijat, EtusivuDto, KoulutustoimijaBaseDto, Kayt
 import { createLogger } from '@shared/utils/logger';
 import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composition-api';
 import { IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
+import { Debounced } from '@shared/utils/delay';
 
 Vue.use(VueCompositionApi);
 
@@ -61,6 +62,7 @@ export class KayttajaStore implements IOikeusProvider {
   public readonly nimi = computed(() => parsiEsitysnimi(this.state.tiedot));
   public readonly isAdmin = computed(() => _.includes(this.state.tiedot?.oikeudet || [], 'ROLE_EPERUSTEET_ADMIN'));
   public readonly koulutustoimijat = computed(() => this.state.koulutustoimijat);
+  public readonly ophSelected = computed(() => this.state.koulutustoimijaId === this.getOphKtId());
 
   public async init() {
     try {
@@ -121,7 +123,8 @@ export class KayttajaStore implements IOikeusProvider {
     return this.organisaatioOikeudet.value[kohde];
   }
 
-  public async fetchEtusivu(koulutustoimijaId: string | number, koulutustyypit: [string]) {
+  @Debounced(300)
+  public async fetchEtusivu(koulutustoimijaId: string | number, koulutustyypit: string[]) {
     this.state.etusivu = null;
     this.state.etusivu = (await Koulutustoimijat.getEtusivu(koulutustyypit, _.toString(koulutustoimijaId))).data;
   }

@@ -43,6 +43,7 @@ import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import TileVstToteutussuunnitelmat from './vst/TileVstToteutussuunnitelmat.vue';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
+import { Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -69,7 +70,7 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
   private paivitettavatJaSiirrettavatTotsStore!: PaivitettavatJaSiirrettavatTotsStore;
 
   @Prop({ required: true })
-  private toteutus!: string;
+  private toteutus!: Toteutus;
 
   @Prop({ required: true })
   private tervetuloaTeksti!: string;

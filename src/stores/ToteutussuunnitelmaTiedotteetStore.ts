@@ -18,18 +18,23 @@ export class ToteutussuunnitelmaTiedotteetStore {
   public readonly fetch = watch([this.opetussuunnitelma], async () => {
     this.state.tiedotteet = null;
     if (this.opetussuunnitelma.value) {
-      const res = (await Ulkopuoliset.getTiedotteetHaku(
-        0,
-        99999,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        this.opetussuunnitelma.value.peruste.perusteId
-      )).data as any;
-      this.state.tiedotteet = res.data;
+      if (this.opetussuunnitelma.value.peruste) {
+        const res = (await Ulkopuoliset.getTiedotteetHaku(
+          0,
+          99999,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          this.opetussuunnitelma.value.peruste.perusteId
+        )).data as any;
+        this.state.tiedotteet = res.data;
+      }
+ else {
+        this.state.tiedotteet = [];
+      }
     }
   });
 }

@@ -113,6 +113,7 @@ import { requiredOneLang, translated } from '@shared/validators/required';
 import { Kieli } from '@shared/tyypit';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { KoulutustoimijaBaseDto } from '../../eperusteet-frontend-utils/vue/src/generated/amosaa';
+import { Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -143,12 +144,15 @@ export default class RouteUkk extends Mixins(validationMixin) {
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
 
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
+
   private rajain: string = '';
   private ohje: OhjeDto = {};
   private koulutustoimijaRajaus: KoulutustoimijaBaseDto[] = [];
 
   async mounted() {
-    this.ohjeetStore.fetch();
+    this.ohjeetStore.fetch(this.toteutus);
     this.koulutustoimijaRajaus = _.map(this.koulutustoimijat);
   }
 
@@ -200,7 +204,10 @@ export default class RouteUkk extends Mixins(validationMixin) {
 
   async createUpdateKysymys(event: any) {
     event.preventDefault(); // Piilotetaan modaali myöhemmin
-    await this.ohjeetStore.save(this.ohje);
+    await this.ohjeetStore.save({
+      ...this.ohje,
+      toteutus: this.toteutus as any,
+    });
     (this as any).$refs.createUpdateKysymys.hide();
   }
 

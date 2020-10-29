@@ -28,7 +28,7 @@
 import { Vue, Component, Prop, Provide } from 'vue-property-decorator';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { EtusivuDto } from '../../../eperusteet-frontend-utils/vue/src/generated/amosaa';
+import { EtusivuDto } from '@shared/api/amosaa';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 

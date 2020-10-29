@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Prop, Provide } from 'vue-property-decorator';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 
@@ -23,5 +23,10 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
   },
 })
 export default class TileOrganisaationHallinta extends Vue {
+  @Prop({ required: false })
+  private headerStyle!: string;
+
+  @Provide('tileHeaderStyle')
+  private tileHeaderStyle = this.headerStyle;
 }
 </script>

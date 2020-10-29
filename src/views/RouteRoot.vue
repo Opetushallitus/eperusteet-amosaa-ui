@@ -20,6 +20,7 @@ import { Meta } from '@shared/utils/decorators';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
+import { Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -35,7 +36,7 @@ export default class RouteRoot extends Vue {
   private kayttajaStore!: KayttajaStore;
 
   @Prop({ required: false, default: 'ammatillinen' })
-  private toteutus!: string;
+  private toteutus!: Toteutus;
 
   private height = null as number | null;
 
