@@ -76,7 +76,7 @@
         <hr/>
         <h3 class="pt-3">{{ $t('keskeiset-sisallot') }}</h3>
         <b-row>
-          <b-col>
+          <b-col md="10">
             <b-form-group v-if="isEditing || data.opintokokonaisuus.keskeisetSisallot && !isEditing">
               <EpContent
                 v-model="data.opintokokonaisuus.keskeisetSisallot"
@@ -89,16 +89,49 @@
         <hr/>
         <h3 class="pt-3">{{ $t('arviointi') }}</h3>
         <b-row>
-          <b-col class="py-3">
+          <b-col md="10" class="py-3">
             <h4>{{ $t('arvioinnin-kuvaus') }}</h4>
-            <p v-if="data.opintokokonaisuus.arvioinninKuvaus">Content</p>
-            <p v-else>{{ $t('ei-sisaltoa') }}</p>
-            <h4>{{ $t('opiskelijan-osaamisen-arvioinnin-kohteet') }}</h4>
-            <ul>
-              <li v-for="arviointiItem in data.opintokokonaisuus.arvioinnit" :key="arviointiItem.id">
-                {{$kaanna(arviointiItem.arviointi)}}
-              </li>
-            </ul>
+            <b-form-group v-if="isEditing || data.opintokokonaisuus.arvioinninKuvaus && !isEditing">
+              <EpContent
+                v-model="data.opintokokonaisuus.arvioinninKuvaus"
+                layout="normal"
+                :is-editable="isEditing"/>
+            </b-form-group>
+            <p v-if="!data.opintokokonaisuus.arvioinninKuvaus && !isEditing">{{ $t('ei-sisaltoa') }}</p>
+
+            <b-form-group :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet')  + (isEditing ? ' *' : '')" required>
+              <div v-if="isEditing">
+                <draggable
+                  v-bind="arvioinnitOptions"
+                  tag="div"
+                  v-model="data.opintokokonaisuus.arvioinnit">
+
+                  <b-row v-for="arviointiItem in data.opintokokonaisuus.arvioinnit" :key="arviointiItem.id" class="pb-2">
+                    <b-col cols="10" lg="8">
+                      <EpInput v-model="arviointiItem.arviointi" :is-editing="isEditing" :disabled="arviointiItem.uri !== undefined">
+                        <div class="order-handle m-2" slot="left">
+                          <fas icon="grip-vertical"></fas>
+                        </div>
+                      </EpInput>
+                    </b-col>
+                    <b-col cols="1" v-if="isEditing">
+                      <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(arviointiItem, 'arvioinnit')"/>
+                    </b-col>
+                  </b-row>
+                </draggable>
+
+                <EpButton variant="outline" icon="plus" @click="onAddListItem('arvioinnit')" v-if="isEditing">
+                  {{ $t('lisaa-tavoite') }}
+                </EpButton>
+              </div>
+              <div v-else>
+                <ul>
+                  <li v-for="arviointiItem in data.opintokokonaisuus.arvioinnit" :key="arviointiItem.id">
+                    {{ $kaanna(arviointiItem.arviointi)}}
+                  </li>
+                </ul>
+              </div>
+            </b-form-group>
           </b-col>
         </b-row>
       </template>
@@ -215,6 +248,15 @@ export default class RouteOpintokokonaisuus extends Vue {
       },
     };
   }
+
+  get arvioinnitOptions() {
+    return {
+      ...this.defaultDragOptions,
+      group: {
+        name: 'arvioinnit',
+      },
+    };
+  }
 }
 </script>
 
@@ -224,10 +266,4 @@ export default class RouteOpintokokonaisuus extends Vue {
   ::v-deep fieldset {
     padding-right: 0px;
   }
-
-  .container {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
 </style>
