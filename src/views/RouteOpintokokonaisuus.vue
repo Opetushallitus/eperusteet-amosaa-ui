@@ -4,16 +4,18 @@
       <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
       </template>
-      <template v-slot:default="{ data, isEditing, validation }">
+      <template v-slot:default="{ data, isEditing, validation, data: { opintokokonaisuus }, data: { opintokokonaisuus: { tyyppi } } }">
         <b-row>
-          <b-col md="7">
-            <b-form-group :label="$t('opintokokonaisuuden-nimi') + (isEditing ? ' *' : '')" required>
+          <b-col md="7" v-if="TyyppiSource.PERUSTEESTA === tyyppi && !isEditing">
+            <b-form-group
+              :label="$t('opintokokonaisuuden-nimi') + (isEditing ? ' *' : '')"
+              required>
               <EpField v-model="data.tekstiKappale.nimi" :is-editing="isEditing"/>
             </b-form-group>
           </b-col>
           <b-col md="3">
-            <b-form-group :label="$t('minimilaajuus') + (isEditing ? ' *' : '')" required>
-              <EpLaajuusInput v-model="data.opintokokonaisuus.minimilaajuus" :is-editing="isEditing">
+            <b-form-group :label="$t('laajuus') + (isEditing ? ' *' : '')" required>
+              <EpLaajuusInput v-model="opintokokonaisuus.laajuus" :is-editing="isEditing">
                 {{$t('opintopiste')}}
               </EpLaajuusInput>
             </b-form-group>
@@ -21,11 +23,11 @@
         </b-row>
         <b-row>
           <b-col md="10">
-            <b-form-group :label="$t('kuvaus')  + (isEditing ? ' *' : '')" required>
+            <b-form-group :label="$t('kuvaus')  + (isEditing  && TyyppiSource.OMA === tyyppi ? ' *' : '')" required>
               <EpContent
-                v-model="data.opintokokonaisuus.kuvaus"
+                v-model="opintokokonaisuus.kuvaus"
                 layout="normal"
-                :is-editable="isEditing"/>
+                :is-editable="isEditing && TyyppiSource.OMA === tyyppi"/>
             </b-form-group>
           </b-col>
         </b-row>
@@ -35,25 +37,25 @@
           <b-col md="10">
             <b-form-group :label="$t('tavoitteiden-otsikko')  + (isEditing ? ' *' : '')" required>
               <EpInput
-                v-model="data.opintokokonaisuus.opetuksenTavoiteOtsikko"
+                v-model="opintokokonaisuus.opetuksenTavoiteOtsikko"
                 :is-editing="isEditing"/>
             </b-form-group>
             <h4>{{ $t('tavoitteiden-kuvaus') }}</h4>
-            <b-form-group v-if="isEditing || data.opintokokonaisuus.tavoitteidenKuvaus && !isEditing">
+            <b-form-group v-if="isEditing || opintokokonaisuus.tavoitteidenKuvaus && !isEditing">
               <EpContent
-                v-model="data.opintokokonaisuus.tavoitteidenKuvaus"
+                v-model="opintokokonaisuus.tavoitteidenKuvaus"
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <p v-if="!data.opintokokonaisuus.tavoitteidenKuvaus && !isEditing">{{ $t('ei-sisaltoa') }}</p>
+            <p v-if="!opintokokonaisuus.tavoitteidenKuvaus && !isEditing">{{ $t('ei-sisaltoa') }}</p>
             <b-form-group :label="$t('tavoitteet')  + (isEditing ? ' *' : '')" required>
               <div v-if="isEditing">
                 <draggable
                   v-bind="tavoitteetOptions"
                   tag="div"
-                  v-model="data.opintokokonaisuus.tavoitteet">
+                  v-model="opintokokonaisuus.tavoitteet">
 
-                  <b-row v-for="tavoiteItem in data.opintokokonaisuus.tavoitteet" :key="tavoiteItem.id" class="pb-2">
+                  <b-row v-for="tavoiteItem in opintokokonaisuus.tavoitteet" :key="tavoiteItem.id" class="pb-2">
                     <b-col cols="10" lg="8">
                       <EpInput
                         v-model="tavoiteItem.tavoite"
@@ -76,7 +78,7 @@
               </div>
               <div v-else>
                 <ul>
-                  <li v-for="tavoiteItem in data.opintokokonaisuus.tavoitteet" :key="tavoiteItem.id">
+                  <li v-for="tavoiteItem in opintokokonaisuus.tavoitteet" :key="tavoiteItem.id">
                     {{ $kaanna(tavoiteItem.tavoite)}}
                   </li>
                 </ul>
@@ -88,13 +90,13 @@
         <h3 class="pt-3">{{ $t('keskeiset-sisallot') }}</h3>
         <b-row>
           <b-col md="10">
-            <b-form-group v-if="isEditing || data.opintokokonaisuus.keskeisetSisallot && !isEditing">
+            <b-form-group v-if="isEditing || opintokokonaisuus.keskeisetSisallot && !isEditing">
               <EpContent
-                v-model="data.opintokokonaisuus.keskeisetSisallot"
+                v-model="opintokokonaisuus.keskeisetSisallot"
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <p v-if="!data.opintokokonaisuus.keskeisetSisallot && !isEditing">{{ $t('ei-sisaltoa') }}</p>
+            <p v-if="!opintokokonaisuus.keskeisetSisallot && !isEditing">{{ $t('ei-sisaltoa') }}</p>
           </b-col>
         </b-row>
         <hr/>
@@ -102,22 +104,22 @@
         <b-row>
           <b-col md="10" class="py-3">
             <h4>{{ $t('arvioinnin-kuvaus') }}</h4>
-            <b-form-group v-if="isEditing || data.opintokokonaisuus.arvioinninKuvaus && !isEditing">
+            <b-form-group v-if="isEditing || opintokokonaisuus.arvioinninKuvaus && !isEditing">
               <EpContent
-                v-model="data.opintokokonaisuus.arvioinninKuvaus"
+                v-model="opintokokonaisuus.arvioinninKuvaus"
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <p v-if="!data.opintokokonaisuus.arvioinninKuvaus && !isEditing">{{ $t('ei-sisaltoa') }}</p>
+            <p v-if="!opintokokonaisuus.arvioinninKuvaus && !isEditing">{{ $t('ei-sisaltoa') }}</p>
 
             <b-form-group :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet')  + (isEditing ? ' *' : '')" required>
               <div v-if="isEditing">
                 <draggable
                   v-bind="arvioinnitOptions"
                   tag="div"
-                  v-model="data.opintokokonaisuus.arvioinnit">
+                  v-model="opintokokonaisuus.arvioinnit">
 
-                  <b-row v-for="arviointiItem in data.opintokokonaisuus.arvioinnit" :key="arviointiItem.id" class="pb-2">
+                  <b-row v-for="arviointiItem in opintokokonaisuus.arvioinnit" :key="arviointiItem.id" class="pb-2">
                     <b-col cols="10" lg="8">
                       <EpInput
                         v-model="arviointiItem.arviointi"
@@ -140,7 +142,7 @@
               </div>
               <div v-else>
                 <ul>
-                  <li v-for="arviointiItem in data.opintokokonaisuus.arvioinnit" :key="arviointiItem.id">
+                  <li v-for="arviointiItem in opintokokonaisuus.arvioinnit" :key="arviointiItem.id">
                     {{ $kaanna(arviointiItem.arviointi)}}
                   </li>
                 </ul>
@@ -170,6 +172,11 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 
+enum TyyppiSource {
+  PERUSTEESTA = 'perusteesta',
+  OMA = 'oma'
+}
+
 @Component({
   components: {
     EpEditointi,
@@ -195,6 +202,8 @@ export default class RouteOpintokokonaisuus extends Vue {
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
   private editointiStore: EditointiStore | null = null;
+
+  TyyppiSource = TyyppiSource;
 
   @Watch('sisaltoviiteId', { immediate: true })
   sisaltoviiteChange() {
