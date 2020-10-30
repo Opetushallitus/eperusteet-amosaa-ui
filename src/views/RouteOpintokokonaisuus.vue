@@ -6,7 +6,7 @@
       </template>
       <template v-slot:default="{ data, isEditing, validation, data: { opintokokonaisuus }, data: { opintokokonaisuus: { tyyppi } } }">
         <b-row>
-          <b-col md="7" v-if="TyyppiSource.PERUSTEESTA === tyyppi && !isEditing">
+          <b-col md="7" v-if="tyyppi === TyyppiSource.OMA || tyyppi === TyyppiSource.PERUSTEESTA && !isEditing">
             <b-form-group
               :label="$t('opintokokonaisuuden-nimi') + (isEditing ? ' *' : '')"
               required>
@@ -23,11 +23,11 @@
         </b-row>
         <b-row>
           <b-col md="10">
-            <b-form-group :label="$t('kuvaus')  + (isEditing  && TyyppiSource.OMA === tyyppi ? ' *' : '')" required>
+            <b-form-group :label="$t('kuvaus')  + (isEditing  && tyyppi === TyyppiSource.OMA ? ' *' : '')" required>
               <EpContent
                 v-model="opintokokonaisuus.kuvaus"
                 layout="normal"
-                :is-editable="isEditing && TyyppiSource.OMA === tyyppi"/>
+                :is-editable="isEditing && tyyppi === TyyppiSource.OMA"/>
             </b-form-group>
           </b-col>
         </b-row>
