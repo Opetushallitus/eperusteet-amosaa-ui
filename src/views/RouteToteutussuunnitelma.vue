@@ -119,6 +119,7 @@
 
             <template v-slot:tekstikappale="{ item }">
               <div class="menu-item">
+                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}.</span>
                 <router-link :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
@@ -127,6 +128,7 @@
 
             <template v-slot:opintokokonaisuus="{ item }">
               <div class="menu-item">
+                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}.</span>
                 <router-link :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
                 </router-link>
@@ -135,7 +137,7 @@
 
             <template v-slot:new>
               <EpSisaltoLisays
-                v-if="toteutusTyyppi === 'ammatillinen'"
+                v-if="isAmmatillinen"
                 v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }"
                 :toteutussuunnitelmaId="toteutussuunnitelmaId"
                 :koulutustoimijaId="koulutustoimijaId"
@@ -144,7 +146,7 @@
                 :toteutussuunnitelma="toteutussuunnitelma"/>
 
               <EpTekstikappaleLisays
-                v-if="toteutusTyyppi === 'vapaasivistystyo'"
+                v-if="isVapaaSivistystyo"
                 @save="tallennaUusiTekstikappale"
                 :tekstikappaleet="perusteenOsat"
                 :paatasovalinta="true">
@@ -155,7 +157,7 @@
               </EpTekstikappaleLisays>
 
               <EpTekstikappaleLisays
-                  v-if="toteutusTyyppi === 'vapaasivistystyo'"
+                  v-if="isVapaaSivistystyo"
                   @save="tallennaUusiOpintokokonaisuus"
                   :tekstikappaleet="perusteenOsat"
                   :paatasovalinta="true"
@@ -319,7 +321,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       this.koulutustoimijaId,
       {
         tyyppi: _.toLower(MatalaTyyppiEnum.OPINTOKOKONAISUUS),
-        opintokokonaisuus: {},
+        opintokokonaisuus: { tyyppi: 'oma' },
       } as SisaltoviiteMatalaDto,
       this,
       this.updateNavigation);
@@ -362,8 +364,12 @@ export default class RouteToteutussuunnitelma extends Vue {
     ];
   }
 
-  get toteutusTyyppi() {
-    return this.toteutus;
+  get isAmmatillinen() {
+    return this.toteutus === 'ammatillinen';
+  }
+
+  get isVapaaSivistystyo() {
+    return this.toteutus === 'vapaasivistystyo';
   }
 
   get tekstikappaleet() {
