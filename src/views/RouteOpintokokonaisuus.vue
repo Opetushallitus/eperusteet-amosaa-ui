@@ -10,12 +10,18 @@
             <b-form-group
               :label="$t('opintokokonaisuuden-nimi') + (isEditing ? ' *' : '')"
               required>
-              <EpField v-model="data.tekstiKappale.nimi" :is-editing="isEditing"/>
+              <EpField
+                v-model="data.tekstiKappale.nimi"
+                :is-editing="isEditing"
+                :validation="validation.tekstiKappale.nimi"/>
             </b-form-group>
           </b-col>
           <b-col md="3">
             <b-form-group :label="$t('laajuus') + (isEditing ? ' *' : '')" required>
-              <EpLaajuusInput v-model="opintokokonaisuus.laajuus" :is-editing="isEditing">
+              <EpLaajuusInput
+                v-model="opintokokonaisuus.laajuus"
+                :is-editing="isEditing"
+                :validation="validation.opintokokonaisuus.laajuus">
                 {{$t('opintopiste')}}
               </EpLaajuusInput>
             </b-form-group>
@@ -27,7 +33,8 @@
               <EpContent
                 v-model="opintokokonaisuus.kuvaus"
                 layout="normal"
-                :is-editable="isEditing && tyyppi === TyyppiSource.OMA"/>
+                :is-editable="isEditing && tyyppi === TyyppiSource.OMA"
+                :validation="validation.opintokokonaisuus.kuvaus"/>
             </b-form-group>
           </b-col>
         </b-row>
@@ -36,9 +43,10 @@
         <b-row>
           <b-col md="10">
             <b-form-group :label="$t('tavoitteiden-otsikko')  + (isEditing ? ' *' : '')" required>
-              <EpInput
+              <ep-input
                 v-model="opintokokonaisuus.opetuksenTavoiteOtsikko"
-                :is-editing="isEditing"/>
+                :is-editing="isEditing"
+                :validation="validation.opintokokonaisuus.opetuksenTavoiteOtsikko"/>
             </b-form-group>
             <h4>{{ $t('tavoitteiden-kuvaus') }}</h4>
             <b-form-group v-if="isEditing || opintokokonaisuus.tavoitteidenKuvaus && !isEditing">
