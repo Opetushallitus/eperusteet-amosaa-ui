@@ -1,7 +1,10 @@
 import Vue from 'vue';
 import VueCompositionApi, { computed } from '@vue/composition-api';
-import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko } from '@shared/api/amosaa';
+
 import _ from 'lodash';
+import { minLength, required } from 'vuelidate/lib/validators';
+
+import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko } from '@shared/tyypit';
 
@@ -63,8 +66,28 @@ export class OpintokokonaisuusStore implements IEditoitava {
       name: 'toteutussuunnitelma',
     });
   }
+
   public readonly validator = computed(() => {
-    return {};
+    return {
+      tekstiKappale: {
+        nimi: { required },
+      },
+      opintokokonaisuus: {
+        laajuus: { required },
+        kuvaus: { required },
+        opetuksenTavoiteOtsikko: {
+          required,
+        },
+        tavoitteet: {
+          'min-length': minLength(1),
+          required,
+        },
+        arvioinnit: {
+          'min-length': minLength(1),
+          required,
+        },
+      },
+    };
   });
 
   public async lock() {
