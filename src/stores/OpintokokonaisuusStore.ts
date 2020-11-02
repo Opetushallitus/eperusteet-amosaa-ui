@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueCompositionApi, { computed } from '@vue/composition-api';
 
 import _ from 'lodash';
-import { minLength, required } from 'vuelidate/lib/validators';
+import { minLength, required, minValue } from 'vuelidate/lib/validators';
 
 import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
@@ -11,6 +11,8 @@ import { Revision, ILukko } from '@shared/tyypit';
 Vue.use(VueCompositionApi);
 
 export class OpintokokonaisuusStore implements IEditoitava {
+  private opintokokonaisuus: SisaltoviiteMatalaDto | undefined = undefined;
+
   constructor(
     private opetussuunnitelmaId: number,
     private koulutustoimijaId: string,
@@ -32,13 +34,19 @@ export class OpintokokonaisuusStore implements IEditoitava {
   }
 
   async load() {
+    let content: SisaltoviiteMatalaDto;
+
     if (this.versionumero) {
       const revisions = (await Sisaltoviitteet.getSisaltoviiteRevisions(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId)).data as Revision[];
       const rev = revisions[revisions.length - this.versionumero];
-      return (await Sisaltoviitteet.getSisaltoviiteRevision(this.opetussuunnitelmaId, this.sisaltoviiteId, rev.numero, this.koulutustoimijaId)).data;
+      content = (await Sisaltoviitteet.getSisaltoviiteRevision(this.opetussuunnitelmaId, this.sisaltoviiteId, rev.numero, this.koulutustoimijaId)).data as SisaltoviiteMatalaDto;
+      this.opintokokonaisuus = content;
+      return content;
     }
     else {
-      return (await Sisaltoviitteet.getSisaltoviiteTekstit(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId)).data;
+      content = (await Sisaltoviitteet.getSisaltoviiteTekstit(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId)).data;
+      this.opintokokonaisuus = content;
+      return content;
     }
   }
 
@@ -73,7 +81,10 @@ export class OpintokokonaisuusStore implements IEditoitava {
         nimi: { required },
       },
       opintokokonaisuus: {
-        laajuus: { required },
+        laajuus: {
+          required,
+          'min-length': minValue(this.opintokokonaisuus?.opintokokonaisuus?.minimilaajuus || 0),
+        },
         kuvaus: { required },
         opetuksenTavoiteOtsikko: {
           required,
@@ -109,7 +120,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
     await SisaltoviiteLukko.unlock(_.toNumber(this.koulutustoimijaId), this.opetussuunnitelmaId, this.sisaltoviiteId);
   }
 
-  public features(data: any) {
+  public features(_data: any) {
     return computed(() => {
       return {
         editable: true,
