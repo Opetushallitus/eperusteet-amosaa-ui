@@ -48,14 +48,20 @@
                 :is-editing="isEditing"
                 :validation="validation.opintokokonaisuus.opetuksenTavoiteOtsikko"/>
             </b-form-group>
-            <h4>{{ $t('tavoitteiden-kuvaus') }}</h4>
+            <h4 class="pb-2">{{ $t('tavoitteiden-kuvaus') }}</h4>
             <b-form-group v-if="isEditing || opintokokonaisuus.tavoitteidenKuvaus && !isEditing">
               <EpContent
                 v-model="opintokokonaisuus.tavoitteidenKuvaus"
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <p v-if="!opintokokonaisuus.tavoitteidenKuvaus && !isEditing">{{ $t('ei-sisaltoa') }}</p>
+            <div v-if="!opintokokonaisuus.tavoitteidenKuvaus && !isEditing" class="d-flex pb-3">
+              <EpAlert/>
+              <div class="d-flex flex-column justify-content-center">
+                <p class="mb-1">{{ $t('ei-sisaltoa') }}</p>
+                <p>{{ $t('kirjoita-sisaltoa-valitsemalla-muokkaa') }}</p>
+              </div>
+            </div>
             <b-form-group :label="$t('tavoitteet')  + (isEditing ? ' *' : '')" required>
               <div v-if="isEditing">
                 <draggable
@@ -95,7 +101,7 @@
           </b-col>
         </b-row>
         <hr/>
-        <h3 class="pt-3">{{ $t('keskeiset-sisallot') }}</h3>
+        <h3 class="py-3">{{ $t('keskeiset-sisallot') }}</h3>
         <b-row>
           <b-col md="10">
             <b-form-group v-if="isEditing || opintokokonaisuus.keskeisetSisallot && !isEditing">
@@ -104,22 +110,33 @@
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <p v-if="!opintokokonaisuus.keskeisetSisallot && !isEditing">{{ $t('ei-sisaltoa') }}</p>
+            <div v-if="!opintokokonaisuus.keskeisetSisallot && !isEditing" class="d-flex pb-3">
+              <EpAlert/>
+              <div class="d-flex flex-column justify-content-center">
+                <p class="mb-1">{{ $t('ei-sisaltoa') }}</p>
+                <p>{{ $t('kirjoita-sisaltoa-valitsemalla-muokkaa') }}</p>
+              </div>
+            </div>
           </b-col>
         </b-row>
         <hr/>
         <h3 class="pt-3">{{ $t('arviointi') }}</h3>
         <b-row>
           <b-col md="10" class="py-3">
-            <h4>{{ $t('arvioinnin-kuvaus') }}</h4>
+            <h4 class="pb-2">{{ $t('arvioinnin-kuvaus') }}</h4>
             <b-form-group v-if="isEditing || opintokokonaisuus.arvioinninKuvaus && !isEditing">
               <EpContent
                 v-model="opintokokonaisuus.arvioinninKuvaus"
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <p v-if="!opintokokonaisuus.arvioinninKuvaus && !isEditing">{{ $t('ei-sisaltoa') }}</p>
-
+            <div v-if="!opintokokonaisuus.arvioinninKuvaus && !isEditing" class="d-flex pb-3">
+              <EpAlert/>
+              <div class="d-flex flex-column justify-content-center">
+                <p class="mb-1">{{ $t('ei-sisaltoa') }}</p>
+                <p>{{ $t('kirjoita-sisaltoa-valitsemalla-muokkaa') }}</p>
+              </div>
+            </div>
             <b-form-group :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet')  + (isEditing ? ' *' : '')" required>
               <div v-if="isEditing">
                 <draggable
@@ -176,6 +193,7 @@ import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
@@ -193,6 +211,7 @@ enum TyyppiSource {
     EpLaajuusInput,
     EpInput,
     EpButton,
+    EpAlert,
     draggable,
   },
 })
