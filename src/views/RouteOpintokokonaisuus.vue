@@ -66,16 +66,33 @@
                   tag="div"
                   v-model="opintokokonaisuus.tavoitteet">
 
-                  <b-row v-for="tavoiteItem in opintokokonaisuus.tavoitteet" :key="tavoiteItem.id" class="pb-2">
+                  <b-row v-for="(tavoiteItem, index) in opintokokonaisuus.tavoitteet" :key="tavoiteItem.id" class="pb-2">
                     <b-col cols="10" lg="8">
-                      <EpInput
-                        v-model="tavoiteItem.tavoite"
+                      <EpKoodistoSelect
+                        :store="koodisto"
+                        :value="opintokokonaisuus.tavoitteet[index]"
+                        @add="updateTavoiteByIndex($event, index)"
                         :is-editing="isEditing"
-                        :disabled="tavoiteItem.perusteesta || tavoiteItem.tavoiteKoodi">
-                        <div class="order-handle m-2" slot="left">
-                          <fas icon="grip-vertical"></fas>
-                        </div>
-                      </EpInput>
+                        :naytaArvo="false">
+                        <template #default="{ open }">
+                          <b-input-group>
+                            <EpInput
+                              v-model="tavoiteItem.tavoite"
+                              :is-editing="isEditing"
+                              :disabled="tavoiteItem.perusteesta"
+                              class="input-wrapper">
+                              <div class="order-handle m-2" slot="left">
+                                <fas icon="grip-vertical"></fas>
+                              </div>
+                            </EpInput>
+                            <b-input-group-append>
+                              <b-button @click="open" icon="plus" variant="primary">
+                                {{ $t('hae-koodistosta') }}
+                              </b-button>
+                            </b-input-group-append>
+                          </b-input-group>
+                        </template>
+                      </EpKoodistoSelect>
                     </b-col>
                     <b-col cols="1" v-if="isEditing && !tavoiteItem.perusteesta">
                       <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"/>
@@ -185,6 +202,9 @@ import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
+import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
+import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
+import { Koodisto } from '@shared/api/eperusteet';
 
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
@@ -203,6 +223,7 @@ enum TyyppiSource {
     EpInput,
     EpButton,
     EpAlert,
+    EpKoodistoSelect,
     draggable,
   },
 })
@@ -220,6 +241,17 @@ export default class RouteOpintokokonaisuus extends Vue {
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
   private editointiStore: EditointiStore | null = null;
+
+  private readonly koodisto = new KoodistoSelectStore({
+    async query(query: string, sivu = 0) {
+      return (await Koodisto.kaikkiSivutettuna('opintokokonaisuustavoitteet', query, {
+        params: {
+          sivu,
+          sivukoko: 10,
+        },
+      })).data as any;
+    },
+  });
 
   TyyppiSource = TyyppiSource;
 
@@ -242,6 +274,25 @@ export default class RouteOpintokokonaisuus extends Vue {
         this.versionumero,
         this,
         () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId)));
+  }
+
+  updateTavoiteByIndex(val, index) {
+    const updatedTavoitteet = [...this.editointiStore?.data.value.opintokokonaisuus.tavoitteet];
+    updatedTavoitteet[index] = {
+      perusteesta: false,
+      tavoite: val.nimi,
+      tavoiteKoodi: val.uri,
+    };
+
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opintokokonaisuus: {
+        ...this.editointiStore?.data.value.opintokokonaisuus,
+        tavoitteet: [
+          ...updatedTavoitteet,
+        ],
+      },
+    });
   }
 
   onAddListItem(array: string) {
@@ -306,5 +357,14 @@ export default class RouteOpintokokonaisuus extends Vue {
 
   ::v-deep fieldset {
     padding-right: 0px;
+  }
+
+  ::v-deep .input-wrapper {
+    flex: 1 1 0%;
+
+    input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
   }
 </style>
