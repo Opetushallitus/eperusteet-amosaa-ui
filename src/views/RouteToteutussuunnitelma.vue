@@ -321,7 +321,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       this.koulutustoimijaId,
       {
         tyyppi: _.toLower(MatalaTyyppiEnum.OPINTOKOKONAISUUS),
-        opintokokonaisuus: { tyyppi: 'oma' },
+        opintokokonaisuus: { tyyppi: 'oma' as string },
       } as SisaltoviiteMatalaDto,
       this,
       this.updateNavigation);

@@ -55,13 +55,10 @@
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <div v-if="!opintokokonaisuus.tavoitteidenKuvaus && !isEditing" class="d-flex pb-3">
-              <EpAlert/>
-              <div class="d-flex flex-column justify-content-center">
-                <p class="mb-1">{{ $t('ei-sisaltoa') }}</p>
-                <p>{{ $t('kirjoita-sisaltoa-valitsemalla-muokkaa') }}</p>
-              </div>
-            </div>
+            <EpAlert
+              v-if="!opintokokonaisuus.tavoitteidenKuvaus && !isEditing"
+              :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+              class="pb-3"/>
             <b-form-group :label="$t('tavoitteet')  + (isEditing ? ' *' : '')" required>
               <div v-if="isEditing">
                 <draggable
@@ -110,13 +107,10 @@
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <div v-if="!opintokokonaisuus.keskeisetSisallot && !isEditing" class="d-flex pb-3">
-              <EpAlert/>
-              <div class="d-flex flex-column justify-content-center">
-                <p class="mb-1">{{ $t('ei-sisaltoa') }}</p>
-                <p>{{ $t('kirjoita-sisaltoa-valitsemalla-muokkaa') }}</p>
-              </div>
-            </div>
+            <EpAlert
+              v-if="!opintokokonaisuus.keskeisetSisallot && !isEditing"
+              :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+              class="pb-3"/>
           </b-col>
         </b-row>
         <hr/>
@@ -130,13 +124,10 @@
                 layout="normal"
                 :is-editable="isEditing"/>
             </b-form-group>
-            <div v-if="!opintokokonaisuus.arvioinninKuvaus && !isEditing" class="d-flex pb-3">
-              <EpAlert/>
-              <div class="d-flex flex-column justify-content-center">
-                <p class="mb-1">{{ $t('ei-sisaltoa') }}</p>
-                <p>{{ $t('kirjoita-sisaltoa-valitsemalla-muokkaa') }}</p>
-              </div>
-            </div>
+            <EpAlert
+              v-if="!opintokokonaisuus.arvioinninKuvaus && !isEditing"
+              :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+              class="pb-3"/>
             <b-form-group :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet')  + (isEditing ? ' *' : '')" required>
               <div v-if="isEditing">
                 <draggable
