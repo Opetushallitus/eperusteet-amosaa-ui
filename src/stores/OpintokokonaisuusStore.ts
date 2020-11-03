@@ -7,6 +7,8 @@ import { minLength, required, minValue } from 'vuelidate/lib/validators';
 import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko } from '@shared/tyypit';
+import { Kielet } from '@shared/stores/kieli';
+import { translated } from '@shared/validators/required';
 
 Vue.use(VueCompositionApi);
 
@@ -76,19 +78,18 @@ export class OpintokokonaisuusStore implements IEditoitava {
   }
 
   public readonly validator = computed(() => {
+    const kieli = [Kielet.getSisaltoKieli.value];
     return {
       tekstiKappale: {
-        nimi: { required },
+        nimi: translated(kieli),
       },
       opintokokonaisuus: {
         laajuus: {
           required,
           'min-length': minValue(this.opintokokonaisuus?.opintokokonaisuus?.minimilaajuus || 0),
         },
-        kuvaus: { required },
-        opetuksenTavoiteOtsikko: {
-          required,
-        },
+        kuvaus: translated(kieli),
+        opetuksenTavoiteOtsikko: translated(kieli),
         tavoitteet: {
           'min-length': minLength(1),
           required,
