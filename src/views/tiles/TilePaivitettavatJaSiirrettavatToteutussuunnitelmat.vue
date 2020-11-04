@@ -46,7 +46,14 @@ export default class TilePaivitettavatJaSiirrettavatToteutussuunnitelmat extends
   @Prop({ required: true })
   private paivitettavatJaSiirrettavatTotsStore!: PaivitettavatJaSiirrettavatTotsStore;
 
+  @Prop({ required: true })
+  private koulutustoimijaId!: string;
+
   private limit = 3;
+
+  async mounted() {
+    await this.paivitettavatJaSiirrettavatTotsStore.fetch(this.koulutustoimijaId);
+  }
 
   get vanhatJaHistoriaToteutussuunnitelmat(): any[] | null {
     if (this.paivitettavatJaSiirrettavatTotsStore.vanhentuneetToteutussuunnitelmat.value

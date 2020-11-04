@@ -3,14 +3,21 @@ import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Sisaltoviitteet, SisaltoViiteKevytDto, SisaltoViiteRakenneDto, SisaltoViiteKevytDtoTyyppiEnum } from '@shared/api/amosaa';
+import { Toteutus } from '@/utils/toteutustypes';
 
 Vue.use(VueCompositionApi);
+
+const ToteutusPerusrakenneOtsikko = {
+  [Toteutus.AMMATILLINEN]: 'tekstikappaleet',
+  [Toteutus.VAPAASIVISTYSTYO]: 'rakenne',
+};
 
 export class RakenneStore implements IEditoitava {
   constructor(
     private opetussuunnitelmaId: number,
     private koulutustoimijaId: string,
     private updateNavigation: Function,
+    private toteutus: Toteutus,
   ) {
   }
 
@@ -28,53 +35,54 @@ export class RakenneStore implements IEditoitava {
     const otsikot = (await Sisaltoviitteet.getOtsikot(this.opetussuunnitelmaId, this.koulutustoimijaId)).data;
     const root = _.find(otsikot, otsikko => _.isNil(_.get(otsikko, '_vanhempi'))) as SisaltoViiteRakenneDto;
 
-    const tekstikappaleet = _.map(this.lapsetRakenteesta(otsikot, root.lapset, SisaltoViiteKevytDtoTyyppiEnum.TEKSTIKAPPALE),
-      tekstikappale => this.tekstikappaleLapsilla(tekstikappale, otsikot));
+    const perusRakenne = _.map(this.lapsetRakenteesta(otsikot, root.lapset, [SisaltoViiteKevytDtoTyyppiEnum.TEKSTIKAPPALE, SisaltoViiteKevytDtoTyyppiEnum.OPINTOKOKONAISUUS]),
+      sisaltoviite => this.sisaltoviiteLapsilla(sisaltoviite, otsikot));
 
     const suorituspolutRoot = _.find(otsikot, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLUT) as any });
     const suorituspolut = [
       ...this.lapsetRakenteesta(otsikot, suorituspolutRoot?.lapset),
-      ...this.lapsetRakenteesta(otsikot, root?.lapset, SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLKU),
-      ...this.lapsetRakenteesta(otsikot, root?.lapset, SisaltoViiteKevytDtoTyyppiEnum.OSASUORITUSPOLKU),
+      ...this.lapsetRakenteesta(otsikot, root?.lapset, [SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLKU]),
+      ...this.lapsetRakenteesta(otsikot, root?.lapset, [SisaltoViiteKevytDtoTyyppiEnum.OSASUORITUSPOLKU]),
     ];
 
     const tutkinnonosatRoot = _.find(otsikot, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSAT) as any });
     const tutkinnonosat = [
       ...this.lapsetRakenteesta(otsikot, tutkinnonosatRoot?.lapset),
-      ...this.lapsetRakenteesta(otsikot, root?.lapset, SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSA),
+      ...this.lapsetRakenteesta(otsikot, root?.lapset, [SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSA]),
     ];
 
     return {
       otsikot,
       rakenteet: [{
-        otsikko: 'tekstikappaleet',
-        sisalto: tekstikappaleet,
+        otsikko: ToteutusPerusrakenneOtsikko[this.toteutus],
+        sisalto: perusRakenne,
         lapset: 'lapset',
-
-      }, {
+      },
+      ...(this.toteutus === Toteutus.AMMATILLINEN ? [{
         otsikko: 'suorituspolut',
         sisalto: suorituspolut,
-
-      }, {
+      }] : []),
+      ...(this.toteutus === Toteutus.AMMATILLINEN ? [{
         otsikko: 'tutkinnonosat',
         sisalto: tutkinnonosat,
-      }],
+      }] : []),
+      ],
     };
   }
 
-  tekstikappaleLapsilla(tekstikappale, rakenteet) {
+  sisaltoviiteLapsilla(sisaltoviite, rakenteet) {
     return {
-      ...tekstikappale,
-      lapset: _.chain(tekstikappale.lapset)
-        .map(tekstikappale => this.tekstikappaleLapsilla(_.find(rakenteet, { id: _.toNumber(tekstikappale) }), rakenteet))
+      ...sisaltoviite,
+      lapset: _.chain(sisaltoviite.lapset)
+        .map(sisaltoviite => this.sisaltoviiteLapsilla(_.find(rakenteet, { id: _.toNumber(sisaltoviite) }), rakenteet))
         .value(),
     };
   }
 
-  lapsetRakenteesta(otsikot, lapset, tyyppi?: SisaltoViiteKevytDtoTyyppiEnum) {
+  lapsetRakenteesta(otsikot, lapset, tyypit?: SisaltoViiteKevytDtoTyyppiEnum[]) {
     return _.chain(lapset)
       .map(lapsi => _.find(otsikot, { id: _.toNumber(lapsi) }))
-      .filter(rakenne => (!tyyppi || rakenne!.tyyppi as any === _.toLower(tyyppi)) && _.isObject(rakenne!.tekstiKappale))
+      .filter(rakenne => (!tyypit || _.includes(_.map(tyypit, tyyppi => _.toLower(tyyppi)), rakenne!.tyyppi)) && _.isObject(rakenne!.tekstiKappale))
       .value();
   }
 
@@ -85,15 +93,15 @@ export class RakenneStore implements IEditoitava {
     const tutkinnonosat = _.find(data.otsikot, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSAT) as any }) as SisaltoViiteRakenneDto;
 
     root.lapset = [
-      {
+      ...(suorituspolut ? [{
         ...suorituspolut,
         lapset: _.get(_.find(data.rakenteet, { otsikko: 'suorituspolut' }), 'sisalto'),
-      },
-      {
+      }] : []),
+      ...(tutkinnonosat ? [{
         ...tutkinnonosat,
         lapset: _.get(_.find(data.rakenteet, { otsikko: 'tutkinnonosat' }), 'sisalto'),
-      },
-      ..._.get(_.find(data.rakenteet, { otsikko: 'tekstikappaleet' }), 'sisalto'),
+      }] : []),
+      ..._.get(_.find(data.rakenteet, { otsikko: ToteutusPerusrakenneOtsikko[this.toteutus] }), 'sisalto'),
     ];
 
     await Sisaltoviitteet.updateSisaltoViiteRakenne(this.opetussuunnitelmaId, root.id!, this.koulutustoimijaId, root);

@@ -2,11 +2,11 @@
   <div id="scroll-anchor" v-if="editointiStore" >
     <EpEditointi :store="editointiStore" :versionumero="versionumero">
       <template v-slot:header="{ data }">
-        <h2 class="m-0">{{ $t('toteutussuunnitelman-tiedot') }}</h2>
+        <h2 class="m-0">{{ $t(kielistykset['title']) }}</h2>
       </template>
       <template v-slot:default="{ data, isEditing, validation }">
 
-        <b-form-group :label="$t('toteutussuunnitelman-nimi')">
+        <b-form-group :label="$t(kielistykset['nimi'])">
           <ep-field v-model="data.opetussuunnitelma.nimi" :is-editing="isEditing" :validation="validation.opetussuunnitelma.nimi"></ep-field>
         </b-form-group>
 
@@ -70,35 +70,35 @@
           </b-row>
         </b-container>
 
-        <hr/>
+        <div v-if="data.peruste">
+          <hr/>
+          <h3>{{$t('perusteen-tiedot')}}</h3>
 
-        <h3>{{$t('perusteen-tiedot')}}</h3>
-
-        <b-container fluid>
-          <b-row>
-            <b-col>
-              <b-form-group :label="$t('tutkinto')">
-                <div>{{$kaanna(data.peruste.nimi)}}</div>
-                <div>({{data.peruste.diaarinumero}})</div>
-              </b-form-group>
-            </b-col>
-            <b-col>
-              <b-form-group :label="$t('voimassaolo')">
-                <div><span v-if="data.peruste.voimassaoloAlkaa">{{$sd(data.peruste.voimassaoloAlkaa)}}</span> - <span v-if="data.peruste.voimassaoloLoppuu">{{$sd(data.peruste.voimassaoloLoppuu)}}</span></div>
-              </b-form-group>
-            </b-col>
-          </b-row>
-           <b-row>
-            <b-col>
-              <b-form-group :label="$t('koulutukset')">
-                <div v-for="(koulutus, index) in data.peruste.koulutukset" :key="'koulutus'+index">
-                  {{$kaanna(koulutus.nimi)}} ({{koulutus.koulutuskoodiArvo}})
-                </div>
-              </b-form-group>
-            </b-col>
-          </b-row>
-        </b-container>
-
+          <b-container fluid>
+            <b-row>
+              <b-col>
+                <b-form-group :label="$t('tutkinto')">
+                  <div>{{$kaanna(data.peruste.nimi)}}</div>
+                  <div>({{data.peruste.diaarinumero}})</div>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group :label="$t('voimassaolo')">
+                  <div><span v-if="data.peruste.voimassaoloAlkaa">{{$sd(data.peruste.voimassaoloAlkaa)}}</span> - <span v-if="data.peruste.voimassaoloLoppuu">{{$sd(data.peruste.voimassaoloLoppuu)}}</span></div>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col>
+                <b-form-group :label="$t('koulutukset')">
+                  <div v-for="(koulutus, index) in data.peruste.koulutukset" :key="'koulutus'+index">
+                    {{$kaanna(koulutus.nimi)}} ({{koulutus.koulutuskoodiArvo}})
+                  </div>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-container>
+        </div>
 
         <div v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
           <hr/>
@@ -128,6 +128,8 @@ import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 
 import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
+import { OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
+import { Murupolku } from '@shared/stores/murupolku';
 
 @Component({
   components: {
@@ -140,9 +142,13 @@ import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
   },
 })
 export default class RouteToteutussuunnitelmaTiedot extends Vue {
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
+
   private editointiStore: EditointiStore | null = null;
 
-  async mounted() {
+  mounted() {
+    Murupolku.aseta('toteutussuunnitelmantiedot', this.$t(OpetussuunnitelmaTyyppi[this.toteutus]));
     this.fetch();
   }
 
@@ -171,6 +177,10 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   get versionumero() {
     return _.toNumber(this.$route.query.versionumero);
+  }
+
+  get kielistykset() {
+    return ToteutussuunnitelmaTiedotKielistykset[this.toteutus];
   }
 }
 </script>

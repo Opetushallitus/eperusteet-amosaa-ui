@@ -33,7 +33,10 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
 
   async load() {
     const opetussuunnitelma = (await this.getOpetussuunnitelmaVersion()) as OpetussuunnitelmaDto;
-    this.peruste = (await Perusteet.getPeruste(opetussuunnitelma.peruste?.id!)).data;
+
+    if (opetussuunnitelma.peruste) {
+      this.peruste = (await Perusteet.getPeruste(opetussuunnitelma.peruste?.id!)).data;
+    }
 
     return {
       opetussuunnitelma: {

@@ -7,7 +7,7 @@
 
            <div class="row">
             <div class="col-sm-10 mb-4">
-              <b-form-group class="mt-4 pt-2 " :label="$t('kayta-pohjana')+' *'">
+              <b-form-group class="mt-4 pt-2 " :label="$t('kayta-pohjana')+' *'" v-if="pohjanValinta">
                 <b-form-radio v-for="(radiobutton, index) in tyypinRadioButtons" :key="'radiobutton'+index" class="p-2 pl-4" v-model="pohjanTyyppi" :value="radiobutton.value" :disabled="radiobutton.disabled">
                   {{$t(radiobutton.text)}}
                 </b-form-radio>
@@ -54,7 +54,7 @@
 
               </b-form-group>
 
-              <b-form-group :label="$t(kaannokset.nimiLabel) +' *'" v-if="pohjanTyyppi">
+              <b-form-group :label="$t(kaannokset.nimiLabel) +' *'" v-if="pohjanTyyppi || !pohjanValinta">
                 <ep-field v-model="nimi" :is-editing="true" :validation="$v.nimi"></ep-field>
               </b-form-group>
 
@@ -88,6 +88,7 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
+import { Toteutus } from '@/utils/toteutustypes';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
@@ -127,6 +128,11 @@ const kielistykset = {
     nimiLabel: 'toteutussuunnitelman-nimi',
     luoLabel: 'luo-suunnitelma',
   },
+  'pohja': {
+    stepName: 'uusi-yhteisten-osien-pohja',
+    nimiLabel: 'pohjan-nimi',
+    luoLabel: 'luo-pohja',
+  },
 };
 
 @Component({
@@ -160,13 +166,13 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private koulutustoimijaId!: string | number;
 
   @Prop({ required: true })
-  private opetussuunnitelmanTyyppi!: 'ops' | 'yleinen' | 'yhteinen';
+  private opetussuunnitelmanTyyppi!: 'ops' | 'yleinen' | 'yhteinen' | 'pohja';
 
   @Prop({ required: false })
   private opetussuunnitelmanSuoritustapa!: string;
 
   @Prop({ required: true })
-  private toteutus!: string;
+  private toteutus!: Toteutus;
 
   private pohjanTyyppi: 'toteutussuunnitelma' | 'peruste' | 'uusi' | 'ophPohja' | null = null;
 
@@ -335,6 +341,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   nimiSearchIdentity(tietue: any) {
     return _.toLower(this.$kaanna(tietue.nimi));
+  }
+
+  get pohjanValinta() {
+    return this.opetussuunnitelmanTyyppi !== 'pohja';
   }
 }
 </script>

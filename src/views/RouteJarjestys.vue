@@ -40,6 +40,7 @@ import { RakenneStore } from '@/stores/RakenneStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpJarjesta from '@shared/components/EpJarjesta/EpJarjesta.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -55,6 +56,9 @@ export default class RouteJarjestys extends Vue {
   private toteutussuunnitelmaId!: number;
 
   @Prop({ required: true })
+  private toteutus!: Toteutus;
+
+  @Prop({ required: true })
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
   private editointiStore: EditointiStore | null = null;
@@ -65,6 +69,7 @@ export default class RouteJarjestys extends Vue {
         this.toteutussuunnitelmaId,
         this.koulutustoimijaId,
         async () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+        this.toteutus,
       ));
   }
 }

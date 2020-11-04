@@ -12,8 +12,8 @@ export class OhjeetStore {
 
   public readonly ohjeet = computed(() => this.state.ohjeet);
 
-  public async fetch() {
-    this.state.ohjeet = (await Ohjeet.getOhjeet()).data as any;
+  public async fetch(toteutus) {
+    this.state.ohjeet = (await Ohjeet.getOhjeet(toteutus)).data as any;
   }
 
   public async save(ohje: OhjeDto) {

@@ -98,6 +98,7 @@ import { Page } from '@shared/tyypit';
 import { BvTableFieldArray } from 'bootstrap-vue';
 import { IToteutussuunnitelmaProvider } from './types';
 import * as _ from 'lodash';
+import { Toteutus } from '@/utils/toteutustypes';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
@@ -165,10 +166,9 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
     if (!this.isLoading) {
       this.isLoading = true;
       try {
-        this.query.sivu = 0;
         await this.provider.updateQuery(
           _.toNumber(koulutustoimijaId),
-          this.$route.params.toteutus,
+          this.$route.params.toteutus as Toteutus,
           query,
         );
       }
@@ -251,7 +251,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   }
 
   get sivu() {
-    return this.items?.sivu! + 1;
+    return this.query?.sivu! + 1;
   }
 
   set sivu(value: number) {

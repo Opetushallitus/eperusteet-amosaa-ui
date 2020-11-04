@@ -1,7 +1,6 @@
 <template>
   <EpHomeTile icon="muistikirja"
               :route="{ name: 'tiedotteet' }"
-              :header-bg-color="{ top: '#009700', bottom: '#007500' }"
               :count="uudetTiedotteetCount">
     <template slot="header">
       <span>{{ $t('tile-tiedotteet') }}</span>
@@ -23,12 +22,13 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch, Provide } from 'vue-property-decorator';
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
 import { Tiedotteet, TiedoteDto } from '@shared/api/eperusteet';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { julkaisupaikka, onkoUusi } from '@shared/utils/tiedote';
+import { Debounced } from '@shared/utils/delay';
 
 @Component({
   components: {
@@ -43,6 +43,15 @@ export default class TileTiedotteet extends Vue {
   @Prop({ required: true })
   private kieli!: string;
 
+  @Prop({ required: false })
+  private headerStyle!: string;
+
+  @Prop({ required: false, default: 'amosaa' })
+  private julkaisupaikka!: string;
+
+  @Provide('tileHeaderStyle')
+  private tileHeaderStyle = this.headerStyle;
+
   @Watch('kieli', { immediate: true })
   async onSisaltoKieliChange(newValue: string, oldValue: string) {
     if (newValue && newValue !== oldValue) {
@@ -54,6 +63,7 @@ export default class TileTiedotteet extends Vue {
     this.fetch();
   }
 
+  @Debounced()
   async fetch() {
     try {
       this.isLoading = true;
@@ -66,7 +76,7 @@ export default class TileTiedotteet extends Vue {
         undefined,
         undefined,
         undefined,
-        [julkaisupaikka.amosaa],
+        [this.julkaisupaikka],
       )).data as any).data;
     }
     catch (err) {

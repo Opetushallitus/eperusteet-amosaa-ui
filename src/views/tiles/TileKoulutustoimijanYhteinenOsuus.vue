@@ -26,10 +26,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { EtusivuDto } from '../../../eperusteet-frontend-utils/vue/src/generated/amosaa';
+import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
+import { KayttajaStore } from '@/stores/kayttaja';
+import { Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -38,8 +41,31 @@ import { EtusivuDto } from '../../../eperusteet-frontend-utils/vue/src/generated
   },
 })
 export default class TileKoulutustoimijanYhteinenOsuus extends Vue {
-  @Prop({})
-  private etusivu!: EtusivuDto | null;
+  @Prop({ required: true })
+  private kayttajaStore!: KayttajaStore;
+
+  @Prop({ required: true })
+  private koulutustoimijaId!: string;
+
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
+
+  async mounted() {
+    this.fetch();
+  }
+
+  @Watch('koulutustoimijaId')
+  async koulutustoimijaChange() {
+    await this.fetch();
+  }
+
+  async fetch() {
+    await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId, EperusteetKoulutustyyppiRyhmat[this.toteutus]);
+  }
+
+  get etusivu() {
+    return this.kayttajaStore?.etusivu?.value || null;
+  }
 }
 </script>
 

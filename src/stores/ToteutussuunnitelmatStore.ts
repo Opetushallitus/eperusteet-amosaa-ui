@@ -4,6 +4,7 @@ import { PageOpetussuunnitelmaDto, Opetussuunnitelmat } from '@shared/api/amosaa
 import _ from 'lodash';
 import { IToteutussuunnitelmaProvider } from '@/components/EpToteutussuunnitelmaListaus/types';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
+import { Toteutus } from '@/utils/toteutustypes';
 
 Vue.use(VueCompositionApi);
 
@@ -14,7 +15,7 @@ export class ToteutussuunnitelmatStore implements IToteutussuunnitelmaProvider {
 
   public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
 
-  public async updateQuery(koulutustoimijaId: number, toteutus: string, query: any) {
+  public async updateQuery(koulutustoimijaId: number, toteutus: Toteutus, query: any) {
     this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getAllOpetussuunnitelmatSivutettu(
       _.toString(koulutustoimijaId), undefined,
       {

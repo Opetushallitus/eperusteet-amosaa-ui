@@ -56,6 +56,7 @@ import { required } from 'vuelidate/lib/validators';
 import { validationMixin } from 'vuelidate';
 import { parsiEsitysnimi } from '@/stores/kayttaja';
 import { julkaisupaikka, julkaisupaikkaSort } from '@shared/utils/tiedote';
+import { TiedoteJulkaisupaikka, Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -75,6 +76,9 @@ export default class RouteTiedotteet extends Vue {
   @Prop({ required: true })
   private kieliStore!: KieliStore;
 
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
+
   @Watch('sisaltoKieli', { immediate: true })
   async onSisaltoKieliChange(newValue: string, oldValue: string) {
     if (newValue && newValue !== oldValue) {
@@ -88,7 +92,7 @@ export default class RouteTiedotteet extends Vue {
       sivu: this.currentPage - 1,
       sivukoko: 10,
       tiedoteJulkaisuPaikka: [
-        julkaisupaikka.amosaa,
+        TiedoteJulkaisupaikka[this.toteutus],
       ],
     });
   }

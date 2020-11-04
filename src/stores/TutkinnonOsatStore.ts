@@ -21,7 +21,11 @@ export class TutkinnonOsatStore implements IEditoitava {
     this.state.tutkinnonosat = null;
     if (this.opetussuunnitelma.value) {
       const tutkinnonosaViitteet = (await Sisaltoviitteet.getTutkinnonosat(this.opetussuunnitelma.value.id, this.opetussuunnitelma.value.koulutustoimija.id)).data;
-      const perusteenTutkinnonosaViitteet = _.keyBy((await Perusteet.getTutkinnonOsaViitteet(this.opetussuunnitelma.value.peruste.id, 'reformi')).data as any[], '_tutkinnonOsa');
+
+      let perusteenTutkinnonosaViitteet = {};
+      if (this.opetussuunnitelma.value.peruste && _.size(tutkinnonosaViitteet) > 0) {
+        perusteenTutkinnonosaViitteet = _.keyBy((await Perusteet.getTutkinnonOsaViitteet(this.opetussuunnitelma.value.peruste.id, 'reformi')).data as any[], '_tutkinnonOsa');
+      }
 
       this.state.tutkinnonosat = _.map(tutkinnonosaViitteet, (tutkinnonosaViite, index) => {
         return {

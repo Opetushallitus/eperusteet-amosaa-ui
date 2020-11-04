@@ -9,9 +9,9 @@
 
   <div class="row pt-0">
     <div class="col">
-      <ep-toteutussuunnitelman-tiedotteet class="info-box" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
+      <ep-toteutussuunnitelman-tiedotteet class="info-box" v-if="peruste" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
       <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma"/>
-      <ep-toteutussuunnitelman-tutkinnon-osat class="info-box" :sisaltoViiteStore="sisaltoViiteStore" />
+      <ep-toteutussuunnitelman-sisaltoviitteet class="info-box" :sisaltoViiteStore="sisaltoViiteStore" :toteutus="toteutus"/>
     </div>
     <div class="col">
       <ep-viimeaikainen-toiminta class="info-box" :muokkaustietoStore="muokkaustietoStore"/>
@@ -26,7 +26,7 @@ import _ from 'lodash';
 import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
 import EpToteutussuunnitelmaAikataulu from '@/components/EpYleisnakyma/EpToteutussuunnitelmaAikataulu.vue';
 import EpToteutussuunnitelmanPerustiedot from '@/components/EpYleisnakyma/EpToteutussuunnitelmanPerustiedot.vue';
-import EpToteutussuunnitelmanTutkinnonOsat from '@/components/EpYleisnakyma/EpToteutussuunnitelmanTutkinnonOsat.vue';
+import EpToteutussuunnitelmanSisaltoviitteet from '@/components/EpYleisnakyma/EpToteutussuunnitelmanSisaltoviitteet.vue';
 import EpToteutussuunnitelmanTiedotteet from '@/components/EpYleisnakyma/EpToteutussuunnitelmanTiedotteet.vue';
 import EpViimeaikainenToiminta from '@shared/components/EpViimeaikainenToiminta/EpViimeaikainenToiminta.vue';
 import { MuokkaustietoStore } from '@/stores/MuokkaustietoStore';
@@ -34,12 +34,13 @@ import { AikatauluStore } from '@/stores/AikatauluStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
     EpToteutussuunnitelmaAikataulu,
     EpToteutussuunnitelmanPerustiedot,
-    EpToteutussuunnitelmanTutkinnonOsat,
+    EpToteutussuunnitelmanSisaltoviitteet,
     EpViimeaikainenToiminta,
     EpToteutussuunnitelmanTiedotteet,
   },
@@ -63,8 +64,15 @@ export default class RouteYleisnakyma extends Vue {
   @Prop({ required: false, default: 'peruste' })
   private tyyppi!: 'opas' | 'peruste';
 
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
+
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+  }
+
+  get peruste() {
+    return this.toteutussuunnitelma?.peruste;
   }
 }
 </script>

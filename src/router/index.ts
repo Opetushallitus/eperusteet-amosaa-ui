@@ -36,6 +36,7 @@ import { Virheet } from '@shared/stores/virheet';
 import { SovellusVirhe } from '@shared/tyypit';
 import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
+import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTiles } from '@/utils/toteutustypes';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -59,6 +60,11 @@ const router = new VueRouter({
     component: RouteLang,
     props,
   }, {
+    path: '/:toteutus',
+    name: 'root',
+    component: RouteLang,
+    props,
+  }, {
     path: '/:toteutus/:lang/koulutustoimija/:koulutustoimijaId/',
     component: RouteRoot,
     props,
@@ -70,7 +76,15 @@ const router = new VueRouter({
       path: '',
       name: 'home',
       component: RouteEtusivu,
-      props,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          tervetuloaTeksti: TervetuloaTeksti[route.params.toteutus],
+          tervetuloaTekstiKuvaus: TervetuloaTekstiKuvaus[route.params.toteutus],
+          tiles: ToteutusTiles[route.params.toteutus](stores, route.params),
+        };
+      },
     }, {
       path: 'ukk',
       name: 'ukk',
@@ -100,7 +114,14 @@ const router = new VueRouter({
       path: 'yhteinen',
       name: 'yhteinen',
       component: RouteYhteiset,
-      props,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          tyypit: stores.kayttajaStore.ophSelected.value ? ['pohja'] : ['yhteinen'],
+          storeProvider: stores.kayttajaStore.ophSelected.value ? stores.ophPohjatStore : stores.yhteisetOsuudetStore,
+        };
+      },
     }, {
       path: 'paivitettavat',
       name: 'paivitettavat',
@@ -145,7 +166,7 @@ const router = new VueRouter({
         return {
           ...route.params,
           ...stores,
-          opetussuunnitelmanTyyppi: 'yhteinen',
+          opetussuunnitelmanTyyppi: stores.kayttajaStore.ophSelected.value ? 'pohja' : 'yhteinen',
           perusteetStore: null,
         };
       },
