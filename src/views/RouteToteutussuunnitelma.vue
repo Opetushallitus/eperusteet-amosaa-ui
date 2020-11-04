@@ -219,8 +219,7 @@ import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
-import { NavigationNodeDtoTypeEnum } from '@shared/api/eperusteet';
-import { MatalaTyyppiEnum, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
+import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum } from '@shared/api/amosaa';
 
 @Component({
   components: {
