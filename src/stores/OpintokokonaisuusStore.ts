@@ -53,7 +53,15 @@ export class OpintokokonaisuusStore implements IEditoitava {
   }
 
   async save(data: any) {
-    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, data);
+    const filteredData = {
+      ...data,
+      opintokokonaisuus: {
+        ...data.opintokokonaisuus,
+        tavoitteet: data.opintokokonaisuus.tavoitteet.filter(tavoite => !!tavoite.tavoiteKoodi),
+        arvioinnit: data.opintokokonaisuus.arvioinnit.filter(arviointi => !!arviointi.arviointi),
+      },
+    };
+    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, filteredData);
   }
 
   async restore(rev: number) {
