@@ -80,6 +80,7 @@
                               v-model="tavoiteItem.tavoite"
                               :is-editing="isEditing"
                               :disabled="tavoiteItem.perusteesta || !!tavoiteItem.tavoiteKoodi"
+                              :validation="validation.opintokokonaisuus.tavoitteet.$each.$iter[index].tavoite"
                               class="input-wrapper">
                               <div class="order-handle m-2" slot="left">
                                 <fas icon="grip-vertical"></fas>
@@ -152,12 +153,13 @@
                   tag="div"
                   v-model="opintokokonaisuus.arvioinnit">
 
-                  <b-row v-for="arviointiItem in opintokokonaisuus.arvioinnit" :key="arviointiItem.id" class="pb-2">
+                  <b-row v-for="(arviointiItem, index) in opintokokonaisuus.arvioinnit" :key="arviointiItem.id" class="pb-2">
                     <b-col cols="10" lg="8">
                       <EpInput
                         v-model="arviointiItem.arviointi"
                         :is-editing="isEditing"
-                        :disabled="arviointiItem.perusteesta">
+                        :disabled="arviointiItem.perusteesta"
+                        :validation="validation.opintokokonaisuus.arvioinnit.$each.$iter[index].arviointi">
                         <div class="order-handle m-2" slot="left">
                           <fas icon="grip-vertical"></fas>
                         </div>
