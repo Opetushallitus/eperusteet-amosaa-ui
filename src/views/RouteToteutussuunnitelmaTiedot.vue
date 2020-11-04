@@ -62,12 +62,22 @@
             </b-col>
             <b-col>
               <b-form-group :label="$t('esikatselu')">
-                <ep-external-link :url="data.opetussuunnitelma.toteutussuunnitelmaUrl">
+                <ep-toggle v-model="data.opetussuunnitelma.esikatseltavissa" :is-editing="isEditing" v-if="isEditing || !data.opetussuunnitelma.esikatseltavissa">
+                  {{$t('salli-opetussuunnitelman-esikatselu')}}
+                </ep-toggle>
+                <ep-external-link :url="data.opetussuunnitelma.toteutussuunnitelmaUrl" v-if="!isEditing && data.opetussuunnitelma.esikatseltavissa">
                   {{$t('esikatsele-toteutussuunnitelmaa')}}
                 </ep-external-link>
               </b-form-group>
             </b-col>
           </b-row>
+           <b-row>
+            <b-col>
+              <b-form-group :label="$t('tila')">
+                {{$t(data.opetussuunnitelma.tila)}}
+              </b-form-group>
+            </b-col>
+           </b-row>
         </b-container>
 
         <div v-if="data.peruste">
@@ -113,20 +123,17 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { UiKielet } from '@shared/stores/kieli';
-
 import { ToteutussuunnitelmaTiedotStore } from '@/stores/ToteutussuunnitelmaTiedotStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
-
+import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
 import { OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { Murupolku } from '@shared/stores/murupolku';
@@ -139,6 +146,7 @@ import { Murupolku } from '@shared/stores/murupolku';
     EpDatepicker,
     EpExternalLink,
     EpSiirtoModal,
+    EpToggle,
   },
 })
 export default class RouteToteutussuunnitelmaTiedot extends Vue {
@@ -159,7 +167,7 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   fetch() {
     if (!(this.editointiStore && this.editointiStore.isLoading.value)) {
-      this.editointiStore = new EditointiStore(new ToteutussuunnitelmaTiedotStore(this.toteutussuunnitelmaId, this.koulutustoimijaId, this.versionumero));
+      this.editointiStore = new EditointiStore(new ToteutussuunnitelmaTiedotStore(this.toteutussuunnitelmaId, this.koulutustoimijaId, this.versionumero, this.toteutus));
     }
   }
 

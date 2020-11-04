@@ -181,3 +181,24 @@ export const TiedoteJulkaisupaikka = {
   [Toteutus.VAPAASIVISTYSTYO]: 'vst',
   [Toteutus.AMMATILLINEN]: 'amosaa',
 };
+
+export const ArkistointiTekstit = {
+  [Toteutus.VAPAASIVISTYSTYO]:
+    {
+      text: 'arkistoi-opetussuunnitelma',
+      meta: {
+        title: 'arkistoi-opetussuunnitelma',
+        confirm: 'arkistoi-opetussuunnitelma-vahvistus',
+        reroute: 'toteutussuunnitelmat',
+      },
+    },
+  [Toteutus.AMMATILLINEN]:
+    {
+      text: 'arkistoi-toteutussuunnitelma',
+      meta: {
+        title: 'arkistoi-toteutussuunnitelma',
+        confirm: 'arkistoi-toteutussuunnitelma-vahvistus',
+        reroute: 'toteutussuunnitelmat',
+      },
+    },
+};

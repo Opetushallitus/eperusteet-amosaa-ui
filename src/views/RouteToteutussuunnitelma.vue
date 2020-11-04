@@ -53,7 +53,12 @@
 
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
 
-                  <b-dropdown-item v-else :to="{ name: ratasvalinta.route }">
+                  <b-dropdown-item v-if="ratasvalinta.route" :to="{ name: ratasvalinta.route }">
+                    <fas :icon="ratasvalinta.icon" />
+                    {{ $t(ratasvalinta.text) }}
+                  </b-dropdown-item>
+
+                  <b-dropdown-item v-if="ratasvalinta.click" @click="ratasClick(ratasvalinta.click, ratasvalinta.meta)">
                     <fas :icon="ratasvalinta.icon" />
                     {{ $t(ratasvalinta.text) }}
                   </b-dropdown-item>
@@ -221,7 +226,8 @@ import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
 import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum } from '@shared/api/amosaa';
 import { Murupolku } from '@shared/stores/murupolku';
-import { OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
+import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
+import { arkistoiOpetussuunnitelma } from '@/utils/arkistointi';
 
 @Component({
   components: {
@@ -366,7 +372,20 @@ export default class RouteToteutussuunnitelma extends Vue {
         icon: 'roskalaatikko',
         oikeus: 'hallinta',
       },
+      {
+        separator: true,
+        oikeus: 'hallinta',
+      }, {
+        icon: ['far', 'folder'],
+        click: arkistoiOpetussuunnitelma,
+        ...ArkistointiTekstit[this.toteutus],
+        oikeus: 'hallinta',
+      },
     ];
+  }
+
+  ratasClick(clickFn, meta) {
+    clickFn(this, meta);
   }
 
   get isAmmatillinen() {

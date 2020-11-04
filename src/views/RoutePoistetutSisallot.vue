@@ -79,7 +79,7 @@ export default class RoutePoistetutSisallot extends Vue {
   }
 
   get poistetutsisallotValilehdet() {
-    return [
+    return _.filter([
       {
         otsikko: 'tutkinnonosat',
         poistetut: this.poistetutTyypeilla(['tutkinnonosa']),
@@ -92,7 +92,11 @@ export default class RoutePoistetutSisallot extends Vue {
         otsikko: 'tekstikappaleet',
         poistetut: this.poistetutTyypeilla(['tekstikappale']),
       },
-    ];
+      {
+        otsikko: 'opintokokonaisuudet',
+        poistetut: this.poistetutTyypeilla(['opintokokonaisuus']),
+      },
+    ], valilehti => _.size(valilehti.poistetut) > 0);
   }
 
   get poistetutsisallot() {
