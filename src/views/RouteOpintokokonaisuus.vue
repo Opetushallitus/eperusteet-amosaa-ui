@@ -79,7 +79,7 @@
                             <EpInput
                               v-model="tavoiteItem.tavoite"
                               :is-editing="isEditing"
-                              :disabled="tavoiteItem.perusteesta"
+                              :disabled="tavoiteItem.perusteesta || !!tavoiteItem.tavoiteKoodi"
                               class="input-wrapper">
                               <div class="order-handle m-2" slot="left">
                                 <fas icon="grip-vertical"></fas>
