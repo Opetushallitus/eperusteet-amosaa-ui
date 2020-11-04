@@ -53,15 +53,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
   }
 
   async save(data: any) {
-    const filteredData = {
-      ...data,
-      opintokokonaisuus: {
-        ...data.opintokokonaisuus,
-        tavoitteet: data.opintokokonaisuus.tavoitteet.filter(tavoite => !!tavoite.tavoiteKoodi),
-        arvioinnit: data.opintokokonaisuus.arvioinnit.filter(arviointi => !!arviointi.arviointi),
-      },
-    };
-    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, filteredData);
+    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, data);
   }
 
   async restore(rev: number) {
@@ -86,25 +78,39 @@ export class OpintokokonaisuusStore implements IEditoitava {
   }
 
   public readonly validator = computed(() => {
-    const kieli = [Kielet.getSisaltoKieli.value];
+    const kieli = Kielet.getSisaltoKieli.value;
     return {
       tekstiKappale: {
-        nimi: translated(kieli),
+        nimi: translated([kieli]),
       },
       opintokokonaisuus: {
         laajuus: {
           required,
           'min-length': minValue(this.opintokokonaisuus?.opintokokonaisuus?.minimilaajuus || 0),
         },
-        kuvaus: translated(kieli),
-        opetuksenTavoiteOtsikko: translated(kieli),
+        kuvaus: translated([kieli]),
+        opetuksenTavoiteOtsikko: translated([kieli]),
         tavoitteet: {
           'min-length': minLength(1),
           required,
+          $each: {
+            tavoite: {
+              [kieli]: {
+                required,
+              },
+            },
+          },
         },
         arvioinnit: {
           'min-length': minLength(1),
           required,
+          $each: {
+            arviointi: {
+              [kieli]: {
+                required,
+              },
+            },
+          },
         },
       },
     };
