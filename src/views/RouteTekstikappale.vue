@@ -8,13 +8,35 @@
       <template v-slot:default="{ data, isEditing, validation }">
 
         <div class="container">
-          <b-form-group :label="$t('otsikko')" v-if="isEditing">
-            <ep-field v-model="data.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
-          </b-form-group>
 
-          <b-form-group :label="$t('kappaleen-teksti')" :label-sr-only="!isEditing">
-            <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing" />
-          </b-form-group>
+          <div v-if="data.perusteteksti">
+
+            <EpCollapse>
+              <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
+              <ep-content layout="normal" v-model="data.perusteteksti" :is-editable="false" />
+              <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
+                {{$t('nayta-perusteen-teksti')}}
+              </ep-toggle>
+            </EpCollapse>
+
+            <b-form-group :label="$t('paikallinen-teksti')">
+              <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing" v-if="isEditing || data.tekstiKappale.teksti"/>
+              <EpAlert
+                v-if="!isEditing && !data.tekstiKappale.teksti"
+                :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+                class="pb-3"/>
+            </b-form-group>
+          </div>
+
+          <div v-else>
+            <b-form-group :label="$t('otsikko')" v-if="isEditing">
+              <ep-field v-model="data.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
+            </b-form-group>
+
+            <b-form-group :label="$t('kappaleen-teksti')" :label-sr-only="!isEditing">
+              <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing" />
+            </b-form-group>
+          </div>
         </div>
       </template>
 
@@ -32,12 +54,17 @@ import EpField from '@shared/components/forms/EpField.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import EpToggle from '@shared/components/forms/EpToggle.vue';
+import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 
 @Component({
   components: {
     EpEditointi,
     EpField,
     EpContent,
+    EpToggle,
+    EpCollapse,
+    EpAlert,
   },
 })
 export default class RouteTekstikappale extends Vue {

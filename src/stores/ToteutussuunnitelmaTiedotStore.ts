@@ -8,13 +8,14 @@ import { Kielet } from '@shared/stores/kieli';
 import { Revision, Kieli } from '@shared/tyypit';
 import { requiredLokalisoituTeksti } from '@shared/validators/required';
 import { required, minValue, maxValue } from 'vuelidate/lib/validators';
+import { Toteutus } from '@/utils/toteutustypes';
 
 Vue.use(VueCompositionApi);
 
 export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
   private peruste: PerusteDto | null = null;
 
-  constructor(private opetussuunnitelmaId: number, private koulutustoimijaId: string, private versionumero: number) {
+  constructor(private opetussuunnitelmaId: number, private koulutustoimijaId: string, private versionumero: number, private toteutus: Toteutus) {
   }
 
   async acquire() {
@@ -41,7 +42,7 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
     return {
       opetussuunnitelma: {
         ...opetussuunnitelma,
-        toteutussuunnitelmaUrl: buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${opetussuunnitelma.id}`),
+        toteutussuunnitelmaUrl: buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${opetussuunnitelma.id}/${this.toteutus}`),
       },
       peruste: this.peruste,
     };
