@@ -59,62 +59,60 @@
               v-if="!opintokokonaisuus.tavoitteidenKuvaus && !isEditing"
               :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
               class="pb-3"/>
-            <b-form-group :label="$t('tavoitteet')  + (isEditing ? ' *' : '')" required>
-              <div v-if="isEditing">
-                <draggable
-                  v-bind="tavoitteetOptions"
-                  tag="div"
-                  v-model="opintokokonaisuus.tavoitteet">
-
-                  <b-row v-for="(tavoiteItem, index) in opintokokonaisuus.tavoitteet" :key="tavoiteItem.id" class="pb-2">
-                    <b-col cols="10" lg="8">
-                      <EpKoodistoSelect
-                        :store="koodisto"
-                        :value="opintokokonaisuus.tavoitteet[index]"
-                        @add="updateTavoiteByIndex($event, index)"
-                        :is-editing="isEditing"
-                        :naytaArvo="false">
-                        <template #default="{ open }">
-                          <b-input-group>
-                            <EpInput
-                              v-model="tavoiteItem.tavoite"
-                              :is-editing="isEditing"
-                              :disabled="tavoiteItem.perusteesta || !!tavoiteItem.tavoiteKoodi"
-                              :validation="validation.opintokokonaisuus.tavoitteet.$each.$iter[index].tavoite"
-                              class="input-wrapper">
-                              <div class="order-handle m-2" slot="left">
-                                <fas icon="grip-vertical"></fas>
-                              </div>
-                            </EpInput>
-                            <b-input-group-append>
-                              <b-button @click="open" icon="plus" variant="primary">
-                                {{ $t('hae-koodistosta') }}
-                              </b-button>
-                            </b-input-group-append>
-                          </b-input-group>
-                        </template>
-                      </EpKoodistoSelect>
-                    </b-col>
-                    <b-col cols="1" v-if="isEditing && !tavoiteItem.perusteesta">
-                      <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"/>
-                    </b-col>
-                  </b-row>
-                </draggable>
-
-                <EpButton variant="outline" icon="plus" @click="onAddListItem('tavoitteet')" v-if="isEditing">
-                  {{ $t('lisaa-tavoite') }}
-                </EpButton>
-              </div>
-              <div v-else>
-                <ul>
-                  <li v-for="tavoiteItem in opintokokonaisuus.tavoitteet" :key="tavoiteItem.id">
-                    {{ $kaanna(tavoiteItem.tavoite)}}
-                  </li>
-                </ul>
-              </div>
-            </b-form-group>
           </b-col>
         </b-row>
+        <b-form-group :label="$t('tavoitteet')  + (isEditing ? ' *' : '')" required>
+          <div v-if="isEditing">
+            <draggable
+              v-bind="tavoitteetOptions"
+              tag="div"
+              v-model="opintokokonaisuus.tavoitteet">
+              <b-row v-for="(tavoiteItem, index) in opintokokonaisuus.tavoitteet" :key="tavoiteItem.id" class="pb-2">
+                <b-col cols="11" md="10">
+                  <EpKoodistoSelect
+                    :store="koodisto"
+                    :value="opintokokonaisuus.tavoitteet[index]"
+                    @add="updateTavoiteByIndex($event, index)"
+                    :is-editing="isEditing"
+                    :naytaArvo="false">
+                    <template #default="{ open }">
+                      <b-input-group>
+                        <EpInput
+                          v-model="tavoiteItem.tavoite"
+                          :is-editing="isEditing"
+                          :disabled="tavoiteItem.perusteesta || !!tavoiteItem.tavoiteKoodi"
+                          :validation="validation.opintokokonaisuus.tavoitteet.$each.$iter[index].tavoite"
+                          class="input-wrapper">
+                          <div class="order-handle m-2" slot="left">
+                            <fas icon="grip-vertical"></fas>
+                          </div>
+                        </EpInput>
+                        <b-input-group-append>
+                          <b-button @click="open" icon="plus" variant="primary">
+                            {{ $t('hae-koodistosta') }}
+                          </b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </template>
+                  </EpKoodistoSelect>
+                </b-col>
+                <b-col cols="1" v-if="isEditing && !tavoiteItem.perusteesta">
+                  <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"/>
+                </b-col>
+              </b-row>
+            </draggable>
+            <EpButton variant="outline" icon="plus" @click="onAddListItem('tavoitteet')" v-if="isEditing">
+              {{ $t('lisaa-tavoite') }}
+            </EpButton>
+          </div>
+          <div v-else>
+            <ul>
+              <li v-for="tavoiteItem in opintokokonaisuus.tavoitteet" :key="tavoiteItem.id">
+                {{ $kaanna(tavoiteItem.tavoite)}}
+              </li>
+            </ul>
+          </div>
+        </b-form-group>
         <hr/>
         <h3 class="py-3">{{ $t('keskeiset-sisallot') }}</h3>
         <b-row>
@@ -146,45 +144,44 @@
               v-if="!opintokokonaisuus.arvioinninKuvaus && !isEditing"
               :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
               class="pb-3"/>
-            <b-form-group :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet')  + (isEditing ? ' *' : '')" required>
-              <div v-if="isEditing">
-                <draggable
-                  v-bind="arvioinnitOptions"
-                  tag="div"
-                  v-model="opintokokonaisuus.arvioinnit">
-
-                  <b-row v-for="(arviointiItem, index) in opintokokonaisuus.arvioinnit" :key="arviointiItem.id" class="pb-2">
-                    <b-col cols="10" lg="8">
-                      <EpInput
-                        v-model="arviointiItem.arviointi"
-                        :is-editing="isEditing"
-                        :disabled="arviointiItem.perusteesta"
-                        :validation="validation.opintokokonaisuus.arvioinnit.$each.$iter[index].arviointi">
-                        <div class="order-handle m-2" slot="left">
-                          <fas icon="grip-vertical"></fas>
-                        </div>
-                      </EpInput>
-                    </b-col>
-                    <b-col cols="1" v-if="isEditing && !arviointiItem.perusteesta">
-                      <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(arviointiItem, 'arvioinnit')"/>
-                    </b-col>
-                  </b-row>
-                </draggable>
-
-                <EpButton variant="outline" icon="plus" @click="onAddListItem('arvioinnit')" v-if="isEditing">
-                  {{ $t('lisaa-tavoite') }}
-                </EpButton>
-              </div>
-              <div v-else>
-                <ul>
-                  <li v-for="arviointiItem in opintokokonaisuus.arvioinnit" :key="arviointiItem.id">
-                    {{ $kaanna(arviointiItem.arviointi)}}
-                  </li>
-                </ul>
-              </div>
-            </b-form-group>
           </b-col>
         </b-row>
+        <b-form-group :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet')  + (isEditing ? ' *' : '')" required>
+          <div v-if="isEditing">
+            <draggable
+              v-bind="arvioinnitOptions"
+              tag="div"
+              v-model="opintokokonaisuus.arvioinnit">
+
+              <b-row v-for="(arviointiItem, index) in opintokokonaisuus.arvioinnit" :key="arviointiItem.id" class="pb-2">
+                <b-col md="10">
+                  <EpInput
+                    v-model="arviointiItem.arviointi"
+                    :is-editing="isEditing"
+                    :disabled="arviointiItem.perusteesta"
+                    :validation="validation.opintokokonaisuus.arvioinnit.$each.$iter[index].arviointi">
+                    <div class="order-handle m-2" slot="left">
+                      <fas icon="grip-vertical"></fas>
+                    </div>
+                  </EpInput>
+                </b-col>
+                <b-col cols="1" v-if="isEditing && !arviointiItem.perusteesta">
+                  <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(arviointiItem, 'arvioinnit')"/>
+                </b-col>
+              </b-row>
+            </draggable>
+            <EpButton variant="outline" icon="plus" @click="onAddListItem('arvioinnit')" v-if="isEditing">
+              {{ $t('lisaa-tavoite') }}
+            </EpButton>
+          </div>
+          <div v-else>
+            <ul>
+              <li v-for="arviointiItem in opintokokonaisuus.arvioinnit" :key="arviointiItem.id">
+                {{ $kaanna(arviointiItem.arviointi)}}
+              </li>
+            </ul>
+          </div>
+        </b-form-group>
       </template>
     </EpEditointi>
   </div>
