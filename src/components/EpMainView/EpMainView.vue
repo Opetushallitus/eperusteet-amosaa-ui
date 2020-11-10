@@ -33,7 +33,7 @@ export default class EpMainView extends Vue {}
 @import "@shared/styles/_variables.scss";
 
 .content {
-  padding: 40px 20px 20px;
+  padding: 40px 20px;
 }
 
 .col-fixed {

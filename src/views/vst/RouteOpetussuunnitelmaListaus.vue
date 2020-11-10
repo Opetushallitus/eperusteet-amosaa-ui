@@ -52,6 +52,36 @@
               </div>
             </div>
           </div>
+          <div class="ops">
+            <h2 class="mt-4">{{ $t('julkaistut-opetussuunnitelmat') }}</h2>
+
+            <div class="info" v-if="julkaistut.length === 0">
+              <div v-if="hasRajain">
+                {{ $t('ei-hakutuloksia') }}
+              </div>
+              <EpAlert v-else :ops="true" :text="$t('ei-julkaistuja-opetussuunnitelmia')" class="mt-4" />
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div
+                v-for="ops in julkaistut"
+                :key="ops.id"
+                class="opsbox opsbox--published"
+                :style="ops.bannerImage">
+                <RouterLink
+                  tag="a"
+                  :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"
+                  :key="ops.id">
+                  <div class="opsbox__info opsbox__info--published d-flex flex-column justify-content-between">
+                    <div class="opsbox__name">
+                      {{ $kaanna(ops.nimi) }}
+                    </div>
+                    <!-- Published date -->
+                  </div>
+                </RouterLink>
+              </div>
+            </div>
+          </div>
         </b-col>
       </b-row>
     </b-container>
@@ -69,9 +99,9 @@ import EpMainView from '@/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import KoulutustyyppiSelect from '@shared/components/forms/EpKoulutustyyppiSelect.vue';
 import EpProgress from '@shared/components/EpProgressPopover/EpProgress.vue';
+import EpAlert from '@shared/components/EpAlert/EpAlert.vue'
 
-import { yleissivistavatKoulutustyypit } from '@shared/utils/perusteet';
-import { tileBackgroundColor } from '@shared/utils/bannerIcons';
+import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 
@@ -84,6 +114,7 @@ import { Kielet } from '@shared/stores/kieli';
     EpSearch,
     KoulutustyyppiSelect,
     EpProgress,
+    EpAlert,
   },
 })
 export default class RouteOpetussuunnitelmaListaus extends Vue {
@@ -100,13 +131,8 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
     return !_.isEmpty(this.rajain);
   }
 
-  get yleissivistavatKoulutustyypit() {
-    return yleissivistavatKoulutustyypit;
-  }
-
   get jarjestetyt() {
     return _(this.opslista)
-      .map(ops => ({ ...ops, tileStyle: tileBackgroundColor(ops.peruste!.koulutustyyppi!)}))
       .sortBy('luotu')
       .reverse()
       .value();
@@ -122,6 +148,13 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
       .value();
   }
 
+  get julkaistut() {
+    return _.chain(this.arkistoimattomat)
+      .filter(ops => (ops.tila as string) === 'julkaistu')
+      .map(ops => ({ ...ops, bannerImage: koulutusTyyppiTile(ops.peruste!.koulutustyyppi)}))
+      .value();
+  }
+
   protected async init() {
     const res = await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId);
     this.opslista = res.data;
@@ -133,6 +166,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 @import '@shared/styles/_mixins.scss';
 
 $box-radius: 10px;
+$box-height: 230px;
 $box-width: 192px;
 $new-tile-top-bg-color:#1E49CF;
 $new-tile-bottom-bg-color:#0f3284;
@@ -140,6 +174,8 @@ $vst-tile-top-bg-color:#9B4E27;
 $vst-tile-bottom-bg-color:#993300;
 
 .ops {
+  margin-bottom: 40px;
+
   &__info {
     padding: 10px 0;
   }
@@ -151,11 +187,24 @@ $vst-tile-bottom-bg-color:#993300;
   border-radius: $box-radius;
   @include tile-background-shadow;
 
+  &:hover {
+    @include tile-background-shadow-selected;
+  }
+
+  &--published {
+    height: $box-height;
+    width: $box-width;
+    background-repeat: no-repeat;
+    border-radius: $box-radius $box-radius 0 0;
+    background-size: contain;
+    text-align: center;
+  }
+
   &__new {
     background-size: contain;
     background: linear-gradient(180deg, $new-tile-top-bg-color 0%, $new-tile-bottom-bg-color 100%);
     border-radius: $box-radius;
-    height: 230px;
+    height: $box-height;
     margin: 0 auto;
     padding-top: 48px;
     text-align: center;
@@ -190,7 +239,7 @@ $vst-tile-bottom-bg-color:#993300;
     margin: 0 auto;
   }
 
-  &__published, &__chart {
+  &__chart {
     width: $box-width;
     border-radius: $box-radius $box-radius 0 0;
     background-size: contain;
@@ -208,6 +257,11 @@ $vst-tile-bottom-bg-color:#993300;
     border: 1px solid #E7E7E7;
     border-top-width: 0;
     overflow-y: auto;
+
+    &--published {
+      height: 150px;
+      margin-top: 80px;
+    }
   }
 
   &__name {
