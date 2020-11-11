@@ -1,13 +1,17 @@
 <template>
   <EpMainView>
     <template slot="header">
-      <h1>{{ $t('opetussuunnitelmat') }}</h1>
-      <p>{{ $t('opetussuunnitelmat-kuvaus') }}</p>
-      <div class="d-flex">
-        <b-form-group :label="$t('nimi')">
-          <EpSearch v-model="rajain" :placeholder="$t('etsi-opetussuunnitelmia')"/>
-        </b-form-group>
+      <h1 class="mb-3">{{ $t('opetussuunnitelmat') }}</h1>
+      <div class="d-md-flex">
+        <p class="mt-2">{{ $t('opetussuunnitelmat-kuvaus') }}</p>
+        <EpArkistoidutOps
+          v-if="poistetut.length > 0"
+          :opetussuunnitelmat="poistetut"
+          :title="'arkistoidut-opetussuunnitelmat'"/>
       </div>
+      <b-form-group :label="$t('nimi')">
+        <EpSearch v-model="rajain" :placeholder="$t('etsi-opetussuunnitelmia')"/>
+      </b-form-group>
     </template>
     <b-container fluid class="pl-0">
       <b-row>
@@ -95,6 +99,7 @@ import _ from 'lodash';
 
 import { oikeustarkastelu } from '@/directives/oikeustarkastelu';
 import EpMainView from '@/components/EpMainView/EpMainView.vue';
+import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
 
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import KoulutustyyppiSelect from '@shared/components/forms/EpKoulutustyyppiSelect.vue';
@@ -111,6 +116,7 @@ import { Kielet } from '@shared/stores/kieli';
   },
   components: {
     EpMainView,
+    EpArkistoidutOps,
     EpSearch,
     KoulutustyyppiSelect,
     EpProgress,
@@ -139,20 +145,24 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   get arkistoimattomat() {
-    return _.reject(this.jarjestetyt, ops => (ops.tila as string) === 'poistettu');
+    return _.reject(this.jarjestetyt, (ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'poistettu');
   }
 
   get keskeneraiset() {
     return _.chain(this.arkistoimattomat)
-      .reject(ops => (ops.tila as string) === 'julkaistu')
+      .reject((ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'julkaistu')
       .value();
   }
 
   get julkaistut() {
     return _.chain(this.arkistoimattomat)
-      .filter(ops => (ops.tila as string) === 'julkaistu')
-      .map(ops => ({ ...ops, bannerImage: koulutusTyyppiTile(ops.peruste!.koulutustyyppi)}))
+      .filter((ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'julkaistu')
+      .map((ops: OpetussuunnitelmaDto) => ({ ...ops, bannerImage: koulutusTyyppiTile(ops.peruste!.koulutustyyppi)}))
       .value();
+  }
+
+  get poistetut() {
+    return _.filter(this.jarjestetyt, (ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'poistettu');
   }
 
   protected async init() {
