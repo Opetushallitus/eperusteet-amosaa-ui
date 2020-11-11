@@ -139,6 +139,10 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 
   get jarjestetyt() {
     return _(this.opslista)
+      .filter((ops: OpetussuunnitelmaDto) => _.includes(
+        _.toLower(_.get(ops, 'nimi.' + Kielet.getSisaltoKieli.value)),
+        _.toLower(this.rajain)
+      ))
       .sortBy('luotu')
       .reverse()
       .value();
