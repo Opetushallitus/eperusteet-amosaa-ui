@@ -4,24 +4,25 @@
     <Portal to="headerExtension">
       <div class="portal-menu d-flex">
         <div class="upper-left">
-          <!-- <ep-progress-popover :slices="progressSlices">
-
-            <template v-slot:header>
+          <EpProgressPopover :slices="progressSlices" :popup-style="popupStyle">
+            <template #header>
               <div class="pt-1 row justify-content-center" v-if="validationStats">
                 <div v-if="validationStats.ok < validationStats.total">
                   {{ validationStats.ok }} / {{ validationStats.total }} {{$t('valmis')}}
                 </div>
                 <div v-else-if="validationCategories">
-                  <b-button class="px-3 py-1" variant="primary"
-                      :to="{ name: 'perusteprojekti' }">{{ $t('julkaise') }}</b-button>
+                  <b-button
+                    class="px-3 py-1"
+                    variant="primary"
+                    :to="{ name: 'julkaise' }">{{ $t('julkaise') }}</b-button>
                 </div>
               </div>
             </template>
-
             <div v-if="validationStats" class="row justify-content-center">
-              <b-button v-if="validationStats.ok < validationStats.total"
-                        variant="primary"
-                        :to="{ name: 'perusteprojekti' }">{{ $t('siirry-julkaisunakymaan') }}</b-button>
+              <b-button
+                v-if="validationStats.ok < validationStats.total"
+                variant="primary"
+                :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}</b-button>
               <div v-if="validationCategories">
                 <div class="pl-3 pt-2 pb-1 row" v-for="c in validationStats.categories" :key="c.category">
                   <div class="col-1">
@@ -29,15 +30,14 @@
                     <fas class="text-danger" icon="info-circle" v-if="c.failcount > 0"/>
                   </div>
                   <div class="col">
-                    <span v-if="c.failcount === 0">{{ $t(c.category + "-validation-ok") }}</span>
-                    <span v-if="c.failcount > 0">{{ $t(c.category + "-validation-error") }}</span>
+                    <span v-if="c.failcount === 0">{{ $t(c.category) }}</span>
+                    <span v-if="c.failcount > 0">{{ $t(c.category) }}</span>
                   </div>
                 </div>
               </div>
             </div>
-            <ep-spinner v-else />
-
-          </ep-progress-popover> -->
+            <EpSpinner v-else />
+          </EpProgressPopover>
         </div>
         <div class="flex-grow-1 align-self-center">
           <div class="mb-5 p-2" v-if="toteutussuunnitelma">
@@ -218,6 +218,8 @@ import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
+import EpProgressPopover from '@shared/components/EpProgressPopover/EpProgressPopover.vue';
+import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
@@ -230,6 +232,21 @@ import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/t
 import { arkistoiOpetussuunnitelma } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 
+interface ValidationCategory {
+  category: string;
+  ok: number;
+  failcount: number;
+  total: number;
+}
+
+interface ValidationStats {
+  categories: ValidationCategory[];
+  ok: number;
+  total: number;
+}
+
+const VST_PROGRESS_POPUP_BG =  '#993300';
+
 @Component({
   components: {
     EpTreeNavibar,
@@ -238,6 +255,8 @@ import { KayttajaStore } from '@/stores/kayttaja';
     EpSearch,
     EpSisaltoLisays,
     EpTekstikappaleLisays,
+    EpProgressPopover,
+    EpSpinner,
   },
 })
 export default class RouteToteutussuunnitelma extends Vue {
@@ -395,12 +414,12 @@ export default class RouteToteutussuunnitelma extends Vue {
     clickFn(this, meta);
   }
 
-  get isAmmatillinen() {
-    return this.toteutus === 'ammatillinen';
+  get isAmmatillinen(): boolean {
+    return this.toteutus === Toteutus.AMMATILLINEN;
   }
 
-  get isVapaaSivistystyo() {
-    return this.toteutus === 'vapaasivistystyo';
+  get isVapaaSivistystyo(): boolean {
+    return this.toteutus === Toteutus.VAPAASIVISTYSTYO;
   }
 
   get tekstikappaleet() {
@@ -416,6 +435,50 @@ export default class RouteToteutussuunnitelma extends Vue {
       ...this.tekstikappaleet,
       ...this.opintokokonaisuudet,
     ], 'chapter');
+  }
+
+  get validationStats(): ValidationCategory | ValidationStats | undefined {
+    if (this.validationCategories) {
+      const categories = _.chain(this.validationCategories)
+        .map(category => {
+          return {
+            category,
+            ok: 0,
+            failcount: _.size(_.filter(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value!.virheet, virhe => virhe.syy === category)),
+            total: _.size(_.filter(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value!.virheet, virhe => virhe.syy === category)),
+          };
+        })
+        .value();
+
+      return {
+        categories,
+        ok: 0,
+        total: _.size(categories),
+      };
+    }
+  }
+
+  get validationCategories(): string[] | undefined {
+    if (this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
+      return _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value.virheet)
+        .keyBy('syy')
+        .keys()
+        .value();
+    }
+  }
+
+  get progressSlices(): number[] | undefined {
+    if (this.validationCategories) {
+      return _.chain(this.validationCategories)
+        .map(category => 0.5)
+        .value();
+    }
+  }
+
+  get popupStyle(): { [key:string]: string } {
+    return {
+      background: VST_PROGRESS_POPUP_BG,
+    };
   }
 }
 </script>
