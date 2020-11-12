@@ -153,6 +153,9 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
+  @Prop({ required: true })
+  private toteutussuunnitelmaStore?: ToteutussuunnitelmaStore;
+
   private editointiStore: EditointiStore | null = null;
 
   mounted() {
@@ -167,7 +170,15 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   fetch() {
     if (!(this.editointiStore && this.editointiStore.isLoading.value)) {
-      this.editointiStore = new EditointiStore(new ToteutussuunnitelmaTiedotStore(this.toteutussuunnitelmaId, this.koulutustoimijaId, this.versionumero, this.toteutus));
+      this.editointiStore = new EditointiStore(
+        new ToteutussuunnitelmaTiedotStore(
+          this.toteutussuunnitelmaId,
+          this.koulutustoimijaId,
+          this.versionumero,
+          this.toteutus,
+          this.toteutussuunnitelmaStore
+        )
+      );
     }
   }
 
