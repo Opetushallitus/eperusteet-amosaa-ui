@@ -54,6 +54,7 @@
                   </div>
                 </RouterLink>
               </div>
+              <EpSpinner v-if="status === OpsStatus.LOADING" />
             </div>
           </div>
           <div class="ops">
@@ -73,10 +74,11 @@
                 class="opsbox opsbox--published"
                 :style="ops.bannerImage">
                 <RouterLink
+                  class="d-block h-100"
                   tag="a"
                   :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"
                   :key="ops.id">
-                  <div class="opsbox__info opsbox__info--published d-flex flex-column justify-content-between">
+                  <div class="opsbox__info opsbox__info--published d-flex justify-content-center align-items-center">
                     <div class="opsbox__name">
                       {{ $kaanna(ops.nimi) }}
                     </div>
@@ -84,6 +86,7 @@
                   </div>
                 </RouterLink>
               </div>
+              <EpSpinner v-if="status === OpsStatus.LOADING" />
             </div>
           </div>
         </b-col>
@@ -97,7 +100,6 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import _ from 'lodash';
 
-import { oikeustarkastelu } from '@/directives/oikeustarkastelu';
 import EpMainView from '@/components/EpMainView/EpMainView.vue';
 import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
 
@@ -105,15 +107,19 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
 import KoulutustyyppiSelect from '@shared/components/forms/EpKoulutustyyppiSelect.vue';
 import EpProgress from '@shared/components/EpProgressPopover/EpProgress.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue'
+import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue'
 
 import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 
+enum OpsStatus {
+  INITIAL,
+  LOADING,
+  DONE,
+}
+
 @Component({
-  directives: {
-    oikeustarkastelu,
-  },
   components: {
     EpMainView,
     EpArkistoidutOps,
@@ -121,13 +127,20 @@ import { Kielet } from '@shared/stores/kieli';
     KoulutustyyppiSelect,
     EpProgress,
     EpAlert,
+    EpSpinner,
   },
 })
 export default class RouteOpetussuunnitelmaListaus extends Vue {
+  readonly OpsStatus = OpsStatus;
+
   @Prop({ required: true })
   private koulutustoimijaId!: string;
+
   private rajain = '';
   private opslista: OpetussuunnitelmaDto[] = [];
+
+  status: OpsStatus = OpsStatus.INITIAL;
+
 
   mounted() {
     this.init();
@@ -170,8 +183,10 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   protected async init() {
+    this.status = OpsStatus.LOADING;
     const res = await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId);
     this.opslista = res.data;
+    this.status = OpsStatus.DONE;
   }
 }
 </script>

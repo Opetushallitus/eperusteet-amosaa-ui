@@ -95,3 +95,9 @@ export default class EpArkistoidutOps extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+::v-deep .b-table.table-borderless thead th {
+  border: none;
+}
+</style>

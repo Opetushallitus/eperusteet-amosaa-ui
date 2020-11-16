@@ -1,6 +1,6 @@
 <template>
   <EpHomeTile icon="opetussuunnitelma"
-              :route="{ name: 'toteutussuunnitelmat' }">
+              :route="{ name: isVST ? 'opetussuunnitelmaListaus' : 'toteutussuunnitelmat' }">
     <template slot="header">
       <span>{{ $t(title) }}</span>
     </template>
@@ -74,6 +74,10 @@ export default class TileToteutussuunnitelmat extends Vue {
 
   get etusivu() {
     return this.kayttajaStore?.etusivu?.value || null;
+  }
+
+  get isVST() {
+    return this.toteutus === Toteutus.VAPAASIVISTYSTYO;
   }
 }
 </script>
