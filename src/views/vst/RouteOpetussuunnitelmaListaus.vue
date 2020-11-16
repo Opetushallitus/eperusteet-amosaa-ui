@@ -209,7 +209,6 @@ $vst-tile-bottom-bg-color:#993300;
     height: $box-height;
     width: $box-width;
     background-repeat: no-repeat;
-    border-radius: $box-radius $box-radius 0 0;
     background-size: contain;
     text-align: center;
   }
