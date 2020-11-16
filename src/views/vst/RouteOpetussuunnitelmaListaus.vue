@@ -272,8 +272,7 @@ $vst-tile-bottom-bg-color:#993300;
     overflow-y: auto;
 
     &--published {
-      height: 150px;
-      margin-top: 80px;
+      height: 100%;
     }
   }
 
