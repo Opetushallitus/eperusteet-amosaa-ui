@@ -202,3 +202,8 @@ export const ArkistointiTekstit = {
       },
     },
 };
+
+export const SuunnitelmaListausRoute = {
+  [Toteutus.VAPAASIVISTYSTYO]: 'opetussuunnitelmaListaus',
+  [Toteutus.AMMATILLINEN]: 'toteutussuunnitelmat',
+};

@@ -1,6 +1,5 @@
 <template>
-  <EpHomeTile icon="opetussuunnitelma"
-              :route="{ name: isVST ? 'opetussuunnitelmaListaus' : 'toteutussuunnitelmat' }">
+  <EpHomeTile icon="opetussuunnitelma" :route="{ name: targetRoute }">
     <template slot="header">
       <span>{{ $t(title) }}</span>
     </template>
@@ -32,7 +31,7 @@ import { KayttajaStore } from '@/stores/kayttaja';
 import { EtusivuDto } from '@shared/api/amosaa';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 import { watch } from '@vue/composition-api';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus, SuunnitelmaListausRoute } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -76,8 +75,8 @@ export default class TileToteutussuunnitelmat extends Vue {
     return this.kayttajaStore?.etusivu?.value || null;
   }
 
-  get isVST() {
-    return this.toteutus === Toteutus.VAPAASIVISTYSTYO;
+  get targetRoute() {
+    return SuunnitelmaListausRoute[this.toteutus];
   }
 }
 </script>

@@ -31,7 +31,8 @@
           <EpButton
             variant="link"
             icon="peruuta"
-            @click="$emit('restore', data.item)">
+            @click="$emit('restore', data.item)"
+            v-oikeustarkastelu="{ oikeus: 'hallinta' }">
             {{ $t('palauta') }}
           </EpButton>
         </template>

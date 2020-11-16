@@ -17,6 +17,7 @@
       <b-row>
         <b-col>
           <div class="ops">
+            <EpSpinner v-if="!opslista" />
             <h2>{{ $t('keskeneraiset-opetussuunnitelmat') }}</h2>
             <div class="ops__info" v-if="keskeneraiset.length === 0 && hasRajain">
               {{ $t('ei-hakutuloksia') }}
@@ -54,7 +55,6 @@
                   </div>
                 </RouterLink>
               </div>
-              <EpSpinner v-if="status === OpsStatus.LOADING" />
             </div>
           </div>
           <div class="ops">
@@ -86,7 +86,6 @@
                   </div>
                 </RouterLink>
               </div>
-              <EpSpinner v-if="status === OpsStatus.LOADING" />
             </div>
           </div>
         </b-col>
@@ -113,12 +112,6 @@ import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 
-enum OpsStatus {
-  INITIAL,
-  LOADING,
-  DONE,
-}
-
 @Component({
   components: {
     EpMainView,
@@ -131,16 +124,11 @@ enum OpsStatus {
   },
 })
 export default class RouteOpetussuunnitelmaListaus extends Vue {
-  readonly OpsStatus = OpsStatus;
-
   @Prop({ required: true })
   private koulutustoimijaId!: string;
 
   private rajain = '';
-  private opslista: OpetussuunnitelmaDto[] = [];
-
-  status: OpsStatus = OpsStatus.INITIAL;
-
+  private opslista: OpetussuunnitelmaDto[] | null = null;
 
   mounted() {
     this.init();
@@ -183,10 +171,8 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   protected async init() {
-    this.status = OpsStatus.LOADING;
     const res = await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId);
     this.opslista = res.data;
-    this.status = OpsStatus.DONE;
   }
 }
 </script>
