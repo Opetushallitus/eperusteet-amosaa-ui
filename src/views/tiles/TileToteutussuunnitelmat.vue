@@ -1,6 +1,5 @@
 <template>
-  <EpHomeTile icon="opetussuunnitelma"
-              :route="{ name: 'toteutussuunnitelmat' }">
+  <EpHomeTile icon="opetussuunnitelma" :route="{ name: route }">
     <template slot="header">
       <span>{{ $t(title) }}</span>
     </template>
@@ -52,6 +51,9 @@ export default class TileToteutussuunnitelmat extends Vue {
 
   @Prop({ required: true })
   private title!: string;
+
+  @Prop({ required: true })
+  private route!: string;
 
   @Prop({ required: false })
   private headerStyle!: string;

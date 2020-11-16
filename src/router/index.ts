@@ -30,6 +30,7 @@ import RoutePoistetutSisallot from '@/views/RoutePoistetutSisallot.vue';
 import RouteYhteiset from '@/views/RouteYhteiset.vue';
 import RouteKayttooikeudet from '@/views/RouteKayttooikeudet.vue';
 import RouteOpintokokonaisuus from '@/views/RouteOpintokokonaisuus.vue';
+import RouteOpetussuunnitelmaListaus from '@/views/vst/RouteOpetussuunnitelmaListaus.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -241,6 +242,11 @@ const router = new VueRouter({
         props,
       },
       ],
+    }, {
+      path: 'opetussuunnitelmat',
+      name: 'opetussuunnitelmaListaus',
+      component: RouteOpetussuunnitelmaListaus,
+      props,
     }, {
       path: '*',
       redirect: (to) => {

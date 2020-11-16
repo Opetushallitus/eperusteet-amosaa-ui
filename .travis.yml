@@ -15,7 +15,7 @@ script:
   - git submodule update --recursive --init
 
   - echo 'Generate API...' && echo -en 'travis_fold:start:deps\\r'
-  - cd eperusteet-amosaa/eperusteet && mvn dependency:resolve --batch-mode && cd ../..
+  - cd eperusteet-amosaa && mvn dependency:resolve --batch-mode && cd ..
   - echo -en 'travis_fold:end:deps\\r'
 
   - yarn install --silent
