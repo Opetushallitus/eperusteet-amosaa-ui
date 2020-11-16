@@ -108,6 +108,7 @@ import EpAlert from '@shared/components/EpAlert/EpAlert.vue'
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue'
 
 import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
+import { VapaasivistystyoKoulutustyypit } from '@shared/utils/perusteet';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 
@@ -170,7 +171,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   protected async init() {
-    const res = await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId);
+    const res = await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit);
     this.opslista = res.data;
   }
 }
