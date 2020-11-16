@@ -35,6 +35,7 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
         koulutustoimijaId,
         toteutus,
         title: 'toteutussuunnitelmat',
+        route: 'toteutussuunnitelmat',
       },
       oikeustarkastelu: {
         oikeus: 'luku',
@@ -105,6 +106,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
         toteutus,
         headerStyle: { 'background': 'linear-gradient(180deg, #9B4E27  0%, #993300 100%)' },
         title: 'opetussuunnitelmat',
+        route: 'opetussuunnitelmaListaus',
       },
       oikeustarkastelu: {
         oikeus: 'luku',
@@ -201,9 +203,4 @@ export const ArkistointiTekstit = {
         reroute: 'toteutussuunnitelmat',
       },
     },
-};
-
-export const SuunnitelmaListausRoute = {
-  [Toteutus.VAPAASIVISTYSTYO]: 'opetussuunnitelmaListaus',
-  [Toteutus.AMMATILLINEN]: 'toteutussuunnitelmat',
 };
