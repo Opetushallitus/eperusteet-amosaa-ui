@@ -96,12 +96,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-
 import _ from 'lodash';
 
-import EpMainView from '@/components/EpMainView/EpMainView.vue';
 import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
 
+import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import KoulutustyyppiSelect from '@shared/components/forms/EpKoulutustyyppiSelect.vue';
 import EpProgress from '@shared/components/EpProgressPopover/EpProgress.vue';
