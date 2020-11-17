@@ -1,6 +1,11 @@
 <template>
   <EpMainView>
-    <EpToteutussuunnitelmaListaus :provider="storeProvider" :koulutustoimija-id="koulutustoimijaId" :tyypit="tyypit" :filters="['voimassaolo']">
+    <EpToteutussuunnitelmaListaus
+      :provider="storeProvider"
+      :koulutustoimija-id="koulutustoimijaId"
+      :tyypit="tyypit"
+      :filters="['voimassaolo','tila']"
+      :fieldKeys="tableFields">
       <div slot="header" class="d-flex justify-content-between">
         <h2>{{ $t('koulutustoimijan-yhteinen-osuus') }}</h2>
 
@@ -41,5 +46,9 @@ export default class RouteYhteiset extends Vue {
 
   @Prop({ required: true })
   private tyypit!: string[];
+
+  get tableFields() {
+    return ['nimi', 'tila', 'muokattu', 'voimaantulo', 'paatospaivamaara'];
+  }
 }
 </script>

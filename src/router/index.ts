@@ -172,6 +172,19 @@ const router = new VueRouter({
         };
       },
     }, {
+      path: 'tunnistamisraportti/uusi',
+      name: 'tunnistamisraporttiLuonti',
+      component: RouteToteutussuunnitelmaLuonti,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          opetussuunnitelmanTyyppi: 'tunnistamisraportti',
+          opetussuunnitelmanSuoritustapa: 'reformi',
+          ophPohjatStore: null,
+        };
+      },
+    }, {
       path: 'toteutussuunnitelma/:toteutussuunnitelmaId',
       component: RouteToteutussuunnitelma,
       props,
