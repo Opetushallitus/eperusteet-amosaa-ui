@@ -21,7 +21,7 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
     private koulutustoimijaId: string,
     private versionumero: number,
     private toteutus: Toteutus,
-    private toteutussuunnitelmaStore?: ToteutussuunnitelmaStore) {
+    private toteutussuunnitelmaStore: ToteutussuunnitelmaStore) {
   }
 
   async acquire() {

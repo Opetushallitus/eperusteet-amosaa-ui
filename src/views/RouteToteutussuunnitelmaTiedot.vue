@@ -176,7 +176,7 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
           this.koulutustoimijaId,
           this.versionumero,
           this.toteutus,
-          this.toteutussuunnitelmaStore
+          this.toteutussuunnitelmaStore!,
         )
       );
     }

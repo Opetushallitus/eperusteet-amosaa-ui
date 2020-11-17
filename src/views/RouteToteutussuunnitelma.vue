@@ -4,34 +4,32 @@
     <Portal to="headerExtension">
       <div class="portal-menu d-flex">
         <div class="upper-left">
-          <EpProgressPopover :slices="progressSlices" :popup-style="popupStyle">
-            <template #header>
-              <div class="pt-1 row justify-content-center" v-if="validationStats">
-                <div v-if="validationStats.ok < validationStats.total">
-                  {{ validationStats.ok }} / {{ validationStats.total }} {{$t('valmis')}}
-                </div>
-                <div v-else-if="validationCategories">
-                  <b-button
-                    class="px-3 py-1"
-                    variant="primary"
-                    :to="{ name: 'julkaise' }">{{ $t('julkaise') }}</b-button>
-                </div>
+          <EpProgressPopover
+            :slices="progressSlices"
+            :popup-style="popupStyle"
+            :retainPopup="true">
+            <template v-slot:header>
+              <div class="pt-1 row justify-content-center" v-if="validationCategories">
+                <span>{{ $t(validationStateText) }}</span>
               </div>
             </template>
-            <div v-if="validationStats" class="row justify-content-center">
-              <b-button
-                v-if="validationStats.ok < validationStats.total"
-                variant="primary"
-                :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}</b-button>
-              <div v-if="validationCategories">
-                <div class="pl-3 pt-2 pb-1 row" v-for="c in validationStats.categories" :key="c.category">
+            <div v-if="validationCategories" class="row justify-content-center">
+              <b-button variant="primary" :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}</b-button>
+              <div>
+                <div class="pl-3 pt-2 pb-1 row" v-if="validationCategories.length === 0">
                   <div class="col-1">
-                    <fas class="text-success" icon="check-circle" v-if="c.failcount === 0"/>
-                    <fas class="text-danger" icon="info-circle" v-if="c.failcount > 0"/>
+                    <fas class="text-success" icon="check-circle"/>
                   </div>
                   <div class="col">
-                    <span v-if="c.failcount === 0">{{ $t(c.category) }}</span>
-                    <span v-if="c.failcount > 0">{{ $t(c.category) }}</span>
+                    {{ $t('suunnitelmassa-ei-virheita') }}
+                  </div>
+                </div>
+                <div class="pl-3 pt-2 pb-1 row" v-for="category in validationCategories" :key="category">
+                  <div class="col-1">
+                    <fas class="text-danger" icon="info-circle"/>
+                  </div>
+                  <div class="col">
+                    <span>{{ $t(category) }}</span>
                   </div>
                 </div>
               </div>
@@ -226,25 +224,13 @@ import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
-import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum } from '@shared/api/amosaa';
+import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
 import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
 import { arkistoiOpetussuunnitelma } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 
-interface ValidationCategory {
-  category: string;
-  ok: number;
-  failcount: number;
-  total: number;
-}
-
-interface ValidationStats {
-  categories: ValidationCategory[];
-  ok: number;
-  total: number;
-}
-
+const AMMATILLINEN_PROGRESS_POPUP_BG = '#009700';
 const VST_PROGRESS_POPUP_BG =  '#993300';
 
 @Component({
@@ -437,27 +423,6 @@ export default class RouteToteutussuunnitelma extends Vue {
     ], 'chapter');
   }
 
-  get validationStats(): ValidationCategory | ValidationStats | undefined {
-    if (this.validationCategories) {
-      const categories = _.chain(this.validationCategories)
-        .map(category => {
-          return {
-            category,
-            ok: 0,
-            failcount: _.size(_.filter(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value!.virheet, virhe => virhe.syy === category)),
-            total: _.size(_.filter(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value!.virheet, virhe => virhe.syy === category)),
-          };
-        })
-        .value();
-
-      return {
-        categories,
-        ok: 0,
-        total: _.size(categories),
-      };
-    }
-  }
-
   get validationCategories(): string[] | undefined {
     if (this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
       return _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value.virheet)
@@ -475,10 +440,35 @@ export default class RouteToteutussuunnitelma extends Vue {
     }
   }
 
-  get popupStyle(): { [key:string]: string } {
-    return {
-      background: VST_PROGRESS_POPUP_BG,
-    };
+  get popupStyle(): { [key:string]: string } | null {
+    switch (this.toteutus) {
+      case Toteutus.AMMATILLINEN:
+        return { background: AMMATILLINEN_PROGRESS_POPUP_BG };
+        break;
+      case Toteutus.VAPAASIVISTYSTYO:
+        return { background: VST_PROGRESS_POPUP_BG };
+        break;
+      default:
+        return null;
+        break;
+    }
+  }
+
+  get validationStateText(): string {
+    if (this.toteutussuunnitelma) {
+      switch (this.toteutussuunnitelma.tila) {
+        case _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS):
+          return 'luonnos';
+          break;
+        case _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU):
+          return 'julkaistu';
+          break
+        default:
+          return '';
+          break;
+      }
+    }
+    return '';
   }
 }
 </script>
