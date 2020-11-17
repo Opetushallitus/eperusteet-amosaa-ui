@@ -1,7 +1,9 @@
 <template>
 <div>
   <div v-b-modal.sisallontuonti>
-    <span @click="openModal">{{ $t('tuo-sisaltoa-muista-toteutussuunnitelmista') }}</span>
+    <span @click="openModal">
+      {{$t(kaannokset['tuoBtn'])}}
+    </span>
   </div>
   <b-modal ref="sisallontuontiModal"
            id="sisallontuonti"
@@ -14,9 +16,9 @@
 
     <div v-if="!toteutussuunnitelma">
 
-      <p>{{$t('valitse-ensin-mista-suunnitelmasta-haluat-tuoda-sisaltoa')}}</p>
+      <p>{{$t(kaannokset['topicNoOps'])}}</p>
 
-      <ep-search v-model="query.nimi" :placeholder="$t('etsi-toteutussuunnitelmaa-tai-jaettua-osaa-tai-yhteista-osaa')"/>
+      <ep-search v-model="query.nimi" :placeholder="$t(kaannokset['searchPlaceholder'])"/>
 
       <ep-spinner v-if="!opetussuunnitelmatpage" />
 
@@ -40,7 +42,7 @@
     </div>
 
     <div v-else>
-      <p>{{$t('valitse-mitka-sisallot-haluat-tuoda-toteutussuunnitelmasta')}} {{$kaanna(toteutussuunnitelma.nimi)}}</p>
+      <p>{{$t(kaannokset['topicOps'])}} {{$kaanna(toteutussuunnitelma.nimi)}}</p>
 
       <ep-spinner v-if="!sisaltoviitteet" />
 
@@ -86,7 +88,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Mixins, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Mixins, Vue, Watch, Inject } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import { OpetussuunnitelmaDto, SisaltoViiteKevytDto } from '@shared/api/amosaa';
@@ -94,6 +96,22 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { SisaltotuontiStore } from '@/stores/SisaltotuontiStore';
+
+const kaannokset = {
+  default: {
+    tuoBtn: 'tuo-sisaltoa-muista-toteutussuunnitelmista',
+    topicNoOps: 'valitse-ensin-mista-suunnitelmasta-haluat-tuoda-sisaltoa',
+    topicOps: 'valitse-mitka-sisallot-haluat-tuoda-toteutussuunnitelmasta',
+    searchPlaceholder: 'etsi-toteutussuunnitelmaa-tai-jaettua-osaa-tai-yhteista-osaa',
+
+  },
+  organisaatioRyhma: {
+    tuoBtn: 'tuo-sisaltoa-toisesta-raportista',
+    topicNoOps: 'valitse-ensin-mista-tunnistamisrapostista-haluat-tuoda-sisaltoa',
+    topicOps: 'valitse-mitka-sisallot-haluat-tuoda-tunnistamisraportista',
+    searchPlaceholder: 'etsi',
+  },
+};
 
 @Component({
   components: {
@@ -111,6 +129,9 @@ export default class EpSisallonTuonti extends Vue {
 
   @Prop({ required: true })
   private updateNavigation!: Function;
+
+  @Inject({ from: 'koulutustoimija' })
+  private readonly koulutustoimija!: any;
 
   private query = {} as any;
   private sisaltoPages = {};
@@ -224,22 +245,30 @@ export default class EpSisallonTuonti extends Vue {
   }
 
   get opetussuunnitelmaFields() {
-    return [{
+    let tableFields: any[] = [{
       key: 'nimi',
       label: this.$t('nimi') as string,
       sortable: false,
-    }, {
-      key: 'tyyppi',
-      sortable: false,
-      label: this.$t('tyyppi') as string,
-      formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
-        return this.$t('amosaa-tyyppi-' + value);
-      },
-    }, {
-      key: 'perusteDiaarinumero',
-      sortable: false,
-      label: this.$t('diaarinumero') as string,
     }];
+
+    if (!this.koulutustoimija.organisaatioRyhma) {
+      tableFields = [
+        ...tableFields,
+        {
+          key: 'tyyppi',
+          sortable: false,
+          label: this.$t('tyyppi') as string,
+          formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
+            return this.$t('amosaa-tyyppi-' + value);
+          },
+        }, {
+          key: 'perusteDiaarinumero',
+          sortable: false,
+          label: this.$t('diaarinumero') as string,
+        }];
+    }
+
+    return tableFields;
   }
 
   get sisaltoTaulut() {
@@ -298,6 +327,10 @@ export default class EpSisallonTuonti extends Vue {
   valitseToteutussuunnitelma(toteutussuunnitelma) {
     this.toteutussuunnitelma = toteutussuunnitelma;
     this.sisaltotuontiStore!.fetchSisallot(toteutussuunnitelma.id);
+  }
+
+  get kaannokset() {
+    return kaannokset[this.koulutustoimija.organisaatioRyhma ? 'organisaatioRyhma' : 'default'];
   }
 }
 

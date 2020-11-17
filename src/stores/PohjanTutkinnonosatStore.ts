@@ -8,7 +8,6 @@ Vue.use(VueCompositionApi);
 export class PohjanTutkinnonosatStore {
   private state = reactive({
     tutkinnonosat: null as any[] | null,
-    tutkinnonosaLaajuudet: null as any[] | null,
     peruste: null as any | null,
   })
 
@@ -28,52 +27,6 @@ export class PohjanTutkinnonosatStore {
         ...tutkinnonosa,
         laajuus: this.getPerusteenTutkinnonosaViitteenLaajuus(perusteenTutkinnonosaViitteet[tutkinnonosa.id]),
         koodi: tutkinnonosa.koodi.uri,
-      };
-    });
-  }
-
-  public async fetchToteutussuunnitelmasta(koulutustoimijaId, toteutussuunnitelmaId) {
-    this.state.tutkinnonosat = null;
-
-    const opetussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
-    const tutkinnonosaViitteetById = _.keyBy((await Sisaltoviitteet.getTutkinnonosat(toteutussuunnitelmaId, koulutustoimijaId)).data, 'id');
-    const sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(toteutussuunnitelmaId, koulutustoimijaId)).data;
-    const tutkinnonosaViitteet = _.chain(sisaltoviitteet)
-      .filter(sisaltoviite => sisaltoviite.tyyppi === _.toLower(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSAT))
-      .map(tutkinnonosatViite => tutkinnonosatViite.lapset as any)
-      .flatMap()
-      .map(tutkinnonosaId => tutkinnonosaViitteetById[tutkinnonosaId])
-      .value();
-
-    const perusteIds = _.uniq([
-      opetussuunnitelma.peruste!.id,
-      ..._.chain(tutkinnonosaViitteet)
-        .filter('peruste')
-        .map('peruste.id')
-        .uniq()
-        .value(),
-    ]);
-
-    const perusteidenTutkinnonosaViitteet = _.chain(await Promise.all(_.map(perusteIds, perusteId => Perusteet.getTutkinnonOsaViitteet(perusteId, opetussuunnitelma.suoritustapa!))))
-      .map('data')
-      .flatMap()
-      .value();
-
-    const perusteenTutkinnonosaViitteet = _.keyBy(perusteidenTutkinnonosaViitteet, '_tutkinnonOsa');
-
-    this.state.tutkinnonosat = _.map(tutkinnonosaViitteet, tutkinnonosaViite => {
-      let laajuus;
-      if (perusteenTutkinnonosaViitteet[tutkinnonosaViite.tosa?.perusteentutkinnonosa!]) {
-        laajuus = this.getPerusteenTutkinnonosaViitteenLaajuus(perusteenTutkinnonosaViitteet[tutkinnonosaViite.tosa?.perusteentutkinnonosa!]);
-      }
-      else if (tutkinnonosaViite.tosa?.omatutkinnonosa) {
-        laajuus = tutkinnonosaViite.tosa.omatutkinnonosa.laajuus;
-      }
-
-      return {
-        nimi: tutkinnonosaViite.tekstiKappale?.nimi,
-        laajuus,
-        koodi: tutkinnonosaViite.tosa?.koodi,
       };
     });
   }
