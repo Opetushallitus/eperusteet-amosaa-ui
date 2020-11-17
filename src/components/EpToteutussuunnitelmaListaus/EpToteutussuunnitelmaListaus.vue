@@ -9,7 +9,8 @@
     <div class="filters" v-if="items">
       <div class="row align-items-end">
         <div class="col-12 col-md-3 mt-2 mb-2 mr-2">
-          <EpSearch v-model="query.nimi" :placeholder="$t('etsi-toteutussuunnitelmaa-tai-jaettua-osaa')" :maxWidth="true"/>
+          <label>{{ $t(nameLabel) }}</label>
+          <EpSearch v-model="query.nimi" :placeholder="$t('etsi')" :maxWidth="true"/>
         </div>
         <div class="col-12 col-lg-3 col-md-4 m-2" v-if="filtersInclude('tyyppi')">
           <label>{{ $t('tyyppi') }}</label>
@@ -118,6 +119,9 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
 
   @Prop({ required: false })
   fieldKeys!: string[];
+
+  @Prop({ required: false, default: 'nimi' })
+  nameLabel!: string;
 
   @Prop({ required: false, default: () => ['tyyppi', 'voimassaolo', 'tila'] })
   filters!: ProjektiFilter[];

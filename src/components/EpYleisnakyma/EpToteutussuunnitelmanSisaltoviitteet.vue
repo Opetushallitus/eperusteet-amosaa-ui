@@ -4,8 +4,10 @@
 
     <ep-spinner v-if="!sisaltoviitteet" />
 
-    <ep-small-data-box v-else v-for="(sisaltoviite, index) in toteutuksenSisaltoviitteet" :key="'sisaltoviite'+index"
-      :topic="$t(sisaltoviite.teksti)" :count="sisaltoviite.lkm" />
+    <div class="d-flex" v-else>
+      <ep-small-data-box v-for="(sisaltoviite, index) in toteutuksenSisaltoviitteet" :key="'sisaltoviite'+index"
+        :topic="$t(sisaltoviite.teksti)" :count="sisaltoviite.lkm" />
+    </div>
 
   </div>
 </template>
@@ -85,27 +87,27 @@ export default class EpToteutussuunnitelmanSisaltoviitteet extends Vue {
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
 
-  .box {
-    width: 125px;
-    height: 140px;
-    margin-right: 10px;
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #f7f8fc;
+  // .box {
+  //   width: 125px;
+  //   height: 140px;
+  //   margin-right: 10px;
+  //   margin-top: 10px;
+  //   padding: 10px;
+  //   background-color: #f7f8fc;
 
-    .count {
-      font-size: 2.375rem;
-      line-height: 1;
+  //   .count {
+  //     font-size: 2.375rem;
+  //     line-height: 1;
 
-      .secondary {
-        font-size: 1rem;
-        color: $gray-lighten-1;
-      }
-    }
+  //     .secondary {
+  //       font-size: 1rem;
+  //       color: $gray-lighten-1;
+  //     }
+  //   }
 
-    .topic {
-      padding-top: 10px;
-    }
-  }
+  //   .topic {
+  //     padding-top: 10px;
+  //   }
+  // }
 
 </style>

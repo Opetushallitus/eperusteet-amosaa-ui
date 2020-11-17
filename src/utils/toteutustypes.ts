@@ -34,7 +34,7 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
         kayttajaStore: stores.kayttajaStore,
         koulutustoimijaId,
         toteutus,
-        title: 'toteutussuunnitelmat',
+        title: stores.kayttajaStore.koulutustoimija.value.organisaatioRyhma ? 'oppimisympariston-tunnistamisraportit' : 'toteutussuunnitelmat',
         route: 'toteutussuunnitelmat',
       },
       oikeustarkastelu: {

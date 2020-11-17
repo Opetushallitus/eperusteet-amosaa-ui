@@ -24,10 +24,10 @@
                     :validation="$v.peruste"
                     :search-identity="nimiSearchIdentity">
                     <template slot="singleLabel" slot-scope="{ option }">
-                      {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}, {{$sd(option.voimassaoloAlkaa)}})
+                      {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}<span v-if="option.voimassaoloAlkaa">, {{$sd(option.voimassaoloAlkaa)}}</span>)
                     </template>
                     <template slot="option" slot-scope="{ option }">
-                      {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}, {{$sd(option.voimassaoloAlkaa)}})
+                      {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}<span v-if="option.voimassaoloAlkaa">, {{$sd(option.voimassaoloAlkaa)}}</span>)
                     </template>
                   </EpMultiSelect>
                   <EpSpinner v-else />
@@ -56,6 +56,31 @@
 
               <b-form-group :label="$t(kaannokset.nimiLabel) +' *'" v-if="pohjanTyyppi || !pohjanValinta">
                 <ep-field v-model="nimi" :is-editing="true" :validation="$v.nimi"></ep-field>
+              </b-form-group>
+
+              <b-form-group :label="$t(kaannokset.tutkinnonosatLabel) +' *'" v-if="tutkinnonosatValinta">
+                <ep-spinner v-if="!tutkinnonosat" />
+
+                <b-table
+                  v-else
+                  responsive
+                  borderless
+                  striped
+                  fixed
+                  hover
+                  :items="tutkinnonosat"
+                  :fields="tutkinnonosatFields"
+                  :selectable="true"
+                  @row-selected="onRowSelected"
+                  select-mode="single"
+                  selected-variant=''>
+
+                  <template v-slot:cell(nimi)="{ item }">
+                    <fas v-if="item.selected" icon="check-square" class="checked mr-2"/>
+                    <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+                    {{ $kaanna(item.nimi) }}
+                  </template>
+                </b-table>
               </b-form-group>
 
             </div>
@@ -88,7 +113,11 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
+import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { Toteutus } from '@/utils/toteutustypes';
+import { minLength, required } from 'vuelidate/lib/validators';
+import { createLogger } from '@shared/utils/logger';
+import { perusteenSuoritustapa } from '@shared/utils/perusteet';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
@@ -133,6 +162,20 @@ const kielistykset = {
     nimiLabel: 'pohjan-nimi',
     luoLabel: 'luo-pohja',
   },
+  'tunnistamisraportti': {
+    stepName: 'uusi-oppimisympariston-tunnistamisraportti',
+    peruste: {
+      pohjaLabel: 'pohja',
+      pohjaValintaPlaceHolder: 'valitse-pohja',
+    },
+    toteutussuunnitelma: {
+      pohjaLabel: 'pohja',
+      pohjaValintaPlaceHolder: 'valitse-tunnistamisraportti',
+    },
+    nimiLabel: 'oppimisympariston-tunnistamisraportin-nimi',
+    luoLabel: 'luo-tunnistamisraportti',
+    tutkinnonosatLabel: 'valitse-tutkinnonosat-jotka-tuodaan-pohjasta',
+  },
 };
 
 @Component({
@@ -163,10 +206,13 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private ophPohjatStore!: OphPohjatStore;
 
   @Prop({ required: true })
+  private pohjanTutkinnonosatStore!: PohjanTutkinnonosatStore;
+
+  @Prop({ required: true })
   private koulutustoimijaId!: string | number;
 
   @Prop({ required: true })
-  private opetussuunnitelmanTyyppi!: 'ops' | 'yleinen' | 'yhteinen' | 'pohja';
+  private opetussuunnitelmanTyyppi!: 'ops' | 'yleinen' | 'yhteinen' | 'pohja' | 'tunnistamisraportti';
 
   @Prop({ required: false })
   private opetussuunnitelmanSuoritustapa!: string;
@@ -179,6 +225,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private peruste: PerusteDto | null = null;
   private toteutussuunnitelma: OpetussuunnitelmaDto | null = null;
   private nimi: any | null = null;
+  private tutkinnonosaKoodit: string[] = [];
 
   async mounted() {
     this.toteutussuunnitelmaPohjatStore.updateQuery(
@@ -187,7 +234,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       {
         sivukoko: 1000,
         tila: ['poistettu', 'luonnos', 'valmis', 'julkaistu'],
-        tyyppi: [this.opetussuunnitelmanTyyppi],
+        tyyppi: [this.tyyppi],
       });
 
     if (this.perusteetStore) {
@@ -197,6 +244,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     if (this.ophPohjatStore) {
       await this.ophPohjatStore.fetch();
     }
+  }
+
+  get tyyppi() {
+    return this.opetussuunnitelmanTyyppi !== 'tunnistamisraportti' ? this.opetussuunnitelmanTyyppi : 'ops';
   }
 
   get kaannokset() {
@@ -256,25 +307,50 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
           text: 'koulutustoimijan-yhteista-osuutta',
         },
       ],
+      tunnistamisraportti: [
+        {
+          value: 'peruste',
+          text: 'perusteprojektia',
+        },
+        {
+          value: 'toteutussuunnitelma',
+          text: 'toista-oppimisympariston-tunnistamisraporttia',
+        },
+      ],
     };
   }
 
   async onSave() {
-    const luotu = await this.toteutussuunnitelmaStore.create(_.toString(this.koulutustoimijaId), {
-      perusteId: this.peruste ? this.peruste.id : undefined,
-      perusteDiaarinumero: this.peruste ? this.peruste.diaarinumero : undefined,
-      opsId: this.toteutussuunnitelma ? this.toteutussuunnitelma.id : undefined,
-      tyyppi: this.opetussuunnitelmanTyyppi as any,
-      suoritustapa: this.opetussuunnitelmanSuoritustapa,
-      nimi: this.nimi,
-    });
+    try {
+      const luotu = await this.toteutussuunnitelmaStore.create(_.toString(this.koulutustoimijaId), {
+        perusteId: this.peruste ? this.peruste.id : undefined,
+        perusteDiaarinumero: this.peruste ? this.peruste.diaarinumero : undefined,
+        opsId: this.toteutussuunnitelma ? this.toteutussuunnitelma.id : undefined,
+        tyyppi: this.tyyppi as any,
+        suoritustapa: this.tallennettavaSuoritustapa,
+        nimi: this.nimi,
+        tutkinnonOsaKoodiIncludes: this.tutkinnonosaKoodit,
+      });
 
-    this.$router.push({
-      name: 'toteutussuunnitelma',
-      params: {
-        toteutussuunnitelmaId: _.toString(luotu.id),
-      },
-    });
+      this.$router.push({
+        name: 'toteutussuunnitelma',
+        params: {
+          toteutussuunnitelmaId: _.toString(luotu.id),
+        },
+      });
+    }
+    catch (e) {
+      createLogger('RouteToteutussuunnitelmaLuonti').error(e);
+      this.$fail(this.$t('toteutussuunnitelman-luonti-virhe') as string);
+    }
+  }
+
+  get tallennettavaSuoritustapa() {
+    if (this.opetussuunnitelmanTyyppi === 'tunnistamisraportti' && this.peruste) {
+      return perusteenSuoritustapa(this.pohjanTutkinnonosatStore.peruste.value);
+    }
+
+    return this.opetussuunnitelmanSuoritustapa;
   }
 
   onCancel() {
@@ -301,6 +377,16 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       validation = {
         ...validation,
         toteutussuunnitelma: notNull(),
+      };
+    }
+
+    if (this.opetussuunnitelmanTyyppi === 'tunnistamisraportti') {
+      validation = {
+        ...validation,
+        tutkinnonosaKoodit: {
+          'min-length': minLength(1),
+          required,
+        },
       };
     }
 
@@ -346,10 +432,68 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   get pohjanValinta() {
     return this.opetussuunnitelmanTyyppi !== 'pohja';
   }
+
+  @Watch('peruste')
+  async perusteChange() {
+    this.tutkinnonosaKoodit = [];
+
+    if (this.opetussuunnitelmanTyyppi === 'tunnistamisraportti' && this.peruste) {
+      await this.pohjanTutkinnonosatStore.fetchPerusteesta(this.peruste.id);
+    }
+  }
+
+  @Watch('toteutussuunnitelma')
+  async toteutussuunnitelmaChange() {
+    this.tutkinnonosaKoodit = [];
+
+    if (this.opetussuunnitelmanTyyppi === 'tunnistamisraportti' && this.toteutussuunnitelma) {
+      await this.pohjanTutkinnonosatStore.fetchToteutussuunnitelmasta(this.koulutustoimijaId, this.toteutussuunnitelma.id);
+    }
+  }
+
+  get tutkinnonosatValinta() {
+    return this.opetussuunnitelmanTyyppi === 'tunnistamisraportti' && (this.peruste !== null || this.toteutussuunnitelma != null);
+  }
+
+  get tutkinnonosat() {
+    if (!this.pohjanTutkinnonosatStore.tutkinnonosat.value) {
+      return this.pohjanTutkinnonosatStore.tutkinnonosat.value;
+    }
+
+    return _.map(this.pohjanTutkinnonosatStore.tutkinnonosat.value, tutkinnonosa => {
+      return {
+        ...tutkinnonosa,
+        selected: _.includes(this.tutkinnonosaKoodit, tutkinnonosa.koodi),
+      };
+    });
+  }
+
+  get tutkinnonosatFields() {
+    return [{
+      key: 'nimi',
+      label: this.$t('nimi'),
+    }, {
+      key: 'laajuus',
+      label: this.$t('laajuus'),
+      thStyle: { width: '10rem' },
+    }];
+  }
+
+  onRowSelected(item) {
+    if (!_.isEmpty(item)) {
+      if (_.includes(this.tutkinnonosaKoodit, item[0].koodi)) {
+        this.tutkinnonosaKoodit = _.filter(this.tutkinnonosaKoodit, koodi => koodi !== item[0].koodi);
+      }
+      else {
+        this.tutkinnonosaKoodit.push(item[0].koodi);
+      }
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+@import "@shared/styles/_variables.scss";
 
 .tieto {
   padding: 20px 20px 20px 0px;
@@ -357,6 +501,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   .nimi {
     font-weight: 600;
   }
+}
+
+.checked {
+  color: $paletti-blue;
 }
 
 </style>

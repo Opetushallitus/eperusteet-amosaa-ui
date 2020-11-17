@@ -63,6 +63,7 @@ export class KayttajaStore implements IOikeusProvider {
   public readonly isAdmin = computed(() => _.includes(this.state.tiedot?.oikeudet || [], 'ROLE_EPERUSTEET_ADMIN'));
   public readonly koulutustoimijat = computed(() => this.state.koulutustoimijat);
   public readonly ophSelected = computed(() => this.state.koulutustoimijaId === this.getOphKtId());
+  public readonly koulutustoimija = computed(() => _.find(this.state.koulutustoimijat, kt => _.toString(kt.id) === this.state.koulutustoimijaId));
 
   public async init() {
     try {
