@@ -211,7 +211,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Watch, Prop, Component, Vue } from 'vue-property-decorator';
+import { Watch, Prop, Component, Vue, Provide } from 'vue-property-decorator';
 import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
 import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
@@ -228,6 +228,7 @@ import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum } fr
 import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
 import { arkistoiOpetussuunnitelma } from '@/utils/arkistointi';
+import { KayttajaStore } from '@/stores/kayttaja';
 
 @Component({
   components: {
@@ -250,8 +251,14 @@ export default class RouteToteutussuunnitelma extends Vue {
   private koulutustoimijaId!: string;
 
   @Prop({ required: true })
+  private kayttajaStore!: KayttajaStore;
 
+  @Prop({ required: true })
   private toteutus!: Toteutus;
+
+  @Provide('koulutustoimija')
+  private koulutustoimija = this.kayttajaStore.koulutustoimija.value;
+
   private isInitializing = false;
   private naviStore: EpTreeNavibarStore | null = null;
   private query: string = '';

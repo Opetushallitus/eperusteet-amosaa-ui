@@ -380,7 +380,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       };
     }
 
-    if (this.opetussuunnitelmanTyyppi === 'tunnistamisraportti') {
+    if (this.opetussuunnitelmanTyyppi === 'tunnistamisraportti' && this.pohjanTyyppi === 'peruste') {
       validation = {
         ...validation,
         tutkinnonosaKoodit: {
@@ -445,14 +445,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   @Watch('toteutussuunnitelma')
   async toteutussuunnitelmaChange() {
     this.tutkinnonosaKoodit = [];
-
-    if (this.opetussuunnitelmanTyyppi === 'tunnistamisraportti' && this.toteutussuunnitelma) {
-      await this.pohjanTutkinnonosatStore.fetchToteutussuunnitelmasta(this.koulutustoimijaId, this.toteutussuunnitelma.id);
-    }
   }
 
   get tutkinnonosatValinta() {
-    return this.opetussuunnitelmanTyyppi === 'tunnistamisraportti' && (this.peruste !== null || this.toteutussuunnitelma != null);
+    return this.opetussuunnitelmanTyyppi === 'tunnistamisraportti' && (this.peruste !== null);
   }
 
   get tutkinnonosat() {
