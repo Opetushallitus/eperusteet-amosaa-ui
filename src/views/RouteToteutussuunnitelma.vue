@@ -459,7 +459,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       case _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS):
         return 'luonnos';
         break;
-      case _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU):
+      case _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS):
         return 'julkaistu';
         break
       default:
