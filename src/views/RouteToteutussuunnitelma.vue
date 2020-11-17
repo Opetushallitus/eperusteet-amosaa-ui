@@ -455,20 +455,17 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get validationStateText(): string {
-    if (this.toteutussuunnitelma) {
-      switch (this.toteutussuunnitelma.tila) {
-        case _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS):
-          return 'luonnos';
-          break;
-        case _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU):
-          return 'julkaistu';
-          break
-        default:
-          return '';
-          break;
-      }
+    switch (this.toteutussuunnitelma?.tila) {
+      case _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS):
+        return 'luonnos';
+        break;
+      case _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU):
+        return 'julkaistu';
+        break
+      default:
+        return '';
+        break;
     }
-    return '';
   }
 }
 </script>
