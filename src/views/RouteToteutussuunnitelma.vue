@@ -7,14 +7,31 @@
           <EpProgressPopover
             :slices="progressSlices"
             :popup-style="popupStyle"
-            :retainPopup="true">
+            :retainPopup="true"
+            :height="isPublished ? 80 : 60"
+            :width="isPublished ? 80 : 60">
             <template v-slot:header>
-              <div class="pt-1 row justify-content-center" v-if="validationCategories">
-                <span>{{ $t(validationStateText) }}</span>
+              <div class="row flex-column align-items-center" v-if="validationCategories">
+                <span
+                  class="validation-text pb-2"
+                  :class="isPublished ? 'validation-text--published' : null">
+                  {{ $t(validationStateText) }}
+                </span>
+                <b-button
+                  v-if="isDraft"
+                  variant="primary"
+                  :to="{ name: 'julkaisu' }"
+                  size="sm"
+                  class="btn-publish">{{ $t('siirry-julkaisunakymaan') }}
+                </b-button>
               </div>
             </template>
             <div v-if="validationCategories" class="row justify-content-center">
-              <b-button variant="primary" :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}</b-button>
+              <b-button
+                v-if="isPublished"
+                variant="primary"
+                :to="{ name: 'julkaisu' }">{{ $t('siirry-julkaisunakymaan') }}
+              </b-button>
               <div>
                 <div class="pl-3 pt-2 pb-1 row" v-if="validationCategories.length === 0">
                   <div class="col-1">
@@ -467,6 +484,14 @@ export default class RouteToteutussuunnitelma extends Vue {
         break;
     }
   }
+
+  get isPublished(): boolean {
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS);
+  }
+
+  get isDraft(): boolean {
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+  }
 }
 </script>
 
@@ -537,5 +562,17 @@ export default class RouteToteutussuunnitelma extends Vue {
 .bottom-menu-item {
   margin-left: 20px;
   margin-bottom: 10px;
+}
+
+.validation-text {
+  font-size: 14px;
+
+  &--published {
+    font-size: inherit;
+  }
+}
+
+.btn-publish {
+  border-radius: 14px;
 }
 </style>
