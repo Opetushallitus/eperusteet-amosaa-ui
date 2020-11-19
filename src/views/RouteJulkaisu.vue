@@ -12,31 +12,33 @@
       </ul>
     </div>
     <div>
-      <h3 class="mt-4 mb-3">{{ $t('tarkistukset') }}</h3>
-      <EpCollapse :borderTop="true">
-        <template v-slot:header>
-          <h4 class="pb-3">
-            <span class="text-danger mr-1">
-              <fas icon="info-fill" />
-            </span>
-            {{ $t('toteutussuunnitelman-tiedot') }}
-          </h4>
-        </template>
-        <table class="table table-striped table-borderless">
-          <tbody>
-            <tr v-for="category in validationCategories" :key="category">
-              <td>
-                <div class="text-nowrap">
-                  <span class="text-danger mr-2">
-                    <fas icon="info" />
-                  </span>
-                  <span>{{ $t(category) }}</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </EpCollapse>
+      <template v-if="validationCategories.length > 0">
+        <h3 class="mt-4 mb-3">{{ $t('tarkistukset') }}</h3>
+        <EpCollapse :borderTop="true">
+          <template v-slot:header>
+            <h4 class="pb-3">
+              <span class="text-danger mr-1">
+                <fas icon="info-fill" />
+              </span>
+              {{ $t('toteutussuunnitelman-tiedot') }}
+            </h4>
+          </template>
+          <table class="table table-striped table-borderless">
+            <tbody>
+              <tr v-for="category in validationCategories" :key="category">
+                <td>
+                  <div class="text-nowrap">
+                    <span class="text-danger mr-2">
+                      <fas icon="info" />
+                    </span>
+                    <span>{{ $t(category) }}</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </EpCollapse>
+      </template>
       <template v-if="suunnitelma">
         <h3>{{ $t('suunnitelman-tiedot') }}</h3>
         <b-container fluid>
@@ -79,7 +81,7 @@
                 <div class="d-flex align-items-center">
                   <EpDatepicker v-model="suunnitelma.voimaantulo" />
                   <div class="ml-2 mr-2">-</div>
-                  <!-- <EpDatepicker v-model="suunnitelma.voimassaoloLoppuu" /> -->
+                  <EpDatepicker v-model="suunnitelma.paatospaivamaara" />
                 </div>
               </b-form-group>
             </b-col>
@@ -159,13 +161,11 @@ export default class RouteJulkaisu extends Vue {
     return buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${this.suunnitelma!.id}/${this.toteutus}`)
   }
 
-  get validationCategories(): string[] | undefined {
-    if (this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
-      return _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value.virheet)
-        .keyBy('syy')
-        .keys()
-        .value();
-    }
+  get validationCategories(): string[] | null {
+    return _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value?.virheet)
+      .keyBy('syy')
+      .keys()
+      .value();
   }
 }
 </script>
