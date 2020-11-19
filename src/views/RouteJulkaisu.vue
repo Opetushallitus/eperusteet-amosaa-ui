@@ -75,7 +75,7 @@
             </b-col>
              <b-col lg="6">
               <b-form-group :label="$t('esikatselu')">
-                <EpExternalLink :url="''"  v-if="suunnitelma.esikatseltavissa">
+                <EpExternalLink :url="esikatseluUrl"  v-if="suunnitelma.esikatseltavissa">
                   {{ $t('esikatsele-toteutussuunnitelmaa') }}
                 </EpExternalLink>
                 <template v-else>-</template>
@@ -99,11 +99,17 @@ import { Component, Mixins, Prop, Vue, Watch } from 'vue-property-decorator';
 
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
+import { Toteutus } from '@/utils/toteutustypes';
+
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+
+import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
+
+import { Kielet } from '@shared/stores/kieli';
 
 @Component({
   components: {
@@ -118,8 +124,15 @@ export default class RouteJulkaisu extends Vue {
   @Prop({ required: true })
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
+
   get suunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+  }
+
+  get esikatseluUrl() {
+    return buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${this.suunnitelma!.id}/${this.toteutus}`)
   }
 
   get validationCategories(): string[] | undefined {
