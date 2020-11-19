@@ -12,10 +12,32 @@
       </ul>
     </div>
     <div>
-      <h3>{{ $t('tarkistukset') }}</h3>
-      {{ validationCategories }}
+      <h3 class="mt-4 mb-3">{{ $t('tarkistukset') }}</h3>
+      <EpCollapse :borderTop="true">
+        <template v-slot:header>
+          <h4 class="pb-3">
+            <span class="text-danger mr-1">
+              <fas icon="info-fill" />
+            </span>
+            {{ $t('toteutussuunnitelman-tiedot') }}
+          </h4>
+        </template>
+        <table class="table table-striped table-borderless">
+          <tbody>
+            <tr v-for="category in validationCategories" :key="category">
+              <td>
+                <div class="text-nowrap">
+                  <span class="text-danger mr-2">
+                    <fas icon="info" />
+                  </span>
+                  <span>{{ $t(category) }}</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </EpCollapse>
       <template v-if="suunnitelma">
-        <hr class="mt-4 mb-4">
         <h3>{{ $t('suunnitelman-tiedot') }}</h3>
         <b-container fluid>
           <b-row no-gutters>
@@ -106,6 +128,7 @@ import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 
 import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 
@@ -118,6 +141,7 @@ import { Kielet } from '@shared/stores/kieli';
     EpExternalLink,
     EpContent,
     EpButton,
+    EpCollapse,
   }
 })
 export default class RouteJulkaisu extends Vue {
