@@ -523,7 +523,7 @@ export default class RouteToteutussuunnitelma extends Vue {
 
   .upper-left {
     @media (max-width: 991.98px) {
-      padding: 10px 30px;
+      padding: 0 30px;
     }
     @media (min-width: 992px) {
       min-width: $sidebar-width;

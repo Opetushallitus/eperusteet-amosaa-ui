@@ -67,7 +67,7 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
 
   async save(data: any) {
     await Opetussuunnitelmat.updateOpetussuunnitelma(this.opetussuunnitelmaId, this.koulutustoimijaId, data.opetussuunnitelma);
-    await this.toteutussuunnitelmaStore?.updateValidation(this.koulutustoimijaId, this.opetussuunnitelmaId);
+    await this.toteutussuunnitelmaStore?.init(this.koulutustoimijaId, this.opetussuunnitelmaId);
   }
 
   async release() {

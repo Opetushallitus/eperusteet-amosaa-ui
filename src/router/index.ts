@@ -30,6 +30,7 @@ import RoutePoistetutSisallot from '@/views/RoutePoistetutSisallot.vue';
 import RouteYhteiset from '@/views/RouteYhteiset.vue';
 import RouteKayttooikeudet from '@/views/RouteKayttooikeudet.vue';
 import RouteOpintokokonaisuus from '@/views/RouteOpintokokonaisuus.vue';
+import RouteJulkaisu from '@/views/RouteJulkaisu.vue';
 import RouteOpetussuunnitelmaListaus from '@/views/vst/RouteOpetussuunnitelmaListaus.vue';
 
 import { stores } from '@/stores/index';
@@ -253,7 +254,12 @@ const router = new VueRouter({
         name: 'oikeudet',
         component: RouteKayttooikeudet,
         props,
-      },
+      }, {
+        path: 'julkaisu',
+        name: 'julkaisu',
+        component: RouteJulkaisu,
+        props,
+      }
       ],
     }, {
       path: 'opetussuunnitelmat',
