@@ -256,7 +256,7 @@ const router = new VueRouter({
         props,
       }, {
         path: 'julkaisu',
-        name: 'julkaisu',
+        name: 'julkaise',
         component: RouteJulkaisu,
         props,
       }

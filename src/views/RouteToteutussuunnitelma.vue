@@ -20,7 +20,7 @@
                 <b-button
                   v-if="isDraft"
                   variant="primary"
-                  :to="{ name: 'julkaisu' }"
+                  :to="{ name: 'julkaise' }"
                   size="sm"
                   class="btn-publish">{{ $t('siirry-julkaisunakymaan') }}
                 </b-button>
@@ -30,7 +30,7 @@
               <b-button
                 v-if="isPublished"
                 variant="primary"
-                :to="{ name: 'julkaisu' }">{{ $t('siirry-julkaisunakymaan') }}
+                :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}
               </b-button>
               <div>
                 <div class="pl-3 pt-2 pb-1 row" v-if="validationCategories.length === 0">

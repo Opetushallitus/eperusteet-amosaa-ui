@@ -12,8 +12,8 @@
       </ul>
     </div>
     <div>
+      <h3 class="mt-4 mb-3">{{ $t('tarkistukset') }}</h3>
       <template v-if="validationCategories.length > 0">
-        <h3 class="mt-4 mb-3">{{ $t('tarkistukset') }}</h3>
         <EpCollapse :borderTop="true">
           <template v-slot:header>
             <h4 class="pb-3">
@@ -39,6 +39,10 @@
           </table>
         </EpCollapse>
       </template>
+      <div v-else class="d-flex align-items-center mb-4">
+        <fas class="text-success mr-2" icon="check-circle"/>
+        {{ $t('suunnitelmassa-ei-virheita') }}
+      </div>
       <template v-if="suunnitelma">
         <h3>{{ $t('suunnitelman-tiedot') }}</h3>
         <b-container fluid>
@@ -110,7 +114,7 @@
         <hr class="mt-4 mb-4">
         <h3>{{ $t('uusi-julkaisu') }}</h3>
         <b-form-group :label="$t('julkaisun-tiedote') + ' *'">
-          <div class="mt-2 mb-3">TBA</div>
+          <!-- Julkaisutiedote, julkaisuhistoria ja julkaisunappi -->
         </b-form-group>
       </template>
     </div>
