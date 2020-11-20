@@ -3,18 +3,16 @@
 
     <Portal to="headerExtension">
       <div class="portal-menu d-flex">
-        <div class="upper-left">
+        <div class="upper-left d-flex align-items-center justify-content-center">
           <EpProgressPopover
             :slices="progressSlices"
             :popup-style="popupStyle"
             :retainPopup="true"
-            :height="isPublished ? 80 : 60"
-            :width="isPublished ? 80 : 60">
+            :height="60"
+            :width="60">
             <template v-slot:header>
               <div class="row flex-column align-items-center" v-if="validationCategories">
-                <span
-                  class="validation-text pb-2"
-                  :class="isPublished ? 'validation-text--published' : null">
+                <span class="validation-text pb-2">
                   {{ $t(validationStateText) }}
                 </span>
                 <b-button
@@ -566,10 +564,6 @@ export default class RouteToteutussuunnitelma extends Vue {
 
 .validation-text {
   font-size: 14px;
-
-  &--published {
-    font-size: inherit;
-  }
 }
 
 .btn-publish {
