@@ -7,7 +7,6 @@
           <EpProgressPopover
             :slices="progressSlices"
             :popup-style="popupStyle"
-            :retainPopup="true"
             :height="60"
             :width="60">
             <template v-slot:header>
