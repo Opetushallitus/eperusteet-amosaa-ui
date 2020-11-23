@@ -2,9 +2,6 @@
   <EpCollapse :borderTop="borderTop">
     <template v-slot:header>
       <h4 class="pb-3" v-if="title">
-        <span :class="'text-' + type" class="mr-1">
-          <fas icon="info-fill" />
-        </span>
         {{ $t(title) }}
       </h4>
     </template>
@@ -13,6 +10,9 @@
         <tr v-for="(item, i) in items" :key="item.nimi + i">
           <td>
             <div class="text-nowrap">
+              <span :class="'text-' + type" class="mr-2">
+                <fas icon="info" />
+              </span>
               <span>{{ item.nimi ? $kaanna(item.nimi) + ': ' : '' }} {{ $t(item.syy) }}</span>
             </div>
           </td>
