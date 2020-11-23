@@ -13,33 +13,19 @@
     </div>
     <div>
       <h3 class="mt-4 mb-3">{{ $t('tarkistukset') }}</h3>
-      <template v-if="validationCategories.length > 0">
-        <EpCollapse :borderTop="true">
-          <template v-slot:header>
-            <h4 class="pb-3">
-              <span class="text-danger mr-1">
-                <fas icon="info-fill" />
-              </span>
-              {{ $t('toteutussuunnitelman-tiedot') }}
-            </h4>
-          </template>
-          <table class="table table-striped table-borderless">
-            <tbody>
-              <tr v-for="category in validationCategories" :key="category">
-                <td>
-                  <div class="text-nowrap">
-                    <span class="text-danger mr-2">
-                      <fas icon="info" />
-                    </span>
-                    <span>{{ $t(category) }}</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </EpCollapse>
-      </template>
-      <div v-else class="d-flex align-items-center mb-4">
+      <EpValidointilistaus
+        v-if="parsedErrors && parsedErrors.length > 0"
+        :borderTop="true"
+        :items="parsedErrors"
+        :title="'validointi-virheet'"
+        :type="'danger'" />
+      <EpValidointilistaus
+        v-if="warnings && warnings.length > 0"
+        :items="warnings"
+        :title="'validointi-varoitukset'"
+        :type="'warning'" />
+      <EpSpinner v-if="!toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value" />
+      <div v-if="hasNoErrors && toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value" class="d-flex align-items-center mb-4">
         <fas class="text-success mr-2" icon="check-circle"/>
         {{ $t('suunnitelmassa-ei-virheita') }}
       </div>
@@ -129,12 +115,15 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
 import { Toteutus } from '@/utils/toteutustypes';
 
+import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue'
+
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
+import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 
 import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 
@@ -148,6 +137,8 @@ import { Kielet } from '@shared/stores/kieli';
     EpContent,
     EpButton,
     EpCollapse,
+    EpSpinner,
+    EpValidointilistaus
   }
 })
 export default class RouteJulkaisu extends Vue {
@@ -165,11 +156,27 @@ export default class RouteJulkaisu extends Vue {
     return buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${this.suunnitelma!.id}/${this.toteutus}`)
   }
 
-  get validationCategories(): string[] | null {
-    return _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value?.virheet)
-      .keyBy('syy')
-      .keys()
-      .value();
+  get hasNoErrors(): boolean {
+    return this.errors?.length === 0 && this.warnings?.length === 0;
+  }
+
+  get parsedErrors() {
+    if (this.errors) {
+      return [
+        ...this.errors!.filter(error => error.nimi && error),
+        ..._.chain(this.errors!.filter(error => !error.nimi && error))
+          .uniqBy('syy')
+          .value()
+      ];
+    }
+  }
+
+  get errors() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value?.virheet;
+  }
+
+  get warnings() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value?.varoitukset;
   }
 }
 </script>

@@ -3,7 +3,7 @@
 
     <Portal to="headerExtension">
       <div class="portal-menu d-flex">
-        <div class="upper-left d-flex align-items-center justify-content-center">
+        <div class="upper-left d-flex justify-content-center" :class="{ 'align-items-center': isPublished }">
           <EpProgressPopover
             :slices="progressSlices"
             :popup-style="popupStyle"
