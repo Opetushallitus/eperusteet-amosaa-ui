@@ -13,14 +13,19 @@
 
             <EpCollapse>
               <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
-              <ep-content layout="normal" v-model="data.perusteteksti" :is-editable="false" />
+              <ep-content layout="normal" v-model="data.perusteteksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
               <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
                 {{$t('nayta-perusteen-teksti')}}
               </ep-toggle>
             </EpCollapse>
 
             <b-form-group :label="$t('paikallinen-teksti')">
-              <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing" v-if="isEditing || data.tekstiKappale.teksti"/>
+              <ep-content
+                layout="normal"
+                v-model="data.tekstiKappale.teksti"
+                :is-editable="isEditing"
+                v-if="isEditing || data.tekstiKappale.teksti"
+                :kuvaHandler="kuvaHandler"/>
               <EpAlert
                 v-if="!isEditing && !data.tekstiKappale.teksti"
                 :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
@@ -34,7 +39,7 @@
             </b-form-group>
 
             <b-form-group :label="$t('kappaleen-teksti')" :label-sr-only="!isEditing">
-              <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing" />
+              <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing" :kuvaHandler="kuvaHandler"/>
             </b-form-group>
           </div>
         </div>
@@ -56,6 +61,8 @@ import EpContent from '@shared/components/EpContent/EpContent.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
+import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
+import { KuvaStore } from '@/stores/KuvaStore';
 
 @Component({
   components: {
@@ -105,6 +112,10 @@ export default class RouteTekstikappale extends Vue {
 
   get versionumero() {
     return _.toNumber(this.$route.query.versionumero);
+  }
+
+  get kuvaHandler() {
+    return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
   }
 }
 </script>

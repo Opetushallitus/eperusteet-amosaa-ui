@@ -25,7 +25,7 @@ module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
-        'vue$': path.resolve(__dirname, 'node_modules/vue'),
+        'vue$': 'vue/dist/vue.esm.js',
         '@shared': path.resolve(__dirname, 'eperusteet-frontend-utils/vue/src'),
         '@assets': path.resolve(__dirname, 'eperusteet-frontend-utils/vue/public'),
         '@public': path.resolve(__dirname, 'public'),
