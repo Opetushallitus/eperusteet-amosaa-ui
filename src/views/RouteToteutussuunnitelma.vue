@@ -10,9 +10,9 @@
             :height="60"
             :width="60">
             <template v-slot:header>
-              <div class="row flex-column align-items-center" v-if="validationCategories">
+              <div class="row flex-column align-items-center">
                 <span class="validation-text pb-2">
-                  {{ $t(validationStateText) }}
+                  {{ $t(publishingState) }}
                 </span>
                 <b-button
                   v-if="isDraft"
@@ -243,9 +243,7 @@ import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
 import { arkistoiOpetussuunnitelma } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
-
-const AMMATILLINEN_PROGRESS_POPUP_BG = '#009700';
-const VST_PROGRESS_POPUP_BG =  '#993300';
+import { tileBackgroundColor } from '@shared/utils/bannerIcons';
 
 @Component({
   components: {
@@ -454,40 +452,20 @@ export default class RouteToteutussuunnitelma extends Vue {
     }
   }
 
-  get popupStyle(): { [key:string]: string } | null {
-    switch (this.toteutus) {
-      case Toteutus.AMMATILLINEN:
-        return { background: AMMATILLINEN_PROGRESS_POPUP_BG };
-        break;
-      case Toteutus.VAPAASIVISTYSTYO:
-        return { background: VST_PROGRESS_POPUP_BG };
-        break;
-      default:
-        return null;
-        break;
-    }
+  get publishingState(): OpetussuunnitelmaDtoTilaEnum | undefined {
+    return this.toteutussuunnitelma!.tila;
   }
 
-  get validationStateText(): string {
-    switch (this.toteutussuunnitelma?.tila) {
-      case _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS):
-        return 'luonnos';
-        break;
-      case _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS):
-        return 'julkaistu';
-        break
-      default:
-        return '';
-        break;
-    }
+  get popupStyle(): { background: string; } | undefined {
+    return tileBackgroundColor(this.toteutussuunnitelma!.peruste!.koulutustyyppi);
   }
 
   get isPublished(): boolean {
-    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS);
+    return this.toteutussuunnitelma!.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
   }
 
   get isDraft(): boolean {
-    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+    return this.toteutussuunnitelma!.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
   }
 }
 </script>
