@@ -453,19 +453,19 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get publishingState(): OpetussuunnitelmaDtoTilaEnum | undefined {
-    return this.toteutussuunnitelma!.tila;
+    return this.toteutussuunnitelma?.tila;
   }
 
   get popupStyle(): { background: string; } | undefined {
-    return tileBackgroundColor(this.toteutussuunnitelma!.peruste!.koulutustyyppi);
+    return tileBackgroundColor(this.toteutussuunnitelma?.peruste?.koulutustyyppi);
   }
 
   get isPublished(): boolean {
-    return this.toteutussuunnitelma!.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
   }
 
   get isDraft(): boolean {
-    return this.toteutussuunnitelma!.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
   }
 }
 </script>
