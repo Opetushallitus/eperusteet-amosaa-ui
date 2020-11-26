@@ -41,7 +41,6 @@ import TileUkk from './tiles/TileUkk.vue';
 import TileTilastot from './tiles/TileTilastot.vue';
 import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
-import TileVstToteutussuunnitelmat from './vst/TileVstToteutussuunnitelmat.vue';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 import { Toteutus } from '@/utils/toteutustypes';
 

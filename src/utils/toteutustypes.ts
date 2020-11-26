@@ -5,6 +5,7 @@ import TileOrganisaationHallinta from '@/views/tiles/TileOrganisaationHallinta.v
 import TileTiedotteet from '@/views/tiles/TileTiedotteet.vue';
 import TileUkk from '@/views/tiles/TileUkk.vue';
 import TileTilastot from '@/views/tiles/TileTilastot.vue';
+import { tileColors } from '@shared/utils/bannerIcons';
 
 export enum Toteutus {
   VAPAASIVISTYSTYO = 'vapaasivistystyo',
@@ -24,6 +25,10 @@ export const TervetuloaTekstiKuvaus = {
 export const OpetussuunnitelmaTyyppi = {
   [Toteutus.VAPAASIVISTYSTYO]: 'opetussuunnitelma',
   [Toteutus.AMMATILLINEN]: 'toteutussuunnitelma',
+};
+
+export const TileBackground = {
+  [Toteutus.VAPAASIVISTYSTYO]: { 'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][0] + ' 0%, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][1] + ' 100%)' },
 };
 
 export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
@@ -104,7 +109,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
         kayttajaStore: stores.kayttajaStore,
         koulutustoimijaId,
         toteutus,
-        headerStyle: { 'background': 'linear-gradient(180deg, #9B4E27  0%, #993300 100%)' },
+        headerStyle: TileBackground[toteutus],
         title: 'opetussuunnitelmat',
         route: 'opetussuunnitelmaListaus',
       },
@@ -116,7 +121,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
       component: TileTiedotteet,
       props: {
         kieli: stores.kieliStore.getSisaltoKieli.value || null,
-        headerStyle: { 'background': 'linear-gradient(180deg, #9B4E27  0%, #993300 100%)' },
+        headerStyle: TileBackground[toteutus],
         julkaisupaikka: TiedoteJulkaisupaikka[toteutus],
       },
       oikeustarkastelu: {
@@ -126,7 +131,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
     {
       component: TileOrganisaationHallinta,
       props: {
-        headerStyle: { 'background': 'linear-gradient(180deg, #9B4E27  0%, #993300 100%)' },
+        headerStyle: TileBackground[toteutus],
       },
       oikeustarkastelu: {
         oikeus: 'hallinta',
@@ -136,13 +141,13 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
       component: TileUkk,
       props: {
         text: 'amosaa-vst-ukk-kuvaus',
-        headerStyle: { 'background': 'linear-gradient(180deg, #9B4E27  0%, #993300 100%)' },
+        headerStyle: TileBackground[toteutus],
       },
     },
     {
       component: TileTilastot,
       props: {
-        headerStyle: { 'background': 'linear-gradient(180deg, #9B4E27  0%, #993300 100%)' },
+        headerStyle: TileBackground[toteutus],
         text: 'amosaa-vst-tilastot-kuvaus',
       },
       oikeustarkastelu: {

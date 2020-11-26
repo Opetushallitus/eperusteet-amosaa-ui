@@ -43,7 +43,7 @@
                   tag="a"
                   :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"
                   :key="ops.id">
-                  <div class="opsbox__chart">
+                  <div class="opsbox__chart" :style="backgroundStyle">
                     <div class="opsbox__progress-clamper">
                       <EpProgress :slices="[0.2, 0.5, 1]" />
                     </div>
@@ -104,13 +104,14 @@ import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import KoulutustyyppiSelect from '@shared/components/forms/EpKoulutustyyppiSelect.vue';
 import EpProgress from '@shared/components/EpProgressPopover/EpProgress.vue';
-import EpAlert from '@shared/components/EpAlert/EpAlert.vue'
-import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue'
+import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
+import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 
 import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
 import { VapaasivistystyoKoulutustyypit } from '@shared/utils/perusteet';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
+import { TileBackground, Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -126,6 +127,9 @@ import { Kielet } from '@shared/stores/kieli';
 export default class RouteOpetussuunnitelmaListaus extends Vue {
   @Prop({ required: true })
   private koulutustoimijaId!: string;
+
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
 
   private rajain = '';
   private opslista: OpetussuunnitelmaDto[] | null = null;
@@ -162,7 +166,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   get julkaistut() {
     return _.chain(this.arkistoimattomat)
       .filter((ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'julkaistu')
-      .map((ops: OpetussuunnitelmaDto) => ({ ...ops, bannerImage: koulutusTyyppiTile(ops.peruste!.koulutustyyppi)}))
+      .map((ops: OpetussuunnitelmaDto) => ({ ...ops, bannerImage: koulutusTyyppiTile(ops.peruste!.koulutustyyppi) }))
       .value();
   }
 
@@ -173,6 +177,10 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   protected async init() {
     const res = await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit);
     this.opslista = res.data;
+  }
+
+  get backgroundStyle() {
+    return TileBackground[this.toteutus];
   }
 }
 </script>
@@ -185,8 +193,6 @@ $box-height: 230px;
 $box-width: 192px;
 $new-tile-top-bg-color:#1E49CF;
 $new-tile-bottom-bg-color:#0f3284;
-$vst-tile-top-bg-color:#9B4E27;
-$vst-tile-bottom-bg-color:#993300;
 
 .ops {
   margin-bottom: 40px;
@@ -244,7 +250,6 @@ $vst-tile-bottom-bg-color:#993300;
   &__chart {
     height: 138px;
     padding-top: 28px;
-    background: linear-gradient(180deg, $vst-tile-top-bg-color 0%, $vst-tile-bottom-bg-color 100%);
   }
 
   &__progress-clamper {
