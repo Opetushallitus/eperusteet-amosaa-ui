@@ -192,9 +192,8 @@
                       </ul>
                     </template>
                   </b-table>
-                </div>
 
-              </ep-collapse>
+              </div>
 
               <ep-collapse>
                 <h3 slot="header">{{$t('ammattitaidon-osoittaminen')}}</h3>

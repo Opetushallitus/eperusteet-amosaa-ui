@@ -14,14 +14,14 @@ export async function arkistoiOpetussuunnitelma(el, meta) {
     try {
       await Opetussuunnitelmat.updateOpetussuunnitelmaTila(el.$route.params.toteutussuunnitelmaId as number, meta.tila, el.$route.params.koulutustoimijaId);
       switch (meta.tila) {
-        case 'POISTETTU':
-          el.$success(el.$t('arkistoi-suunnitelma-onnistui'));
-          break;
-        case 'LUONNOS':
-          el.$success(el.$t('palautus-onnistui'));
-          break;
-        default:
-          break;
+      case 'POISTETTU':
+        el.$success(el.$t('arkistoi-suunnitelma-onnistui'));
+        break;
+      case 'LUONNOS':
+        el.$success(el.$t('palautus-onnistui'));
+        break;
+      default:
+        break;
       }
     }
     catch (e) {

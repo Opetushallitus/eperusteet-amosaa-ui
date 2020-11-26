@@ -423,14 +423,14 @@ export default class RouteToteutussuunnitelma extends Vue {
         ...(!this.isArchived && {
           separator: true,
           oikeus: 'hallinta',
-        })
+        }),
       }, {
         ...(!this.isArchived && {
           icon: ['far', 'folder'],
           click: arkistoiOpetussuunnitelma,
           ...ArkistointiTekstit.arkistointi[this.toteutus],
           oikeus: 'hallinta',
-        })
+        }),
       },
     ];
   }
@@ -474,7 +474,8 @@ export default class RouteToteutussuunnitelma extends Vue {
   get progressSlices(): number[] | undefined {
     if (this.isArchived) {
       return [0];
-    } else if (this.validationCategories) {
+    }
+    else if (this.validationCategories) {
       return _.chain(this.validationCategories)
         .map(category => 0.5)
         .value();

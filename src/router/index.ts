@@ -259,7 +259,7 @@ const router = new VueRouter({
         name: 'julkaise',
         component: RouteJulkaisu,
         props,
-      }
+      },
       ],
     }, {
       path: 'opetussuunnitelmat',

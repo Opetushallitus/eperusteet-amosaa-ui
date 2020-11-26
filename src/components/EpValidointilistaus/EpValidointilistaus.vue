@@ -23,16 +23,16 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-  import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
+import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 
   @Component({
     components: {
       EpCollapse,
-    }
+    },
   })
-  export default class EpValidointilistaus extends Vue {
+export default class EpValidointilistaus extends Vue {
     @Prop({ required: true })
     title!: string;
 
@@ -44,7 +44,7 @@
 
     @Prop({ required: true })
     type!: 'danger' | 'warning';
-  }
+}
 </script>
 
 <style scoped lang="scss">

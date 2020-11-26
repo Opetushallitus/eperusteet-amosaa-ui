@@ -218,7 +218,7 @@ export const ArkistointiTekstit = {
         title: 'palauta-ops',
         confirm: 'palauta-opetussuunnitelma-vahvistus',
         tila: 'LUONNOS',
-      }
+      },
     },
     [Toteutus.AMMATILLINEN]:
     {
@@ -227,7 +227,7 @@ export const ArkistointiTekstit = {
         title: 'palauta-toteutussuunnitelma',
         confirm: 'palauta-toteutussuunnitelma-vahvistus',
         tila: 'LUONNOS',
-      }
+      },
     },
-  }
+  },
 };

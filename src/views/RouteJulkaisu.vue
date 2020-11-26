@@ -115,7 +115,7 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
 import { Toteutus } from '@/utils/toteutustypes';
 
-import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue'
+import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue';
 
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
@@ -138,8 +138,8 @@ import { Kielet } from '@shared/stores/kieli';
     EpButton,
     EpCollapse,
     EpSpinner,
-    EpValidointilistaus
-  }
+    EpValidointilistaus,
+  },
 })
 export default class RouteJulkaisu extends Vue {
   @Prop({ required: true })
@@ -153,7 +153,7 @@ export default class RouteJulkaisu extends Vue {
   }
 
   get esikatseluUrl() {
-    return buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${this.suunnitelma!.id}/${this.toteutus}`)
+    return buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${this.suunnitelma!.id}/${this.toteutus}`);
   }
 
   get hasNoErrors(): boolean {
@@ -166,7 +166,7 @@ export default class RouteJulkaisu extends Vue {
         ...this.errors!.filter(error => error.nimi && error),
         ..._.chain(this.errors!.filter(error => !error.nimi && error))
           .uniqBy('syy')
-          .value()
+          .value(),
       ];
     }
   }
