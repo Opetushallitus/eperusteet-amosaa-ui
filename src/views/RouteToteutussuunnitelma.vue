@@ -3,7 +3,7 @@
 
     <Portal to="headerExtension">
       <div class="portal-menu d-flex">
-        <div class="upper-left d-flex justify-content-center" :class="{ 'align-items-center': isPublished }">
+        <div class="upper-left d-flex justify-content-center" :class="{ 'align-items-center': isPublished || isReady || isArchived }">
           <EpProgressPopover
             :slices="progressSlices"
             :popup-style="popupStyle"
@@ -19,17 +19,30 @@
                   variant="primary"
                   :to="{ name: 'julkaise' }"
                   size="sm"
-                  class="btn-publish">{{ $t('siirry-julkaisunakymaan') }}
+                  pill>{{ $t('siirry-julkaisunakymaan') }}
                 </b-button>
               </div>
             </template>
-            <div v-if="validationCategories" class="row justify-content-center">
+            <div v-if="validationCategories" class="d-flex flex-column align-items-center">
               <b-button
-                v-if="isPublished"
+                v-if="isPublished || isReady"
                 variant="primary"
                 :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}
               </b-button>
-              <div>
+              <template v-if="isArchived">
+                <b-button
+                  variant="primary"
+                  @click="restore">{{ $t('palauta') }}
+                </b-button>
+                <div class="font-size-08 mt-2 text-center">
+                  {{
+                    isVapaaSivistystyo ?
+                    $t('voit-palauttaa-arkistoidun-opetussuunnitelman-luonnostilaan') :
+                    $t('voit-palauttaa-arkistoidun-toteutussuunnitelman-luonnostilaan')
+                  }}
+                </div>
+              </template>
+              <div v-if="!isArchived">
                 <div class="pl-3 pt-2 pb-1 row" v-if="validationCategories.length === 0">
                   <div class="col-1">
                     <fas class="text-success" icon="check-circle"/>
@@ -362,6 +375,16 @@ export default class RouteToteutussuunnitelma extends Vue {
       this.updateNavigation);
   }
 
+  async restore() {
+    await arkistoiOpetussuunnitelma(
+      this,
+      {
+        ...ArkistointiTekstit.palautus[this.toteutus].meta,
+        callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+      },
+    );
+  }
+
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
   }
@@ -397,13 +420,17 @@ export default class RouteToteutussuunnitelma extends Vue {
         oikeus: 'hallinta',
       },
       {
-        separator: true,
-        oikeus: 'hallinta',
+        ...(!this.isArchived && {
+          separator: true,
+          oikeus: 'hallinta',
+        })
       }, {
-        icon: ['far', 'folder'],
-        click: arkistoiOpetussuunnitelma,
-        ...ArkistointiTekstit[this.toteutus],
-        oikeus: 'hallinta',
+        ...(!this.isArchived && {
+          icon: ['far', 'folder'],
+          click: arkistoiOpetussuunnitelma,
+          ...ArkistointiTekstit.arkistointi[this.toteutus],
+          oikeus: 'hallinta',
+        })
       },
     ];
   }
@@ -445,7 +472,9 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get progressSlices(): number[] | undefined {
-    if (this.validationCategories) {
+    if (this.isArchived) {
+      return [0];
+    } else if (this.validationCategories) {
       return _.chain(this.validationCategories)
         .map(category => 0.5)
         .value();
@@ -464,8 +493,16 @@ export default class RouteToteutussuunnitelma extends Vue {
     return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
   }
 
+  get isReady(): boolean {
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS);
+  }
+
   get isDraft(): boolean {
     return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+  }
+
+  get isArchived(): boolean {
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
   }
 }
 </script>
@@ -541,9 +578,5 @@ export default class RouteToteutussuunnitelma extends Vue {
 
 .validation-text {
   font-size: 14px;
-}
-
-.btn-publish {
-  border-radius: 14px;
 }
 </style>

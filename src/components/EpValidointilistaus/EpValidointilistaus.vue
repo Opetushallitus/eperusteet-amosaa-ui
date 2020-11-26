@@ -9,8 +9,8 @@
       <tbody>
         <tr v-for="(item, i) in items" :key="item.nimi + i">
           <td>
-            <div class="text-nowrap">
-              <span :class="'text-' + type" class="mr-2">
+            <div class="d-flex align-items-center">
+              <span :class="'text-' + type" class="mr-2 align-self-start">
                 <fas icon="info" />
               </span>
               <span>{{ item.nimi ? $kaanna(item.nimi) + ': ' : '' }} {{ $t(item.syy) }}</span>

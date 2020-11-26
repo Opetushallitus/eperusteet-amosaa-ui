@@ -190,22 +190,44 @@ export const TiedoteJulkaisupaikka = {
 };
 
 export const ArkistointiTekstit = {
-  [Toteutus.VAPAASIVISTYSTYO]:
-    {
+  arkistointi: {
+    [Toteutus.VAPAASIVISTYSTYO]: {
       text: 'arkistoi-opetussuunnitelma',
       meta: {
         title: 'arkistoi-opetussuunnitelma',
         confirm: 'arkistoi-opetussuunnitelma-vahvistus',
-        reroute: 'toteutussuunnitelmat',
+        tila: 'POISTETTU',
+        reroute: 'opetussuunnitelmaListaus',
       },
     },
-  [Toteutus.AMMATILLINEN]:
+    [Toteutus.AMMATILLINEN]:
     {
       text: 'arkistoi-toteutussuunnitelma',
       meta: {
         title: 'arkistoi-toteutussuunnitelma',
         confirm: 'arkistoi-toteutussuunnitelma-vahvistus',
+        tila: 'POISTETTU',
         reroute: 'toteutussuunnitelmat',
       },
     },
+  },
+  palautus: {
+    [Toteutus.VAPAASIVISTYSTYO]: {
+      text: 'palauta-ops',
+      meta: {
+        title: 'palauta-ops',
+        confirm: 'palauta-opetussuunnitelma-vahvistus',
+        tila: 'LUONNOS',
+      }
+    },
+    [Toteutus.AMMATILLINEN]:
+    {
+      text: 'palauta-toteutussuunnitelma',
+      meta: {
+        title: 'palauta-toteutussuunnitelma',
+        confirm: 'palauta-toteutussuunnitelma-vahvistus',
+        tila: 'LUONNOS',
+      }
+    },
+  }
 };
