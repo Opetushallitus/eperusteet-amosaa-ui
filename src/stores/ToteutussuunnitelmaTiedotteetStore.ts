@@ -32,7 +32,7 @@ export class ToteutussuunnitelmaTiedotteetStore {
         )).data as any;
         this.state.tiedotteet = res.data;
       }
- else {
+      else {
         this.state.tiedotteet = [];
       }
     }

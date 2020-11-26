@@ -3,41 +3,66 @@
 
     <Portal to="headerExtension">
       <div class="portal-menu d-flex">
-        <div class="upper-left">
-          <!-- <ep-progress-popover :slices="progressSlices">
-
+        <div class="upper-left d-flex justify-content-center">
+          <EpProgressPopover
+            :slices="progressSlices"
+            :popup-style="popupStyle"
+            :height="60"
+            :width="60">
             <template v-slot:header>
-              <div class="pt-1 row justify-content-center" v-if="validationStats">
-                <div v-if="validationStats.ok < validationStats.total">
-                  {{ validationStats.ok }} / {{ validationStats.total }} {{$t('valmis')}}
-                </div>
-                <div v-else-if="validationCategories">
-                  <b-button class="px-3 py-1" variant="primary"
-                      :to="{ name: 'perusteprojekti' }">{{ $t('julkaise') }}</b-button>
-                </div>
+              <div class="row flex-column align-items-center">
+                <span class="validation-text pb-2">
+                  {{ $t(publishingState) }}
+                </span>
+                <b-button
+                  v-if="isDraft"
+                  variant="primary"
+                  :to="{ name: 'julkaise' }"
+                  size="sm"
+                  pill>{{ $t('siirry-julkaisunakymaan') }}
+                </b-button>
               </div>
             </template>
-
-            <div v-if="validationStats" class="row justify-content-center">
-              <b-button v-if="validationStats.ok < validationStats.total"
-                        variant="primary"
-                        :to="{ name: 'perusteprojekti' }">{{ $t('siirry-julkaisunakymaan') }}</b-button>
-              <div v-if="validationCategories">
-                <div class="pl-3 pt-2 pb-1 row" v-for="c in validationStats.categories" :key="c.category">
+            <div v-if="validationCategories" class="d-flex flex-column align-items-center">
+              <b-button
+                v-if="isPublished || isReady"
+                variant="primary"
+                :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}
+              </b-button>
+              <template v-if="isArchived">
+                <b-button
+                  variant="primary"
+                  @click="restore">{{ $t('palauta') }}
+                </b-button>
+                <div class="font-size-08 mt-2 text-center">
+                  {{
+                    isVapaaSivistystyo ?
+                    $t('voit-palauttaa-arkistoidun-opetussuunnitelman-luonnostilaan') :
+                    $t('voit-palauttaa-arkistoidun-toteutussuunnitelman-luonnostilaan')
+                  }}
+                </div>
+              </template>
+              <div v-if="!isArchived">
+                <div class="pl-3 pt-2 pb-1 row" v-if="validationCategories.length === 0">
                   <div class="col-1">
-                    <fas class="text-success" icon="check-circle" v-if="c.failcount === 0"/>
-                    <fas class="text-danger" icon="info-circle" v-if="c.failcount > 0"/>
+                    <fas class="text-success" icon="check-circle"/>
                   </div>
                   <div class="col">
-                    <span v-if="c.failcount === 0">{{ $t(c.category + "-validation-ok") }}</span>
-                    <span v-if="c.failcount > 0">{{ $t(c.category + "-validation-error") }}</span>
+                    {{ $t('suunnitelmassa-ei-virheita') }}
+                  </div>
+                </div>
+                <div class="pl-3 pt-2 pb-1 row" v-for="category in validationCategories" :key="category">
+                  <div class="col-1">
+                    <fas class="text-danger" icon="info-circle"/>
+                  </div>
+                  <div class="col">
+                    <span>{{ $t(category) }}</span>
                   </div>
                 </div>
               </div>
             </div>
-            <ep-spinner v-else />
-
-          </ep-progress-popover> -->
+            <EpSpinner v-else />
+          </EpProgressPopover>
         </div>
         <div class="flex-grow-1 align-self-center">
           <div class="mb-5 p-2" v-if="toteutussuunnitelma">
@@ -218,17 +243,20 @@ import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
+import EpProgressPopover from '@shared/components/EpProgressPopover/EpProgressPopover.vue';
+import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
-import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum } from '@shared/api/amosaa';
+import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
 import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
 import { arkistoiOpetussuunnitelma } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
+import { tileBackgroundColor } from '@shared/utils/bannerIcons';
 
 @Component({
   components: {
@@ -238,6 +266,8 @@ import { KayttajaStore } from '@/stores/kayttaja';
     EpSearch,
     EpSisaltoLisays,
     EpTekstikappaleLisays,
+    EpProgressPopover,
+    EpSpinner,
   },
 })
 export default class RouteToteutussuunnitelma extends Vue {
@@ -345,6 +375,16 @@ export default class RouteToteutussuunnitelma extends Vue {
       this.updateNavigation);
   }
 
+  async restore() {
+    await arkistoiOpetussuunnitelma(
+      this,
+      {
+        ...ArkistointiTekstit.palautus[this.toteutus].meta,
+        callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+      },
+    );
+  }
+
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
   }
@@ -380,13 +420,17 @@ export default class RouteToteutussuunnitelma extends Vue {
         oikeus: 'hallinta',
       },
       {
-        separator: true,
-        oikeus: 'hallinta',
+        ...(!this.isArchived && {
+          separator: true,
+          oikeus: 'hallinta',
+        }),
       }, {
-        icon: ['far', 'folder'],
-        click: arkistoiOpetussuunnitelma,
-        ...ArkistointiTekstit[this.toteutus],
-        oikeus: 'hallinta',
+        ...(!this.isArchived && {
+          icon: ['far', 'folder'],
+          click: arkistoiOpetussuunnitelma,
+          ...ArkistointiTekstit.arkistointi[this.toteutus],
+          oikeus: 'hallinta',
+        }),
       },
     ];
   }
@@ -395,12 +439,12 @@ export default class RouteToteutussuunnitelma extends Vue {
     clickFn(this, meta);
   }
 
-  get isAmmatillinen() {
-    return this.toteutus === 'ammatillinen';
+  get isAmmatillinen(): boolean {
+    return this.toteutus === Toteutus.AMMATILLINEN;
   }
 
-  get isVapaaSivistystyo() {
-    return this.toteutus === 'vapaasivistystyo';
+  get isVapaaSivistystyo(): boolean {
+    return this.toteutus === Toteutus.VAPAASIVISTYSTYO;
   }
 
   get tekstikappaleet() {
@@ -416,6 +460,50 @@ export default class RouteToteutussuunnitelma extends Vue {
       ...this.tekstikappaleet,
       ...this.opintokokonaisuudet,
     ], 'chapter');
+  }
+
+  get validationCategories(): string[] | undefined {
+    if (this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
+      return _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value.virheet)
+        .keyBy('syy')
+        .keys()
+        .value();
+    }
+  }
+
+  get progressSlices(): number[] | undefined {
+    if (this.isArchived) {
+      return [0];
+    }
+    else if (this.validationCategories) {
+      return _.chain(this.validationCategories)
+        .map(category => 0.5)
+        .value();
+    }
+  }
+
+  get publishingState(): OpetussuunnitelmaDtoTilaEnum | undefined {
+    return this.toteutussuunnitelma?.tila;
+  }
+
+  get popupStyle(): { background: string; } | undefined {
+    return tileBackgroundColor(this.toteutussuunnitelma?.peruste?.koulutustyyppi);
+  }
+
+  get isPublished(): boolean {
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
+  }
+
+  get isReady(): boolean {
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS);
+  }
+
+  get isDraft(): boolean {
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+  }
+
+  get isArchived(): boolean {
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
   }
 }
 </script>
@@ -448,7 +536,7 @@ export default class RouteToteutussuunnitelma extends Vue {
 
   .upper-left {
     @media (max-width: 991.98px) {
-      padding: 10px 30px;
+      padding: 0 30px;
     }
     @media (min-width: 992px) {
       min-width: $sidebar-width;
@@ -487,5 +575,9 @@ export default class RouteToteutussuunnitelma extends Vue {
 .bottom-menu-item {
   margin-left: 20px;
   margin-bottom: 10px;
+}
+
+.validation-text {
+  font-size: 14px;
 }
 </style>

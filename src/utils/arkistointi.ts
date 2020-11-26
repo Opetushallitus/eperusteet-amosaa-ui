@@ -12,14 +12,30 @@ export async function arkistoiOpetussuunnitelma(el, meta) {
 
   if (arkistoi) {
     try {
-      await Opetussuunnitelmat.updateOpetussuunnitelmaTila(el.$route.params.toteutussuunnitelmaId as number, 'POISTETTU', el.$route.params.koulutustoimijaId);
-      el.$router.push({
-        name: meta.reroute,
-      });
-      el.$success(el.$t('arkistoi-suunnitelma-onnistui'));
+      await Opetussuunnitelmat.updateOpetussuunnitelmaTila(el.$route.params.toteutussuunnitelmaId as number, meta.tila, el.$route.params.koulutustoimijaId);
+      switch (meta.tila) {
+      case 'POISTETTU':
+        el.$success(el.$t('arkistoi-suunnitelma-onnistui'));
+        break;
+      case 'LUONNOS':
+        el.$success(el.$t('palautus-onnistui'));
+        break;
+      default:
+        break;
+      }
     }
     catch (e) {
       el.$fail(el.$t('arkistointi-epaonnistui'));
+    }
+
+    if (meta.reroute) {
+      el.$router.push({
+        name: meta.reroute,
+      });
+    }
+
+    if (meta.callback) {
+      await meta.callback();
     }
   }
 }
