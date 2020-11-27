@@ -12,7 +12,7 @@
             <template v-slot:header>
               <div class="row flex-column align-items-center">
                 <span class="validation-text pb-2">
-                  {{ $t(publishingState) }}
+                  {{ $t(tila) }}
                 </span>
                 <b-button
                   v-if="isDraft"
@@ -482,16 +482,26 @@ export default class RouteToteutussuunnitelma extends Vue {
     }
   }
 
-  get publishingState(): OpetussuunnitelmaDtoTilaEnum | undefined {
-    return this.toteutussuunnitelma?.tila;
+  get tila() {
+    if (this.julkaisut) {
+      if (this.isPublished) {
+        return _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
+      }
+
+      return _.toLower(this.toteutussuunnitelma?.tila);
+    }
   }
 
   get popupStyle(): { background: string; } | undefined {
     return tileBackgroundColor(this.toteutussuunnitelma?.peruste?.koulutustyyppi);
   }
 
+  get julkaisut() {
+    return this.toteutussuunnitelmaStore.julkaisut.value;
+  }
+
   get isPublished(): boolean {
-    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
+    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU) || _.size(this.julkaisut) > 0;
   }
 
   get isReady(): boolean {
@@ -499,7 +509,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get isDraft(): boolean {
-    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+    return this.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
   }
 
   get isArchived(): boolean {

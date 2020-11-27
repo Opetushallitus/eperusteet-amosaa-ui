@@ -12,7 +12,7 @@
       </ul>
     </div>
     <div>
-      <h3 class="mt-4 mb-3">{{ $t('tarkistukset') }}</h3>
+      <h3 class="mt-4 mb-1">{{ $t('tarkistukset') }}</h3>
       <EpValidointilistaus
         v-if="parsedErrors && parsedErrors.length > 0"
         :borderTop="true"
@@ -97,11 +97,38 @@
             </b-col>
           </b-row>
         </b-container>
+
         <hr class="mt-4 mb-4">
-        <h3>{{ $t('uusi-julkaisu') }}</h3>
-        <b-form-group :label="$t('julkaisun-tiedote') + ' *'">
-          <!-- Julkaisutiedote, julkaisuhistoria ja julkaisunappi -->
-        </b-form-group>
+
+        <div v-if="julkaisuMahdollinen && julkaisut">
+          <h3>{{ $t('uusi-julkaisu') }}</h3>
+          <b-form-group :label="$t('julkaisun-tiedote') + ' *'">
+            <div class="font-size-08 mb-2">{{$t('tiedote-naytetaan-tyoryhmalle-taman-sivun-julkaisuhistoriassa')}}</div>
+            <ep-content v-model="julkaisu.tiedote"
+                        layout="full"
+                        :is-editable="true" />
+            <ep-button class="mt-3" @click="julkaise" :showSpinner="julkaistaan" :disabled="!julkaisu.tiedote[sisaltoKieli]">
+              {{ $t(kielistykset['julkaisuBtn']) }}
+            </ep-button>
+          </b-form-group>
+        </div>
+
+        <ep-collapse v-if="julkaisut">
+          <h3 slot="header">{{ $t('julkaisuhistoria') }}</h3>
+          <div class="alert alert-info" v-if="julkaisut.length === 0">
+            {{ $t('ei-julkaisuja') }}
+          </div>
+          <div class="julkaisu p-2" v-for="(julkaisu, index) in julkaisutSorted" :key="julkaisu+index">
+            <div>
+              <span class="font-weight-bold pr-1">{{$t('versio')}} {{julkaisu.revision}}</span>
+              <span v-if="index === 0">({{$t('uusin-julkaisu')}})</span>
+            </div>
+            <div>{{$sdt(julkaisu.luotu)}} {{julkaisu.nimi}}</div>
+            <div class="pt-2" v-html="$kaanna(julkaisu.tiedote)"></div>
+          </div>
+
+        </ep-collapse>
+
       </template>
     </div>
   </div>
@@ -113,7 +140,7 @@ import { Component, Mixins, Prop, Vue, Watch } from 'vue-property-decorator';
 
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
-import { Toteutus } from '@/utils/toteutustypes';
+import { JulkaisuKielistykset, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
 
 import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue';
 
@@ -128,6 +155,8 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 
 import { Kielet } from '@shared/stores/kieli';
+import { Julkaisut, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
+import { parsiEsitysnimi } from '@/stores/kayttaja';
 
 @Component({
   components: {
@@ -147,6 +176,11 @@ export default class RouteJulkaisu extends Vue {
 
   @Prop({ required: true })
   private toteutus!: Toteutus;
+
+  private julkaistaan = false;
+  private julkaisu = {
+    tiedote: {},
+  };
 
   get suunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
@@ -178,11 +212,61 @@ export default class RouteJulkaisu extends Vue {
   get warnings() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value?.varoitukset;
   }
+
+  get julkaisuMahdollinen() {
+    return _.size(this.errors) === 0 && this.suunnitelma?.tila !== _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
+  }
+
+  get julkaisut() {
+    return this.toteutussuunnitelmaStore.julkaisut.value;
+  }
+
+  get julkaisutSorted() {
+    return _.chain(this.julkaisut)
+      .map(julkaisu => {
+        return {
+          ...julkaisu,
+          nimi: julkaisu.kayttajanTieto ? parsiEsitysnimi(julkaisu.kayttajanTieto) : julkaisu.luoja,
+        };
+      })
+      .sortBy(julkaisu => julkaisu.revision! * -1)
+      .value();
+  }
+
+  get sisaltoKieli() {
+    return Kielet.getSisaltoKieli.value;
+  }
+
+  async julkaise() {
+    this.julkaistaan = true;
+    try {
+      await this.toteutussuunnitelmaStore.julkaise(this.julkaisu);
+      this.$success(this.$t(this.kielistykset['julkaisuOnnistui']) as string);
+    }
+    catch (err) {
+      this.$fail(this.$t('julkaisu-epaonnistui-' + OpetussuunnitelmaTyyppi[this.toteutus] + '-' + err.response.data.syy) as string);
+    }
+    this.julkaistaan = false;
+  }
+
+  get kielistykset() {
+    return JulkaisuKielistykset[this.toteutus];
+  }
 }
 </script>
 
 <style scoped lang="scss">
+@import '@shared/styles/_variables';
+
   .content {
     padding: 15px 50px 50px 50px;
+  }
+
+  .julkaisu:nth-of-type(even) {
+    background-color: $table-even-row-bg-color;
+  }
+
+  .julkaisu:nth-of-type(odd) {
+    background-color: $table-odd-row-bg-color;
   }
 </style>
