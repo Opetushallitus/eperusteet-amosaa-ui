@@ -231,3 +231,14 @@ export const ArkistointiTekstit = {
     },
   },
 };
+
+export const JulkaisuKielistykset = {
+  [Toteutus.VAPAASIVISTYSTYO]: {
+    julkaisuBtn: 'julkaise-opetussuunnitelma',
+    julkaisuOnnistui: 'opetussuunnitelma-julkaistu',
+  },
+  [Toteutus.AMMATILLINEN]: {
+    julkaisuBtn: 'julkaise-toteutussuunnitelma',
+    julkaisuOnnistui: 'toteutussuunnitelma-julkaistu',
+  },
+};
