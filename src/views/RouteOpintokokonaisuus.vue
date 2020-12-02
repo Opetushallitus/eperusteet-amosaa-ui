@@ -34,7 +34,8 @@
                 v-model="opintokokonaisuus.kuvaus"
                 layout="normal"
                 :is-editable="isEditing && tyyppi === TyyppiSource.OMA"
-                :validation="validation.opintokokonaisuus.kuvaus"/>
+                :validation="validation.opintokokonaisuus.kuvaus"
+                :kuvaHandler="kuvaHandler"/>
             </b-form-group>
           </b-col>
         </b-row>
@@ -53,7 +54,8 @@
               <EpContent
                 v-model="opintokokonaisuus.tavoitteidenKuvaus"
                 layout="normal"
-                :is-editable="isEditing"/>
+                :is-editable="isEditing"
+                :kuvaHandler="kuvaHandler"/>
             </b-form-group>
             <EpAlert
               v-if="!opintokokonaisuus.tavoitteidenKuvaus && !isEditing"
@@ -121,7 +123,8 @@
               <EpContent
                 v-model="opintokokonaisuus.keskeisetSisallot"
                 layout="normal"
-                :is-editable="isEditing"/>
+                :is-editable="isEditing"
+                :kuvaHandler="kuvaHandler"/>
             </b-form-group>
             <EpAlert
               v-if="!opintokokonaisuus.keskeisetSisallot && !isEditing"
@@ -138,7 +141,8 @@
               <EpContent
                 v-model="opintokokonaisuus.arvioinninKuvaus"
                 layout="normal"
-                :is-editable="isEditing"/>
+                :is-editable="isEditing"
+                :kuvaHandler="kuvaHandler"/>
             </b-form-group>
             <EpAlert
               v-if="!opintokokonaisuus.arvioinninKuvaus && !isEditing"
@@ -203,10 +207,12 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
+import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { Koodisto } from '@shared/api/eperusteet';
 
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
+import { KuvaStore } from '@/stores/KuvaStore';
 
 enum TyyppiSource {
   PERUSTEESTA = 'perusteesta',
@@ -347,6 +353,10 @@ export default class RouteOpintokokonaisuus extends Vue {
         name: 'arvioinnit',
       },
     };
+  }
+
+  get kuvaHandler() {
+    return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
   }
 }
 </script>
