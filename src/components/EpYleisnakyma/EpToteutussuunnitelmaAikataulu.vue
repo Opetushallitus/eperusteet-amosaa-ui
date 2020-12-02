@@ -3,9 +3,12 @@
 
     <div class="d-flex justify-content-between">
       <h3>{{$t('aikataulu')}}</h3>
-      <ep-aikataulu-modal ref="aikataulumodal" :rootModel="toteutussuunnitelma" :aikataulut="aikataulut" @tallenna="tallenna">
+      <ep-aikataulu-modal
+        ref="aikataulumodal"
+        :rootModel="toteutussuunnitelma"
+        :aikataulut="aikataulut"
+        @tallenna="tallenna">
         <span slot="luomispaiva-topic" v-html="$t('suunnitelman-luomispaiva-br')"></span>
-        <span slot="julkaisupaiva-topic" v-html="$t('suunnitelma-astuu-voimaan-br')"></span>
       </ep-aikataulu-modal>
     </div>
 
@@ -20,7 +23,6 @@
 
     <ep-aikataulu v-else :aikataulut="aikataulut">
       <span slot="luomispaiva-topic" v-html="$t('suunnitelman-luomispaiva-br')"></span>
-      <span slot="julkaisupaiva-topic" v-html="$t('suunnitelma-astuu-voimaan-br')"></span>
     </ep-aikataulu>
 
   </div>

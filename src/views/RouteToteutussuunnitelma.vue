@@ -100,11 +100,11 @@
 
     <EpSidebar v-if="navigation" :show-social="false">
       <template v-slot:bar>
-        <div class="m-3">
+        <div class="m-3 ml-4 mr-4">
           <EpSearch v-model="query" />
         </div>
         <div class="navigation">
-          <EpTreeNavibar :store="naviStore">
+          <EpTreeNavibar :store="naviStore" show-all-toggle>
             <template v-slot:header>
               <div class="heading">
                 <div class="menu-item">
@@ -166,50 +166,52 @@
             </template>
 
             <template v-slot:new>
-              <EpSisaltoLisays
-                v-if="isAmmatillinen"
-                v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }"
-                :toteutussuunnitelmaId="toteutussuunnitelmaId"
-                :koulutustoimijaId="koulutustoimijaId"
-                :navigation="navigation.value"
-                :updateNavigation="updateNavigation"
-                :toteutussuunnitelma="toteutussuunnitelma"/>
+              <div class="mb-3">
+                <EpSisaltoLisays
+                  v-if="isAmmatillinen"
+                  v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }"
+                  :toteutussuunnitelmaId="toteutussuunnitelmaId"
+                  :koulutustoimijaId="koulutustoimijaId"
+                  :navigation="navigation.value"
+                  :updateNavigation="updateNavigation"
+                  :toteutussuunnitelma="toteutussuunnitelma"/>
 
-              <EpTekstikappaleLisays
-                v-if="isVapaaSivistystyo"
-                @save="tallennaUusiTekstikappale"
-                :tekstikappaleet="perusteenOsat"
-                :paatasovalinta="true">
-                <template v-slot:default="{tekstikappale}">
-                  <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                  {{ $kaanna(tekstikappale.label) }}
-                </template>
-              </EpTekstikappaleLisays>
-
-              <EpTekstikappaleLisays
+                <EpTekstikappaleLisays
                   v-if="isVapaaSivistystyo"
-                  @save="tallennaUusiOpintokokonaisuus"
+                  @save="tallennaUusiTekstikappale"
                   :tekstikappaleet="perusteenOsat"
-                  :paatasovalinta="true"
-                  :otsikkoRequired="false"
-                  modalId="opintokokonaisuusLisays">
-                  <template v-slot:lisays-btn-text>
-                    {{$t('uusi-opintokokonaisuus')}}
-                  </template>
-                  <template v-slot:modal-title>
-                    {{$t('uusi-opintokokonaisuus')}}
-                  </template>
-                  <template v-slot:footer-lisays-btn-text>
-                    {{$t('lisaa-opintokokonaisuus')}}
-                  </template>
-                  <template v-slot:header>
-                    {{$t('opintokokonaisuuden-sijainti')}}
-                  </template>
+                  :paatasovalinta="true">
                   <template v-slot:default="{tekstikappale}">
                     <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
                     {{ $kaanna(tekstikappale.label) }}
                   </template>
                 </EpTekstikappaleLisays>
+
+                <EpTekstikappaleLisays
+                    v-if="isVapaaSivistystyo"
+                    @save="tallennaUusiOpintokokonaisuus"
+                    :tekstikappaleet="perusteenOsat"
+                    :paatasovalinta="true"
+                    :otsikkoRequired="false"
+                    modalId="opintokokonaisuusLisays">
+                    <template v-slot:lisays-btn-text>
+                      {{$t('uusi-opintokokonaisuus')}}
+                    </template>
+                    <template v-slot:modal-title>
+                      {{$t('uusi-opintokokonaisuus')}}
+                    </template>
+                    <template v-slot:footer-lisays-btn-text>
+                      {{$t('lisaa-opintokokonaisuus')}}
+                    </template>
+                    <template v-slot:header>
+                      {{$t('opintokokonaisuuden-sijainti')}}
+                    </template>
+                    <template v-slot:default="{tekstikappale}">
+                      <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                      {{ $kaanna(tekstikappale.label) }}
+                    </template>
+                  </EpTekstikappaleLisays>
+                </div>
             </template>
 
           </EpTreeNavibar>
@@ -225,7 +227,7 @@
           <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
             <span class="text-nowrap">
               <fas icon="jarjesta" fixed-width />
-              {{ $t('muokkaa-rakennetta') }}
+               <a class="btn btn-link btn-link-nav">{{$t('muokkaa-jarjestysta')}}</a>
             </span>
           </router-link>
         </div>
@@ -562,7 +564,6 @@ export default class RouteToteutussuunnitelma extends Vue {
 .heading {
   margin-left: 28px;
   margin-right: 28px;
-  border-bottom: 1px solid rgb(216, 216, 216);
 }
 
 .menu-item {
@@ -570,12 +571,14 @@ export default class RouteToteutussuunnitelma extends Vue {
   padding: 7px 10px 7px 10px;
 
   a {
-    color: #000;
-
     &.router-link-exact-active {
       font-weight: 600;
     }
   }
+}
+
+.menu-item:not(.bottom-menu-item) a{
+  color: #000;
 }
 
 .navigation ::v-deep .ep-button .btn {
@@ -590,4 +593,11 @@ export default class RouteToteutussuunnitelma extends Vue {
 .validation-text {
   font-size: 14px;
 }
+
+::v-deep .structure-toggle {
+  margin-left: 35px;
+  margin-bottom: 10px;
+  margin-right: 35px;
+}
+
 </style>
