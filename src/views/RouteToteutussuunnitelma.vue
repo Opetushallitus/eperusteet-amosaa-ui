@@ -420,12 +420,12 @@ export default class RouteToteutussuunnitelma extends Vue {
         oikeus: 'hallinta',
       },
       {
-        ...(!this.isArchived && {
+        ...(this.isDraft && {
           separator: true,
           oikeus: 'hallinta',
         }),
       }, {
-        ...(!this.isArchived && {
+        ...(this.isDraft && {
           icon: ['far', 'folder'],
           click: arkistoiOpetussuunnitelma,
           ...ArkistointiTekstit.arkistointi[this.toteutus],
@@ -508,8 +508,8 @@ export default class RouteToteutussuunnitelma extends Vue {
     return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS);
   }
 
-  get isDraft(): boolean {
-    return this.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+  get isDraft(): boolean | undefined {
+    return this.tila === (!!this.julkaisut ? _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS) : undefined);
   }
 
   get isArchived(): boolean {
