@@ -47,7 +47,7 @@ export class ToteutussuunnitelmaStore {
     const navData = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, koulutustoimijaId)).data;
     const filteredNavData = {
       ...navData,
-      children: _.reject(navData.children, { label: null, type: 'tiedot'})
+      children: _.reject(navData.children, { label: null, type: 'tiedot'} as { [key: string]: string | null; }),
     } as NavigationNodeDto;
     this.state.navigation = filteredNavData;
   }
