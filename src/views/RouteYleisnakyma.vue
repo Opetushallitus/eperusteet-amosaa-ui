@@ -2,18 +2,18 @@
 <div class="yleisnakyma">
 
   <div class="row">
-    <div class="col">
+    <div class="col p-0">
       <ep-toteutussuunnitelma-aikataulu class="info-box" :aikatauluStore="aikatauluStore" :toteutussuunnitelma="toteutussuunnitelma"/>
     </div>
   </div>
 
   <div class="row pt-0">
-    <div class="col">
+    <div class="col-lg-12 col-xl-6 p-0">
       <ep-toteutussuunnitelman-tiedotteet class="info-box" v-if="peruste" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
       <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma"/>
       <ep-toteutussuunnitelman-sisaltoviitteet class="info-box" :sisaltoViiteStore="sisaltoViiteStore" :toteutus="toteutus"/>
     </div>
-    <div class="col">
+    <div class="col-lg-12 col-xl-6 p-0 pl-2">
       <ep-viimeaikainen-toiminta class="info-box" :muokkaustietoStore="muokkaustietoStore"/>
     </div>
   </div>
@@ -88,12 +88,6 @@ export default class RouteYleisnakyma extends Vue {
 
   .row {
     margin: 0px;
-    padding-top: 10px;
-
-    .col {
-      padding: 0px;
-      padding-left: 10px;
-    }
   }
 
   .info-box {
