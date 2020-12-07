@@ -50,12 +50,12 @@
               <b-form-group :label="$t('julkaisukielet')">
                 <b-form-checkbox-group v-if="isEditing" v-model="data.opetussuunnitelma.julkaisukielet" stacked>
                   <b-form-checkbox v-for="kieli in kielet" :key="kieli" :value="kieli">
-                    {{ $t(kieli) | capitalize }}
+                    {{ $t(kieli) }}
                   </b-form-checkbox>
                 </b-form-checkbox-group>
                 <div v-else class="text-nowrap">
                   <span v-for="(kieli, idx) in data.opetussuunnitelma.julkaisukielet" :key="kieli" :value="kieli">
-                    {{ $t(kieli) | capitalize }}<span class="mr-0" v-if="idx < data.opetussuunnitelma.julkaisukielet.length - 1">,</span>
+                    {{ $t(kieli) }}<span class="mr-0" v-if="idx < data.opetussuunnitelma.julkaisukielet.length - 1">,</span>
                   </span>
                 </div>
               </b-form-group>
@@ -148,11 +148,6 @@ import { Murupolku } from '@shared/stores/murupolku';
     EpSiirtoModal,
     EpToggle,
   },
-  filters: {
-    capitalize: value => {
-      return _.capitalize(value);
-    }
-  }
 })
 export default class RouteToteutussuunnitelmaTiedot extends Vue {
   @Prop({ required: true })
