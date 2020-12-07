@@ -44,12 +44,7 @@ export class ToteutussuunnitelmaStore {
   }
 
   public async initNavigation(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
-    const navData = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, koulutustoimijaId)).data;
-    const filteredNavData = {
-      ...navData,
-      children: _.reject(navData.children, { label: null, type: 'tiedot' } as { [key: string]: string | null; }),
-    } as NavigationNodeDto;
-    this.state.navigation = filteredNavData;
+    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, koulutustoimijaId)).data;
   }
 
   public async updateValidation(koulutustoimijaId: string, toteutussuunnitelmaId: number) {

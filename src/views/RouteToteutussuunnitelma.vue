@@ -105,7 +105,7 @@
         </div>
         <div class="navigation">
           <EpTreeNavibar :store="naviStore" show-all-toggle>
-            <template v-slot:header>
+            <template v-slot:tiedot>
               <div class="heading">
                 <div class="menu-item">
                   <router-link :to="{ name: 'toteutussuunnitelma' }" exact>
@@ -115,7 +115,7 @@
               </div>
             </template>
 
-            <template v-slot:tutkinnonosat="{ item }">
+            <template v-slot:tutkinnonosat>
               <div class="menu-item">
                 <router-link :to="{ name: 'tutkinnonosat' }">
                   {{ $t('tutkinnonosat') }}
