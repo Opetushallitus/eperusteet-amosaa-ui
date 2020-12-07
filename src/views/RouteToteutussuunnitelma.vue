@@ -106,12 +106,10 @@
         <div class="navigation">
           <EpTreeNavibar :store="naviStore" show-all-toggle>
             <template v-slot:tiedot>
-              <div class="heading">
-                <div class="menu-item">
-                  <router-link :to="{ name: 'toteutussuunnitelma' }" exact>
-                    {{ $t('yleisnakyma') }}
-                  </router-link>
-                </div>
+              <div class="menu-item">
+                <router-link :to="{ name: 'toteutussuunnitelma' }" exact>
+                  {{ $t('yleisnakyma') }}
+                </router-link>
               </div>
             </template>
 
@@ -149,7 +147,7 @@
 
             <template v-slot:tekstikappale="{ item }">
               <div class="menu-item">
-                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}.</span>
+                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter - 1 }}.</span>
                 <router-link :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
@@ -158,7 +156,7 @@
 
             <template v-slot:opintokokonaisuus="{ item }">
               <div class="menu-item">
-                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}.</span>
+                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter - 1 }}.</span>
                 <router-link :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
                 </router-link>
