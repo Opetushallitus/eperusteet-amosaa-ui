@@ -1,6 +1,6 @@
 import { Opetussuunnitelmat } from '@shared/api/amosaa';
 
-export async function arkistoiOpetussuunnitelma(el, meta) {
+export async function vaihdaOpetussunnitelmaTilaConfirm(el, meta) {
   const arkistoi = await el.$bvModal.msgBoxConfirm(el.$t(meta.confirm) as any, {
     title: el.$t(meta.title),
     okVariant: 'primary',
@@ -11,8 +11,10 @@ export async function arkistoiOpetussuunnitelma(el, meta) {
   });
 
   if (arkistoi) {
+    const toteutussuunnitelmaId = meta.toteutussuunnitelmaId ? meta.toteutussuunnitelmaId : el.$route.params.toteutussuunnitelmaId;
+
     try {
-      await Opetussuunnitelmat.updateOpetussuunnitelmaTila(el.$route.params.toteutussuunnitelmaId as number, meta.tila, el.$route.params.koulutustoimijaId);
+      await Opetussuunnitelmat.updateOpetussuunnitelmaTila(toteutussuunnitelmaId, meta.tila, el.$route.params.koulutustoimijaId);
       switch (meta.tila) {
       case 'POISTETTU':
         el.$success(el.$t('arkistoi-suunnitelma-onnistui'));

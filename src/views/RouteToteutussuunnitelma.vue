@@ -256,7 +256,7 @@ import { Meta } from '@shared/utils/decorators';
 import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
 import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
-import { arkistoiOpetussuunnitelma } from '@/utils/arkistointi';
+import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { tileBackgroundColor } from '@shared/utils/bannerIcons';
 
@@ -378,7 +378,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   async restore() {
-    await arkistoiOpetussuunnitelma(
+    await vaihdaOpetussunnitelmaTilaConfirm(
       this,
       {
         ...ArkistointiTekstit.palautus[this.toteutus].meta,
@@ -422,14 +422,14 @@ export default class RouteToteutussuunnitelma extends Vue {
         oikeus: 'hallinta',
       },
       {
-        ...(!this.isArchived && {
+        ...(this.isDraft && {
           separator: true,
           oikeus: 'hallinta',
         }),
       }, {
-        ...(!this.isArchived && {
+        ...(this.isDraft && {
           icon: ['far', 'folder'],
-          click: arkistoiOpetussuunnitelma,
+          click: vaihdaOpetussunnitelmaTilaConfirm,
           ...ArkistointiTekstit.arkistointi[this.toteutus],
           oikeus: 'hallinta',
         }),
@@ -510,8 +510,8 @@ export default class RouteToteutussuunnitelma extends Vue {
     return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS);
   }
 
-  get isDraft(): boolean {
-    return this.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+  get isDraft(): boolean | undefined {
+    return this.tila === (!!this.julkaisut ? _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS) : undefined);
   }
 
   get isArchived(): boolean {

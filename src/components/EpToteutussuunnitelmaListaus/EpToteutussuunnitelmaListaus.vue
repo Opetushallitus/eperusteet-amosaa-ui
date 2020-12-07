@@ -73,6 +73,19 @@
               {{ $kaanna(data.item.nimi) }}
             </router-link>
           </template>
+          <template v-slot:cell(tila)="data">
+            <div class="d-flex">
+              {{ $t(data.item.tila) }}
+              <ep-button
+                v-if="data.item.tila === 'poistettu'"
+                variant="link py-0"
+                icon="peruuta"
+                @click="restore(data.item)"
+                v-oikeustarkastelu="{ oikeus: 'tilanvaihto' }">
+                {{ $t('palauta') }}
+              </ep-button>
+            </div>
+          </template>
         </b-table>
         <ep-pagination v-model="sivu"
                        :per-page="perPage"
@@ -88,18 +101,23 @@
 
 <script lang="ts">
 import { Watch, Prop, Component, Vue } from 'vue-property-decorator';
+
+import * as _ from 'lodash';
+import { BvTableFieldArray } from 'bootstrap-vue';
+
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpIcon from '@shared/components/EpIcon/EpIcon.vue';
 import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Page } from '@shared/tyypit';
-import { BvTableFieldArray } from 'bootstrap-vue';
+
 import { IToteutussuunnitelmaProvider } from './types';
-import * as _ from 'lodash';
 import { Toteutus } from '@/utils/toteutustypes';
+import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
@@ -111,6 +129,7 @@ export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
     EpPagination,
     EpSearch,
     EpSpinner,
+    EpButton,
   },
 })
 export default class EpToteutussuunnitelmaListaus extends Vue {
@@ -239,6 +258,19 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       jarjestys: sort.sortBy,
       jarjestysNouseva: !sort.sortDesc,
     };
+  }
+
+  async restore(item) {
+    await vaihdaOpetussunnitelmaTilaConfirm(
+      this,
+      {
+        title: 'palauta-toteutussuunnitelma',
+        confirm: 'palauta-toteutussuunnitelma-vahvistus',
+        tila: 'LUONNOS',
+        toteutussuunnitelmaId: item.id,
+      }
+    );
+    await this.onQueryChange(this.query);
   }
 
   get vaihtoehdotVoimassaolo() {
