@@ -115,7 +115,7 @@
               </div>
             </template>
 
-            <template v-slot:tutkinnonosat="{ item }">
+            <template v-slot:tutkinnonosat>
               <div class="menu-item">
                 <router-link :to="{ name: 'tutkinnonosat' }">
                   {{ $t('tutkinnonosat') }}
@@ -149,7 +149,7 @@
 
             <template v-slot:tekstikappale="{ item }">
               <div class="menu-item">
-                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}.</span>
+                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
                 <router-link :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
@@ -158,7 +158,7 @@
 
             <template v-slot:opintokokonaisuus="{ item }">
               <div class="menu-item">
-                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}.</span>
+                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
                 <router-link :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
                 </router-link>
