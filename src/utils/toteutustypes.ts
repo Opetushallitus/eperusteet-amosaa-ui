@@ -33,7 +33,7 @@ export const TileBackground = {
 
 export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
   return [
-    {
+    ...(stores.kayttajaStore.ophSelected.value ? [] : [{
       component: TileToteutussuunnitelmat,
       props: {
         kayttajaStore: stores.kayttajaStore,
@@ -45,7 +45,7 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
       oikeustarkastelu: {
         oikeus: 'luku',
       },
-    },
+    }]),
     {
       component: TileKoulutustoimijanYhteinenOsuus,
       props: {
@@ -103,7 +103,7 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
 
 const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
   return [
-    {
+    ...(stores.kayttajaStore.ophSelected.value ? [] : [{
       component: TileToteutussuunnitelmat,
       props: {
         kayttajaStore: stores.kayttajaStore,
@@ -116,7 +116,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
       oikeustarkastelu: {
         oikeus: 'luku',
       },
-    },
+    }]),
     {
       component: TileTiedotteet,
       props: {

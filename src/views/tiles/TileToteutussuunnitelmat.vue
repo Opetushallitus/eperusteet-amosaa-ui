@@ -70,6 +70,11 @@ export default class TileToteutussuunnitelmat extends Vue {
     await this.fetch();
   }
 
+  @Watch('toteutus')
+  async toteutusChange() {
+    await this.fetch();
+  }
+
   async fetch() {
     await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId, EperusteetKoulutustyyppiRyhmat[this.toteutus]);
   }
