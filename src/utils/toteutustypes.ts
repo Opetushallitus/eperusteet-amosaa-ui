@@ -27,6 +27,11 @@ export const OpetussuunnitelmaTyyppi = {
   [Toteutus.AMMATILLINEN]: 'toteutussuunnitelma',
 };
 
+export const OpetussuunnitelmaOppilaitostyyppi = {
+  [Toteutus.VAPAASIVISTYSTYO]: true,
+  [Toteutus.AMMATILLINEN]: false,
+};
+
 export const TileBackground = {
   [Toteutus.VAPAASIVISTYSTYO]: { 'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][0] + ' 0%, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][1] + ' 100%)' },
 };

@@ -71,13 +71,25 @@
               </b-form-group>
             </b-col>
           </b-row>
-           <b-row>
+          <b-row>
+            <b-col v-if="showOpetussuunnitelmaOppilaitostyyppi">
+              <b-form-group :label="$t('oppilaitoksen-tyyppi')">
+                <ep-select v-if="isEditing" :items="oppilaitostyypit" v-model="data.opetussuunnitelma.oppilaitosTyyppiKoodiUri" :isEditing="isEditing" :enableEmptyOption="true">
+                  <template slot-scope="{ item }">
+                    {{kaannaOppilaitosNimi(item)}}
+                  </template>
+                </ep-select>
+                <div v-else>
+                  {{kaannaOppilaitosNimi(data.opetussuunnitelma.oppilaitosTyyppiKoodiUri)}}
+                </div>
+              </b-form-group>
+            </b-col>
             <b-col>
               <b-form-group :label="$t('tila')">
                 {{$t(data.opetussuunnitelma.tila)}}
               </b-form-group>
             </b-col>
-           </b-row>
+          </b-row>
         </b-container>
 
         <div v-if="data.peruste">
@@ -135,8 +147,11 @@ import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
-import { OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset, OpetussuunnitelmaOppilaitostyyppi } from '@/utils/toteutustypes';
 import { Murupolku } from '@shared/stores/murupolku';
+import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
+import { Koodisto } from '@shared/api/eperusteet';
+import EpSelect from '@shared/components/forms/EpSelect.vue';
 
 @Component({
   components: {
@@ -147,6 +162,7 @@ import { Murupolku } from '@shared/stores/murupolku';
     EpExternalLink,
     EpSiirtoModal,
     EpToggle,
+    EpSelect,
   },
 })
 export default class RouteToteutussuunnitelmaTiedot extends Vue {
@@ -158,9 +174,24 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   private editointiStore: EditointiStore | null = null;
 
-  mounted() {
+  private readonly oppilaitostyyppiKoodisto = new KoodistoSelectStore({
+    async query(query: string, sivu = 0) {
+      return (await Koodisto.kaikkiSivutettuna('vapaasivistystyooppilaitostyyppi', query, {
+        params: {
+          sivu,
+          sivukoko: 50,
+        },
+      })).data as any;
+    },
+  });
+
+  async mounted() {
     Murupolku.aseta('toteutussuunnitelmantiedot', this.$t(OpetussuunnitelmaTyyppi[this.toteutus]));
     this.fetch();
+
+    if (this.showOpetussuunnitelmaOppilaitostyyppi) {
+      await this.oppilaitostyyppiKoodisto.query();
+    }
   }
 
   @Watch('versionumero', { immediate: true })
@@ -200,6 +231,36 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   get kielistykset() {
     return ToteutussuunnitelmaTiedotKielistykset[this.toteutus];
+  }
+
+  get showOpetussuunnitelmaOppilaitostyyppi() {
+    return OpetussuunnitelmaOppilaitostyyppi[this.toteutus];
+  }
+
+  get oppilaitostyypit() {
+    return _.chain(_.get(this.oppilaitostyyppiKoodisto.data.value, 'data'))
+      .map(koodi => koodi.koodiUri)
+      .value();
+  }
+
+  get oppilaitostyypitNimi() {
+    return _.chain(_.get(this.oppilaitostyyppiKoodisto.data.value, 'data'))
+      .map(koodi => {
+        return {
+          koodiUri: koodi.koodiUri,
+          nimi: _.mapValues(_.keyBy(koodi.metadata, v => _.toLower(v.kieli)), v => v.nimi),
+        };
+      })
+      .keyBy('koodiUri')
+      .value();
+  }
+
+  kaannaOppilaitosNimi(koodiUri) {
+    if (this.oppilaitostyypitNimi[koodiUri]) {
+      return this.$kaanna(this.oppilaitostyypitNimi[koodiUri].nimi);
+    }
+
+    return koodiUri;
   }
 }
 </script>
