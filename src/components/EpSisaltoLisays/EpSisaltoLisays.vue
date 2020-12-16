@@ -31,7 +31,7 @@
       <hr class="mt-1 mb-1"/>
 
       <b-dropdown-item>
-        <ep-sisallon-tuonti :opetussuunnitelmaId="toteutussuunnitelma.id" :koulutustoimijaId="koulutustoimijaId" :updateNavigation="updateNavigation"/>
+        <ep-sisallon-tuonti v-if="toteutussuunnitelma" :opetussuunnitelmaId="toteutussuunnitelma.id" :koulutustoimijaId="koulutustoimijaId" :updateNavigation="updateNavigation"/>
       </b-dropdown-item>
     </div>
 
@@ -79,10 +79,12 @@ export default class EpSisaltoLisays extends Vue {
   }
 
   get navigationNodes() {
-    return [
-      this.navigation,
-      ...this.navigationChildren(this.navigation.children as []),
-    ];
+    if (this.navigation) {
+      return [
+        this.navigation,
+        ...this.navigationChildren(this.navigation.children as []),
+      ];
+    }
   }
 
   navigationChildren(navigations: NavigationNodeDto[]): NavigationNodeDto[] {
@@ -170,7 +172,7 @@ export default class EpSisaltoLisays extends Vue {
   }
 
   get opsYhteinenOsuus() {
-    return this.toteutussuunnitelma.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
+    return this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
   }
 }
 
