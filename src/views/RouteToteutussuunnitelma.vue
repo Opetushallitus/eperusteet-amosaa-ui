@@ -4,28 +4,27 @@
     <Portal to="headerExtension">
       <div class="portal-menu d-flex">
         <div class="upper-left d-flex justify-content-center">
-          <EpProgressPopover
-            :slices="progressSlices"
-            :popup-style="popupStyle"
-            :height="60"
-            :width="60">
+          <EpProgressPopover :slices="progressSlices" :popup-style="popupStyle" :height="60" :width="60">
             <template v-slot:header>
               <div class="row flex-column align-items-center">
                 <span class="validation-text pb-2">
                   {{ $t(tila) }}
                 </span>
-                <b-button
-                  v-if="isDraft"
-                  variant="primary"
-                  :to="{ name: 'julkaise' }"
-                  size="sm"
-                  pill>{{ $t('siirry-julkaisunakymaan') }}
-                </b-button>
+
+                <template v-if="validationCategories && validationCategories.length === 0">
+                  <b-button class="px-3 py-1" variant="primary" v-if="isDraft && isOpsPohja" @click="makeReady">
+                    {{$t('aseta-valmiiksi')}}
+                  </b-button>
+                  <b-button class="px-3 py-1" variant="primary" :to="{ name: 'julkaise' }" v-else-if="!isOpsPohja && isDraft && !isPublished && !isArchived">
+                    {{ $t('siirry-julkaisunakymaan') }}
+                  </b-button>
+                </template>
+
               </div>
             </template>
             <div v-if="validationCategories" class="d-flex flex-column align-items-center">
               <b-button
-                v-if="isPublished || isReady"
+                v-if="(isPublished || isReady) && !isOpsPohja"
                 variant="primary"
                 :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}
               </b-button>
@@ -253,9 +252,9 @@ import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
-import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
+import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { Murupolku } from '@shared/stores/murupolku';
-import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
+import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { tileBackgroundColor } from '@shared/utils/bannerIcons';
@@ -295,8 +294,8 @@ export default class RouteToteutussuunnitelma extends Vue {
   private naviStore: EpTreeNavibarStore | null = null;
   private query: string = '';
 
-  mounted() {
-    Murupolku.aseta('toteutussuunnitelma', this.$t(OpetussuunnitelmaTyyppi[this.toteutus]));
+  get opetussuunnitelmaTyyppi() {
+    return this.isOpsPohja ? OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA : this.toteutus;
   }
 
   @Meta
@@ -330,7 +329,9 @@ export default class RouteToteutussuunnitelma extends Vue {
   async fetch() {
     this.isInitializing = true;
     try {
+      Murupolku.aseta('toteutussuunnitelma', '...');
       await this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+      Murupolku.aseta('toteutussuunnitelma', this.$t(OpetussuunnitelmaTyyppi[this.opetussuunnitelmaTyyppi]));
 
       if (this.navigation) {
         this.naviStore = new EpTreeNavibarStore(this.navigation, () => null);
@@ -381,7 +382,7 @@ export default class RouteToteutussuunnitelma extends Vue {
     await vaihdaOpetussunnitelmaTilaConfirm(
       this,
       {
-        ...ArkistointiTekstit.palautus[this.toteutus].meta,
+        ...ArkistointiTekstit.palautus[this.opetussuunnitelmaTyyppi].meta,
         callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
       },
     );
@@ -398,7 +399,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   get ratasvalinnat() {
     return [
       {
-        text: 'toteutussuunnitelman-tiedot',
+        text: ToteutussuunnitelmaTiedotKielistykset[this.opetussuunnitelmaTyyppi]['title'],
         route: 'toteutussuunnitelmantiedot',
         icon: 'info',
         oikeus: 'luku',
@@ -422,15 +423,15 @@ export default class RouteToteutussuunnitelma extends Vue {
         oikeus: 'hallinta',
       },
       {
-        ...(this.isDraft && {
+        ...((this.isDraft || this.isOpsPohja) && {
           separator: true,
           oikeus: 'hallinta',
         }),
       }, {
-        ...(this.isDraft && {
+        ...((this.isDraft || this.isOpsPohja) && {
           icon: ['far', 'folder'],
           click: vaihdaOpetussunnitelmaTilaConfirm,
-          ...ArkistointiTekstit.arkistointi[this.toteutus],
+          ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
           oikeus: 'hallinta',
         }),
       },
@@ -495,7 +496,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get popupStyle(): { background: string; } | undefined {
-    return tileBackgroundColor(this.toteutussuunnitelma?.peruste?.koulutustyyppi);
+    return tileBackgroundColor(this.toteutussuunnitelma?.peruste ? this.toteutussuunnitelma?.peruste?.koulutustyyppi : this.toteutussuunnitelma?.koulutustyyppi);
   }
 
   get julkaisut() {
@@ -516,6 +517,23 @@ export default class RouteToteutussuunnitelma extends Vue {
 
   get isArchived(): boolean {
     return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
+  }
+
+  get isOpsPohja() {
+    return this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
+  }
+
+  async makeReady() {
+    await vaihdaOpetussunnitelmaTilaConfirm(
+      this,
+      {
+        tila: 'VALMIS',
+        title: 'aseta-pohja-valmiiksi',
+        confirm: 'pohja-valmis-varmistus',
+        okTitle: 'aseta-valmiiksi',
+        callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+      },
+    );
   }
 }
 </script>

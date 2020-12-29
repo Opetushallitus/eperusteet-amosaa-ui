@@ -9,13 +9,21 @@
 
         <div class="container">
 
-          <div v-if="data.perusteteksti">
+          <div v-if="data.perusteteksti || data.pohjanTekstikappale">
 
-            <EpCollapse>
+            <EpCollapse v-if="data.perusteteksti">
               <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
               <ep-content layout="normal" v-model="data.perusteteksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
               <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
                 {{$t('nayta-perusteen-teksti')}}
+              </ep-toggle>
+            </EpCollapse>
+
+            <EpCollapse v-if="data.pohjanTekstikappale">
+              <h4 slot="header">{{$t('pohjan-teksti')}}</h4>
+              <ep-content layout="normal" v-model="data.pohjanTekstikappale.teksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
+              <ep-toggle v-model="data.naytaPohjanTeksti" :is-editing="true" v-if="isEditing">
+                {{$t('nayta-pohjan-teksti')}}
               </ep-toggle>
             </EpCollapse>
 

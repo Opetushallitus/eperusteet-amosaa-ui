@@ -22,12 +22,15 @@ export async function vaihdaOpetussunnitelmaTilaConfirm(el, meta) {
       case 'LUONNOS':
         el.$success(el.$t('palautus-onnistui'));
         break;
+      case 'VALMIS':
+        el.$success(el.$t('tilan-vaihto-valmis-onnistui'));
+        break;
       default:
         break;
       }
     }
     catch (e) {
-      el.$fail(el.$t('arkistointi-epaonnistui'));
+      el.$fail(el.$t('tilan-vaihto-epaonnistui'));
     }
 
     if (meta.reroute) {

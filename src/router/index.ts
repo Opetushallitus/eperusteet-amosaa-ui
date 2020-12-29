@@ -32,6 +32,7 @@ import RouteKayttooikeudet from '@/views/RouteKayttooikeudet.vue';
 import RouteOpintokokonaisuus from '@/views/RouteOpintokokonaisuus.vue';
 import RouteJulkaisu from '@/views/RouteJulkaisu.vue';
 import RouteOpetussuunnitelmaListaus from '@/views/vst/RouteOpetussuunnitelmaListaus.vue';
+import RouteOpsPohjaLuonti from '@/views/RouteOpsPohjaLuonti.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -264,6 +265,28 @@ const router = new VueRouter({
       path: 'opetussuunnitelmat',
       name: 'opetussuunnitelmaListaus',
       component: RouteOpetussuunnitelmaListaus,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          opsTyyppi: 'ops',
+        };
+      },
+    }, {
+      path: 'opetussuunnitelmat/pohjat',
+      name: 'opetussuunnitelmaPohjatListaus',
+      component: RouteOpetussuunnitelmaListaus,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          opsTyyppi: 'opspohja',
+        };
+      },
+    }, {
+      path: 'opetussuunnitelmat/pohjat/uusi',
+      name: 'opetussuunnitelmaPohjaLuonti',
+      component: RouteOpsPohjaLuonti,
       props,
     }, {
       path: '*',

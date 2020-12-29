@@ -60,7 +60,7 @@
                 </div>
               </b-form-group>
             </b-col>
-            <b-col>
+            <b-col v-if="!isOpsPohja">
               <b-form-group :label="$t('esikatselu')">
                 <ep-toggle v-model="data.opetussuunnitelma.esikatseltavissa" :is-editing="isEditing" v-if="isEditing || !data.opetussuunnitelma.esikatseltavissa">
                   {{$t('salli-opetussuunnitelman-esikatselu')}}
@@ -122,7 +122,7 @@
           </b-container>
         </div>
 
-        <div v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
+        <div v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }" v-if="!isOpsPohja">
           <hr/>
           <h3>{{$t('toiminnot')}}</h3>
           <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="editointiStore.data.value.opetussuunnitelma"></ep-siirto-modal>
@@ -136,7 +136,7 @@
 import _ from 'lodash';
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { UiKielet } from '@shared/stores/kieli';
 import { ToteutussuunnitelmaTiedotStore } from '@/stores/ToteutussuunnitelmaTiedotStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
@@ -186,8 +186,9 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
   });
 
   async mounted() {
-    Murupolku.aseta('toteutussuunnitelmantiedot', this.$t(OpetussuunnitelmaTyyppi[this.toteutus]));
-    this.fetch();
+    Murupolku.aseta('toteutussuunnitelmantiedot', '...');
+    await this.fetch();
+    Murupolku.aseta('toteutussuunnitelmantiedot', this.$t(OpetussuunnitelmaTyyppi[this.opetussuunnitelmaTyyppi]));
 
     if (this.showOpetussuunnitelmaOppilaitostyyppi) {
       await this.oppilaitostyyppiKoodisto.query();
@@ -213,6 +214,11 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
     }
   }
 
+  @Watch('isOpsPohja')
+  isPohjaChange() {
+    Murupolku.aseta('toteutussuunnitelmantiedot', this.$t(OpetussuunnitelmaTyyppi[this.opetussuunnitelmaTyyppi]));
+  }
+
   get kielet() {
     return UiKielet;
   }
@@ -230,7 +236,15 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
   }
 
   get kielistykset() {
-    return ToteutussuunnitelmaTiedotKielistykset[this.toteutus];
+    return ToteutussuunnitelmaTiedotKielistykset[this.opetussuunnitelmaTyyppi];
+  }
+
+  get opetussuunnitelmaTyyppi() {
+    return this.isOpsPohja ? OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA : this.toteutus;
+  }
+
+  get isOpsPohja() {
+    return this.editointiStore?.data.value?.opetussuunnitelma.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
   }
 
   get showOpetussuunnitelmaOppilaitostyyppi() {

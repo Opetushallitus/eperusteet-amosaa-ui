@@ -1,17 +1,17 @@
 <template>
   <EpMainView>
     <template slot="header">
-      <h1 class="mb-3">{{ $t('opetussuunnitelmat') }}</h1>
-      <div class="d-md-flex">
-        <p class="mt-2">{{ $t('opetussuunnitelmat-kuvaus') }}</p>
+      <h1 class="mb-3">{{ $t(kaannokset['otsikko']) }}</h1>
+      <div class="d-md-flex justify-content-between">
+        <p class="mt-2">{{ $t(kaannokset['kuvaus']) }}</p>
         <EpArkistoidutOps
           v-if="poistetut.length > 0"
           :opetussuunnitelmat="poistetut"
-          :title="'arkistoidut-opetussuunnitelmat'"
-          @restore="onRestoreOps"/>
+          @restore="onRestoreOps"
+          :title="kaannokset['arkistoidut']"/>
       </div>
       <b-form-group :label="$t('nimi')">
-        <EpSearch v-model="rajain" :placeholder="$t('etsi-opetussuunnitelmia')"/>
+        <EpSearch v-model="rajain" :placeholder="$t('etsi')"/>
       </b-form-group>
     </template>
     <b-container fluid class="pl-0">
@@ -19,7 +19,7 @@
         <b-col>
           <div class="ops">
             <EpSpinner v-if="!opslista" />
-            <h2>{{ $t('keskeneraiset-opetussuunnitelmat') }}</h2>
+            <h2>{{ $t(kaannokset['keskeneraiset']) }}</h2>
             <div class="ops__info" v-if="keskeneraiset.length === 0 && hasRajain">
               {{ $t('ei-hakutuloksia') }}
             </div>
@@ -28,7 +28,7 @@
                 v-if="!hasRajain"
                 class="opsbox"
                 v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'opetussuunnitelma' }">
-                <RouterLink tag="a" :to="{ name: 'toteutussuunnitelmaLuonti' }">
+                <RouterLink tag="a" :to="{ name: kaannokset['uusiRoute'] }">
                   <div class="opsbox__new">
                     <div class="opsbox__plus-icon">
                       <fas icon="plussa"></fas>
@@ -59,13 +59,13 @@
             </div>
           </div>
           <div class="ops">
-            <h2 class="mt-4">{{ $t('julkaistut-opetussuunnitelmat') }}</h2>
+            <h2 class="mt-4">{{ $t(kaannokset['julkaistut']) }}</h2>
 
             <div class="info" v-if="julkaistut.length === 0">
               <div v-if="hasRajain">
                 {{ $t('ei-hakutuloksia') }}
               </div>
-              <EpAlert v-else :ops="true" :text="$t('ei-julkaistuja-opetussuunnitelmia')" class="mt-4" />
+              <EpAlert v-else :ops="true" :text="$t(kaannokset['eiJulkaistuja'])" class="mt-4" />
             </div>
 
             <div class="d-flex flex-wrap">
@@ -116,6 +116,31 @@ import { VapaasivistystyoKoulutustyypit } from '@shared/utils/perusteet';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 
+const opsTyyppiKaannokset = {
+  ops: {
+    otsikko: 'opetussuunnitelmat',
+    kuvaus: 'opetussuunnitelmat-kuvaus',
+    arkistoidut: 'arkistoidut-opetussuunnitelmat',
+    etsi: 'etsi-opetussuunnitelmia',
+    keskeneraiset: 'keskeneraiset-opetussuunnitelmat',
+    julkaistut: 'julkaistut-opetussuunnitelmat',
+    eiJulkaistuja: 'ei-julkaistuja-opetussuunnitelmia',
+    uusiRoute: 'toteutussuunnitelmaLuonti',
+    julkaisuTila: 'julkaistu',
+  },
+  opspohja: {
+    otsikko: 'pohjat',
+    kuvaus: 'pohjat-kuvaus',
+    arkistoidut: 'arkistoidut-pohjat',
+    etsi: 'etsi',
+    keskeneraiset: 'keskeneraiset-pohjat',
+    julkaistut: 'valmiit-pohjat',
+    eiJulkaistuja: 'ei-valmiita-pohjia',
+    uusiRoute: 'opetussuunnitelmaPohjaLuonti',
+    julkaisuTila: 'valmis',
+  },
+};
+
 @Component({
   components: {
     EpMainView,
@@ -133,6 +158,9 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 
   @Prop({ required: true })
   private toteutus!: Toteutus;
+
+  @Prop({ required: true })
+  private opsTyyppi!: 'ops' | 'opspohja';
 
   private rajain = '';
   private opslista: OpetussuunnitelmaDto[] | null = null;
@@ -173,14 +201,14 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 
   get keskeneraiset() {
     return _.chain(this.arkistoimattomat)
-      .reject((ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'julkaistu')
+      .reject((ops: OpetussuunnitelmaDto) => (ops.tila as string) === this.kaannokset['julkaisuTila'])
       .value();
   }
 
   get julkaistut() {
     return _.chain(this.arkistoimattomat)
-      .filter((ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'julkaistu')
-      .map((ops: OpetussuunnitelmaDto) => ({ ...ops, bannerImage: koulutusTyyppiTile(ops.peruste!.koulutustyyppi) }))
+      .filter((ops: OpetussuunnitelmaDto) => (ops.tila as string) === this.kaannokset['julkaisuTila'])
+      .map((ops: OpetussuunnitelmaDto) => ({ ...ops, bannerImage: koulutusTyyppiTile(ops.peruste ? ops.peruste!.koulutustyyppi : ops.koulutustyyppi) }))
       .value();
   }
 
@@ -189,12 +217,21 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   protected async init() {
-    const res = await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit);
-    this.opslista = res.data;
+    if (this.opsTyyppi === 'ops') {
+      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit)).data;
+    }
+
+    if (this.opsTyyppi === 'opspohja') {
+      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, undefined, 'OPSPOHJA')).data;
+    }
   }
 
   get backgroundStyle() {
     return TileBackground[this.toteutus];
+  }
+
+  get kaannokset() {
+    return opsTyyppiKaannokset[this.opsTyyppi];
   }
 }
 </script>

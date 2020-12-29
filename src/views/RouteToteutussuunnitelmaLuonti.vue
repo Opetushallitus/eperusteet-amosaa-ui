@@ -13,46 +13,48 @@
                 </b-form-radio>
               </b-form-group>
 
-              <b-form-group :label="$t(kaannokset[pohjanTyyppi].pohjaLabel) +' *'" v-if="pohjanTyyppi && pohjanTyyppi !== 'uusi'">
-                <div v-if="pohjanTyyppi === 'peruste'">
-                  <EpMultiSelect
-                    v-if="perusteet"
-                    v-model="peruste"
-                    :placeholder="$t(kaannokset[pohjanTyyppi].pohjaValintaPlaceHolder)"
-                    :is-editing="true"
-                    :options="perusteet"
-                    :validation="$v.peruste"
-                    :search-identity="nimiSearchIdentity">
-                    <template slot="singleLabel" slot-scope="{ option }">
-                      {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}<span v-if="option.voimassaoloAlkaa">, {{$sd(option.voimassaoloAlkaa)}}</span>)
-                    </template>
-                    <template slot="option" slot-scope="{ option }">
-                      {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}<span v-if="option.voimassaoloAlkaa">, {{$sd(option.voimassaoloAlkaa)}}</span>)
-                    </template>
-                  </EpMultiSelect>
-                  <EpSpinner v-else />
-                </div>
+              <template v-if="pohjanTyyppi !== 'pohjaton'">
+                <b-form-group :label="$t(kaannokset[pohjanTyyppi].pohjaLabel) +' *'" v-if="pohjanTyyppi && pohjanTyyppi !== 'uusi'">
+                  <div v-if="pohjanTyyppi === 'peruste'">
+                    <EpMultiSelect
+                      v-if="perusteet"
+                      v-model="peruste"
+                      :placeholder="$t(kaannokset[pohjanTyyppi].pohjaValintaPlaceHolder)"
+                      :is-editing="true"
+                      :options="perusteet"
+                      :validation="$v.peruste"
+                      :search-identity="nimiSearchIdentity">
+                      <template slot="singleLabel" slot-scope="{ option }">
+                        {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}<span v-if="option.voimassaoloAlkaa">, {{$sd(option.voimassaoloAlkaa)}}</span>)
+                      </template>
+                      <template slot="option" slot-scope="{ option }">
+                        {{ $kaanna(option.nimi) }} ({{option.diaarinumero}}<span v-if="option.voimassaoloAlkaa">, {{$sd(option.voimassaoloAlkaa)}}</span>)
+                      </template>
+                    </EpMultiSelect>
+                    <EpSpinner v-else />
+                  </div>
 
-                <div v-if="pohjanTyyppi === 'toteutussuunnitelma' || pohjanTyyppi === 'ophPohja'">
-                  <EpMultiSelect
-                    v-if="pohjat"
-                    v-model="toteutussuunnitelma"
-                    :placeholder="$t(kaannokset[pohjanTyyppi].pohjaValintaPlaceHolder)"
-                    :is-editing="true"
-                    :options="pohjat"
-                    :validation="$v.toteutussuunnitelma"
-                    :search-identity="nimiSearchIdentity">
-                    <template slot="singleLabel" slot-scope="{ option }">
-                      {{ $kaanna(option.nimi) }}
-                    </template>
-                    <template slot="option" slot-scope="{ option }">
-                      {{ $kaanna(option.nimi) }}
-                    </template>
-                  </EpMultiSelect>
-                  <EpSpinner v-else />
-                </div>
+                  <div v-if="pohjanTyyppi === 'toteutussuunnitelma' || pohjanTyyppi === 'ophPohja' || pohjanTyyppi === 'opsPohja'">
+                    <EpMultiSelect
+                      v-if="pohjat"
+                      v-model="toteutussuunnitelma"
+                      :placeholder="$t(kaannokset[pohjanTyyppi].pohjaValintaPlaceHolder)"
+                      :is-editing="true"
+                      :options="pohjat"
+                      :validation="$v.toteutussuunnitelma"
+                      :search-identity="nimiSearchIdentity">
+                      <template slot="singleLabel" slot-scope="{ option }">
+                        {{ $kaanna(option.nimi) }}
+                      </template>
+                      <template slot="option" slot-scope="{ option }">
+                        {{ $kaanna(option.nimi) }}
+                      </template>
+                    </EpMultiSelect>
+                    <EpSpinner v-else />
+                  </div>
 
-              </b-form-group>
+                </b-form-group>
+              </template>
 
               <b-form-group :label="$t(kaannokset.nimiLabel) +' *'" v-if="pohjanTyyppi || !pohjanValinta">
                 <ep-field v-model="nimi" :is-editing="true" :validation="$v.nimi"></ep-field>
@@ -121,63 +123,6 @@ import { perusteenSuoritustapa } from '@shared/utils/perusteet';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
-const kielistykset = {
-  'ops': {
-    stepName: 'uusi-toteutussuunnitelma',
-    peruste: {
-      pohjaLabel: 'toteutussuunnitelman-pohja',
-      pohjaValintaPlaceHolder: 'valitse-perusteprojekti',
-    },
-    toteutussuunnitelma: {
-      pohjaLabel: 'toteutussuunnitelman-pohja',
-      pohjaValintaPlaceHolder: 'valitse-toteutussuunnitelma',
-    },
-    nimiLabel: 'toteutussuunnitelman-nimi',
-    luoLabel: 'luo-toteutussuunnitelma',
-  },
-  'yleinen': {
-    stepName: 'uusi-jaettu-osa',
-    toteutussuunnitelma: {
-      pohjaLabel: 'jaetun-osan-pohja',
-      pohjaValintaPlaceHolder: 'valitse-jaettu-osa',
-    },
-    nimiLabel: 'jaetun-osan-nimi',
-    luoLabel: 'luo-jaettu-osa',
-  },
-  'yhteinen': {
-    stepName: 'uusi-yhteinen-osa',
-    toteutussuunnitelma: {
-      pohjaLabel: 'koulutustoimijan-yhteinen-osuus',
-      pohjaValintaPlaceHolder: 'valitse-yhteinen-osuus',
-    },
-    ophPohja: {
-      pohjaLabel: 'suunnitelman-pohja',
-      pohjaValintaPlaceHolder: 'valitse-pohja',
-    },
-    nimiLabel: 'toteutussuunnitelman-nimi',
-    luoLabel: 'luo-suunnitelma',
-  },
-  'pohja': {
-    stepName: 'uusi-yhteisten-osien-pohja',
-    nimiLabel: 'pohjan-nimi',
-    luoLabel: 'luo-pohja',
-  },
-  'tunnistamisraportti': {
-    stepName: 'uusi-oppimisympariston-tunnistamisraportti',
-    peruste: {
-      pohjaLabel: 'pohja',
-      pohjaValintaPlaceHolder: 'valitse-pohja',
-    },
-    toteutussuunnitelma: {
-      pohjaLabel: 'pohja',
-      pohjaValintaPlaceHolder: 'valitse-tunnistamisraportti',
-    },
-    nimiLabel: 'oppimisympariston-tunnistamisraportin-nimi',
-    luoLabel: 'luo-tunnistamisraportti',
-    tutkinnonosatLabel: 'valitse-tutkinnonosat-jotka-tuodaan-pohjasta',
-  },
-};
-
 @Component({
   components: {
     EpMainView,
@@ -193,9 +138,6 @@ const kielistykset = {
   },
 } as any)
 export default class RouteToteutussuunnitelmaLuonti extends Vue {
-  @Prop({ required: true })
-  private toteutussuunnitelmaPohjatStore!: ToteutussuunnitelmatStore;
-
   @Prop({ required: true })
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
@@ -220,14 +162,17 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
-  private pohjanTyyppi: 'toteutussuunnitelma' | 'peruste' | 'uusi' | 'ophPohja' | null = null;
+  private pohjanTyyppi: 'toteutussuunnitelma' | 'peruste' | 'uusi' | 'ophPohja' | 'opsPohja' | 'pohjaton' | null = null;
 
   private peruste: PerusteDto | null = null;
   private toteutussuunnitelma: OpetussuunnitelmaDto | null = null;
   private nimi: any | null = null;
   private tutkinnonosaKoodit: string[] = [];
+  private toteutussuunnitelmaPohjatStore: ToteutussuunnitelmatStore | null = null;
+  private toteutussuunnitelmaOpsPohjatStore: ToteutussuunnitelmatStore | null = null;
 
   async mounted() {
+    this.toteutussuunnitelmaPohjatStore = new ToteutussuunnitelmatStore();
     this.toteutussuunnitelmaPohjatStore.updateQuery(
       _.toNumber(this.koulutustoimijaId),
       this.toteutus,
@@ -236,6 +181,18 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
         tila: ['poistettu', 'luonnos', 'valmis', 'julkaistu'],
         tyyppi: [this.tyyppi],
       });
+
+    if (this.toteutus === Toteutus.VAPAASIVISTYSTYO) {
+      this.toteutussuunnitelmaOpsPohjatStore = new ToteutussuunnitelmatStore();
+      this.toteutussuunnitelmaOpsPohjatStore.updateQuery(
+        _.toNumber(this.koulutustoimijaId),
+        undefined,
+        {
+          sivukoko: 1000,
+          tila: ['luonnos', 'valmis', 'julkaistu'],
+          tyyppi: ['opspohja'],
+        });
+    }
 
     if (this.perusteetStore) {
       this.perusteetStore.fetchJulkaistutPerusteet();
@@ -251,7 +208,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   }
 
   get kaannokset() {
-    return kielistykset[this.opetussuunnitelmanTyyppi];
+    return this.kielistykset[this.opetussuunnitelmanTyyppi];
   }
 
   @Watch('pohjanTyyppi')
@@ -277,16 +234,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   get radioButtons() {
     return {
-      ops: [
-        {
-          value: 'peruste',
-          text: 'perusteprojektia',
-        },
-        {
-          value: 'toteutussuunnitelma',
-          text: 'toista-toteutussuunnitelmaa',
-        },
-      ],
+      ops: this.opsRadioButtons[this.toteutus],
       yleinen: [
         {
           value: 'toteutussuunnitelma',
@@ -317,6 +265,121 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
           text: 'toista-oppimisympariston-tunnistamisraporttia',
         },
       ],
+    };
+  }
+
+  get opsRadioButtons() {
+    return {
+      [Toteutus.VAPAASIVISTYSTYO]: [
+        {
+          value: 'peruste',
+          text: 'perusteprojektia',
+        },
+        {
+          value: 'opsPohja',
+          text: 'opetussuunnitelman-pohjaa',
+        },
+        {
+          value: 'toteutussuunnitelma',
+          text: 'toista-toteutussuunnitelmaa',
+        },
+        {
+          value: 'pohjaton',
+          text: 'luo-uusi-ilman-pohjaa',
+        },
+      ],
+      [Toteutus.AMMATILLINEN]: [
+        {
+          value: 'peruste',
+          text: 'perusteprojektia',
+        },
+        {
+          value: 'toteutussuunnitelma',
+          text: 'toista-toteutussuunnitelmaa',
+        },
+      ],
+    };
+  }
+
+  get toteutussuunnitelmaKielistykset() {
+    return {
+      [Toteutus.VAPAASIVISTYSTYO]: {
+        stepName: 'luo-uusi-opetussuunnitelma',
+        peruste: {
+          pohjaLabel: 'perusteprojekti',
+          pohjaValintaPlaceHolder: 'valitse',
+        },
+        opsPohja: {
+          pohjaLabel: 'opetussuunnitelman-pohja',
+          pohjaValintaPlaceHolder: 'valitse',
+        },
+        toteutussuunnitelma: {
+          pohjaLabel: 'toinen-opetussuunnitelma',
+          pohjaValintaPlaceHolder: 'valitse',
+        },
+        nimiLabel: 'opetussuunnitelman-nimi',
+        luoLabel: 'luo-opetussuunnitelma',
+      },
+      [Toteutus.AMMATILLINEN]: {
+        stepName: 'uusi-toteutussuunnitelma',
+        peruste: {
+          pohjaLabel: 'toteutussuunnitelman-pohja',
+          pohjaValintaPlaceHolder: 'valitse-perusteprojekti',
+        },
+        toteutussuunnitelma: {
+          pohjaLabel: 'toteutussuunnitelman-pohja',
+          pohjaValintaPlaceHolder: 'valitse-toteutussuunnitelma',
+        },
+        nimiLabel: 'toteutussuunnitelman-nimi',
+        luoLabel: 'luo-toteutussuunnitelma',
+      },
+    };
+  }
+
+  get kielistykset() {
+    return {
+      'ops': this.toteutussuunnitelmaKielistykset[this.toteutus],
+      'yleinen': {
+        stepName: 'uusi-jaettu-osa',
+        toteutussuunnitelma: {
+          pohjaLabel: 'jaetun-osan-pohja',
+          pohjaValintaPlaceHolder: 'valitse-jaettu-osa',
+        },
+        nimiLabel: 'jaetun-osan-nimi',
+        luoLabel: 'luo-jaettu-osa',
+      },
+      'yhteinen': {
+        stepName: 'uusi-yhteinen-osa',
+        toteutussuunnitelma: {
+          pohjaLabel: 'koulutustoimijan-yhteinen-osuus',
+          pohjaValintaPlaceHolder: 'valitse-yhteinen-osuus',
+        },
+        ophPohja: {
+          pohjaLabel: 'suunnitelman-pohja',
+          pohjaValintaPlaceHolder: 'valitse-pohja',
+        },
+        nimiLabel: 'toteutussuunnitelman-nimi',
+        luoLabel: 'luo-suunnitelma',
+      },
+      'pohja': {
+        stepName: 'uusi-yhteisten-osien-pohja',
+        nimiLabel: 'pohjan-nimi',
+        luoLabel: 'luo-pohja',
+      },
+      'tunnistamisraportti': {
+        stepName: 'uusi-oppimisympariston-tunnistamisraportti',
+        peruste: {
+          pohjaLabel: 'pohja',
+          pohjaValintaPlaceHolder: 'valitse-pohja',
+        },
+        toteutussuunnitelma: {
+          pohjaLabel: 'pohja',
+          pohjaValintaPlaceHolder: 'valitse-tunnistamisraportti',
+        },
+        nimiLabel: 'oppimisympariston-tunnistamisraportin-nimi',
+        luoLabel: 'luo-tunnistamisraportti',
+        tutkinnonosatLabel: 'valitse-tutkinnonosat-jotka-tuodaan-pohjasta',
+      },
     };
   }
 
@@ -394,8 +457,16 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   }
 
   get toteutussuunnitelmat() {
-    if (this.toteutussuunnitelmaPohjatStore.opetussuunnitelmat.value) {
+    if (this.toteutussuunnitelmaPohjatStore?.opetussuunnitelmat.value) {
       return (this.toteutussuunnitelmaPohjatStore.opetussuunnitelmat.value as any).data;
+    }
+
+    return undefined;
+  }
+
+  get opsPohjat() {
+    if (this.toteutussuunnitelmaOpsPohjatStore?.opetussuunnitelmat.value) {
+      return (this.toteutussuunnitelmaOpsPohjatStore.opetussuunnitelmat.value as any).data;
     }
 
     return undefined;
@@ -404,6 +475,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   get pohjat() {
     if (this.pohjanTyyppi === 'toteutussuunnitelma') {
       return this.toteutussuunnitelmat;
+    }
+
+    if (this.pohjanTyyppi === 'opsPohja') {
+      return this.opsPohjat;
     }
 
     if (this.pohjanTyyppi === 'ophPohja') {

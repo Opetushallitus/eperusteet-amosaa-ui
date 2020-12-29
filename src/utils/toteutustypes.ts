@@ -1,4 +1,5 @@
 import TileToteutussuunnitelmat from '@/views/tiles/TileToteutussuunnitelmat.vue';
+import TileOpetussuunnitelmaPohjat from '@/views/tiles/TileOpetussuunnitelmaPohjat.vue';
 import TileKoulutustoimijanYhteinenOsuus from '@/views/tiles/TileKoulutustoimijanYhteinenOsuus.vue';
 import TilePaivitettavatJaSiirrettavatToteutussuunnitelmat from '@/views/tiles/TilePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
 import TileOrganisaationHallinta from '@/views/tiles/TileOrganisaationHallinta.vue';
@@ -6,6 +7,7 @@ import TileTiedotteet from '@/views/tiles/TileTiedotteet.vue';
 import TileUkk from '@/views/tiles/TileUkk.vue';
 import TileTilastot from '@/views/tiles/TileTilastot.vue';
 import { tileColors } from '@shared/utils/bannerIcons';
+import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 
 export enum Toteutus {
   VAPAASIVISTYSTYO = 'vapaasivistystyo',
@@ -25,6 +27,7 @@ export const TervetuloaTekstiKuvaus = {
 export const OpetussuunnitelmaTyyppi = {
   [Toteutus.VAPAASIVISTYSTYO]: 'opetussuunnitelma',
   [Toteutus.AMMATILLINEN]: 'toteutussuunnitelma',
+  [OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA]: 'pohja',
 };
 
 export const OpetussuunnitelmaOppilaitostyyppi = {
@@ -123,6 +126,20 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
       },
     }]),
     {
+      component: TileOpetussuunnitelmaPohjat,
+      props: {
+        kayttajaStore: stores.kayttajaStore,
+        koulutustoimijaId,
+        toteutus,
+        headerStyle: TileBackground[toteutus],
+        title: 'opetussuunnitelmien-pohjat',
+        route: 'opetussuunnitelmaPohjatListaus',
+      },
+      oikeustarkastelu: {
+        oikeus: 'luku',
+      },
+    },
+    {
       component: TileTiedotteet,
       props: {
         kieli: stores.kieliStore.getSisaltoKieli.value || null,
@@ -182,6 +199,10 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
     title: 'opetussuunnitelman-tiedot',
     nimi: 'opetussuunnitelman-nimi',
   },
+  [OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA]: {
+    title: 'pohjan-tiedot',
+    nimi: 'pohjan-nimi',
+  },
 };
 
 export const ToteutusTiles = {
@@ -196,6 +217,15 @@ export const TiedoteJulkaisupaikka = {
 
 export const ArkistointiTekstit = {
   arkistointi: {
+    [OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA]: {
+      text: 'arkistoi-pohja',
+      meta: {
+        title: 'arkistoi-pohja',
+        confirm: 'arkistoi-pohja-vahvistus',
+        tila: 'POISTETTU',
+        reroute: 'opetussuunnitelmaPohjatListaus',
+      },
+    },
     [Toteutus.VAPAASIVISTYSTYO]: {
       text: 'arkistoi-opetussuunnitelma',
       meta: {
@@ -217,6 +247,14 @@ export const ArkistointiTekstit = {
     },
   },
   palautus: {
+    [OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA]: {
+      text: 'palauta-pohja',
+      meta: {
+        title: 'palauta-pohja',
+        confirm: 'palauta-pohja-vahvistus',
+        tila: 'LUONNOS',
+      },
+    },
     [Toteutus.VAPAASIVISTYSTYO]: {
       text: 'palauta-ops',
       meta: {
