@@ -10,7 +10,7 @@
   <div class="row pt-0">
     <div class="col-lg-12 col-xl-6 p-0">
       <ep-toteutussuunnitelman-tiedotteet class="info-box" v-if="peruste" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
-      <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma"/>
+      <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma" :toteutus="toteutus"/>
       <ep-toteutussuunnitelman-sisaltoviitteet class="info-box" :sisaltoViiteStore="sisaltoViiteStore" :toteutus="toteutus"/>
     </div>
     <div class="col-lg-12 col-xl-6 p-0 pl-2">
