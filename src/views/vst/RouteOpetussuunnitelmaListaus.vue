@@ -7,7 +7,8 @@
         <EpArkistoidutOps
           v-if="poistetut.length > 0"
           :opetussuunnitelmat="poistetut"
-          :title="'arkistoidut-opetussuunnitelmat'"/>
+          :title="'arkistoidut-opetussuunnitelmat'"
+          @restore="onRestoreOps"/>
       </div>
       <b-form-group :label="$t('nimi')">
         <EpSearch v-model="rajain" :placeholder="$t('etsi-opetussuunnitelmia')"/>
@@ -95,10 +96,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import _ from 'lodash';
 
 import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
+
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+
+import { ArkistointiTekstit, TileBackground, Toteutus } from '@/utils/toteutustypes';
+import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
@@ -111,7 +117,6 @@ import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
 import { VapaasivistystyoKoulutustyypit } from '@shared/utils/perusteet';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
-import { TileBackground, Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -131,11 +136,25 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
+  @Prop({ required: true })
+  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+
   private rajain = '';
   private opslista: OpetussuunnitelmaDto[] | null = null;
 
   mounted() {
     this.init();
+  }
+
+  async onRestoreOps({ id }: { id: number }) {
+    await vaihdaOpetussunnitelmaTilaConfirm(
+      this,
+      {
+        ...ArkistointiTekstit.palautus[this.toteutus].meta,
+        toteutussuunnitelmaId: id,
+        callback: async () => this.init(),
+      },
+    );
   }
 
   get hasRajain() {
