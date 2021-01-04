@@ -511,7 +511,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get isDraft(): boolean | undefined {
-    return this.tila === (!!this.julkaisut ? _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS) : undefined);
+    return this.tila === (this.julkaisut ? _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS) : undefined);
   }
 
   get isArchived(): boolean {

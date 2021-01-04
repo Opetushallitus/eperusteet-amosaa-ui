@@ -260,7 +260,7 @@ const router = new VueRouter({
         component: RouteJulkaisu,
         props,
       },
-    ]}, {
+      ] }, {
       path: 'opetussuunnitelmat',
       name: 'opetussuunnitelmaListaus',
       component: RouteOpetussuunnitelmaListaus,
