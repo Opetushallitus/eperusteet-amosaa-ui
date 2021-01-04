@@ -101,8 +101,6 @@ import _ from 'lodash';
 
 import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
 
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-
 import { ArkistointiTekstit, TileBackground, Toteutus } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 
@@ -135,9 +133,6 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 
   @Prop({ required: true })
   private toteutus!: Toteutus;
-
-  @Prop({ required: true })
-  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
   private rajain = '';
   private opslista: OpetussuunnitelmaDto[] | null = null;
