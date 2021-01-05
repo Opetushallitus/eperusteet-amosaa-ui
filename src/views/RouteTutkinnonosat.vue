@@ -14,8 +14,8 @@
             <EpSearch v-model="queryNimi" :placeholder="$t('etsi')"/>
 
             <div class="d-flex">
-              <router-link :to="{name: 'tutkinnonosaLuonti'}">
-                <ep-button variant="outline-primary" icon="plussa">
+              <router-link :to="{name: 'tutkinnonosa', params: {'sisaltoviiteId': 'uusi'}}">
+                <ep-button variant="outline-primary" icon="plussa" disabled>
                   {{ $t('lisaa-tutkinnon-osa') }}
                 </ep-button>
               </router-link>
