@@ -23,7 +23,7 @@
       <ep-spinner v-if="!opetussuunnitelmatpage" />
 
       <div v-else>
-        <b-table responsive striped :items="opetussuunnitelmat" :fields="opetussuunnitelmaFields">
+        <b-table responsive striped :items="opetussuunnitelmatFiltered" :fields="opetussuunnitelmaFields">
           <template v-slot:cell(nimi)="data">
             <ep-button variant="link" @click="valitseToteutussuunnitelma(data.item)">
               {{ $kaanna(data.item.nimi) }}
@@ -165,6 +165,10 @@ export default class EpSisallonTuonti extends Vue {
     if (this.sisaltotuontiStore && this.sisaltotuontiStore.opetussuunnitelmat.value) {
       return (this.sisaltotuontiStore.opetussuunnitelmat.value as any).data;
     }
+  }
+
+  get opetussuunnitelmatFiltered() {
+    return _.filter(this.opetussuunnitelmat, ops => ops.id !== this.opetussuunnitelmaId);
   }
 
   get sisaltoviitteet() {
