@@ -119,9 +119,7 @@ import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { Toteutus } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
-import { perusteenSuoritustapa } from '@shared/utils/perusteet';
-
-export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
+import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa } from '@shared/utils/perusteet';
 
 @Component({
   components: {
@@ -393,6 +391,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
         suoritustapa: this.tallennettavaSuoritustapa,
         nimi: this.nimi,
         tutkinnonOsaKoodiIncludes: this.tutkinnonosaKoodit,
+        koulutustyyppi: this.peruste ? undefined : this.koulutustyyppi,
       });
 
       this.$router.push({
@@ -406,6 +405,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       createLogger('RouteToteutussuunnitelmaLuonti').error(e);
       this.$fail(this.$t('toteutussuunnitelman-luonti-virhe') as string);
     }
+  }
+
+  get koulutustyyppi(): any {
+    return EperusteetKoulutustyyppiRyhmat[this.toteutus][0];
   }
 
   get tallennettavaSuoritustapa() {
