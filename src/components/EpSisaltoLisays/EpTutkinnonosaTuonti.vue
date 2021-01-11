@@ -24,7 +24,8 @@
             v-model="toteutussuunnitelma"
             :placeholder="$t('valitse')"
             :is-editing="true"
-            :options="toteutussuunnitelmat">
+            :options="toteutussuunnitelmat"
+            :search-identity="kaannaNimi">
             <template slot="singleLabel" slot-scope="{ option }">
               {{ $kaanna(option.nimi) }}
             </template>
@@ -137,6 +138,10 @@ export default class EpTutkinnonosaTuonti extends Vue {
 
   get toteutussuunnitelmat() {
     return this.tutkinnonosatTuontiStore?.toteutussuunnitelmat.value || null;
+  }
+
+  kaannaNimi({ nimi }) {
+    return this.$kaanna(nimi);
   }
 
   get tutkinnonosat() {
