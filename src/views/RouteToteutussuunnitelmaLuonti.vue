@@ -279,7 +279,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
         },
         {
           value: 'toteutussuunnitelma',
-          text: 'toista-toteutussuunnitelmaa',
+          text: 'toista-opetussuunnitelmaa',
         },
         {
           value: 'pohjaton',

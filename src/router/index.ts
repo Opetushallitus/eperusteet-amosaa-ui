@@ -149,6 +149,19 @@ const router = new VueRouter({
         };
       },
     }, {
+      path: 'opetussuunnitelmat/uusi',
+      name: 'opetussuunnitelmaLuonti',
+      component: RouteToteutussuunnitelmaLuonti,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          opetussuunnitelmanTyyppi: 'ops',
+          opetussuunnitelmanSuoritustapa: 'reformi',
+          ophPohjatStore: null,
+        };
+      },
+    }, {
       path: 'jaettuosa/uusi',
       name: 'jaettuosaLuonti',
       component: RouteToteutussuunnitelmaLuonti,
