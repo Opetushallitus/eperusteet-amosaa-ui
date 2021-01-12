@@ -125,7 +125,7 @@ const opsTyyppiKaannokset = {
     keskeneraiset: 'keskeneraiset-opetussuunnitelmat',
     julkaistut: 'julkaistut-opetussuunnitelmat',
     eiJulkaistuja: 'ei-julkaistuja-opetussuunnitelmia',
-    uusiRoute: 'toteutussuunnitelmaLuonti',
+    uusiRoute: 'opetussuunnitelmaLuonti',
     julkaisuTila: 'julkaistu',
   },
   opspohja: {
