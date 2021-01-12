@@ -103,7 +103,10 @@
           <EpSearch v-model="query" />
         </div>
         <div class="navigation">
-          <EpTreeNavibar :store="naviStore" show-all-toggle>
+          <EpTreeNavibar
+            :store="naviStore"
+            show-all-toggle
+            :query="query">
             <template v-slot:header>
               <div class="heading">
                 <div class="menu-item">
