@@ -175,7 +175,7 @@
               </b-row>
             </draggable>
             <EpButton variant="outline" icon="plus" @click="onAddListItem('arvioinnit')" v-if="isEditing">
-              {{ $t('lisaa-tavoite') }}
+              {{ $t('lisaa-arviointi') }}
             </EpButton>
           </div>
           <div v-else>
