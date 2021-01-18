@@ -36,11 +36,7 @@
             </b-col>
             <b-col>
               <b-form-group :label="$t('voimassaolo')">
-                <div class="d-flex align-items-center">
-                  <ep-datepicker v-model="data.opetussuunnitelma.voimaantulo" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.voimaantulo"/>
-                  <div class="ml-2 mr-2">-</div>
-                  <ep-datepicker v-model="data.opetussuunnitelma.paatospaivamaara" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.paatospaivamaara"/>
-                </div>
+                <ep-datepicker v-model="data.opetussuunnitelma.voimaantulo" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.voimaantulo"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -99,7 +95,7 @@
           <b-container fluid>
             <b-row>
               <b-col>
-                <b-form-group :label="$t('tutkinto')">
+                <b-form-group :label="$t(kielistykset['perustetyyppi'])">
                   <div>{{$kaanna(data.peruste.nimi)}}</div>
                   <div>({{data.peruste.diaarinumero}})</div>
                 </b-form-group>
@@ -110,7 +106,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row>
+            <b-row v-if="showKoulutukset">
               <b-col>
                 <b-form-group :label="$t('koulutukset')">
                   <div v-for="(koulutus, index) in data.peruste.koulutukset" :key="'koulutus'+index">
@@ -125,7 +121,7 @@
         <div v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }" v-if="!isOpsPohja">
           <hr/>
           <h3>{{$t('toiminnot')}}</h3>
-          <ep-siirto-modal :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="editointiStore.data.value.opetussuunnitelma"></ep-siirto-modal>
+          <ep-siirto-modal :toteutus="toteutus" :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="editointiStore.data.value.opetussuunnitelma"></ep-siirto-modal>
         </div>
       </template>
     </EpEditointi>
@@ -275,6 +271,10 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
     }
 
     return koodiUri;
+  }
+
+  get showKoulutukset() {
+    return this.toteutus === Toteutus.AMMATILLINEN;
   }
 }
 </script>

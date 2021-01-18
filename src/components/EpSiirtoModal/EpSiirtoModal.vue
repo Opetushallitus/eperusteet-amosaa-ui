@@ -1,13 +1,13 @@
 <template>
   <div>
     <ep-button class="siirra-opetussuunnitelma" variant="link" @click="$refs['epsiirtomodaali'].show()">
-          {{$t('siirra-opetussuunnitelma')}}
+          {{$t(kielistykset['siirratoteutusystavaorganisaatiolle'])}}
     </ep-button>
 
     <b-modal id="epsiirtomodaali"
              ref="epsiirtomodaali"
              size="lg"
-             :title="$t('siirra-opetussuunnitelma')"
+             :title="$t(kielistykset['siirratoteutusystavaorganisaatiolle'])"
              :hide-footer="true">
       <p>{{ $t('siirra-kuvaus') }}</p>
       <div v-if="ystavatFormatted">
@@ -24,7 +24,7 @@
             <div class="float-right">
                 <ep-button @click="siirraToteutussuunnitelma(row.item)"
                            variant="link">
-                {{ $t('siirra-toteutussuunnitelma') }}
+                {{ $t(kielistykset['siirratoteutus']) }}
               </ep-button>
             </div>
           </template>
@@ -51,6 +51,8 @@ import { Kielet } from '@shared/stores/kieli';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
+import { ToteutussuunnitelmaSiirtoKielistykset } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {
@@ -70,6 +72,9 @@ export default class EpSiirtoModal extends Vue {
 
   @Prop({ required: true })
   private toteutussuunnitelma!: any;
+
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
 
   @Watch('koulutustoimijaId', { immediate: true })
   async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
@@ -137,6 +142,10 @@ export default class EpSiirtoModal extends Vue {
         fail('siirra-toteutussuunnitelma-epaonnistui');
       }
     }
+  }
+
+  get kielistykset() {
+    return ToteutussuunnitelmaSiirtoKielistykset[this.toteutus];
   }
 }
 </script>
