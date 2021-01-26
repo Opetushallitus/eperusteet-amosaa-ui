@@ -59,10 +59,10 @@
             <b-col v-if="!isOpsPohja">
               <b-form-group :label="$t('esikatselu')">
                 <ep-toggle v-model="data.opetussuunnitelma.esikatseltavissa" :is-editing="isEditing" v-if="isEditing || !data.opetussuunnitelma.esikatseltavissa">
-                  {{$t('salli-opetussuunnitelman-esikatselu')}}
+                  {{$t(kielistykset['salliEsikatselu'])}}
                 </ep-toggle>
                 <ep-external-link :url="data.opetussuunnitelma.toteutussuunnitelmaUrl" v-if="!isEditing && data.opetussuunnitelma.esikatseltavissa">
-                  {{$t('esikatsele-toteutussuunnitelmaa')}}
+                  {{$t(kielistykset['esikatselu'])}}
                 </ep-external-link>
               </b-form-group>
             </b-col>

@@ -195,11 +195,15 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
     title: 'toteutussuunnitelman-tiedot',
     nimi: 'toteutussuunnitelman-nimi',
     perustetyyppi: 'tutkinto',
+    salliEsikatselu: 'salli-toteutussuunnitelman-esikatselu',
+    esikatselu: 'esikatsele-toteutussuunnitelmaa',
   },
   [Toteutus.VAPAASIVISTYSTYO]: {
     title: 'opetussuunnitelman-tiedot',
     nimi: 'opetussuunnitelman-nimi',
     perustetyyppi: 'peruste',
+    salliEsikatselu: 'salli-opetussuunnitelman-esikatselu',
+    esikatselu: 'esikatsele-opetussuunnitelmaa',
   },
   [OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA]: {
     title: 'pohjan-tiedot',
@@ -281,10 +285,12 @@ export const JulkaisuKielistykset = {
   [Toteutus.VAPAASIVISTYSTYO]: {
     julkaisuBtn: 'julkaise-opetussuunnitelma',
     julkaisuOnnistui: 'opetussuunnitelma-julkaistu',
+    esikatselu: 'esikatsele-opetussuunnitelmaa',
   },
   [Toteutus.AMMATILLINEN]: {
     julkaisuBtn: 'julkaise-toteutussuunnitelma',
     julkaisuOnnistui: 'toteutussuunnitelma-julkaistu',
+    esikatselu: 'esikatsele-toteutussuunnitelmaa',
   },
 };
 
