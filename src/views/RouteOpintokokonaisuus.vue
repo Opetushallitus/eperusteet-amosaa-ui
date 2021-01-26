@@ -8,7 +8,7 @@
         <b-row>
           <b-col md="7" v-if="tyyppi === TyyppiSource.OMA || tyyppi === TyyppiSource.PERUSTEESTA && !isEditing">
             <b-form-group
-              :label="$t('opintokokonaisuuden-nimi') + (isEditing ? ' *' : '')"
+              :label="$t(tyyppikielistys['nimiotsikko']) + (isEditing ? ' *' : '')"
               required>
               <EpField
                 v-model="data.tekstiKappale.nimi"
@@ -213,6 +213,7 @@ import { Koodisto } from '@shared/api/eperusteet';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { KuvaStore } from '@/stores/KuvaStore';
+import { Murupolku } from '@shared/stores/murupolku';
 
 enum TyyppiSource {
   PERUSTEESTA = 'perusteesta',
@@ -357,6 +358,32 @@ export default class RouteOpintokokonaisuus extends Vue {
 
   get kuvaHandler() {
     return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
+  }
+
+  get opintokokonaisuustyyppi() {
+    return this.editointiStore?.data.value?.opintokokonaisuus.tyyppi;
+  }
+
+  @Watch('opintokokonaisuustyyppi')
+  tyyppiChange(val) {
+    Murupolku.aseta('opintokokonaisuus', this.$t(this.tyyppikielistys['murupolku']));
+  }
+
+  get tyyppikielistys() {
+    return this.tyyppitekstit[this.opintokokonaisuustyyppi];
+  }
+
+  get tyyppitekstit() {
+    return {
+      [TyyppiSource.OMA]: {
+        nimiotsikko: 'opintokokonaisuuden-nimi',
+        murupolku: 'opintokokonaisuus',
+      },
+      [TyyppiSource.PERUSTEESTA]: {
+        nimiotsikko: 'osaamiskokonaisuuden-nimi',
+        murupolku: 'osaamiskokonaisuus',
+      },
+    };
   }
 }
 </script>

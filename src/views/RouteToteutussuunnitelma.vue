@@ -261,6 +261,7 @@ import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus, Toteutussuunnite
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { tileBackgroundColor } from '@shared/utils/bannerIcons';
+import { routeToNode } from '@/utils/routing';
 
 @Component({
   components: {
@@ -337,7 +338,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       Murupolku.aseta('toteutussuunnitelma', this.$t(OpetussuunnitelmaTyyppi[this.opetussuunnitelmaTyyppi]));
 
       if (this.navigation) {
-        this.naviStore = new EpTreeNavibarStore(this.navigation, () => null);
+        this.naviStore = new EpTreeNavibarStore(this.navigation, routeToNode);
       }
     }
     finally {

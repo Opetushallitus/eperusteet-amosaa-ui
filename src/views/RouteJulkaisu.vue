@@ -107,7 +107,7 @@
             <ep-content v-model="julkaisu.tiedote"
                         layout="full"
                         :is-editable="true" />
-            <ep-button class="mt-3" @click="julkaise" :showSpinner="julkaistaan" :disabled="!julkaisu.tiedote[sisaltoKieli]">
+            <ep-button class="mt-3" @click="julkaise" :showSpinner="julkaistaan">
               {{ $t(kielistykset['julkaisuBtn']) }}
             </ep-button>
           </b-form-group>
