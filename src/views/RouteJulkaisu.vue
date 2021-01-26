@@ -87,10 +87,10 @@
                 <template v-else>-</template>
               </b-form-group>
             </b-col>
-             <b-col lg="6">
+             <b-col lg="6" v-if="!isOpsPohja">
               <b-form-group :label="$t('esikatselu')">
                 <EpExternalLink :url="esikatseluUrl"  v-if="suunnitelma.esikatseltavissa">
-                  {{ $t('esikatsele-toteutussuunnitelmaa') }}
+                  {{ $t(kielistykset['esikatselu']) }}
                 </EpExternalLink>
                 <template v-else>-</template>
               </b-form-group>
@@ -155,7 +155,7 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 
 import { Kielet } from '@shared/stores/kieli';
-import { Julkaisut, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
+import { Julkaisut, OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { parsiEsitysnimi } from '@/stores/kayttaja';
 
 @Component({
@@ -251,6 +251,10 @@ export default class RouteJulkaisu extends Vue {
 
   get kielistykset() {
     return JulkaisuKielistykset[this.toteutus];
+  }
+
+  get isOpsPohja() {
+    return this.suunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
   }
 }
 </script>
