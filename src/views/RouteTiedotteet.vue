@@ -1,5 +1,5 @@
 <template>
-  <ep-main-view>
+  <ep-main-view :container="true" class="mt-5">
     <template slot="header">
       <div class="d-flex justify-content-between">
         <h1>{{ $t('tiedotteet') }}</h1>
@@ -16,46 +16,32 @@
       </div>
     </div>
 
-    <div v-if="tiedotteet">
-      <b-table responsive
-              borderless
-              striped
-              fixed
-              hover
-              no-local-sorting
-              @row-clicked="rowClicked"
-              :items="tiedotteet"
-              :fields="tableFields" />
-
-      <b-pagination v-model="currentPage"
-                    :total-rows="totalRows"
-                    :per-page="perPage"
-                    @change="pageChanged"
-                    aria-controls="tiedotteet"
-                    align="center" />
-    </div>
+    <template v-if="tiedotteet">
+      <ep-tiedote v-for="tiedote in tiedotteet" :key="tiedote.id" :tiedote="tiedote" />
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="totalRows"
+        :per-page="perPage"
+        @change="pageChanged"
+        align="center" />
+    </template>
 
   </ep-main-view>
 </template>
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Vue, Component, Mixins, Watch } from 'vue-property-decorator';
+import { Prop, Vue, Component, Watch } from 'vue-property-decorator';
 
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTiedoteModal from '@shared/components/EpTiedoteModal/EpTiedoteModal.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpTiedote from '@shared/components/EpTiedote/EpTiedote.vue';
 
-import { perustetila, perusteprojektitila } from '@shared/utils/perusteet';
-import { TutoriaaliStore } from '@shared/stores/tutoriaali';
-import { Perusteet, PerusteHakuDto, PerusteHakuInternalDto, TiedoteDto } from '@shared/api/eperusteet';
-import { Kielet, KieliStore } from '@shared/stores/kieli';
+import { KieliStore } from '@shared/stores/kieli';
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
-import { required } from 'vuelidate/lib/validators';
-import { validationMixin } from 'vuelidate';
-import { parsiEsitysnimi } from '@/stores/kayttaja';
-import { julkaisupaikka, julkaisupaikkaSort } from '@shared/utils/tiedote';
 import { TiedoteJulkaisupaikka, Toteutus } from '@/utils/toteutustypes';
 
 @Component({
@@ -64,6 +50,8 @@ import { TiedoteJulkaisupaikka, Toteutus } from '@/utils/toteutustypes';
     EpSearch,
     EpTiedoteModal,
     EpSpinner,
+    EpButton,
+    EpTiedote,
   },
 })
 export default class RouteTiedotteet extends Vue {
@@ -107,10 +95,6 @@ export default class RouteTiedotteet extends Vue {
     this.tiedotteetStore.changePage(this.currentPage - 1);
   }
 
-  rowClicked(item) {
-    (this as any).$refs['eptiedotemodal'].muokkaa(item);
-  }
-
   get sisaltoKieli() {
     return this.kieliStore.getSisaltoKieli.value || null;
   }
@@ -129,35 +113,6 @@ export default class RouteTiedotteet extends Vue {
 
   get isLoading() {
     return this.tiedotteetStore.isLoading.value;
-  }
-
-  get tableFields() {
-    return [{
-      key: 'luotu',
-      label: this.$t('julkaistu'),
-      sortable: false,
-      formatter: (value: any, key: any, item: any) => {
-        return (this as any).$sdt(value);
-      },
-    }, {
-      key: 'muokattu',
-      label: this.$t('muokattu'),
-      sortable: false,
-      formatter: (value: any, key: any, item: any) => {
-        if (item.luotu !== item.muokattu) {
-          return (this as any).$sdt(value);
-        }
-        return '';
-      },
-    }, {
-      key: 'otsikko',
-      label: this.$t('tiedotteen-otsikko'),
-      sortable: false,
-      thStyle: { width: '65%' },
-      formatter: (value: any, key: any, item: any) => {
-        return (this as any).$kaanna(value);
-      },
-    }];
   }
 }
 </script>
