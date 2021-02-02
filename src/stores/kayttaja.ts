@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import Vue from 'vue';
-import { KayttajaApi, Koulutustoimijat, EtusivuDto, KoulutustoimijaBaseDto, Kayttajaoikeudet, OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { KayttajaApi, Koulutustoimijat, EtusivuDto, KoulutustoimijaBaseDto, Kayttajaoikeudet, OpetussuunnitelmaDto, JulkinenApi, KoulutustoimijaJulkinenDto } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
 import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composition-api';
 import { IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
@@ -50,6 +50,7 @@ export class KayttajaStore implements IOikeusProvider {
     koulutustoimijat: null as KoulutustoimijaBaseDto[] | null,
     koulutustoimijaId: null as string | null,
     toteutussuunnitelmaId: null as number | null,
+    ophKoulutustoimija: null as KoulutustoimijaJulkinenDto | null,
   });
 
   public readonly etusivu = computed(() => this.state.etusivu);
@@ -63,6 +64,7 @@ export class KayttajaStore implements IOikeusProvider {
   public readonly isAdmin = computed(() => _.includes(this.state.tiedot?.oikeudet || [], 'ROLE_EPERUSTEET_ADMIN'));
   public readonly koulutustoimijat = computed(() => this.state.koulutustoimijat);
   public readonly ophSelected = computed(() => this.state.koulutustoimijaId === this.getOphKtId());
+  public readonly ophKtId = computed(() => this.state.ophKoulutustoimija?.id);
   public readonly koulutustoimija = computed(() => _.find(this.state.koulutustoimijat, kt => _.toString(kt.id) === this.state.koulutustoimijaId));
 
   public async init() {
@@ -73,6 +75,7 @@ export class KayttajaStore implements IOikeusProvider {
       this.state.koulutustoimijat = (await KayttajaApi.getKoulutustoimijat()).data;
       this.fetchOikeudet();
       logger.info('Käyttäjän tiedot', this.tiedot.value);
+      this.state.ophKoulutustoimija = (await JulkinenApi.getKoulutustoimijaByOid(OphOrgOid)).data;
     }
     catch (err) {
       logger.error('Käyttäjän tietojen lataus epäonnistui', err.message);

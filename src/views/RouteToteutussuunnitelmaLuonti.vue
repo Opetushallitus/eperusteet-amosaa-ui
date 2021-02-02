@@ -116,10 +116,12 @@ import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto } from '@shared/api/amos
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
+import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
 import { Toteutus } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
 import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa } from '@shared/utils/perusteet';
+import { KayttajaStore } from '@/stores/kayttaja';
 
 @Component({
   components: {
@@ -149,6 +151,9 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private pohjanTutkinnonosatStore!: PohjanTutkinnonosatStore;
 
   @Prop({ required: true })
+  private kayttajaStore!: KayttajaStore;
+
+  @Prop({ required: true })
   private koulutustoimijaId!: string | number;
 
   @Prop({ required: true })
@@ -156,6 +161,9 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   @Prop({ required: false })
   private opetussuunnitelmanSuoritustapa!: string;
+
+  @Prop({ required: false })
+  private opetussuunnitelmaPohjatStore!: OpetussuunnitelmaPohjatStore;
 
   @Prop({ required: true })
   private toteutus!: Toteutus;
@@ -167,7 +175,6 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private nimi: any | null = null;
   private tutkinnonosaKoodit: string[] = [];
   private toteutussuunnitelmaPohjatStore: ToteutussuunnitelmatStore | null = null;
-  private toteutussuunnitelmaOpsPohjatStore: ToteutussuunnitelmatStore | null = null;
 
   async mounted() {
     this.toteutussuunnitelmaPohjatStore = new ToteutussuunnitelmatStore();
@@ -180,16 +187,8 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
         tyyppi: [this.tyyppi],
       });
 
-    if (this.toteutus === Toteutus.VAPAASIVISTYSTYO) {
-      this.toteutussuunnitelmaOpsPohjatStore = new ToteutussuunnitelmatStore();
-      this.toteutussuunnitelmaOpsPohjatStore.updateQuery(
-        _.toNumber(this.koulutustoimijaId),
-        undefined,
-        {
-          sivukoko: 1000,
-          tila: ['luonnos', 'valmis', 'julkaistu'],
-          tyyppi: ['opspohja'],
-        });
+    if (this.opetussuunnitelmaPohjatStore) {
+      this.opetussuunnitelmaPohjatStore.fetch(_.toNumber(this.koulutustoimijaId), _.toNumber(this.kayttajaStore.ophKtId.value), this.toteutus);
     }
 
     if (this.perusteetStore) {
@@ -439,7 +438,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       };
     }
 
-    if (this.pohjanTyyppi === 'toteutussuunnitelma' || this.pohjanTyyppi === 'ophPohja') {
+    if (this.pohjanTyyppi === 'toteutussuunnitelma' || this.pohjanTyyppi === 'ophPohja' || this.pohjanTyyppi === 'opsPohja') {
       validation = {
         ...validation,
         toteutussuunnitelma: notNull(),
@@ -468,8 +467,8 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   }
 
   get opsPohjat() {
-    if (this.toteutussuunnitelmaOpsPohjatStore?.opetussuunnitelmat.value) {
-      return (this.toteutussuunnitelmaOpsPohjatStore.opetussuunnitelmat.value as any).data;
+    if (this.opetussuunnitelmaPohjatStore?.opspohjat.value) {
+      return this.opetussuunnitelmaPohjatStore?.opspohjat.value;
     }
 
     return undefined;
@@ -482,10 +481,6 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
     if (this.pohjanTyyppi === 'opsPohja') {
       return this.opsPohjat;
-    }
-
-    if (this.pohjanTyyppi === 'ophPohja') {
-      return this.ophPohjat;
     }
   }
 
