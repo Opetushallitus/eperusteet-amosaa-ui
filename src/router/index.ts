@@ -146,6 +146,7 @@ const router = new VueRouter({
           opetussuunnitelmanTyyppi: 'ops',
           opetussuunnitelmanSuoritustapa: 'reformi',
           ophPohjatStore: null,
+          opetussuunnitelmaPohjatStore: null,
         };
       },
     }, {
@@ -172,6 +173,7 @@ const router = new VueRouter({
           opetussuunnitelmanTyyppi: 'yleinen',
           perusteetStore: null,
           ophPohjatStore: null,
+          opetussuunnitelmaPohjatStore: null,
         };
       },
     }, {
@@ -184,6 +186,7 @@ const router = new VueRouter({
           ...stores,
           opetussuunnitelmanTyyppi: stores.kayttajaStore.ophSelected.value ? 'pohja' : 'yhteinen',
           perusteetStore: null,
+          opetussuunnitelmaPohjatStore: null,
         };
       },
     }, {
@@ -197,6 +200,7 @@ const router = new VueRouter({
           opetussuunnitelmanTyyppi: 'tunnistamisraportti',
           opetussuunnitelmanSuoritustapa: 'reformi',
           ophPohjatStore: null,
+          opetussuunnitelmaPohjatStore: null,
         };
       },
     }, {
