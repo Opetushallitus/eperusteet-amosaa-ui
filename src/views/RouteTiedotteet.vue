@@ -3,10 +3,16 @@
     <template slot="header">
       <div class="d-flex justify-content-between">
         <h1>{{ $t('tiedotteet') }}</h1>
-        <ep-tiedote-modal ref="eptiedotemodal"
-                          :tiedotteetStore="tiedotteetStore"
-                          :editable="false"
-                          :naytaJulkaisupaikka="false" />
+        <ep-linkki
+          :url="url"
+          v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'pohja' }">
+          <div class="d-flex">
+            <span class="icon">
+              <fas icon="plussa"></fas>
+            </span>
+            <span class="ml-2 link-text">{{ $t('lisaa-tiedote') }}</span>
+          </div>
+        </ep-linkki>
       </div>
     </template>
 
@@ -17,7 +23,17 @@
     </div>
 
     <template v-if="tiedotteet">
-      <ep-tiedote v-for="tiedote in tiedotteet" :key="tiedote.id" :tiedote="tiedote" />
+      <ep-content-read-more
+        v-for="tiedote in tiedotteet"
+        :key="tiedote.id"
+        :content="tiedote.sisalto">
+        <template #preHeading>
+          <p>{{ $sdt(tiedote.luotu) }}</p>
+        </template>
+        <template #heading>
+          <h2 class="font-weight-normal">{{ $kaanna(tiedote.otsikko) }}</h2>
+        </template>
+      </ep-content-read-more>
       <b-pagination
         v-model="currentPage"
         :total-rows="totalRows"
@@ -38,7 +54,8 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTiedoteModal from '@shared/components/EpTiedoteModal/EpTiedoteModal.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import EpTiedote from '@shared/components/EpTiedote/EpTiedote.vue';
+import EpContentReadMore from '@shared/components/EpContentReadMore/EpContentReadMore.vue';
+import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
 
 import { KieliStore } from '@shared/stores/kieli';
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
@@ -51,7 +68,8 @@ import { TiedoteJulkaisupaikka, Toteutus } from '@/utils/toteutustypes';
     EpTiedoteModal,
     EpSpinner,
     EpButton,
-    EpTiedote,
+    EpContentReadMore,
+    EpLinkki,
   },
 })
 export default class RouteTiedotteet extends Vue {
@@ -114,9 +132,30 @@ export default class RouteTiedotteet extends Vue {
   get isLoading() {
     return this.tiedotteetStore.isLoading.value;
   }
+
+  get url() {
+    return `/eperusteet-app/uusi/#/${this.sisaltoKieli}/tiedotteet`;
+  }
 }
 </script>
 
 <style scoped lang="scss">
+@import '@shared/styles/_variables.scss';
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 24px;
+  width: 24px;
+  border-radius: 100%;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  background-color: #3367E3;
+}
 
+.link-text {
+  font-size: 1rem;
+  color: $black;
+}
 </style>
