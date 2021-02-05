@@ -53,7 +53,6 @@ import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTiedoteModal from '@shared/components/EpTiedoteModal/EpTiedoteModal.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpContentReadMore from '@shared/components/EpContentReadMore/EpContentReadMore.vue';
 import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
 
@@ -67,7 +66,6 @@ import { TiedoteJulkaisupaikka, Toteutus } from '@/utils/toteutustypes';
     EpSearch,
     EpTiedoteModal,
     EpSpinner,
-    EpButton,
     EpContentReadMore,
     EpLinkki,
   },
