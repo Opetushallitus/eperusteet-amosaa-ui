@@ -1,39 +1,9 @@
 <template>
-  <ep-main-view :container="true" class="mt-5">
-    <template slot="header">
-      <div class="d-flex justify-content-between">
-        <h1>{{ $t('tiedotteet') }}</h1>
-        <ep-linkki
-          :url="url"
-          v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'pohja' }">
-          <div class="d-flex">
-            <span class="icon">
-              <fas icon="plussa"></fas>
-            </span>
-            <span class="ml-2 link-text">{{ $t('lisaa-tiedote') }}</span>
-          </div>
-        </ep-linkki>
-      </div>
+  <ep-tiedote-view :tiedotteet="tiedotteet">
+    <template #search>
+      <ep-search v-model="nimiFilter" @input="nimiFilterChanged" :is-loading="isLoading" />
     </template>
-
-    <div class="row align-items-end mb-4">
-      <div class="col-4">
-        <ep-search v-model="nimiFilter" @input="nimiFilterChanged" :is-loading="isLoading" />
-      </div>
-    </div>
-
-    <template v-if="tiedotteet">
-      <ep-content-read-more
-        v-for="tiedote in tiedotteet"
-        :key="tiedote.id"
-        :content="tiedote.sisalto">
-        <template #preHeading>
-          <p>{{ $sdt(tiedote.luotu) }}</p>
-        </template>
-        <template #heading>
-          <h2 class="font-weight-normal">{{ $kaanna(tiedote.otsikko) }}</h2>
-        </template>
-      </ep-content-read-more>
+    <template #pagination>
       <b-pagination
         v-model="currentPage"
         :total-rows="totalRows"
@@ -41,20 +11,16 @@
         @change="pageChanged"
         align="center" />
     </template>
-
-  </ep-main-view>
+  </ep-tiedote-view>
 </template>
 
 <script lang="ts">
 import _ from 'lodash';
 import { Prop, Vue, Component, Watch } from 'vue-property-decorator';
 
-import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
-import EpTiedoteModal from '@shared/components/EpTiedoteModal/EpTiedoteModal.vue';
-import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import EpContentReadMore from '@shared/components/EpContentReadMore/EpContentReadMore.vue';
 import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
+import EpTiedoteView from '@shared/components/EpTiedoteView/EpTiedoteView.vue';
 
 import { KieliStore } from '@shared/stores/kieli';
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
@@ -62,12 +28,9 @@ import { TiedoteJulkaisupaikka, Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
-    EpMainView,
     EpSearch,
-    EpTiedoteModal,
-    EpSpinner,
-    EpContentReadMore,
     EpLinkki,
+    EpTiedoteView,
   },
 })
 export default class RouteTiedotteet extends Vue {
@@ -136,24 +99,3 @@ export default class RouteTiedotteet extends Vue {
   }
 }
 </script>
-
-<style scoped lang="scss">
-@import '@shared/styles/_variables.scss';
-.icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 24px;
-  width: 24px;
-  border-radius: 100%;
-  margin: 0;
-  padding: 0;
-  color: #fff;
-  background-color: #3367E3;
-}
-
-.link-text {
-  font-size: 1rem;
-  color: $black;
-}
-</style>
