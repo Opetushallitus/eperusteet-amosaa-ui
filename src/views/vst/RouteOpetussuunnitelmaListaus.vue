@@ -218,11 +218,11 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 
   protected async init() {
     if (this.opsTyyppi === 'ops') {
-      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit)).data;
+      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit, 'OPS')).data;
     }
 
     if (this.opsTyyppi === 'opspohja') {
-      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, undefined, 'OPSPOHJA')).data;
+      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit, 'OPSPOHJA')).data;
     }
   }
 

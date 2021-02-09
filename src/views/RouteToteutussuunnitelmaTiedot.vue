@@ -23,7 +23,7 @@
             </b-col>
             <b-col>
               <b-form-group :label="$t('paatospaivamaara')">
-                <ep-datepicker v-model="data.opetussuunnitelma.paatospaivamaara" :is-editing="isEditing" type="sd"/>
+                <ep-datepicker v-model="data.opetussuunnitelma.paatospaivamaara" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.paatospaivamaara"/>
               </b-form-group>
             </b-col>
           </b-row>

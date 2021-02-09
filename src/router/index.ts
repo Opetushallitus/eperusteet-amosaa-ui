@@ -159,7 +159,6 @@ const router = new VueRouter({
           ...stores,
           opetussuunnitelmanTyyppi: 'ops',
           opetussuunnitelmanSuoritustapa: 'reformi',
-          ophPohjatStore: null,
         };
       },
     }, {
