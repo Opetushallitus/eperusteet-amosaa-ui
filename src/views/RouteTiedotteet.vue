@@ -19,17 +19,18 @@ import _ from 'lodash';
 import { Prop, Vue, Component, Watch } from 'vue-property-decorator';
 
 import EpSearch from '@shared/components/forms/EpSearch.vue';
-import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
 import EpTiedoteView from '@shared/components/EpTiedoteView/EpTiedoteView.vue';
 
 import { KieliStore } from '@shared/stores/kieli';
+import { Debounced } from '@shared/utils/delay';
+
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
+
 import { TiedoteJulkaisupaikka, Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
     EpSearch,
-    EpLinkki,
     EpTiedoteView,
   },
 })
@@ -64,7 +65,8 @@ export default class RouteTiedotteet extends Vue {
     });
   }
 
-  nimiFilterChanged(value) {
+  @Debounced(300)
+  async nimiFilterChanged(value) {
     this.nimiFilter = value;
     this.tiedotteetStore.changeNimiFilter(this.nimiFilter);
   }
@@ -92,10 +94,6 @@ export default class RouteTiedotteet extends Vue {
 
   get isLoading() {
     return this.tiedotteetStore.isLoading.value;
-  }
-
-  get url() {
-    return `/eperusteet-app/uusi/#/${this.sisaltoKieli}/tiedotteet`;
   }
 }
 </script>
