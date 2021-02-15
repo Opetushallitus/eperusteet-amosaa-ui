@@ -49,6 +49,7 @@ export class TiedotteetStore implements ITiedotteetProvider {
 
   public async fetch() {
     this.state.isLoading = true;
+    this.state.tiedotteet = null;
     const res = (await Tiedotteet.findTiedotteetBy(
       this.state.options!.sivu,
       this.state.options!.sivukoko,
