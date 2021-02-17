@@ -6,7 +6,7 @@
       <span>{{ $t('tile-tiedotteet') }}</span>
     </template>
     <template slot="content">
-      <ep-spinner v-if="isLoading"></ep-spinner>
+      <ep-spinner v-if="!tiedotteet"></ep-spinner>
       <div v-else>
         <div v-if="tiedotteet && tiedotteet.length > 0">
           <div class="tiedote row justify-content-center text-left" v-for="(tiedote, idx) in tiedotteetFormatted" :key="idx">
@@ -24,10 +24,9 @@
 import _ from 'lodash';
 import { Vue, Component, Prop, Watch, Provide } from 'vue-property-decorator';
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
-import { Tiedotteet, TiedoteDto } from '@shared/api/eperusteet';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { julkaisupaikka, onkoUusi } from '@shared/utils/tiedote';
+import { onkoUusi } from '@shared/utils/tiedote';
 import { Debounced } from '@shared/utils/delay';
 
 @Component({
@@ -37,9 +36,6 @@ import { Debounced } from '@shared/utils/delay';
   },
 })
 export default class TileTiedotteet extends Vue {
-  private isLoading = true;
-  private tiedotteet: any[] = [];
-
   @Prop({ required: true })
   private kieli!: string;
 
@@ -52,6 +48,8 @@ export default class TileTiedotteet extends Vue {
   @Provide('tileHeaderStyle')
   private tileHeaderStyle = this.headerStyle;
 
+  private tiedotteetStore: TiedotteetStore | null = null;
+
   @Watch('kieli', { immediate: true })
   async onSisaltoKieliChange(newValue: string, oldValue: string) {
     if (newValue && newValue !== oldValue) {
@@ -60,31 +58,28 @@ export default class TileTiedotteet extends Vue {
   }
 
   async mounted() {
+    this.tiedotteetStore = new TiedotteetStore();
     this.fetch();
   }
 
   @Debounced()
   async fetch() {
     try {
-      this.isLoading = true;
-      this.tiedotteet = ((await Tiedotteet.findTiedotteetBy(
-        0,
-        3,
-        [_.toUpper(this.kieli)],
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        [this.julkaisupaikka],
-      )).data as any).data;
+      await this.tiedotteetStore!.init(
+        {
+          sivu: 0,
+          sivukoko: 3,
+          kieli: [_.toUpper(this.kieli)],
+          tiedoteJulkaisuPaikka: [this.julkaisupaikka],
+        });
     }
     catch (err) {
       throw err;
     }
-    finally {
-      this.isLoading = false;
-    }
+  }
+
+  get tiedotteet() {
+    return this.tiedotteetStore?.tiedotteet.value;
   }
 
   get tiedotteetFormatted() {
