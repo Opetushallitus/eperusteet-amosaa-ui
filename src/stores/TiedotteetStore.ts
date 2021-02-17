@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { TiedoteDto, Tiedotteet } from '@shared/api/eperusteet';
+import { TiedoteDto } from '@shared/api/eperusteet';
 import { ITiedotteetProvider } from '@shared/stores/types';
 import { TiedoteQuery } from '@shared/api/types';
+import { Ulkopuoliset } from '@shared/api/amosaa';
 
 Vue.use(VueCompositionApi);
 
@@ -50,7 +51,7 @@ export class TiedotteetStore implements ITiedotteetProvider {
   public async fetch() {
     this.state.isLoading = true;
     this.state.tiedotteet = null;
-    const res = (await Tiedotteet.findTiedotteetBy(
+    const res = (await Ulkopuoliset.getTiedotteetHaku(
       this.state.options!.sivu,
       this.state.options!.sivukoko,
       this.state.options!.kieli,
@@ -59,8 +60,8 @@ export class TiedotteetStore implements ITiedotteetProvider {
       this.state.options!.perusteeton,
       this.state.options!.julkinen,
       this.state.options!.yleinen,
-      this.state.options!.tiedoteJulkaisuPaikka,
       this.state.options!.perusteIds,
+      this.state.options!.tiedoteJulkaisuPaikka,
       this.state.options!.koulutusTyyppi,
     )).data;
     this.state.tiedotteet = (res as any).data;
