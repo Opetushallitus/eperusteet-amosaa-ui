@@ -101,9 +101,14 @@ export default class RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat extend
   }
 
   async paivita(toteutussuunnitelmaId) {
-    this.spinners = [...this.spinners, toteutussuunnitelmaId];
-    await this.paivitettavatJaSiirrettavatTotsStore.paivita(toteutussuunnitelmaId, this.koulutustoimijaId);
-    this.$success(this.$t('toteutussuunnitelma-paivitetty-onnistuneesti') as string);
+    try {
+      this.spinners = [...this.spinners, toteutussuunnitelmaId];
+      await this.paivitettavatJaSiirrettavatTotsStore.paivita(toteutussuunnitelmaId, this.koulutustoimijaId);
+      this.$success(this.$t('toteutussuunnitelma-paivitetty-onnistuneesti') as string);
+    }
+    catch (e) {
+      this.$fail(this.$t('virhe-palvelu-virhe') as string);
+    }
   }
 
   async siirra(toteutussuunnitelmaId) {
