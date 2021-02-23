@@ -89,7 +89,7 @@
             </b-col>
              <b-col lg="6" v-if="!isOpsPohja">
               <b-form-group :label="$t('esikatselu')">
-                <EpExternalLink :url="esikatseluUrl"  v-if="suunnitelma.esikatseltavissa">
+                <EpExternalLink :url="esikatseluUrl" v-if="julkaisut && julkaisut.length > 0">
                   {{ $t(kielistykset['esikatselu']) }}
                 </EpExternalLink>
                 <template v-else>-</template>
@@ -102,7 +102,7 @@
 
         <div v-if="julkaisuMahdollinen && julkaisut">
           <h3>{{ $t('uusi-julkaisu') }}</h3>
-          <b-form-group :label="$t('julkaisun-tiedote') + ' *'">
+          <b-form-group :label="$t('julkaisun-tiedote')">
             <div class="font-size-08 mb-2">{{$t('tiedote-naytetaan-tyoryhmalle-taman-sivun-julkaisuhistoriassa')}}</div>
             <ep-content v-model="julkaisu.tiedote"
                         layout="full"
@@ -113,21 +113,7 @@
           </b-form-group>
         </div>
 
-        <ep-collapse v-if="julkaisut">
-          <h3 slot="header">{{ $t('julkaisuhistoria') }}</h3>
-          <div class="alert alert-info" v-if="julkaisut.length === 0">
-            {{ $t('ei-julkaisuja') }}
-          </div>
-          <div class="julkaisu p-2" v-for="(julkaisu, index) in julkaisutSorted" :key="julkaisu+index">
-            <div>
-              <span class="font-weight-bold pr-1">{{$t('versio')}} {{julkaisu.revision}}</span>
-              <span v-if="index === 0">({{$t('uusin-julkaisu')}})</span>
-            </div>
-            <div>{{$sdt(julkaisu.luotu)}} {{julkaisu.nimi}}</div>
-            <div class="pt-2" v-html="$kaanna(julkaisu.tiedote)"></div>
-          </div>
-
-        </ep-collapse>
+        <EpJulkaisuHistoria :julkaisut="julkaisut" />
 
       </template>
     </div>
@@ -151,12 +137,10 @@ import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-
+import EpJulkaisuHistoria from '@shared/components/EpJulkaisuHistoria/EpJulkaisuHistoria.vue';
 import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
-
 import { Kielet } from '@shared/stores/kieli';
-import { Julkaisut, OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
-import { parsiEsitysnimi } from '@/stores/kayttaja';
+import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -168,6 +152,7 @@ import { parsiEsitysnimi } from '@/stores/kayttaja';
     EpCollapse,
     EpSpinner,
     EpValidointilistaus,
+    EpJulkaisuHistoria,
   },
 })
 export default class RouteJulkaisu extends Vue {
@@ -221,18 +206,6 @@ export default class RouteJulkaisu extends Vue {
     return this.toteutussuunnitelmaStore.julkaisut.value;
   }
 
-  get julkaisutSorted() {
-    return _.chain(this.julkaisut)
-      .map(julkaisu => {
-        return {
-          ...julkaisu,
-          nimi: julkaisu.kayttajanTieto ? parsiEsitysnimi(julkaisu.kayttajanTieto) : julkaisu.luoja,
-        };
-      })
-      .sortBy(julkaisu => julkaisu.revision! * -1)
-      .value();
-  }
-
   get sisaltoKieli() {
     return Kielet.getSisaltoKieli.value;
   }
@@ -241,10 +214,11 @@ export default class RouteJulkaisu extends Vue {
     this.julkaistaan = true;
     try {
       await this.toteutussuunnitelmaStore.julkaise(this.julkaisu);
+      this.julkaisu.tiedote = {};
       this.$success(this.$t(this.kielistykset['julkaisuOnnistui']) as string);
     }
     catch (err) {
-      this.$fail(this.$t('julkaisu-epaonnistui-' + OpetussuunnitelmaTyyppi[this.toteutus] + '-' + err.response.data.syy) as string);
+      this.$fail(this.$t('julkaisu-epaonnistui-' + OpetussuunnitelmaTyyppi[this.toteutus] + '-' + err.response?.data?.syy) as string);
     }
     this.julkaistaan = false;
   }
