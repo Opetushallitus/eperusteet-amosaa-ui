@@ -79,7 +79,7 @@ export default class RouteLang extends Vue {
       }
 
       const toteutus = this.toteutus;
-      const lang = await getCasKayttajaKieli();
+      const lang = this.kayttajaStore.casKayttaja.value?.lang || 'fi';
       this.koulutustoimijaId = koulutustoimijaId;
 
       this.$router.push({
