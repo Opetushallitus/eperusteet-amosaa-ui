@@ -69,7 +69,7 @@ export class KayttajaStore implements IOikeusProvider {
   public readonly ophKtId = computed(() => this.state.ophKoulutustoimija?.id);
   public readonly koulutustoimija = computed(() => _.find(this.state.koulutustoimijat, kt => _.toString(kt.id) === this.state.koulutustoimijaId));
   public readonly casKayttaja = computed(() => this.state.casKayttaja);
-  public readonly sovellusOikeudet = computed(() => getSovellusoikeudet(this.state.casKayttaja?.roles, 'APP_EPERUSTEET_AMOSAA'));
+  public readonly sovellusOikeudet = computed(() => getSovellusoikeudet(this.state.casKayttaja?.groups, 'APP_EPERUSTEET_AMOSAA'));
 
   public async init() {
     try {
