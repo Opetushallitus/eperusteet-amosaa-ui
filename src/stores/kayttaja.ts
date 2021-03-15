@@ -3,8 +3,9 @@ import Vue from 'vue';
 import { KayttajaApi, Koulutustoimijat, EtusivuDto, KoulutustoimijaBaseDto, Kayttajaoikeudet, OpetussuunnitelmaDto, JulkinenApi, KoulutustoimijaJulkinenDto } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
 import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composition-api';
-import { IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
+import { getSovellusoikeudet, IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
 import { Debounced } from '@shared/utils/delay';
+import { getCasKayttaja } from '@shared/api/common';
 
 Vue.use(VueCompositionApi);
 
@@ -51,6 +52,7 @@ export class KayttajaStore implements IOikeusProvider {
     koulutustoimijaId: null as string | null,
     toteutussuunnitelmaId: null as number | null,
     ophKoulutustoimija: null as KoulutustoimijaJulkinenDto | null,
+    casKayttaja: null as any | null,
   });
 
   public readonly etusivu = computed(() => this.state.etusivu);
@@ -66,11 +68,14 @@ export class KayttajaStore implements IOikeusProvider {
   public readonly ophSelected = computed(() => this.state.koulutustoimijaId === this.getOphKtId());
   public readonly ophKtId = computed(() => this.state.ophKoulutustoimija?.id);
   public readonly koulutustoimija = computed(() => _.find(this.state.koulutustoimijat, kt => _.toString(kt.id) === this.state.koulutustoimijaId));
+  public readonly casKayttaja = computed(() => this.state.casKayttaja);
+  public readonly sovellusOikeudet = computed(() => getSovellusoikeudet(this.state.casKayttaja?.roles, 'APP_EPERUSTEET_AMOSAA'));
 
   public async init() {
     try {
       logger.info('Haetaan käyttäjän tiedot');
       this.state.tiedot = (await KayttajaApi.getKayttaja()).data;
+      this.state.casKayttaja = await getCasKayttaja();
       await KayttajaApi.updateKoulutustoimijat();
       this.state.koulutustoimijat = (await KayttajaApi.getKoulutustoimijat()).data;
       this.fetchOikeudet();
