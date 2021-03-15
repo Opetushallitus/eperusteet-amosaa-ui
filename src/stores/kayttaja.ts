@@ -6,6 +6,7 @@ import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composit
 import { getSovellusoikeudet, IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
 import { Debounced } from '@shared/utils/delay';
 import { getCasKayttaja } from '@shared/api/common';
+import { Toteutus, ToteutusSovellus } from '@/utils/toteutustypes';
 
 Vue.use(VueCompositionApi);
 
@@ -53,6 +54,7 @@ export class KayttajaStore implements IOikeusProvider {
     toteutussuunnitelmaId: null as number | null,
     ophKoulutustoimija: null as KoulutustoimijaJulkinenDto | null,
     casKayttaja: null as any | null,
+    toteutus: null as Toteutus | null,
   });
 
   public readonly etusivu = computed(() => this.state.etusivu);
@@ -69,7 +71,7 @@ export class KayttajaStore implements IOikeusProvider {
   public readonly ophKtId = computed(() => this.state.ophKoulutustoimija?.id);
   public readonly koulutustoimija = computed(() => _.find(this.state.koulutustoimijat, kt => _.toString(kt.id) === this.state.koulutustoimijaId));
   public readonly casKayttaja = computed(() => this.state.casKayttaja);
-  public readonly sovellusOikeudet = computed(() => getSovellusoikeudet(this.state.casKayttaja?.groups, 'APP_EPERUSTEET_AMOSAA'));
+  public readonly sovellusOikeudet = computed(() => getSovellusoikeudet(this.state.casKayttaja?.groups, ToteutusSovellus[this.state.toteutus || ToteutusSovellus.ammatillinen]));
 
   public async init() {
     try {
@@ -165,6 +167,10 @@ export class KayttajaStore implements IOikeusProvider {
 
   public setToteutussuunnitelmaId(toteutussuunnitelmaId: number) {
     this.state.toteutussuunnitelmaId = toteutussuunnitelmaId;
+  }
+
+  public setToteutus(toteutus) {
+    this.state.toteutus = toteutus;
   }
 }
 

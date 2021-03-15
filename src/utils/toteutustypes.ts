@@ -12,7 +12,12 @@ import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 export enum Toteutus {
   VAPAASIVISTYSTYO = 'vapaasivistystyo',
   AMMATILLINEN = 'ammatillinen',
-}
+};
+
+export const ToteutusSovellus = {
+  [Toteutus.VAPAASIVISTYSTYO]: 'APP_EPERUSTEET_VST',
+  [Toteutus.AMMATILLINEN]: 'APP_EPERUSTEET_AMOSAA',
+};
 
 export const TervetuloaTeksti = {
   [Toteutus.VAPAASIVISTYSTYO]: 'amosaa-vst-tervetuloa',
