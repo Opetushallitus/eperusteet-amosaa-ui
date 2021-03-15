@@ -354,6 +354,7 @@ router.beforeEach((to, from, next) => {
 });
 
 router.beforeEach((to, from, next) => {
+  stores.kayttajaStore.setToteutus(to.params.toteutus);
   stores.perusteetStore.init(to.params.toteutus);
   next();
 });
