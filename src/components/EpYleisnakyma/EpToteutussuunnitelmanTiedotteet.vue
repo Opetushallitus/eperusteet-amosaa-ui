@@ -2,7 +2,10 @@
   <div class="content">
     <div class="d-flex justify-content-between">
       <h3 class="mb-4">{{$t('tiedotteet')}}</h3>
-      <ep-tiedote-modal ref="eptiedotemodal" :tiedotteetStore="tiedotteetStore" :editable="false"/>
+      <ep-tiedote-modal
+        ref="eptiedotemodal"
+        :tiedotteetStore="tiedotteetStore"
+        :editable="false"/>
     </div>
 
     <ep-spinner v-if="!tiedotteet" />

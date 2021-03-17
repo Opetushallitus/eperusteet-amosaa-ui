@@ -152,7 +152,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
         julkaisupaikka: TiedoteJulkaisupaikka[toteutus],
       },
       oikeustarkastelu: {
-        oikeus: 'hallinta',
+        oikeus: 'luku',
       },
     },
     {

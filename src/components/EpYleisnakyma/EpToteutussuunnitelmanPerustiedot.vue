@@ -15,7 +15,7 @@
     </div>
 
     <ep-siirto-modal :toteutus="toteutus" :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="toteutussuunnitelma" v-if="!isOpsPohja"
-      v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }"
+      v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
       />
   </div>
 </template>

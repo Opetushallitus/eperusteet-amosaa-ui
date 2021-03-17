@@ -171,7 +171,7 @@
               <div class="mb-3">
                 <EpSisaltoLisays
                   v-if="isAmmatillinen"
-                  v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :toteutussuunnitelmaId="toteutussuunnitelmaId"
                   :koulutustoimijaId="koulutustoimijaId"
                   :navigation="navigation.value"
@@ -180,6 +180,7 @@
 
                 <EpTekstikappaleLisays
                   v-if="isVapaaSivistystyo"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   @save="tallennaUusiTekstikappale"
                   :tekstikappaleet="perusteenOsat"
                   :paatasovalinta="true">
@@ -191,6 +192,7 @@
 
                 <EpTekstikappaleLisays
                     v-if="isVapaaSivistystyo"
+                    v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                     @save="tallennaUusiOpintokokonaisuus"
                     :tekstikappaleet="perusteenOsat"
                     :paatasovalinta="true"
@@ -226,7 +228,7 @@
 
       <template v-slot:bottom>
         <div class="menu-item bottom-menu-item">
-          <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
+          <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
             <span class="text-nowrap">
               <fas icon="jarjesta" fixed-width />
                <a class="btn btn-link btn-link-nav">{{$t('muokkaa-jarjestysta')}}</a>
@@ -412,31 +414,31 @@ export default class RouteToteutussuunnitelma extends Vue {
         text: 'kayttooikeudet',
         route: 'oikeudet',
         icon: 'kaytto-oikeus',
-        oikeus: 'hallinta',
+        oikeus: 'luonti',
       },
       {
         text: 'luo-pdf',
         route: 'pdfLuonti',
         icon: 'luo-pdf',
-        oikeus: 'hallinta',
+        oikeus: 'muokkaus',
       },
       {
         text: 'poistetut-sisallot',
         route: 'poistetutsisallot',
         icon: 'roskalaatikko',
-        oikeus: 'hallinta',
+        oikeus: 'luonti',
       },
       {
         ...((this.isDraft || this.isOpsPohja) && {
           separator: true,
-          oikeus: 'hallinta',
+          oikeus: 'luonti',
         }),
       }, {
         ...((this.isDraft || this.isOpsPohja) && {
           icon: ['far', 'folder'],
           click: vaihdaOpetussunnitelmaTilaConfirm,
           ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
-          oikeus: 'hallinta',
+          oikeus: 'luonti',
         }),
       },
     ];
@@ -580,7 +582,7 @@ export default class RouteToteutussuunnitelma extends Vue {
 }
 
 .navigation {
-  min-height: 1200px;
+  height: calc(100% - 160px);
 }
 
 .heading {

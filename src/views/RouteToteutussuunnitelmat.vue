@@ -12,13 +12,13 @@
         <h2>{{ $t(topic) }}</h2>
 
         <div>
-          <router-link :to="luontiRoute" v-oikeustarkastelu="{ oikeus: 'hallinta'}">
+          <router-link :to="luontiRoute" v-oikeustarkastelu="{ oikeus: 'luonti'}">
             <ep-button variant="outline-primary" icon="plussa">
               {{ $t(lisaaBtnText) }}
             </ep-button>
           </router-link>
 
-          <router-link :to="{name: 'jaettuosaLuonti'}" v-oikeustarkastelu="{ oikeus: 'hallinta'}" v-if="!isOrganisaatioRyhma">
+          <router-link :to="{name: 'jaettuosaLuonti'}" v-oikeustarkastelu="{ oikeus: 'luonti'}" v-if="!isOrganisaatioRyhma">
             <ep-button variant="outline-primary" icon="plussa" >
               {{ $t('lisaa-jaettu-osa') }}
             </ep-button>
