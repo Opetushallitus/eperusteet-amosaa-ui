@@ -16,7 +16,7 @@
 
     <div v-else-if="aikataulut.length === 0" class="text-center">
       <ep-button @click="otaAikatauluKayttoon" buttonClass="pl-5 pr-5"
-        v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
+        v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
         <span>{{ $t('ota-kayttoon') }}</span>
       </ep-button>
     </div>

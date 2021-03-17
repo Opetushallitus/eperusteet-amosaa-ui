@@ -118,7 +118,7 @@
           </b-container>
         </div>
 
-        <div v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }" v-if="!isOpsPohja">
+        <div v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }" v-if="!isOpsPohja">
           <hr/>
           <h3>{{$t('toiminnot')}}</h3>
           <ep-siirto-modal :toteutus="toteutus" :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="editointiStore.data.value.opetussuunnitelma"></ep-siirto-modal>

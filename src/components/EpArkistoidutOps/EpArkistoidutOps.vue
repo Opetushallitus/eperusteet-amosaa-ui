@@ -32,7 +32,7 @@
             variant="link"
             icon="peruuta"
             @click="$emit('restore', data.item)"
-            v-oikeustarkastelu="{ oikeus: 'hallinta' }">
+            v-oikeustarkastelu="{ oikeus: 'luonti' }">
             {{ $t('palauta') }}
           </EpButton>
         </template>
