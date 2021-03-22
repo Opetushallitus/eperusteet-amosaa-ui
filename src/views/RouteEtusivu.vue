@@ -21,6 +21,9 @@
         />
       </div>
     </div>
+
+  <EpFeedbackModal :palauteProvider="palautteetStore"/>
+
   </div>
 </template>
 
@@ -43,6 +46,8 @@ import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 import { Toteutus } from '@/utils/toteutustypes';
+import EpFeedbackModal from '@shared/components/EpFeedback/EpFeedbackModal.vue';
+import { PalautteetStore } from '@/stores/PalautteetStore';
 
 @Component({
   components: {
@@ -53,6 +58,7 @@ import { Toteutus } from '@/utils/toteutustypes';
     TileTiedotteet,
     TileUkk,
     TileTilastot,
+    EpFeedbackModal,
   },
 })
 export default class RouteEtusivu extends Mixins(EpRoute) {
@@ -79,6 +85,9 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
 
   @Prop({ required: true })
   private tiles!: any;
+
+  @Prop({ required: true })
+  private palautteetStore!: PalautteetStore;
 
   @Meta
   getMetaInfo() {

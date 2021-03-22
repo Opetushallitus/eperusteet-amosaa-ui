@@ -20,6 +20,7 @@ import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { KayttoOikeudetStore } from '@/stores/KayttoOikeudetStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
+import { PalautteetStore } from './PalautteetStore';
 
 const toteutussuunnitelmaStore = new ToteutussuunnitelmaStore();
 const toteutussuunnitelmatStore = new ToteutussuunnitelmatStore();
@@ -42,6 +43,7 @@ const tutkinnonosatTuontiStore = new TutkinnonosatTuontiStore();
 const paivitettavatJaSiirrettavatTotsStore = new PaivitettavatJaSiirrettavatTotsStore();
 const pohjanTutkinnonosatStore = new PohjanTutkinnonosatStore();
 const opetussuunnitelmaPohjatStore = new OpetussuunnitelmaPohjatStore();
+const palautteetStore = new PalautteetStore();
 
 export const stores = Object.freeze({
   aikatauluStore,
@@ -67,4 +69,5 @@ export const stores = Object.freeze({
   kayttoOikeudetStore,
   pohjanTutkinnonosatStore,
   opetussuunnitelmaPohjatStore,
+  palautteetStore,
 });
