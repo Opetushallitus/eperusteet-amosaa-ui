@@ -6,8 +6,11 @@ import TileOrganisaationHallinta from '@/views/tiles/TileOrganisaationHallinta.v
 import TileTiedotteet from '@/views/tiles/TileTiedotteet.vue';
 import TileUkk from '@/views/tiles/TileUkk.vue';
 import TileTilastot from '@/views/tiles/TileTilastot.vue';
+import TilePalautteet from '@shared/components/EpFeedback/TilePalautteet.vue';
+
 import { tileColors } from '@shared/utils/bannerIcons';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { EperusteetPalautekanava } from '@shared/tyypit';
 
 export enum Toteutus {
   VAPAASIVISTYSTYO = 'vapaasivistystyo',
@@ -38,6 +41,16 @@ export const OpetussuunnitelmaTyyppi = {
 export const OpetussuunnitelmaOppilaitostyyppi = {
   [Toteutus.VAPAASIVISTYSTYO]: true,
   [Toteutus.AMMATILLINEN]: false,
+};
+
+export const Tutkintorakennepalaute = {
+  [Toteutus.VAPAASIVISTYSTYO]: false,
+  [Toteutus.AMMATILLINEN]: true,
+};
+
+export const PalauteKey = {
+  [Toteutus.VAPAASIVISTYSTYO]: EperusteetPalautekanava.vst,
+  [Toteutus.AMMATILLINEN]: EperusteetPalautekanava.amosaa,
 };
 
 export const TileBackground = {
