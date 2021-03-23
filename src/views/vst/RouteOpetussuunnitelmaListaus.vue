@@ -51,7 +51,7 @@
                   </div>
                   <div class="opsbox__info">
                     <div class="opsbox__name">
-                      {{ $kaanna(ops.nimi, true) }}
+                      {{ $kaanna(ops.nimi) }}
                     </div>
                   </div>
                 </RouterLink>

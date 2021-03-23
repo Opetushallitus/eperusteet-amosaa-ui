@@ -429,12 +429,12 @@ export default class RouteToteutussuunnitelma extends Vue {
         oikeus: 'luonti',
       },
       {
-        ...((this.isDraft || this.isOpsPohja) && {
+        ...((!this.isArchived) && {
           separator: true,
           oikeus: 'luonti',
         }),
       }, {
-        ...((this.isDraft || this.isOpsPohja) && {
+        ...((!this.isArchived) && {
           icon: ['far', 'folder'],
           click: vaihdaOpetussunnitelmaTilaConfirm,
           ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
