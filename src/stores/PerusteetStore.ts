@@ -4,6 +4,7 @@ import { PerusteDto, Ulkopuoliset, PerusteDtoKoulutustyyppiEnum, PerusteKevytDto
 import _ from 'lodash';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 import { Toteutus } from '@/utils/toteutustypes';
+import { Koulutustyyppi } from '@shared/tyypit';
 
 Vue.use(VueCompositionApi);
 
@@ -16,7 +17,7 @@ export class PerusteetStore {
   public readonly perusteetKevyt = computed(() => {
     if (this.state.perusteetKevyt) {
       return _.filter(this.state.perusteetKevyt, peruste =>
-        !_.includes([PerusteDtoKoulutustyyppiEnum.TELMA, PerusteDtoKoulutustyyppiEnum.VALMA], _.toUpper(peruste.koulutustyyppi)));
+        !_.includes([Koulutustyyppi.telma, Koulutustyyppi.valma], peruste.koulutustyyppi as any));
     }
     return null;
   });
