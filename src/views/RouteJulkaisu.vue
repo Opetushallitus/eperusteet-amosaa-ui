@@ -107,9 +107,7 @@
             <ep-content v-model="julkaisu.tiedote"
                         layout="full"
                         :is-editable="true" />
-            <ep-button class="mt-3" @click="julkaise" :showSpinner="julkaistaan">
-              {{ $t(kielistykset['julkaisuBtn']) }}
-            </ep-button>
+            <EpJulkaisuButton class="mt-3" :julkaise="julkaise" v-oikeustarkastelu="{ oikeus: 'muokkaus' }"/>
           </b-form-group>
         </div>
 
@@ -141,6 +139,7 @@ import EpJulkaisuHistoria from '@shared/components/EpJulkaisuHistoria/EpJulkaisu
 import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButton.vue';
 
 @Component({
   components: {
@@ -153,6 +152,7 @@ import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@s
     EpSpinner,
     EpValidointilistaus,
     EpJulkaisuHistoria,
+    EpJulkaisuButton,
   },
 })
 export default class RouteJulkaisu extends Vue {
@@ -162,7 +162,6 @@ export default class RouteJulkaisu extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
-  private julkaistaan = false;
   private julkaisu = {
     tiedote: {},
   };
@@ -211,7 +210,6 @@ export default class RouteJulkaisu extends Vue {
   }
 
   async julkaise() {
-    this.julkaistaan = true;
     try {
       await this.toteutussuunnitelmaStore.julkaise(this.julkaisu);
       this.julkaisu.tiedote = {};
@@ -220,7 +218,6 @@ export default class RouteJulkaisu extends Vue {
     catch (err) {
       this.$fail(this.$t('julkaisu-epaonnistui-' + OpetussuunnitelmaTyyppi[this.toteutus] + '-' + err.response?.data?.syy) as string);
     }
-    this.julkaistaan = false;
   }
 
   get kielistykset() {
