@@ -215,6 +215,7 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
     perustetyyppi: 'tutkinto',
     salliEsikatselu: 'salli-toteutussuunnitelman-esikatselu',
     esikatselu: 'esikatsele-toteutussuunnitelmaa',
+    tiivistelma: 'tutkinnon-suorittaneen-osaaminen',
   },
   [Toteutus.VAPAASIVISTYSTYO]: {
     title: 'opetussuunnitelman-tiedot',
@@ -222,6 +223,7 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
     perustetyyppi: 'peruste',
     salliEsikatselu: 'salli-opetussuunnitelman-esikatselu',
     esikatselu: 'esikatsele-opetussuunnitelmaa',
+    tiivistelma: 'opetussuunnitelma-tiivistelma',
   },
   [OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA]: {
     title: 'pohjan-tiedot',

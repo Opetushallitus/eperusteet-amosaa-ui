@@ -11,14 +11,12 @@
                   {{ $t(tila) }}
                 </span>
 
-                <template v-if="validationCategories && validationCategories.length === 0">
-                  <b-button class="px-3 py-1" variant="primary" v-if="isDraft && isOpsPohja" @click="makeReady">
-                    {{$t('aseta-valmiiksi')}}
-                  </b-button>
-                  <b-button class="px-3 py-1" variant="primary" :to="{ name: 'julkaise' }" v-else-if="!isOpsPohja && isDraft && !isPublished && !isArchived">
-                    {{ $t('siirry-julkaisunakymaan') }}
-                  </b-button>
-                </template>
+                <b-button class="px-3 py-1" variant="primary" v-if="isDraft && isOpsPohja" @click="makeReady">
+                  {{$t('aseta-valmiiksi')}}
+                </b-button>
+                <b-button class="px-3 py-1" variant="primary" :to="{ name: 'julkaise' }" v-else-if="!isOpsPohja && isDraft && !isPublished && !isArchived">
+                  {{ $t('siirry-julkaisunakymaan') }}
+                </b-button>
 
               </div>
             </template>
