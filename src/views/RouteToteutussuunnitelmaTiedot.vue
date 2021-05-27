@@ -10,8 +10,8 @@
           <ep-field v-model="data.opetussuunnitelma.nimi" :is-editing="isEditing" :validation="validation.opetussuunnitelma.nimi"></ep-field>
         </b-form-group>
 
-        <b-form-group :label="$t('tiivistelma')">
-          <ep-content layout="normal" v-model="data.opetussuunnitelma.kuvaus" :is-editable="isEditing"> </ep-content>
+        <b-form-group :label="$t(kielistykset['tiivistelma'])">
+          <ep-content layout="normal" v-model="data.opetussuunnitelma.kuvaus" :is-editable="isEditing" :kuvaHandler="kuvaHandler"> </ep-content>
         </b-form-group>
 
         <b-container fluid>
@@ -148,6 +148,8 @@ import { Murupolku } from '@shared/stores/murupolku';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { Koodisto } from '@shared/api/eperusteet';
 import EpSelect from '@shared/components/forms/EpSelect.vue';
+import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
+import { KuvaStore } from '@/stores/KuvaStore';
 
 @Component({
   components: {
@@ -275,6 +277,10 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   get showKoulutukset() {
     return this.toteutus === Toteutus.AMMATILLINEN;
+  }
+
+  get kuvaHandler() {
+    return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
   }
 }
 </script>

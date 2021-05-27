@@ -10,6 +10,7 @@ import { requiredLokalisoituTeksti } from '@shared/validators/required';
 import { required, minValue, maxValue } from 'vuelidate/lib/validators';
 import { Toteutus } from '@/utils/toteutustypes';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { KuvaStore } from './KuvaStore';
 
 Vue.use(VueCompositionApi);
 
@@ -66,6 +67,12 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
   }
 
   async save(data: any) {
+    const kuvat = (await new KuvaStore(this.opetussuunnitelmaId, this.koulutustoimijaId).getAllKuvat()).data;
+    data.opetussuunnitelma = {
+      ...data.opetussuunnitelma,
+      liitteet: kuvat,
+    };
+
     await Opetussuunnitelmat.updateOpetussuunnitelma(this.opetussuunnitelmaId, this.koulutustoimijaId, data.opetussuunnitelma);
     await this.toteutussuunnitelmaStore?.init(this.koulutustoimijaId, this.opetussuunnitelmaId);
   }
