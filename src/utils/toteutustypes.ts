@@ -6,15 +6,21 @@ import TileOrganisaationHallinta from '@/views/tiles/TileOrganisaationHallinta.v
 import TileTiedotteet from '@/views/tiles/TileTiedotteet.vue';
 import TileUkk from '@/views/tiles/TileUkk.vue';
 import TileTilastot from '@/views/tiles/TileTilastot.vue';
-import TilePalautteet from '@shared/components/EpFeedback/TilePalautteet.vue';
+import TileOppaat from '@/views/tiles/TileOppaat.vue';
 
 import { tileColors } from '@shared/utils/bannerIcons';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { EperusteetPalautekanava } from '@shared/tyypit';
+import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 
 export enum Toteutus {
   VAPAASIVISTYSTYO = 'vapaasivistystyo',
   AMMATILLINEN = 'ammatillinen',
+};
+
+export const ToteutuksenKoulutustyypit = {
+  [Toteutus.VAPAASIVISTYSTYO]: EperusteetKoulutustyyppiRyhmat.vapaasivistystyo,
+  [Toteutus.AMMATILLINEN]: EperusteetKoulutustyyppiRyhmat.ammatillinen,
 };
 
 export const ToteutusSovellus = {
@@ -115,6 +121,12 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
       },
     },
     {
+      component: TileOppaat,
+      oikeustarkastelu: {
+        oikeus: 'luku',
+      },
+    },
+    {
       component: TileTilastot,
       props: {
         text: 'amosaa-tilastot-kuvaus',
@@ -181,6 +193,15 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
       component: TileUkk,
       props: {
         text: 'amosaa-vst-ukk-kuvaus',
+        headerStyle: TileBackground[toteutus],
+      },
+    },
+    {
+      component: TileOppaat,
+      oikeustarkastelu: {
+        oikeus: 'luku',
+      },
+      props: {
         headerStyle: TileBackground[toteutus],
       },
     },

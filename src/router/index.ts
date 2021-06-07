@@ -33,6 +33,7 @@ import RouteOpintokokonaisuus from '@/views/RouteOpintokokonaisuus.vue';
 import RouteJulkaisu from '@/views/RouteJulkaisu.vue';
 import RouteOpetussuunnitelmaListaus from '@/views/vst/RouteOpetussuunnitelmaListaus.vue';
 import RouteOpsPohjaLuonti from '@/views/RouteOpsPohjaLuonti.vue';
+import RouteOppaat from '@/views/RouteOppaat.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -102,6 +103,11 @@ const router = new VueRouter({
       path: 'tiedotteet',
       name: 'tiedotteet',
       component: RouteTiedotteet,
+      props,
+    }, {
+      path: 'oppaat',
+      name: 'oppaat',
+      component: RouteOppaat,
       props,
     }, {
       path: 'tiedotteet/:tiedoteId',
