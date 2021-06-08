@@ -4,11 +4,13 @@ import VueCompositionApi, { computed } from '@vue/composition-api';
 import _ from 'lodash';
 import { minLength, required, minValue } from 'vuelidate/lib/validators';
 
-import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko } from '@shared/api/amosaa';
+import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko } from '@shared/tyypit';
 import { Kielet } from '@shared/stores/kieli';
 import { translated } from '@shared/validators/required';
+import { Validations } from 'vuelidate-property-decorators';
+import { Computed } from '@shared/utils/interfaces';
 
 Vue.use(VueCompositionApi);
 
@@ -21,6 +23,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
     private sisaltoviiteId: number,
     private versionumero: number,
     private el: any,
+    private opetussuunnitelma: Computed<OpetussuunnitelmaDto>,
     private updateNavigation: Function,
   ) {
   }
@@ -79,7 +82,8 @@ export class OpintokokonaisuusStore implements IEditoitava {
 
   public readonly validator = computed(() => {
     const kieli = Kielet.getSisaltoKieli.value;
-    return {
+
+    let validations = {
       tekstiKappale: {
         nimi: translated([kieli]),
       },
@@ -89,31 +93,42 @@ export class OpintokokonaisuusStore implements IEditoitava {
           'min-length': minValue(this.opintokokonaisuus?.opintokokonaisuus?.minimilaajuus || 0),
         },
         kuvaus: translated([kieli]),
-        opetuksenTavoiteOtsikko: translated([kieli]),
-        tavoitteet: {
-          'min-length': minLength(1),
-          required,
-          $each: {
-            tavoite: {
-              [kieli]: {
-                required,
-              },
-            },
-          },
-        },
-        arvioinnit: {
-          'min-length': minLength(1),
-          required,
-          $each: {
-            arviointi: {
-              [kieli]: {
-                required,
-              },
-            },
-          },
-        },
       },
-    };
+    } as any;
+
+    if (this.opetussuunnitelma?.value?.tyyppi !== _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA)) {
+      validations = {
+        ...validations,
+        opintokokonaisuus: {
+          ...validations.opintokokonaisuus,
+          opetuksenTavoiteOtsikko: translated([kieli]),
+          tavoitteet: {
+            'min-length': minLength(1),
+            required,
+            $each: {
+              tavoite: {
+                [kieli]: {
+                  required,
+                },
+              },
+            },
+          },
+          arvioinnit: {
+            'min-length': minLength(1),
+            required,
+            $each: {
+              arviointi: {
+                [kieli]: {
+                  required,
+                },
+              },
+            },
+          },
+        },
+      };
+    }
+
+    return validations;
   });
 
   public async lock() {
