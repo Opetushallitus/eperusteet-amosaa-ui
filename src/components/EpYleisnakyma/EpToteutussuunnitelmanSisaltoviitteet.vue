@@ -74,6 +74,10 @@ export default class EpToteutussuunnitelmanSisaltoviitteet extends Vue {
         teksti: 'osaamis-ja-opintokokonaisuuksia-yhteensa',
         lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.OPINTOKOKONAISUUS))),
       },
+      koulutuksenosa: {
+        teksti: 'koulutuksen-osaa',
+        lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.KOULUTUKSENOSA))),
+      },
 
     };
   };

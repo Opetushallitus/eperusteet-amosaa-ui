@@ -115,9 +115,10 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
+import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
-import { Toteutus } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaLuontiKielistykset, Toteutus } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
 import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa } from '@shared/utils/perusteet';
@@ -146,6 +147,9 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   @Prop({ required: false })
   private ophPohjatStore!: OphPohjatStore;
+
+  @Prop({ required: false })
+  private ophOpsPohjatStore!: OphOpsPohjatStore;
 
   @Prop({ required: true })
   private pohjanTutkinnonosatStore!: PohjanTutkinnonosatStore;
@@ -189,7 +193,11 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     }
 
     if (this.ophPohjatStore) {
-      await this.ophPohjatStore.fetch(EperusteetKoulutustyyppiRyhmat[this.toteutus]);
+      await this.ophPohjatStore.fetch();
+    }
+
+    if (this.ophOpsPohjatStore) {
+      await this.ophOpsPohjatStore.fetch(EperusteetKoulutustyyppiRyhmat[this.toteutus]);
     }
   }
 
@@ -224,7 +232,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   get radioButtons() {
     return {
-      ops: this.opsRadioButtons[this.toteutus],
+      ops: OpetussuunnitelmaLuontiKielistykset[this.toteutus]['radioButtons'],
       yleinen: [
         {
           value: 'toteutussuunnitelma',
@@ -258,77 +266,9 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     };
   }
 
-  get opsRadioButtons() {
-    return {
-      [Toteutus.VAPAASIVISTYSTYO]: [
-        {
-          value: 'peruste',
-          text: 'perusteprojektia',
-        },
-        {
-          value: 'opsPohja',
-          text: 'opetussuunnitelman-pohjaa',
-        },
-        {
-          value: 'toteutussuunnitelma',
-          text: 'toista-opetussuunnitelmaa',
-        },
-        {
-          value: 'pohjaton',
-          text: 'luo-uusi-ilman-pohjaa',
-        },
-      ],
-      [Toteutus.AMMATILLINEN]: [
-        {
-          value: 'peruste',
-          text: 'perusteprojektia',
-        },
-        {
-          value: 'toteutussuunnitelma',
-          text: 'toista-toteutussuunnitelmaa',
-        },
-      ],
-    };
-  }
-
-  get toteutussuunnitelmaKielistykset() {
-    return {
-      [Toteutus.VAPAASIVISTYSTYO]: {
-        stepName: 'luo-uusi-opetussuunnitelma',
-        peruste: {
-          pohjaLabel: 'perusteprojekti',
-          pohjaValintaPlaceHolder: 'valitse',
-        },
-        opsPohja: {
-          pohjaLabel: 'opetussuunnitelman-pohja',
-          pohjaValintaPlaceHolder: 'valitse',
-        },
-        toteutussuunnitelma: {
-          pohjaLabel: 'toinen-opetussuunnitelma',
-          pohjaValintaPlaceHolder: 'valitse',
-        },
-        nimiLabel: 'opetussuunnitelman-nimi',
-        luoLabel: 'luo-opetussuunnitelma',
-      },
-      [Toteutus.AMMATILLINEN]: {
-        stepName: 'uusi-toteutussuunnitelma',
-        peruste: {
-          pohjaLabel: 'toteutussuunnitelman-pohja',
-          pohjaValintaPlaceHolder: 'valitse-perusteprojekti',
-        },
-        toteutussuunnitelma: {
-          pohjaLabel: 'toteutussuunnitelman-pohja',
-          pohjaValintaPlaceHolder: 'valitse-toteutussuunnitelma',
-        },
-        nimiLabel: 'toteutussuunnitelman-nimi',
-        luoLabel: 'luo-toteutussuunnitelma',
-      },
-    };
-  }
-
   get kielistykset() {
     return {
-      'ops': this.toteutussuunnitelmaKielistykset[this.toteutus],
+      'ops': OpetussuunnitelmaLuontiKielistykset[this.toteutus],
       'yleinen': {
         stepName: 'uusi-jaettu-osa',
         toteutussuunnitelma: {
@@ -468,7 +408,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   }
 
   get ophOpsPohjat() {
-    return this.ophPohjatStore?.opsPohjat.value;
+    return this.ophOpsPohjatStore?.opsPohjat.value;
   }
 
   get pohjat() {
@@ -480,10 +420,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       return this.ophPohjat;
     }
 
-    if (this.pohjanTyyppi === 'opsPohja' && this.opsPohjat && this.ophOpsPohjat) {
+    if (this.pohjanTyyppi === 'opsPohja') {
       return _.sortBy([
-        ...this.opsPohjat,
-        ...this.ophOpsPohjat,
+        ...(this.opsPohjat ? this.opsPohjat : []),
+        ...(this.ophOpsPohjat ? this.ophOpsPohjat : []),
       ], ops => this.$kaanna(ops.nimi!));
     }
   }

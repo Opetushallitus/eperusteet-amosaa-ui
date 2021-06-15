@@ -10,6 +10,7 @@ Vue.use(VueCompositionApi);
 const ToteutusPerusrakenneOtsikko = {
   [Toteutus.AMMATILLINEN]: 'tekstikappaleet',
   [Toteutus.VAPAASIVISTYSTYO]: 'rakenne',
+  [Toteutus.TUTKINTOONVALMENTAVA]: 'rakenne',
 };
 
 export class RakenneStore implements IEditoitava {
@@ -35,8 +36,14 @@ export class RakenneStore implements IEditoitava {
     const otsikot = (await Sisaltoviitteet.getOtsikot(this.opetussuunnitelmaId, this.koulutustoimijaId)).data;
     const root = _.find(otsikot, otsikko => _.isNil(_.get(otsikko, '_vanhempi'))) as SisaltoViiteRakenneDto;
 
-    const perusRakenne = _.map(this.lapsetRakenteesta(otsikot, root.lapset, [SisaltoViiteKevytDtoTyyppiEnum.TEKSTIKAPPALE, SisaltoViiteKevytDtoTyyppiEnum.OPINTOKOKONAISUUS]),
-      sisaltoviite => this.sisaltoviiteLapsilla(sisaltoviite, otsikot));
+    const perusRakenne = _.map(this.lapsetRakenteesta(otsikot, root.lapset, [
+      SisaltoViiteKevytDtoTyyppiEnum.TEKSTIKAPPALE,
+      SisaltoViiteKevytDtoTyyppiEnum.OPINTOKOKONAISUUS,
+      SisaltoViiteKevytDtoTyyppiEnum.KOULUTUKSENOSA,
+      SisaltoViiteKevytDtoTyyppiEnum.KOULUTUKSENOSAT,
+      SisaltoViiteKevytDtoTyyppiEnum.LAAJAALAINENOSAAMINEN,
+    ]),
+    sisaltoviite => this.sisaltoviiteLapsilla(sisaltoviite, otsikot));
 
     const suorituspolutRoot = _.find(otsikot, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLUT) as any });
     const suorituspolut = [

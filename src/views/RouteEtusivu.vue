@@ -45,7 +45,7 @@ import TileTilastot from './tiles/TileTilastot.vue';
 import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
-import { Toteutus } from '@/utils/toteutustypes';
+import { SovellusTitle, Toteutus } from '@/utils/toteutustypes';
 import EpFeedbackModal from '@shared/components/EpFeedback/EpFeedbackModal.vue';
 import { PalautteetStore } from '@/stores/PalautteetStore';
 
@@ -92,7 +92,7 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
   @Meta
   getMetaInfo() {
     return {
-      title: this.$t('eperusteet-amosaa'),
+      title: this.$t(SovellusTitle[this.toteutus]),
       titleTemplate: null,
     };
   }

@@ -21,6 +21,8 @@ import { KayttoOikeudetStore } from '@/stores/KayttoOikeudetStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
 import { PalautteetStore } from './PalautteetStore';
+import { OphOpsPohjatStore } from './OphOpsPohjatStore';
+import { KoulutuksenOsatStore } from './KoulutuksenOsatStore';
 
 const toteutussuunnitelmaStore = new ToteutussuunnitelmaStore();
 const toteutussuunnitelmatStore = new ToteutussuunnitelmatStore();
@@ -29,6 +31,7 @@ const toteutussuunnitelmaPohjatStore = new ToteutussuunnitelmatStore();
 const tiedotteetStore = new TiedotteetStore();
 const perusteetStore = new PerusteetStore();
 const ophPohjatStore = new OphPohjatStore();
+const ophOpsPohjatStore = new OphOpsPohjatStore();
 
 const aikatauluStore = new AikatauluStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const sisaltoViiteStore = new SisaltoViiteStore(toteutussuunnitelmaStore.toteutussuunnitelma);
@@ -37,6 +40,7 @@ const toteutussuunnitelmaTiedotteetStore = new ToteutussuunnitelmaTiedotteetStor
 const tutkinnonOsatStore = new TutkinnonOsatStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const poistetutStore = new PoistetutStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const kayttoOikeudetStore = new KayttoOikeudetStore(toteutussuunnitelmaStore.toteutussuunnitelma);
+const koulutuksenOsatStore = new KoulutuksenOsatStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const ohjeetStore = new OhjeetStore();
 const tilastotStore = new TilastotStore();
 const tutkinnonosatTuontiStore = new TutkinnonosatTuontiStore();
@@ -66,8 +70,10 @@ export const stores = Object.freeze({
   poistetutStore,
   yhteisetOsuudetStore,
   ophPohjatStore,
+  ophOpsPohjatStore,
   kayttoOikeudetStore,
   pohjanTutkinnonosatStore,
   opetussuunnitelmaPohjatStore,
   palautteetStore,
+  koulutuksenOsatStore,
 });

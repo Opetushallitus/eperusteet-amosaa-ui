@@ -17,7 +17,7 @@
               :child-field="rakenne.lapset">
             <template #default="{ node }">
               <span>
-                {{ $kaanna(node.tekstiKappale.nimi) }}
+                {{ $kaanna(node.nimi) }}
               </span>
             </template>
           </ep-jarjesta>

@@ -10,15 +10,34 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
   }
 
   switch (route.name) {
+  case 'toteutussuunnitelma':
+    return {
+      type: 'root',
+      id: Number(route.params?.toteutussuunnitelmaId!),
+    };
+  case 'toteutussuunnitelmantiedot':
+    return {
+      type: 'tiedot',
+      id: Number(route.params?.toteutussuunnitelmaId!),
+    };
   case 'tekstikappale':
     return {
-      type: 'viite',
-      id: Number(route.params?.tekstiKappaleId!),
+      type: 'tekstikappale',
+      id: Number(route.params?.sisaltoviiteId!),
     };
   case 'opintokokonaisuus':
     return {
       type: 'opintokokonaisuus',
       id: Number(route.params?.sisaltoviiteId!),
+    };
+  case 'koulutuksenosa':
+    return {
+      type: 'koulutuksenosa',
+      id: Number(route.params?.sisaltoviiteId!),
+    };
+  case 'koulutuksenosat':
+    return {
+      type: 'koulutuksenosat',
     };
   default:
     console.error('Unknown route', route.name, route);

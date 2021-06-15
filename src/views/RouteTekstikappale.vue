@@ -11,7 +11,7 @@
 
           <div v-if="data.perusteteksti || data.pohjanTekstikappale">
 
-            <EpCollapse v-if="data.perusteteksti">
+            <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && data.perusteteksti)" :borderBottom="naytaPaikallinenTeksti">
               <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
               <ep-content layout="normal" v-model="data.perusteteksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
               <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
@@ -19,7 +19,7 @@
               </ep-toggle>
             </EpCollapse>
 
-            <EpCollapse v-if="data.pohjanTekstikappale">
+            <EpCollapse v-if="data.pohjanTekstikappale && data.pohjanTekstikappale.teksti">
               <h4 slot="header">{{$t('pohjan-teksti')}}</h4>
               <ep-content layout="normal" v-model="data.pohjanTekstikappale.teksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
               <ep-toggle v-model="data.naytaPohjanTeksti" :is-editing="true" v-if="isEditing">
@@ -27,7 +27,7 @@
               </ep-toggle>
             </EpCollapse>
 
-            <b-form-group :label="$t('paikallinen-teksti')">
+            <b-form-group :label="$t('paikallinen-teksti')" v-if="naytaPaikallinenTeksti">
               <ep-content
                 layout="normal"
                 v-model="data.tekstiKappale.teksti"
@@ -61,6 +61,7 @@
 import _ from 'lodash';
 import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
+import { TuvaTekstikappaleStore } from '@/stores/TuvaTekstikappaleStore';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
@@ -71,6 +72,9 @@ import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
+import { Koulutustyyppi } from '@shared/tyypit';
+import { Toteutus } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/generated/amosaa';
 
 @Component({
   components: {
@@ -95,6 +99,9 @@ export default class RouteTekstikappale extends Vue {
   @Prop({ required: true })
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
+
   private editointiStore: EditointiStore | null = null;
 
   @Watch('sisaltoviiteId', { immediate: true })
@@ -108,14 +115,28 @@ export default class RouteTekstikappale extends Vue {
   }
 
   fetch() {
-    this.editointiStore = new EditointiStore(
-      new TekstikappaleStore(
-        this.toteutussuunnitelmaId,
-        this.koulutustoimijaId,
-        this.sisaltoviiteId,
-        this.versionumero,
-        this,
-        () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId)));
+    if (this.toteutus === Toteutus.TUTKINTOONVALMENTAVA) {
+      this.editointiStore = new EditointiStore(
+        new TuvaTekstikappaleStore(
+          this.toteutussuunnitelmaId,
+          this.koulutustoimijaId,
+          this.sisaltoviiteId,
+          this.versionumero,
+          this,
+          () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+          this.toteutussuunnitelmaStore.toteutussuunnitelma));
+    }
+    else {
+      this.editointiStore = new EditointiStore(
+        new TekstikappaleStore(
+          this.toteutussuunnitelmaId,
+          this.koulutustoimijaId,
+          this.sisaltoviiteId,
+          this.versionumero,
+          this,
+          () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+          this.toteutussuunnitelmaStore.toteutussuunnitelma));
+    }
   }
 
   get versionumero() {
@@ -124,6 +145,16 @@ export default class RouteTekstikappale extends Vue {
 
   get kuvaHandler() {
     return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
+  }
+
+  get toteutussuunnitelma() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+  }
+
+  get naytaPaikallinenTeksti() {
+    return this.toteutussuunnitelma?.koulutustyyppi as any !== Koulutustyyppi.tutkintoonvalmentava
+      || this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS)
+      || !this.editointiStore?.data.value.perusteteksti;
   }
 }
 </script>

@@ -162,9 +162,19 @@ export default class RouteJulkaisu extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
+  @Prop({ required: true })
+  private koulutustoimijaId!: string;
+
+  @Prop({ required: true })
+  private toteutussuunnitelmaId!: number;
+
   private julkaisu = {
     tiedote: {},
   };
+
+  async mounted() {
+    await this.toteutussuunnitelmaStore.updateValidation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+  }
 
   get suunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;

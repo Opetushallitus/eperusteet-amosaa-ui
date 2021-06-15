@@ -30,10 +30,13 @@ import RoutePoistetutSisallot from '@/views/RoutePoistetutSisallot.vue';
 import RouteYhteiset from '@/views/RouteYhteiset.vue';
 import RouteKayttooikeudet from '@/views/RouteKayttooikeudet.vue';
 import RouteOpintokokonaisuus from '@/views/RouteOpintokokonaisuus.vue';
+import RouteKoulutuksenOsa from '@/views/RouteKoulutuksenOsa.vue';
+import RouteLaajaAlainenOsaaminen from '@/views/RouteLaajaAlainenOsaaminen.vue';
 import RouteJulkaisu from '@/views/RouteJulkaisu.vue';
 import RouteOpetussuunnitelmaListaus from '@/views/vst/RouteOpetussuunnitelmaListaus.vue';
 import RouteOpsPohjaLuonti from '@/views/RouteOpsPohjaLuonti.vue';
 import RouteOppaat from '@/views/RouteOppaat.vue';
+import RouteKoulutuksenOsat from '@/views/RouteKoulutuksenOsat.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -152,6 +155,7 @@ const router = new VueRouter({
           opetussuunnitelmanTyyppi: 'ops',
           opetussuunnitelmanSuoritustapa: 'reformi',
           ophPohjatStore: null,
+          ophOpsPohjatStore: null,
           opetussuunnitelmaPohjatStore: null,
         };
       },
@@ -168,6 +172,21 @@ const router = new VueRouter({
         };
       },
     }, {
+      path: 'tuvatoteutussuunnitelma/uusi',
+      name: 'tuvatoteutussuunnitelmaLuonti',
+      component: RouteToteutussuunnitelmaLuonti,
+      props: (route: any) => {
+        return {
+          ...route.params,
+          ...stores,
+          opetussuunnitelmanTyyppi: 'ops',
+          opetussuunnitelmanSuoritustapa: 'reformi',
+          ophPohjatStore: null,
+          perusteetStore: null,
+          opetussuunnitelmaPohjatStore: null,
+        };
+      },
+    }, {
       path: 'jaettuosa/uusi',
       name: 'jaettuosaLuonti',
       component: RouteToteutussuunnitelmaLuonti,
@@ -178,6 +197,7 @@ const router = new VueRouter({
           opetussuunnitelmanTyyppi: 'yleinen',
           perusteetStore: null,
           ophPohjatStore: null,
+          ophOpsPohjatStore: null,
           opetussuunnitelmaPohjatStore: null,
         };
       },
@@ -205,6 +225,7 @@ const router = new VueRouter({
           opetussuunnitelmanTyyppi: 'tunnistamisraportti',
           opetussuunnitelmanSuoritustapa: 'reformi',
           ophPohjatStore: null,
+          ophOpsPohjatStore: null,
           opetussuunnitelmaPohjatStore: null,
         };
       },
@@ -258,6 +279,16 @@ const router = new VueRouter({
         component: RouteOpintokokonaisuus,
         props,
       }, {
+        path: 'koulutuksenosa/:sisaltoviiteId',
+        name: 'koulutuksenosa',
+        component: RouteKoulutuksenOsa,
+        props,
+      }, {
+        path: 'laajaalainenosaaminen/:sisaltoviiteId',
+        name: 'laajaalainenosaaminen',
+        component: RouteLaajaAlainenOsaaminen,
+        props,
+      }, {
         path: 'jarjesta',
         component: RouteJarjestys,
         name: 'jarjesta',
@@ -281,6 +312,11 @@ const router = new VueRouter({
         path: 'julkaisu',
         name: 'julkaise',
         component: RouteJulkaisu,
+        props,
+      }, {
+        path: 'koulutuksenosat',
+        name: 'koulutuksenosat',
+        component: RouteKoulutuksenOsat,
         props,
       },
       ] }, {

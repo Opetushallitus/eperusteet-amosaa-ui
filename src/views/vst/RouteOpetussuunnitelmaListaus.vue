@@ -101,7 +101,7 @@ import _ from 'lodash';
 
 import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
 
-import { ArkistointiTekstit, TileBackground, Toteutus } from '@/utils/toteutustypes';
+import { ArkistointiTekstit, OpetussuunnitelmalistausKielistykset, TileBackground, ToteutuksenKoulutustyypit, Toteutus } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
@@ -112,34 +112,8 @@ import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 
 import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
-import { VapaasivistystyoKoulutustyypit } from '@shared/utils/perusteet';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
-
-const opsTyyppiKaannokset = {
-  ops: {
-    otsikko: 'opetussuunnitelmat',
-    kuvaus: 'opetussuunnitelmat-kuvaus',
-    arkistoidut: 'arkistoidut-opetussuunnitelmat',
-    etsi: 'etsi-opetussuunnitelmia',
-    keskeneraiset: 'keskeneraiset-opetussuunnitelmat',
-    julkaistut: 'julkaistut-opetussuunnitelmat',
-    eiJulkaistuja: 'ei-julkaistuja-opetussuunnitelmia',
-    uusiRoute: 'opetussuunnitelmaLuonti',
-    julkaisuTila: 'julkaistu',
-  },
-  opspohja: {
-    otsikko: 'pohjat',
-    kuvaus: 'pohjat-kuvaus',
-    arkistoidut: 'arkistoidut-pohjat',
-    etsi: 'etsi',
-    keskeneraiset: 'keskeneraiset-pohjat',
-    julkaistut: 'valmiit-pohjat',
-    eiJulkaistuja: 'ei-valmiita-pohjia',
-    uusiRoute: 'opetussuunnitelmaPohjaLuonti',
-    julkaisuTila: 'valmis',
-  },
-};
 
 @Component({
   components: {
@@ -216,13 +190,17 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
     return _.filter(this.jarjestetyt, (ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'poistettu');
   }
 
+  get koulutustyypit() {
+    return ToteutuksenKoulutustyypit[this.toteutus];
+  }
+
   protected async init() {
     if (this.opsTyyppi === 'ops') {
-      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit, 'OPS')).data;
+      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit, 'OPS')).data;
     }
 
     if (this.opsTyyppi === 'opspohja') {
-      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, VapaasivistystyoKoulutustyypit, 'OPSPOHJA')).data;
+      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit, 'OPSPOHJA')).data;
     }
   }
 
@@ -231,7 +209,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   get kaannokset() {
-    return opsTyyppiKaannokset[this.opsTyyppi];
+    return OpetussuunnitelmalistausKielistykset[this.toteutus][this.opsTyyppi];
   }
 }
 </script>
