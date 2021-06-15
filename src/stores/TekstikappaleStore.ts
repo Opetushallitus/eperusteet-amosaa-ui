@@ -1,20 +1,22 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko } from '@shared/api/amosaa';
+import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-import { Revision, ILukko } from '@shared/tyypit';
+import { Revision, ILukko, Koulutustyyppi } from '@shared/tyypit';
+import { Computed } from '@shared/utils/interfaces';
 
 Vue.use(VueCompositionApi);
 
 export class TekstikappaleStore implements IEditoitava {
   constructor(
-    private opetussuunnitelmaId: number,
-    private koulutustoimijaId: string,
-    private sisaltoviiteId: number,
-    private versionumero: number,
-    private el: any,
-    private updateNavigation: Function,
+    public opetussuunnitelmaId: number,
+    public koulutustoimijaId: string,
+    public sisaltoviiteId: number,
+    public versionumero: number,
+    public el: any,
+    public updateNavigation: Function,
+    public opetussuunnitelma: Computed<OpetussuunnitelmaDto>,
   ) {
   }
 

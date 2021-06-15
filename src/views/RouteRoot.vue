@@ -20,7 +20,7 @@ import { Meta } from '@shared/utils/decorators';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
-import { Toteutus } from '@/utils/toteutustypes';
+import { SovellusTitle, Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -45,8 +45,8 @@ export default class RouteRoot extends Vue {
     const lang = _.get(this.$route, 'params.lang');
     const hasRouteName = this.$route && this.$route.name;
     return {
-      title: hasRouteName ? this.$t('route-' + this.$route.name) : this.$t('eperusteet-amosaa'),
-      titleTemplate: hasRouteName ? '%s - ' + this.$t('eperusteet-amosaa') : null,
+      title: hasRouteName ? this.$t('route-' + this.$route.name) : this.$t(SovellusTitle[this.toteutus]),
+      titleTemplate: hasRouteName ? '%s - ' + this.$t(SovellusTitle[this.toteutus]) : null,
       htmlAttrs: {
         lang: lang || 'fi',
       },

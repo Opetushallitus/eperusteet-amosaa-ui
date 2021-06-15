@@ -10,7 +10,6 @@
                 <span class="validation-text pb-2">
                   {{ $t(tila) }}
                 </span>
-
                 <b-button class="px-3 py-1" variant="primary" v-if="isDraft && isOpsPohja" @click="makeReady">
                   {{$t('aseta-valmiiksi')}}
                 </b-button>
@@ -165,6 +164,30 @@
               </div>
             </template>
 
+            <template v-slot:koulutuksenosat>
+              <div class="menu-item">
+                <router-link :to="{ name: 'koulutuksenosat' }">
+                  {{ $t('koulutuksenosat') }}
+                </router-link>
+              </div>
+            </template>
+
+            <template v-slot:koulutuksenosa="{ item }">
+              <div class="menu-item">
+                <router-link :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }">
+                  {{ $kaanna(item.label) }}
+                </router-link>
+              </div>
+            </template>
+
+            <template v-slot:laajaalainenosaaminen="{ item }">
+              <div class="menu-item">
+                <router-link :to="{ name: 'laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }">
+                  {{ $kaanna(item.label) }}
+                </router-link>
+              </div>
+            </template>
+
             <template v-slot:new>
               <div class="mb-3">
                 <EpSisaltoLisays
@@ -177,7 +200,7 @@
                   :toteutussuunnitelma="toteutussuunnitelma"/>
 
                 <EpTekstikappaleLisays
-                  v-if="isVapaaSivistystyo"
+                  v-if="salliTekstikappaleLisays"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   @save="tallennaUusiTekstikappale"
                   :tekstikappaleet="perusteenOsat"
@@ -454,6 +477,10 @@ export default class RouteToteutussuunnitelma extends Vue {
     return this.toteutus === Toteutus.VAPAASIVISTYSTYO;
   }
 
+  get isTutkintoonValmentava(): boolean {
+    return this.toteutus === Toteutus.TUTKINTOONVALMENTAVA;
+  }
+
   get tekstikappaleet() {
     return _.filter(this.naviStore!.connected.value, node => node.type === (NavigationNodeDtoTypeEnum.Tekstikappale as string));
   }
@@ -462,10 +489,20 @@ export default class RouteToteutussuunnitelma extends Vue {
     return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Opintokokonaisuus);
   }
 
+  get koulutuksenosat() {
+    return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Koulutuksenosa);
+  }
+
+  get laajaalaisetOsaamiset() {
+    return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Laajaalainenosaaminen);
+  }
+
   get perusteenOsat() {
     return _.sortBy([
       ...this.tekstikappaleet,
       ...this.opintokokonaisuudet,
+      ...this.koulutuksenosat,
+      ...this.laajaalaisetOsaamiset,
     ], 'chapter');
   }
 
@@ -538,6 +575,10 @@ export default class RouteToteutussuunnitelma extends Vue {
         callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
       },
     );
+  }
+
+  get salliTekstikappaleLisays() {
+    return this.isTutkintoonValmentava || this.isVapaaSivistystyo;
   }
 }
 </script>
