@@ -174,9 +174,17 @@
                 </b-col>
               </b-row>
             </draggable>
-            <EpButton variant="outline" icon="plus" @click="onAddListItem('arvioinnit')" v-if="isEditing">
-              {{ $t('lisaa-arvioinnin-kohde') }}
-            </EpButton>
+
+            <div class="d-flex">
+              <EpButton variant="outline" icon="plus" @click="onAddListItem('arvioinnit')" v-if="isEditing">
+                {{ $t('lisaa-arvioinnin-kohde') }}
+              </EpButton>
+              <EpOpintokokonaisuusArviointiImport
+                v-if="isEditing && hasPohja"
+                :toteutussuunnitelmaId="toteutussuunnitelmaId"
+                :koulutustoimijaId="koulutustoimijaId"
+                :addArvioinnit="addPohjanArvioinnit"/>
+            </div>
           </div>
           <div v-else>
             <ul>
@@ -200,7 +208,6 @@ import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpLaajuusInput from '@shared/components/forms/EpLaajuusInput.vue';
-import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
@@ -214,7 +221,8 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { KuvaStore } from '@/stores/KuvaStore';
 import { Murupolku } from '@shared/stores/murupolku';
-import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import EpOpintokokonaisuusArviointiImport from '@/components/EpOpintokokonaisuusArviointiImport/EpOpintokokonaisuusArviointiImport.vue';
 
 enum TyyppiSource {
   PERUSTEESTA = 'perusteesta',
@@ -232,6 +240,7 @@ enum TyyppiSource {
     EpAlert,
     EpKoodistoSelect,
     draggable,
+    EpOpintokokonaisuusArviointiImport,
   },
 })
 export default class RouteOpintokokonaisuus extends Vue {
@@ -303,14 +312,17 @@ export default class RouteOpintokokonaisuus extends Vue {
     });
   }
 
-  onAddListItem(array: string) {
+  onAddListItem(array: string, values?) {
     this.editointiStore?.setData({
       ...this.editointiStore?.data.value,
       opintokokonaisuus: {
         ...this.editointiStore?.data.value.opintokokonaisuus,
         [array]: [
           ..._.get(this.editointiStore?.data.value.opintokokonaisuus, array),
-          { perusteesta: false },
+          {
+            perusteesta: false,
+            ...(!_.isEmpty(values) && values),
+          },
         ],
       },
     });
@@ -390,6 +402,19 @@ export default class RouteOpintokokonaisuus extends Vue {
 
   get isOpsPohja() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
+  }
+
+  get hasPohja() {
+    return _.get(this.toteutussuunnitelmaStore.toteutussuunnitelma.value, '_pohja');
+  }
+
+  addPohjanArvioinnit(arvioinnit) {
+    _.forEach(arvioinnit, arviointi => this.onAddListItem('arvioinnit',
+      {
+        'arviointi': {
+          ...arviointi,
+        },
+      }));
   }
 }
 </script>
