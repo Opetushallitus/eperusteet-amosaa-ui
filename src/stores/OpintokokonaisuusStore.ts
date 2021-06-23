@@ -57,6 +57,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
 
   async save(data: any) {
     await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, data);
+    await this.updateNavigation();
   }
 
   async restore(rev: number) {
