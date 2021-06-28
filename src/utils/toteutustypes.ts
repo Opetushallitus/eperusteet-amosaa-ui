@@ -12,6 +12,8 @@ import { tileColors } from '@shared/utils/bannerIcons';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { EperusteetPalautekanava, Koulutustyyppi } from '@shared/tyypit';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
+import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
+import { TuvaTekstikappaleStore } from '@/stores/TuvaTekstikappaleStore';
 
 export enum Toteutus {
   VAPAASIVISTYSTYO = 'vapaasivistystyo',
@@ -371,6 +373,12 @@ export const TiedoteJulkaisupaikka = {
   [Toteutus.VAPAASIVISTYSTYO]: 'vst',
   [Toteutus.AMMATILLINEN]: 'amosaa',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'tuva',
+};
+
+export const ToteutusTekstikappaleStore = {
+  [Toteutus.VAPAASIVISTYSTYO]: new TekstikappaleStore(),
+  [Toteutus.AMMATILLINEN]: new TekstikappaleStore(),
+  [Toteutus.TUTKINTOONVALMENTAVA]: new TuvaTekstikappaleStore(),
 };
 
 export const ArkistointiTekstit = {
