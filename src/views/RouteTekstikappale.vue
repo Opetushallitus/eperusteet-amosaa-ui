@@ -61,8 +61,7 @@
 import _ from 'lodash';
 import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { TuvaTekstikappaleStore } from '@/stores/TuvaTekstikappaleStore';
-import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
+import { ITekstikappale } from '@/stores/TekstikappaleStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
@@ -102,6 +101,9 @@ export default class RouteTekstikappale extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
+  @Prop({ required: true })
+  private tekstikappaleStore!: ITekstikappale;
+
   private editointiStore: EditointiStore | null = null;
 
   @Watch('sisaltoviiteId', { immediate: true })
@@ -115,28 +117,15 @@ export default class RouteTekstikappale extends Vue {
   }
 
   fetch() {
-    if (this.toteutus === Toteutus.TUTKINTOONVALMENTAVA) {
-      this.editointiStore = new EditointiStore(
-        new TuvaTekstikappaleStore(
-          this.toteutussuunnitelmaId,
-          this.koulutustoimijaId,
-          this.sisaltoviiteId,
-          this.versionumero,
-          this,
-          () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
-          this.toteutussuunnitelmaStore.toteutussuunnitelma));
-    }
-    else {
-      this.editointiStore = new EditointiStore(
-        new TekstikappaleStore(
-          this.toteutussuunnitelmaId,
-          this.koulutustoimijaId,
-          this.sisaltoviiteId,
-          this.versionumero,
-          this,
-          () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
-          this.toteutussuunnitelmaStore.toteutussuunnitelma));
-    }
+    this.editointiStore = new EditointiStore(
+      this.tekstikappaleStore.create(
+        this.toteutussuunnitelmaId,
+        this.koulutustoimijaId,
+        this.sisaltoviiteId,
+        this.versionumero,
+        this,
+        () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+        this.toteutussuunnitelmaStore.toteutussuunnitelma));
   }
 
   get versionumero() {

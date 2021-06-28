@@ -43,7 +43,7 @@ import { Virheet } from '@shared/stores/virheet';
 import { SovellusVirhe } from '@shared/tyypit';
 import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
-import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTiles } from '@/utils/toteutustypes';
+import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -68,7 +68,7 @@ const router = new VueRouter({
     props,
   }, {
     path: '/:toteutus',
-    name: 'root',
+    name: 'rootToteutus',
     component: RouteLang,
     props,
   }, {
@@ -247,7 +247,13 @@ const router = new VueRouter({
         path: 'tekstikappale/:sisaltoviiteId',
         name: 'tekstikappale',
         component: RouteTekstikappale,
-        props,
+        props: (route: any) => {
+          return {
+            ...route.params,
+            ...stores,
+            tekstikappaleStore: ToteutusTekstikappaleStore[route.params.toteutus],
+          };
+        },
       }, {
         path: 'tutkinnonosat',
         name: 'tutkinnonosat',
