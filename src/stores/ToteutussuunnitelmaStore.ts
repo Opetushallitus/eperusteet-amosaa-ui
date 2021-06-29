@@ -59,4 +59,13 @@ export class ToteutussuunnitelmaStore {
     )).data;
     this.state.julkaisut?.unshift(uusiJulkaisu);
   }
+
+  public async palautaJulkaisu(revision: number) {
+    const uusiJulkaisu = (await Julkaisut.aktivoiJulkaisu(
+      this.toteutussuunnitelma.value?.id!,
+      revision,
+      this.toteutussuunnitelma.value?.koulutustoimija?.id as any,
+    )).data;
+    this.state.julkaisut?.unshift(uusiJulkaisu);
+  }
 }
