@@ -111,7 +111,7 @@
           </b-form-group>
         </div>
 
-        <EpJulkaisuHistoria :julkaisut="julkaisut" />
+        <EpJulkaisuHistoria :julkaisut="julkaisut" :palauta="palautaJulkaisu"/>
 
       </template>
     </div>
@@ -236,6 +236,16 @@ export default class RouteJulkaisu extends Vue {
 
   get isOpsPohja() {
     return this.suunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
+  }
+
+  async palautaJulkaisu(julkaisu) {
+    try {
+      await this.toteutussuunnitelmaStore.palautaJulkaisu(julkaisu.revision);
+      this.$success(this.$t(this.kielistykset['suunnitelman-julkaisuversio-palautettu-julkiseksi']) as string);
+    }
+    catch (err) {
+      this.$fail(this.$t('palautus-epaonnistui') as string);
+    }
   }
 }
 </script>
