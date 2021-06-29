@@ -241,7 +241,7 @@ export default class RouteJulkaisu extends Vue {
   async palautaJulkaisu(julkaisu) {
     try {
       await this.toteutussuunnitelmaStore.palautaJulkaisu(julkaisu.revision);
-      this.$success(this.$t(this.kielistykset['suunnitelman-julkaisuversio-palautettu-julkiseksi']) as string);
+      this.$success(this.$t('suunnitelman-julkaisuversio-palautettu-julkiseksi') as string);
     }
     catch (err) {
       this.$fail(this.$t('palautus-epaonnistui') as string);
