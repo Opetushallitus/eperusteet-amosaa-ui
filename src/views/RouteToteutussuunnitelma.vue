@@ -285,6 +285,7 @@ import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { tileBackgroundColor } from '@shared/utils/bannerIcons';
 import { routeToNode } from '@/utils/routing';
+import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 
 @Component({
   components: {
@@ -503,7 +504,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       ...this.opintokokonaisuudet,
       ...this.koulutuksenosat,
       ...this.laajaalaisetOsaamiset,
-    ], 'chapter');
+    ], osa => chapterStringSort(osa.chapter));
   }
 
   get validationCategories(): string[] | undefined {
