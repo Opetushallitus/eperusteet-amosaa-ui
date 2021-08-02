@@ -261,7 +261,7 @@ const tutkintoonvalmentavatiles = (stores, { koulutustoimijaId, toteutus }) => {
         route: 'opetussuunnitelmaListaus',
       },
       oikeustarkastelu: {
-        oikeus: 'hallinta',
+        oikeus: 'luku',
       },
     }]),
     ...(stores.kayttajaStore.ophSelected.value ? [{
