@@ -76,6 +76,15 @@
               v-model="koulutuksenosa.paikallinenTarkennus.laajaalaisetosaamiset"
               :tekstiField="'laajaAlaisenOsaamisenKuvaus'">
               {{$t('lisaa-laaja-alaisen-osaamisen-kuvaus')}}
+
+              <div slot="lisateksti" slot-scope="{item}">
+                <EpContent
+                  v-if="laajaAlaisetKoodilla[item.koodiUri]"
+                  v-model="laajaAlaisetKoodilla[item.koodiUri].perusteteksti"
+                  layout="normal"
+                  :is-editable="false"
+                  :kuvaHandler="kuvaHandler"/>
+              </div>
             </EpKoodistoTekstillaSelect>
             <EpAlert
                 v-if="!isEditing && koulutuksenosa.paikallinenTarkennus.laajaalaisetosaamiset.length === 0"
@@ -184,6 +193,7 @@ import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/Koodist
 import { Koodisto } from '@shared/api/eperusteet';
 import EpSortableTextList from '@shared/components/EpSortableTextList/EpSortableTextList.vue';
 import EpKoulutuksenJarjestajaSelect from '@shared/components/EpKoulutuksenJarjestajaSelect/EpKoulutuksenJarjestajaSelect.vue';
+import { Sisaltoviitteet } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -214,6 +224,15 @@ export default class RouteKoulutuksenOsa extends Vue {
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
   private editointiStore: EditointiStore | null = null;
+  private laajaAlaisetOsaamiset: any[] = [];
+
+  async mounted() {
+    this.laajaAlaisetOsaamiset = (await Sisaltoviitteet.getSisaltoviitteeTyypilla(this.toteutussuunnitelmaId, 'laajaalainenosaaminen', this.koulutustoimijaId)).data;
+  }
+
+  get laajaAlaisetKoodilla() {
+    return _.keyBy(this.laajaAlaisetOsaamiset, 'tuvaLaajaAlainenOsaaminen.nimiKoodi');
+  }
 
   private readonly laajaAlaisetKoodistoStore = new KoodistoSelectStore({
     async query(query: string, sivu = 0) {
