@@ -1,7 +1,7 @@
 <template>
   <div class="home-container minfull">
     <div class="header" ref="header" :style="headerStyle">
-      <EpNavbar :kayttaja="kayttaja" :koulutustoimijat="koulutustoimijat" :rootNavigation="rootNavigation" :sovellusOikeudet="sovellusOikeudet"/>
+      <EpNavbar :kayttaja="kayttaja" :koulutustoimijat="koulutustoimijatOikeuksilla" :rootNavigation="rootNavigation" :sovellusOikeudet="sovellusOikeudet"/>
       <PortalTarget ref="innerPortal" name="headerExtension" />
     </div>
     <RouterView />
@@ -21,6 +21,7 @@ import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { SovellusTitle, Toteutus } from '@/utils/toteutustypes';
+import { OIKEUS_KAANNOT } from '@shared/plugins/oikeustarkastelu';
 
 @Component({
   components: {
@@ -89,8 +90,34 @@ export default class RouteRoot extends Vue {
     return this.kayttajaStore?.tiedot?.value || null;
   }
 
+  get koulutustoimijatOikeuksilla() {
+    return _.map(this.koulutustoimijat, kt => {
+      return {
+        ...kt,
+        oikeus: OIKEUS_KAANNOT[this.koulutustoimijaOikeudet[kt.organisaatio as string]],
+      };
+    });
+  }
+
   get koulutustoimijat() {
     return this.kayttajaStore?.koulutustoimijat?.value || null;
+  }
+
+  get koulutustoimijaOikeudet() {
+    return _.chain(this.kayttajaStore?.koulutustoimijaOikeudet?.value)
+      .keys()
+      .map(oikeus => {
+        return _.map(this.kayttajaStore?.koulutustoimijaOikeudet?.value[oikeus], kt => {
+          return {
+            oikeus,
+            organisaatio: kt.organisaatio,
+          };
+        });
+      })
+      .flatMap()
+      .keyBy('organisaatio')
+      .mapValues('oikeus')
+      .value();
   }
 
   get headerStyle() {
