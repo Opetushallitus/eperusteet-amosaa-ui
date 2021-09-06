@@ -263,7 +263,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Watch, Prop, Component, Vue, Provide } from 'vue-property-decorator';
+import { Watch, Prop, Component, Vue, Provide, ProvideReactive } from 'vue-property-decorator';
 import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
 import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
@@ -284,7 +284,7 @@ import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus, Toteutussuunnite
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { tileBackgroundColor } from '@shared/utils/bannerIcons';
-import { routeToNode } from '@/utils/routing';
+import { LinkkiHandler, routeToNode } from '@/utils/routing';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 
 @Component({
@@ -422,6 +422,16 @@ export default class RouteToteutussuunnitelma extends Vue {
 
   get navigation() {
     return this.toteutussuunnitelmaStore.navigation;
+  }
+
+  @ProvideReactive('navigation')
+  get navigationValue() {
+    return this.toteutussuunnitelmaStore.navigation.value;
+  }
+
+  @ProvideReactive('linkkiHandler')
+  get linkkiHandler() {
+    return new LinkkiHandler();
   }
 
   get ratasvalinnat() {

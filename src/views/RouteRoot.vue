@@ -94,30 +94,13 @@ export default class RouteRoot extends Vue {
     return _.map(this.koulutustoimijat, kt => {
       return {
         ...kt,
-        oikeus: OIKEUS_KAANNOT[this.koulutustoimijaOikeudet[kt.organisaatio as string]],
+        oikeus: this.kayttajaStore.organisaatioOikeudet.value[kt.id!],
       };
     });
   }
 
   get koulutustoimijat() {
     return this.kayttajaStore?.koulutustoimijat?.value || null;
-  }
-
-  get koulutustoimijaOikeudet() {
-    return _.chain(this.kayttajaStore?.koulutustoimijaOikeudet?.value)
-      .keys()
-      .map(oikeus => {
-        return _.map(this.kayttajaStore?.koulutustoimijaOikeudet?.value[oikeus], kt => {
-          return {
-            oikeus,
-            organisaatio: kt.organisaatio,
-          };
-        });
-      })
-      .flatMap()
-      .keyBy('organisaatio')
-      .mapValues('oikeus')
-      .value();
   }
 
   get headerStyle() {

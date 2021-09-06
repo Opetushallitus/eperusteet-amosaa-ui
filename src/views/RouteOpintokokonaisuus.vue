@@ -380,7 +380,9 @@ export default class RouteOpintokokonaisuus extends Vue {
 
   @Watch('opintokokonaisuustyyppi')
   tyyppiChange(val) {
-    Murupolku.aseta('opintokokonaisuus', this.$t(this.tyyppikielistys['murupolku']));
+    if (this.tyyppikielistys) {
+      Murupolku.aseta('opintokokonaisuus', this.$t(this.tyyppikielistys['murupolku']));
+    }
   }
 
   get tyyppikielistys() {
