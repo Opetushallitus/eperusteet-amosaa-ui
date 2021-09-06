@@ -298,6 +298,7 @@ import { chapterStringSort } from '@shared/utils/NavigationBuilder';
     EpProgressPopover,
     EpSpinner,
   },
+  inject: [],
 })
 export default class RouteToteutussuunnitelma extends Vue {
   @Prop({ required: true })
