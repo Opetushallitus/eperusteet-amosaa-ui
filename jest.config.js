@@ -19,8 +19,8 @@ module.exports = {
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': 'jest-transform-stub',
     '^.+\\.tsx?$': 'ts-jest',
   },
-  transformIgnorePatterns: [
-    '/node_modules/',
+  'transformIgnorePatterns': [
+    '/node_modules/(?!(@ckeditor|katex|vue-masonry|lodash-es|bootstrap-vue|vuelidate-property-decorators|deepdash-es)/)',
   ],
   moduleNameMapper: {
     '^@shared/(.*)$': '<rootDir>/eperusteet-frontend-utils/vue/src/$1',

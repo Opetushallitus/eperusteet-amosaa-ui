@@ -143,6 +143,11 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
     this.init();
   }
 
+  @Watch('koulutustoimijaId')
+  koulutustoimijaChange() {
+    this.init();
+  }
+
   async onRestoreOps({ id }: { id: number }) {
     await vaihdaOpetussunnitelmaTilaConfirm(
       this,
@@ -195,6 +200,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   protected async init() {
+    this.opslista = null;
     if (this.opsTyyppi === 'ops') {
       this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit, 'OPS')).data;
     }
