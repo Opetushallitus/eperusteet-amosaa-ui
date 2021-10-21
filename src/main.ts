@@ -71,6 +71,7 @@ async function main() {
     i18n: Kielet.i18n,
     render: h => h(App),
   }).$mount('#app');
+
   Kielet.load(await getKaannokset('eperusteet'));
 }
 
