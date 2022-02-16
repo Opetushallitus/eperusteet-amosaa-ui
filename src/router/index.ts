@@ -44,6 +44,7 @@ import { SovellusVirhe } from '@shared/tyypit';
 import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
+import { Maintenance } from '@shared/api/eperusteet';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -66,7 +67,18 @@ const router = new VueRouter({
     name: 'root',
     component: RouteLang,
     props,
-  }, {
+  },
+  {
+    path: '/maintenance/julkaisekaikki',
+    redirect: () => {
+      (async () => {
+        await Maintenance.teeJulkaisut(true);
+        console.log('Julkaisut aloitettu');
+      })();
+      return '/';
+    },
+  },
+  {
     path: '/:toteutus',
     name: 'rootToteutus',
     component: RouteLang,
