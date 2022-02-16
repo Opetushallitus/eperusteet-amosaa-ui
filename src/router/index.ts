@@ -66,7 +66,18 @@ const router = new VueRouter({
     name: 'root',
     component: RouteLang,
     props,
-  }, {
+  },
+  {
+    path: '/maintenance/julkaisekaikki',
+    redirect: () => {
+      (async () => {
+        await Maintenance.teeJulkaisut(true);
+        console.log('Julkaisut aloitettu');
+      })();
+      return '/';
+    },
+  },
+  {
     path: '/:toteutus',
     name: 'rootToteutus',
     component: RouteLang,
