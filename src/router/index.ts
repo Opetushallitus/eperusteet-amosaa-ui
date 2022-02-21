@@ -44,7 +44,7 @@ import { SovellusVirhe } from '@shared/tyypit';
 import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
-import { Maintenance } from '@shared/api/eperusteet';
+import { Maintenance } from '@shared/api/amosaa';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
