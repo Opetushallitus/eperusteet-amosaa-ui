@@ -30,7 +30,8 @@ export class KayttoOikeudetStore {
   public async paivitaKayttajat() {
     try {
       this.state.kayttajat = (await Koulutustoimijat.getKaikkiKayttajat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
-    } catch (err) {
+    }
+    catch (err) {
       this.state.kayttajat = [];
     }
   }
@@ -38,7 +39,8 @@ export class KayttoOikeudetStore {
   public async paivitaOikeudet() {
     try {
       this.state.kayttajaOikeudet = (await Opetussuunnitelmat.getOpetussuunnitelmaOikeudet(this.opetussuunnitelma.value.id, this.opetussuunnitelma.value.koulutustoimija.id)).data;
-    } catch (err) {
+    }
+    catch (err) {
       this.state.kayttajaOikeudet = [];
     }
   }
@@ -46,8 +48,9 @@ export class KayttoOikeudetStore {
   public async paivitaktYstavat() {
     try {
       this.state.ktYstavat = (await Koulutustoimijat.getOmatYstavat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
-    } catch (err) {
-      this.state.ktYstavat  = [];
+    }
+    catch (err) {
+      this.state.ktYstavat = [];
     }
   }
 
