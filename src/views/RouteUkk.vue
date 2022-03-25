@@ -10,14 +10,22 @@
         <ep-spinner v-if="isLoading"></ep-spinner>
         <div v-else>
           <ep-search v-model="rajain"></ep-search>
-
             <div class="d-flex justify-content-between align-items-end mb-4 mt-3">
               <b-form-group :label="$t('nayta-sisalto-jonka-on-luonut')">
-                <b-form-checkbox-group v-model="koulutustoimijaRajaus">
-                  <b-form-checkbox v-for="(koulutustoimija, index) in koulutustoimijat" :key="'ktvalinta'+index" :value="koulutustoimija" >
-                    {{ $kaanna(koulutustoimija.nimi) }}
-                  </b-form-checkbox>
-                </b-form-checkbox-group>
+                <ep-list-select
+                  v-model="koulutustoimijaRajaus"
+                  identity="id"
+                  search-identity="nimi"
+                  :options="koulutustoimijat">
+                  <template v-slot:default="{ option }">
+                    {{ $kaanna(option.nimi) }}
+                  </template>
+                </ep-list-select>
+                <!-- <b-form-checkbox-group v-model="koulutustoimijaRajaus">                                                                     -->
+                <!--   <b-form-checkbox v-for="(koulutustoimija, index) in koulutustoimijat" :key="'ktvalinta'+index" :value="koulutustoimija" > -->
+                <!--     {{ $kaanna(koulutustoimija.nimi) }}                                                                                     -->
+                <!--   </b-form-checkbox>                                                                                                        -->
+                <!-- </b-form-checkbox-group>                                                                                                    -->
               </b-form-group>
 
               <ep-button class="mb-3" variant="outline-primary" icon="plussa" @click="startKysymysModal(null)">
@@ -102,6 +110,7 @@ import EpKielivalinta from '@shared/components/EpKielivalinta/EpKielivalinta.vue
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
+import EpListSelect from '@shared/components/forms/EpListSelect.vue';
 
 import { TutoriaaliStore } from '@shared/stores/tutoriaali';
 import { OhjeetStore } from '@/stores/OhjeetStore';
@@ -117,13 +126,14 @@ import { Toteutus } from '@/utils/toteutustypes';
 
 @Component({
   components: {
-    EpMainView,
-    EpSearch,
-    EpSpinner,
     EpButton,
     EpContent,
     EpFormContent,
     EpKielivalinta,
+    EpListSelect,
+    EpMainView,
+    EpSearch,
+    EpSpinner,
   },
   validations() {
     return {
