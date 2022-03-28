@@ -27,11 +27,38 @@ export class KayttoOikeudetStore {
   public readonly kayttajaOikeudet = computed(() => this.state.kayttajaOikeudet);
   public readonly ktYstavat = computed(() => this.state.ktYstavat);
 
+  public async paivitaKayttajat() {
+    try {
+      this.state.kayttajat = (await Koulutustoimijat.getKaikkiKayttajat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
+    }
+    catch (err) {
+      this.state.kayttajat = [];
+    }
+  }
+
+  public async paivitaOikeudet() {
+    try {
+      this.state.kayttajaOikeudet = (await Opetussuunnitelmat.getOpetussuunnitelmaOikeudet(this.opetussuunnitelma.value.id, this.opetussuunnitelma.value.koulutustoimija.id)).data;
+    }
+    catch (err) {
+      this.state.kayttajaOikeudet = [];
+    }
+  }
+
+  public async paivitaktYstavat() {
+    try {
+      this.state.ktYstavat = (await Koulutustoimijat.getOmatYstavat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
+    }
+    catch (err) {
+      this.state.ktYstavat = [];
+    }
+  }
+
   public async update() {
     if (this.opetussuunnitelma.value.koulutustoimija.id && this.opetussuunnitelma.value.id) {
-      this.state.kayttajat = (await Koulutustoimijat.getKaikkiKayttajat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
-      this.state.kayttajaOikeudet = (await Opetussuunnitelmat.getOpetussuunnitelmaOikeudet(this.opetussuunnitelma.value.id, this.opetussuunnitelma.value.koulutustoimija.id)).data;
-      this.state.ktYstavat = (await Koulutustoimijat.getOmatYstavat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
+      await this.paivitaKayttajat();
+      await this.paivitaOikeudet();
+      await this.paivitaktYstavat();
     }
   }
 

@@ -384,7 +384,6 @@ Virheet.onError((virhe: SovellusVirhe) => {
   });
 });
 
-
 router.beforeEach(async (to, from, next) => {
   const koulutustoimijaId = String(to.params.koulutustoimijaId);
   const toteutussuunntelmaId = Number(to.params.toteutussuunnitelmaId);
@@ -413,7 +412,6 @@ router.beforeEach((to, from, next) => {
   changeLang(to, from);
   next();
 });
-
 
 router.beforeEach((to, from, next) => {
   stores.kayttajaStore.setToteutus(to.params.toteutus);
