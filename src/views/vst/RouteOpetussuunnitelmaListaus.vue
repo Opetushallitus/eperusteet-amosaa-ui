@@ -89,37 +89,38 @@
               </div>
             </div>
           </div>
-          <div class="ops" v-if="ystavien.length > 0">
-            <h2 class="mt-4">{{ $t(kaannokset['ystavien']) }}</h2>
+<!--          Piilotettu kunnes toimii jotta ei hämää käyttäjiä, kun palautat muista palauttaa myös alhaalta initistä ystävien haku-->
+<!--          <div class="ops" v-if="ystavien.length > 0">-->
+<!--            <h2 class="mt-4">{{ $t(kaannokset['ystavien']) }}</h2>-->
 
-            <div class="info" v-if="julkaistut.length === 0">
-              <div v-if="hasRajain">
-                {{ $t('ei-hakutuloksia') }}
-              </div>
-              <EpAlert v-else :ops="true" :text="$t(kaannokset['eiJulkaistuja'])" class="mt-4" />
-            </div>
+<!--            <div class="info" v-if="julkaistut.length === 0">-->
+<!--              <div v-if="hasRajain">-->
+<!--                {{ $t('ei-hakutuloksia') }}-->
+<!--              </div>-->
+<!--              <EpAlert v-else :ops="true" :text="$t(kaannokset['eiJulkaistuja'])" class="mt-4" />-->
+<!--            </div>-->
 
-            <div class="d-flex flex-wrap">
-              <div
-                v-for="ops in ystavien"
-                :key="ops.id"
-                class="opsbox opsbox--published"
-                :style="ops.bannerImage">
-                <RouterLink
-                  class="d-block h-100"
-                  tag="a"
-                  :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"
-                  :key="ops.id">
-                  <div class="opsbox__info opsbox__info--published d-flex justify-content-center align-items-center">
-                    <div class="opsbox__name">
-                      {{ $kaanna(ops.nimi) }}
-                    </div>
-                    <!-- Published date -->
-                  </div>
-                </RouterLink>
-              </div>
-            </div>
-          </div>
+<!--            <div class="d-flex flex-wrap">-->
+<!--              <div-->
+<!--                v-for="ops in ystavien"-->
+<!--                :key="ops.id"-->
+<!--                class="opsbox opsbox&#45;&#45;published"-->
+<!--                :style="ops.bannerImage">-->
+<!--                <RouterLink-->
+<!--                  class="d-block h-100"-->
+<!--                  tag="a"-->
+<!--                  :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"-->
+<!--                  :key="ops.id">-->
+<!--                  <div class="opsbox__info opsbox__info&#45;&#45;published d-flex justify-content-center align-items-center">-->
+<!--                    <div class="opsbox__name">-->
+<!--                      {{ $kaanna(ops.nimi) }}-->
+<!--                    </div>-->
+<!--                    &lt;!&ndash; Published date &ndash;&gt;-->
+<!--                  </div>-->
+<!--                </RouterLink>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
         </b-col>
       </b-row>
     </b-container>
@@ -235,7 +236,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
     this.opslista = null;
     if (this.opsTyyppi === 'ops') {
       this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit, 'OPS')).data;
-      this.ystavien = (await Opetussuunnitelmat.getAllOtherOrgsOpetussuunnitelmat(this.koulutustoimijaId)).data;
+      // this.ystavien = (await Opetussuunnitelmat.getAllOtherOrgsOpetussuunnitelmat(this.koulutustoimijaId)).data;
     }
 
     if (this.opsTyyppi === 'opspohja') {
