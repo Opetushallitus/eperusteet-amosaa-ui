@@ -16,7 +16,7 @@
         <b-form-group :label="$t('kayttooikeus')">
           <ep-select class="oikeusSelect" :isEditing="true" v-model="oikeusrajaus" :items="oikeusRajausVaihtoehdot" :enableEmptyOption="false">
             <template slot-scope="{ item }">
-              {{$t('oikeus-'+item)}}
+              {{$t('oikeus-'+item.text)}}
             </template>
           </ep-select>
         </b-form-group>
@@ -38,9 +38,9 @@
         </template>
 
         <template v-slot:cell(kayttooikeus)="{ item }">
-          <ep-select class="oikeusSelect" v-if="!item.self && hallintaOikeus" :items="oikeusVaihtoehdot" v-model="item.oikeus" :isEditing="true" :enableEmptyOption="false" @input="updateOikeus(item.id, item.oikeus)">
+          <ep-select class="oikeusSelect" v-if="!item.self && hallintaOikeus" :items="oikeusVaihtoehdot" v-model="item.oikeus" :isEditing="true" :enableEmptyOption="false" @input="updateOikeus(item.id, item.oikeus.value)">
             <template slot-scope="{ item }">
-              {{$t('oikeus-'+item)}}
+              {{$t('oikeus-'+item.text)}}
             </template>
           </ep-select>
 
@@ -80,6 +80,11 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { createLogger } from '@shared/utils/logger';
 import { KoulutustoimijaYstavaDto } from '@shared/generated/amosaa';
 
+interface KayttoOikeusText {
+  value: string;
+  text: string;
+}
+
 @Component({
   components: {
     EpButton,
@@ -104,7 +109,7 @@ export default class RouteKayttooikeudet extends Vue {
   private sivukoko = 10;
   private sivu = 1;
   private query = '';
-  private oikeusrajaus = 'kaikki';
+  private oikeusrajaus: KayttoOikeusText = { value: 'kaikki', text: 'kaikki' };
 
   private logger = createLogger('RouteKayttooikeudet');
 
@@ -118,14 +123,27 @@ export default class RouteKayttooikeudet extends Vue {
         .map(kayttaja => {
           return {
             ...kayttaja,
-            oikeus: kayttaja.id && this.oikeudetById[kayttaja.id] ? _.get(this.oikeudetById[kayttaja.id], 'oikeus') : 'estetty',
+            oikeus: kayttaja.id && this.oikeudetById[kayttaja.id]
+              ? _.find(this.oikeusRajausVaihtoehdot, { value: _.get(this.oldOikeusToNewConvert, (_.get(this.oikeudetById[kayttaja.id], 'oikeus') || 'estetty')) })
+              : _.find(this.oikeusRajausVaihtoehdot, { value: 'estetty' }),
             self: kayttaja.oid === _.toString(this.kayttajaStore.tiedot.value.oid),
           };
         })
         .filter(kayttaja => Kielet.search(this.query, parsiEsitysnimi(kayttaja)))
-        .filter(kayttaja => this.oikeusrajaus === 'kaikki' || kayttaja.oikeus === this.oikeusrajaus)
+        .filter(kayttaja => this.oikeusrajaus.value === 'kaikki' || kayttaja.oikeus?.value === this.oikeusrajaus.value)
         .value();
     }
+  }
+
+  get oldOikeusToNewConvert() {
+    return {
+      'estettty': 'estetty',
+      'luku': 'luku',
+      'muokkaus': 'luku',
+      'luonti': 'luku',
+      'poisto': 'poisto',
+      'hallinta': 'poisto',
+    };
   }
 
   get oikeudetById() {
@@ -165,12 +183,16 @@ export default class RouteKayttooikeudet extends Vue {
     }];
   }
 
-  get oikeusRajausVaihtoehdot() {
-    return ['kaikki', ...this.oikeusVaihtoehdot];
+  get oikeusRajausVaihtoehdot(): KayttoOikeusText[] {
+    return [{ value: 'kaikki', text: 'kaikki' }, ...this.oikeusVaihtoehdot];
   }
 
-  get oikeusVaihtoehdot() {
-    return ['estetty', 'luku', 'muokkaus', 'luonti', 'poisto', 'hallinta'];
+  get oikeusVaihtoehdot(): KayttoOikeusText[] {
+    return [
+      { value: 'estetty', text: 'estetty' },
+      { value: 'luku', text: 'luku' },
+      { value: 'poisto', text: 'muokkaus' },
+    ];
   }
 
   async updateOikeus(id, oikeus) {

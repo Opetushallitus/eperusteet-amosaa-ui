@@ -67,6 +67,10 @@ export default class RouteYleisnakyma extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
+  async mounted() {
+    await this.muokkaustietoStore.refetch();
+  }
+
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
   }
