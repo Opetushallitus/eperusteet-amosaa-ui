@@ -4,6 +4,7 @@ import { OpetussuunnitelmaMuokkaustietoDto, Muokkaustiedot, OpetussuunnitelmaDto
 import { IMuokkaustietoProvider } from '@shared/components/EpViimeaikainenToiminta/types';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
+import { delay } from '@shared/utils/delay';
 
 Vue.use(VueCompositionApi);
 
@@ -27,6 +28,11 @@ export class MuokkaustietoStore implements IMuokkaustietoProvider {
   public readonly muokkaustiedot = computed(() => this.state.muokkaustiedot);
   public readonly viimeinenHaku = computed(() => this.state.viimeinenHaku);
   public readonly hakuLukumaara = computed(() => this.state.hakuLukumaara);
+
+  public async refetch() {
+    this.state.muokkaustiedot = null;
+    await this.update();
+  }
 
   public async update() {
     if (this.opetussuunnitelma.value.koulutustoimija.id && this.opetussuunnitelma.value.id) {
