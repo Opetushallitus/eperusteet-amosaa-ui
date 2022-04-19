@@ -1,6 +1,9 @@
 <template>
   <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore" :versionumero="versionumero">
+    <EpEditointi
+      :store="editointiStore"
+      :versionumero="versionumero"
+      :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
       <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $t(kielistykset['title']) }}</h2>
       </template>

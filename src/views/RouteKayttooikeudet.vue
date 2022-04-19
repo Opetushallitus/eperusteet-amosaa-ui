@@ -124,8 +124,8 @@ export default class RouteKayttooikeudet extends Vue {
           return {
             ...kayttaja,
             oikeus: kayttaja.id && this.oikeudetById[kayttaja.id]
-              ? _.find(this.oikeusRajausVaihtoehdot, { value: _.get(this.oldOikeusToNewConvert, (_.get(this.oikeudetById[kayttaja.id], 'oikeus') || 'estetty')) })
-              : _.find(this.oikeusRajausVaihtoehdot, { value: 'estetty' }),
+              ? _.find(this.oikeusVaihtoehdot, { value: _.get(this.oldOikeusToNewConvert, (_.get(this.oikeudetById[kayttaja.id], 'oikeus') || 'estetty')) })
+              : _.find(this.oikeusVaihtoehdot, { value: 'estetty' }),
             self: kayttaja.oid === _.toString(this.kayttajaStore.tiedot.value.oid),
           };
         })
@@ -137,7 +137,7 @@ export default class RouteKayttooikeudet extends Vue {
 
   get oldOikeusToNewConvert() {
     return {
-      'estettty': 'estetty',
+      'estetty': 'estetty',
       'luku': 'luku',
       'muokkaus': 'luku',
       'luonti': 'luku',
@@ -218,8 +218,12 @@ export default class RouteKayttooikeudet extends Vue {
     return this.$hasOikeus('hallinta', 'koulutustoimija');
   }
 
+  get kayttajaId() {
+    return _.get(this.kayttajaStore.tiedot.value, 'id');
+  }
+
   get currentKoulutustoimijaOikeus() {
-    return this.kayttajaStore.getOikeus(this.koulutustoimijaId);
+    return _.get(_.find(this.oikeusVaihtoehdot, { value: _.get(this.oldOikeusToNewConvert, (_.get(this.oikeudetById[this.kayttajaId], 'oikeus') || 'estetty')) }), 'text');
   }
 }
 </script>

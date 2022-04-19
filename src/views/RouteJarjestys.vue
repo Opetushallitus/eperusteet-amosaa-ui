@@ -1,6 +1,6 @@
 <template>
   <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore">
+    <EpEditointi :store="editointiStore" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
       <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $t('muokkaa-jarjestysta') }}</h2>
       </template>

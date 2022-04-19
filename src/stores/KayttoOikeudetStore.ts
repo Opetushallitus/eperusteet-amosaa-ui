@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
-import { KoulutustoimijaYstavaDto, OpetussuunnitelmaDto, Koulutustoimijat, KayttajaDto, Opetussuunnitelmat, KayttajaoikeusDto } from '@shared/api/amosaa';
+import { KoulutustoimijaYstavaDto, OpetussuunnitelmaDto, Koulutustoimijat, KayttajaDto, Opetussuunnitelmat, KayttajaoikeusDto, KayttajaoikeusDtoOikeusEnum } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
 
@@ -64,18 +64,10 @@ export class KayttoOikeudetStore {
 
   public async updateOikeus(kayttajaId: number, kayttajaOikeus: KayttajaoikeusDto) {
     const tallennettu = (await Opetussuunnitelmat.updateOpetussuunnitelmaOikeus(this.opetussuunnitelma.value.id, kayttajaId, this.opetussuunnitelma.value.koulutustoimija.id, kayttajaOikeus)).data;
+    this.state.kayttajaOikeudet = _.filter(kayttooikeus => _.toNumber(kayttooikeus._kayttaja) !== kayttajaId);
 
-    if (!_.includes(_.map(this.kayttajaOikeudet, 'id'), tallennettu.id)) {
+    if (kayttajaOikeus.oikeus !== _.toLower(KayttajaoikeusDtoOikeusEnum.ESTETTY)) {
       this.state.kayttajaOikeudet = [...this.state.kayttajaOikeudet as any, tallennettu];
-    }
-    else {
-      this.state.kayttajaOikeudet = _.map(this.state.kayttajaOikeudet, kayttajaOikeus => {
-        if (kayttajaOikeus.id === tallennettu.id) {
-          return tallennettu;
-        }
-
-        return kayttajaOikeus;
-      });
     }
   }
 }
