@@ -70,7 +70,7 @@
                 </template>
 
                 <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index"
-                  v-oikeustarkastelu="{ oikeus: ratasvalinta.oikeus, kohde: 'toteutussuunnitelma' }">
+                  v-oikeustarkastelu="{ oikeus: ratasvalinta.oikeus }">
 
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
 

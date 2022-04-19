@@ -1,5 +1,5 @@
 <template>
-  <EpEditointi v-if="editointiStore" :store="editointiStore">
+  <EpEditointi v-if="editointiStore" :store="editointiStore" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
     <template #header="{ data }">
       <h2 class="m-0">{{ $kaanna(data.tuvaLaajaAlainenOsaaminen.nimi) }}</h2>
     </template>
