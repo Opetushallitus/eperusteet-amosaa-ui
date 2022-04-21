@@ -36,7 +36,7 @@ export default class RouteRoot extends Vue {
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
 
-  @Prop({ required: false, default: 'ammatillinen' })
+  @Prop({ required: false })
   private toteutus!: Toteutus;
 
   private height = null as number | null;

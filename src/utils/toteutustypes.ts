@@ -81,6 +81,12 @@ export const TileBackground = {
   [Toteutus.TUTKINTOONVALMENTAVA]: { 'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.TUTKINTOONVALMENTAVA][0] + ' 0%, ' + tileColors[Toteutus.TUTKINTOONVALMENTAVA][1] + ' 100%)' },
 };
 
+export const TotetusOpetussuunnitelmaRoute = {
+  [Toteutus.VAPAASIVISTYSTYO]: 'opetussuunnitelmaListaus',
+  [Toteutus.AMMATILLINEN]: 'toteutussuunnitelmat',
+  [Toteutus.TUTKINTOONVALMENTAVA]: 'opetussuunnitelmaListaus',
+};
+
 export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
   return [
     ...(stores.kayttajaStore.ophSelected.value ? [] : [{
@@ -90,7 +96,7 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
         koulutustoimijaId,
         toteutus,
         title: stores.kayttajaStore.koulutustoimija.value.organisaatioRyhma ? 'oppimisympariston-tunnistamisraportit' : 'toteutussuunnitelmat',
-        route: 'toteutussuunnitelmat',
+        route: TotetusOpetussuunnitelmaRoute[toteutus],
       },
       oikeustarkastelu: {
         oikeus: 'luku',
@@ -167,7 +173,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
         toteutus,
         headerStyle: TileBackground[toteutus],
         title: 'opetussuunnitelmat',
-        route: 'opetussuunnitelmaListaus',
+        route: TotetusOpetussuunnitelmaRoute[toteutus],
         kaannokset: {
           otsikko: 'opetussuunnitelmat',
           kuvaus: 'opetussuunnitelmat-kuvaus',
@@ -258,7 +264,7 @@ const tutkintoonvalmentavatiles = (stores, { koulutustoimijaId, toteutus }) => {
         toteutus,
         headerStyle: TileBackground[toteutus],
         title: 'toteutussuunnitelmat',
-        route: 'opetussuunnitelmaListaus',
+        route: TotetusOpetussuunnitelmaRoute[toteutus],
       },
       oikeustarkastelu: {
         oikeus: 'luku',

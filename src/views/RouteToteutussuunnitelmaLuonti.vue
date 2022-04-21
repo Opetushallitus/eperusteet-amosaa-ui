@@ -118,7 +118,7 @@ import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
-import { OpetussuunnitelmaLuontiKielistykset, Toteutus } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaLuontiKielistykset, TotetusOpetussuunnitelmaRoute, Toteutus } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
 import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa } from '@shared/utils/perusteet';
@@ -353,7 +353,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   onCancel() {
     this.$router.push({
-      name: 'toteutussuunnitelmat',
+      name: TotetusOpetussuunnitelmaRoute[this.toteutus],
     });
   }
 
