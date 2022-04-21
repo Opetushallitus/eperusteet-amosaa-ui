@@ -104,7 +104,7 @@ export default class RouteLang extends Vue {
   }
 
   get toteutus() {
-    return _.has(this.$route.params, 'toteutus') ? _.get(this.$route.params, 'toteutus') : 'ammatillinen';
+    return _.has(this.$route.params, 'toteutus') ? _.get(this.$route.params, 'toteutus') : '';
   }
 
   get headerStyle() {
