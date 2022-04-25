@@ -478,7 +478,7 @@ export const OpetussuunnitelmalistausKielistykset = {
       eiJulkaistuja: 'ei-julkaistuja-opetussuunnitelmia',
       uusiRoute: 'opetussuunnitelmaLuonti',
       julkaisuTila: 'julkaistu',
-      ystavien: 'ystavien-toteutussuunnitelmat',
+      ystavien: 'ystavien-opetussuunnitelmat',
     },
     opspohja: {
       otsikko: 'pohjat',
@@ -490,7 +490,7 @@ export const OpetussuunnitelmalistausKielistykset = {
       eiJulkaistuja: 'ei-valmiita-pohjia',
       uusiRoute: 'opetussuunnitelmaPohjaLuonti',
       julkaisuTila: 'valmis',
-      ystavien: 'ystavien-toteutussuunnitelmat',
+      ystavien: 'ystavien-opetussuunnitelmat',
     },
   },
   [Toteutus.TUTKINTOONVALMENTAVA]: {
@@ -504,7 +504,7 @@ export const OpetussuunnitelmalistausKielistykset = {
       eiJulkaistuja: 'ei-julkaistuja-toteutussuunnitelmia',
       uusiRoute: 'tuvatoteutussuunnitelmaLuonti',
       julkaisuTila: 'julkaistu',
-      ystavien: 'ystavien-toteutussuunnitelmat',
+      ystavien: 'ystavien-opetussuunnitelmat',
     },
     opspohja: {
       otsikko: 'toteutussuunnitelmien-pohjat',
@@ -516,7 +516,7 @@ export const OpetussuunnitelmalistausKielistykset = {
       eiJulkaistuja: 'ei-valmiita-pohjia',
       uusiRoute: 'opetussuunnitelmaPohjaLuonti',
       julkaisuTila: 'valmis',
-      ystavien: 'ystavien-toteutussuunnitelmat',
+      ystavien: 'ystavien-opetussuunnitelmat',
     },
   },
 };
