@@ -39,23 +39,7 @@
                   </div>
                 </RouterLink>
               </div>
-              <div class="opsbox" v-for="ops in keskeneraiset" :key="ops.id">
-                <RouterLink
-                  tag="a"
-                  :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"
-                  :key="ops.id">
-                  <div class="opsbox__chart" :style="backgroundStyle">
-                    <div class="opsbox__progress-clamper">
-                      <EpProgress :slices="[0.2, 0.5, 1]" />
-                    </div>
-                  </div>
-                  <div class="opsbox__info">
-                    <div class="opsbox__name">
-                      {{ $kaanna(ops.nimi) }}
-                    </div>
-                  </div>
-                </RouterLink>
-              </div>
+                <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in keskeneraiset" :key="ops.id"/>
             </div>
           </div>
           <div class="ops">
@@ -69,58 +53,24 @@
             </div>
 
             <div class="d-flex flex-wrap">
-              <div
-                v-for="ops in julkaistut"
-                :key="ops.id"
-                class="opsbox opsbox--published"
-                :style="ops.bannerImage">
-                <RouterLink
-                  class="d-block h-100"
-                  tag="a"
-                  :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"
-                  :key="ops.id">
-                  <div class="opsbox__info opsbox__info--published d-flex justify-content-center align-items-center">
-                    <div class="opsbox__name">
-                      {{ $kaanna(ops.nimi) }}
-                    </div>
-                    <!-- Published date -->
-                  </div>
-                </RouterLink>
-              </div>
+              <OpsJulkaistutTile :ops="ops" v-for="ops in julkaistut" :key="'julkaistu-' + ops.id"/>
             </div>
           </div>
-<!--          Piilotettu kunnes toimii jotta ei hämää käyttäjiä, kun palautat muista palauttaa myös alhaalta initistä ystävien haku-->
-<!--          <div class="ops" v-if="ystavien.length > 0">-->
-<!--            <h2 class="mt-4">{{ $t(kaannokset['ystavien']) }}</h2>-->
+         <div class="ops" v-if="ystavienKeskeneraiset.length > 0">
+           <h2 class="mt-4">{{ $t(kaannokset['ystavien'] + '-keskeneraiset') }}</h2>
 
-<!--            <div class="info" v-if="julkaistut.length === 0">-->
-<!--              <div v-if="hasRajain">-->
-<!--                {{ $t('ei-hakutuloksia') }}-->
-<!--              </div>-->
-<!--              <EpAlert v-else :ops="true" :text="$t(kaannokset['eiJulkaistuja'])" class="mt-4" />-->
-<!--            </div>-->
+           <div class="d-flex flex-wrap">
+             <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in ystavienKeskeneraiset" :key="'ystava-keskenerainen-' + ops.id"/>
+           </div>
+         </div>
 
-<!--            <div class="d-flex flex-wrap">-->
-<!--              <div-->
-<!--                v-for="ops in ystavien"-->
-<!--                :key="ops.id"-->
-<!--                class="opsbox opsbox&#45;&#45;published"-->
-<!--                :style="ops.bannerImage">-->
-<!--                <RouterLink-->
-<!--                  class="d-block h-100"-->
-<!--                  tag="a"-->
-<!--                  :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"-->
-<!--                  :key="ops.id">-->
-<!--                  <div class="opsbox__info opsbox__info&#45;&#45;published d-flex justify-content-center align-items-center">-->
-<!--                    <div class="opsbox__name">-->
-<!--                      {{ $kaanna(ops.nimi) }}-->
-<!--                    </div>-->
-<!--                    &lt;!&ndash; Published date &ndash;&gt;-->
-<!--                  </div>-->
-<!--                </RouterLink>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
+         <div class="ops" v-if="ystavienJulkaistut.length > 0">
+           <h2 class="mt-4">{{ $t(kaannokset['ystavien'] + '-julkaistut') }}</h2>
+
+           <div class="d-flex flex-wrap">
+             <OpsJulkaistutTile :ops="ops" v-for="ops in ystavienJulkaistut" :key="'ystava-julkaistu-' + ops.id"/>
+           </div>
+         </div>
         </b-col>
       </b-row>
     </b-container>
@@ -144,8 +94,10 @@ import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 
 import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
-import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { Opetussuunnitelmat, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
+import OpsKeskeneraisetTile from './OpsKeskeneraisetTile.vue';
+import OpsJulkaistutTile from './OpsJulkaistutTile.vue';
 
 @Component({
   components: {
@@ -156,6 +108,8 @@ import { Kielet } from '@shared/stores/kieli';
     EpProgress,
     EpAlert,
     EpSpinner,
+    OpsKeskeneraisetTile,
+    OpsJulkaistutTile,
   },
 })
 export default class RouteOpetussuunnitelmaListaus extends Vue {
@@ -220,8 +174,12 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   get julkaistut() {
     return _.chain(this.arkistoimattomat)
       .filter((ops: OpetussuunnitelmaDto) => (ops.tila as string) === this.kaannokset['julkaisuTila'])
-      .map((ops: OpetussuunnitelmaDto) => ({ ...ops, bannerImage: koulutusTyyppiTile(ops.peruste ? ops.peruste!.koulutustyyppi : ops.koulutustyyppi) }))
+      .map((ops: OpetussuunnitelmaDto) => this.opsBannerImage(ops))
       .value();
+  }
+
+  opsBannerImage(ops) {
+    return { ...ops, bannerImage: koulutusTyyppiTile(ops.peruste ? ops.peruste!.koulutustyyppi : ops.koulutustyyppi) };
   }
 
   get poistetut() {
@@ -236,12 +194,23 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
     this.opslista = null;
     if (this.opsTyyppi === 'ops') {
       this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit, 'OPS')).data;
-      // this.ystavien = (await Opetussuunnitelmat.getAllOtherOrgsOpetussuunnitelmat(this.koulutustoimijaId)).data;
+      this.ystavien = (await Opetussuunnitelmat.getAllOtherOrgsOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit)).data;
     }
 
     if (this.opsTyyppi === 'opspohja') {
       this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit, 'OPSPOHJA')).data;
     }
+  }
+
+  get ystavienKeskeneraiset() {
+    return _.filter(this.ystavien, ystava => ystava.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS) || ystava.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS));
+  }
+
+  get ystavienJulkaistut() {
+    return _.chain(this.ystavien)
+      .filter(ystavaOps => ystavaOps.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU))
+      .map(ystavaOps => this.opsBannerImage(ystavaOps))
+      .value();
   }
 
   get backgroundStyle() {
