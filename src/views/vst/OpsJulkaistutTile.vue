@@ -5,7 +5,7 @@
     <RouterLink
       class="d-block h-100"
       tag="a"
-      :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"
+      :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
       :key="ops.id">
       <div class="opsbox__info opsbox__info--published d-flex justify-content-center align-items-center">
         <div class="opsbox__name">
