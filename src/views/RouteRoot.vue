@@ -1,7 +1,12 @@
 <template>
   <div class="home-container minfull">
     <div class="header" ref="header" :style="headerStyle">
-      <EpNavbar :kayttaja="kayttaja" :koulutustoimijat="koulutustoimijatOikeuksilla" :rootNavigation="rootNavigation" :sovellusOikeudet="sovellusOikeudet"/>
+      <EpNavbar
+        :kayttaja="kayttaja"
+        :koulutustoimija="koulutustoimija"
+        :koulutustoimijat="koulutustoimijatOikeuksilla"
+        :rootNavigation="rootNavigation"
+        :sovellusOikeudet="sovellusOikeudet"/>
       <PortalTarget ref="innerPortal" name="headerExtension" />
     </div>
     <RouterView />
@@ -22,6 +27,8 @@ import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { SovellusTitle, Toteutus } from '@/utils/toteutustypes';
 import { OIKEUS_KAANNOT } from '@shared/plugins/oikeustarkastelu';
+import { Koulutustoimijat } from '@shared/api/amosaa';
+import { KoulutustoimijaDto } from '@shared/generated/amosaa';
 
 @Component({
   components: {
@@ -40,6 +47,17 @@ export default class RouteRoot extends Vue {
   private toteutus!: Toteutus;
 
   private height = null as number | null;
+  private koulutustoimija = null as KoulutustoimijaDto | null;
+
+  @Prop({ required: true })
+  private koulutustoimijaId!: string;
+
+  @Watch('koulutustoimijaId', { immediate: true })
+  async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
+    if (newValue && newValue !== oldValue) {
+      this.koulutustoimija = (await Koulutustoimijat.getKoulutustoimija(this.koulutustoimijaId)).data;
+    }
+  }
 
   @Meta
   getMetaInfo() {

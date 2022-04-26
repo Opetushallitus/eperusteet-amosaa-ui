@@ -2,7 +2,7 @@
   <div class="opsbox">
     <RouterLink
         tag="a"
-        :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id } }"
+        :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
         :key="ops.id">
         <div class="opsbox__chart" :style="backgroundStyle">
           <div class="opsbox__progress-clamper">
