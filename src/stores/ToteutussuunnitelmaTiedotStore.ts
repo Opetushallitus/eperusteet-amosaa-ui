@@ -7,7 +7,7 @@ import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { Revision, Kieli } from '@shared/tyypit';
 import { requiredLokalisoituTeksti } from '@shared/validators/required';
-import { required, minValue, maxValue } from 'vuelidate/lib/validators';
+import { required, minValue, maxValue, requiredIf } from 'vuelidate/lib/validators';
 import { Toteutus } from '@/utils/toteutustypes';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { KuvaStore } from './KuvaStore';
@@ -105,6 +105,9 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
         },
         voimaantulo: {
           'min-value': peruste && peruste.voimassaoloAlkaa ? minValue(peruste.voimassaoloAlkaa) : '',
+          required: requiredIf(() => {
+            return this.toteutus === Toteutus.VAPAASIVISTYSTYO;
+          }),
         },
         paatospaivamaara: {
           'max-value': peruste && peruste.voimassaoloLoppuu ? maxValue(peruste.voimassaoloLoppuu) : '',
