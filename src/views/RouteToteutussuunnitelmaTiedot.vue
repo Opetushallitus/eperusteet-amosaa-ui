@@ -26,7 +26,9 @@
             </b-col>
             <b-col>
               <b-form-group :label="$t('paatospaivamaara')">
-                <ep-datepicker v-model="data.opetussuunnitelma.paatospaivamaara" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.paatospaivamaara"/>
+                <div class="d-flex align-items-center">
+                  <ep-datepicker v-model="data.opetussuunnitelma.paatospaivamaara" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.paatospaivamaara"/>
+                </div>
               </b-form-group>
             </b-col>
           </b-row>
@@ -39,7 +41,13 @@
             </b-col>
             <b-col>
               <b-form-group :label="$t('voimassaolo')">
-                <ep-datepicker v-model="data.opetussuunnitelma.voimaantulo" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.voimaantulo"/>
+                <div class="d-flex align-content-around flex-wrap">
+                  <ep-datepicker v-model="data.opetussuunnitelma.voimaantulo" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.voimaantulo"/>
+                  <template v-if="opetussuunnitelmaVoimassaoloLoppu">
+                    <div class="ml-2 mr-2 mt-2">-</div>
+                    <ep-datepicker v-model="data.opetussuunnitelma.voimassaoloLoppuu" :is-editing="isEditing" type="sd"/>
+                  </template>
+                </div>
               </b-form-group>
             </b-col>
           </b-row>
@@ -146,7 +154,7 @@ import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
-import { OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset, OpetussuunnitelmaOppilaitostyyppi } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset, OpetussuunnitelmaOppilaitostyyppi, OpetussuunnitelmaVoimassaoloLoppu } from '@/utils/toteutustypes';
 import { Murupolku } from '@shared/stores/murupolku';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { Koodisto } from '@shared/api/eperusteet';
@@ -250,6 +258,10 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   get showOpetussuunnitelmaOppilaitostyyppi() {
     return OpetussuunnitelmaOppilaitostyyppi[this.toteutus];
+  }
+
+  get opetussuunnitelmaVoimassaoloLoppu() {
+    return OpetussuunnitelmaVoimassaoloLoppu[this.toteutus];
   }
 
   get oppilaitostyypit() {

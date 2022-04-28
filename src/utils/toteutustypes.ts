@@ -64,6 +64,12 @@ export const OpetussuunnitelmaOppilaitostyyppi = {
   [Toteutus.TUTKINTOONVALMENTAVA]: false,
 };
 
+export const OpetussuunnitelmaVoimassaoloLoppu = {
+  [Toteutus.VAPAASIVISTYSTYO]: true,
+  [Toteutus.AMMATILLINEN]: false,
+  [Toteutus.TUTKINTOONVALMENTAVA]: false,
+};
+
 export const Tutkintorakennepalaute = {
   [Toteutus.VAPAASIVISTYSTYO]: false,
   [Toteutus.AMMATILLINEN]: true,
