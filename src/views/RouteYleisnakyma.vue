@@ -1,6 +1,17 @@
 <template>
 <div class="yleisnakyma">
 
+  <div class="info-box sync-box" v-if="vanhentunutPeruste">
+    <h2>{{$t('paivita-tutkinnon-perusteet-toteutussuunnitelmiisi')}}</h2>
+    <div v-html="$t('paivita-tutkinnon-perusteet-toteutussuunnitelmiisi-huomioteksti')" />
+
+    <div class="d-flex justify-content-end">
+      <ep-button @click="paivitaPeruste" :showSpinner="syncing">
+        {{$t('paivita')}}
+      </ep-button>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col p-0">
       <ep-toteutussuunnitelma-aikataulu class="info-box" :aikatauluStore="aikatauluStore" :toteutussuunnitelma="toteutussuunnitelma"/>
@@ -35,6 +46,7 @@ import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { Toteutus } from '@/utils/toteutustypes';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
 
 @Component({
   components: {
@@ -43,6 +55,7 @@ import { Toteutus } from '@/utils/toteutustypes';
     EpToteutussuunnitelmanSisaltoviitteet,
     EpViimeaikainenToiminta,
     EpToteutussuunnitelmanTiedotteet,
+    EpButton,
   },
 })
 export default class RouteYleisnakyma extends Vue {
@@ -67,6 +80,8 @@ export default class RouteYleisnakyma extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
+  private syncing = false;
+
   async mounted() {
     await this.muokkaustietoStore.refetch();
   }
@@ -77,6 +92,23 @@ export default class RouteYleisnakyma extends Vue {
 
   get peruste() {
     return this.toteutussuunnitelma?.peruste;
+  }
+
+  get vanhentunutPeruste() {
+    return !!this.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
+  }
+
+  async paivitaPeruste() {
+    try {
+      this.syncing = true;
+      await this.toteutussuunnitelmaStore.paiviteOpetussunnitelmanPeruste();
+      this.$success(this.$t('tutkinnon-peruste-paivitetty') as string);
+    }
+    catch (e) {
+      this.$fail(this.$t('paivitys-epaonnistui') as string);
+    }
+
+    this.syncing = false;
   }
 }
 </script>
@@ -101,6 +133,10 @@ export default class RouteYleisnakyma extends Vue {
     border-radius: 0.5rem;
     box-shadow: 1px 1px 5px 0px rgba(0,26,88,0.1);
     min-width: 370px;
+  }
+
+  .sync-box {
+    background-color: $blue-lighten-4;
   }
 
 }

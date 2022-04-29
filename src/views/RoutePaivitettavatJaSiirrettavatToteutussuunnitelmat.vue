@@ -135,18 +135,18 @@ export default class RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat extend
         return value ? this.$kaanna(value) : '';
       },
     }, {
-      key: 'perusteVanha',
+      key: 'edellinenPaivitys',
       label: this.$t('edellinen-paivitys'),
       sortable: true,
       formatter: (value: any, key: string, item: any) => {
-        return value ? this.$sdt(value.globalVersion.aikaleima) : '';
+        return value ? this.$sdt(value) : '';
       },
     }, {
-      key: 'perusteUusi',
+      key: 'perustePaivittynyt',
       label: this.$t('peruste-paivittynyt'),
       sortable: true,
       formatter: (value: any, key: string, item: any) => {
-        return value ? this.$sd(value.globalVersion.aikaleima) : '';
+        return value ? this.$sd(value) : '';
       },
     }, {
       key: 'paivita',
