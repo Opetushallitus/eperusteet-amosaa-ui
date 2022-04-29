@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { OpetussuunnitelmaDto, Opetussuunnitelmat, NavigationNodeDto, OpetussuunnitelmaLuontiDto, Validointi, JulkaisuBaseDto, Julkaisut } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, Opetussuunnitelmat, NavigationNodeDto, OpetussuunnitelmaLuontiDto, Validointi, JulkaisuBaseDto, Julkaisut, VanhentunutPohjaperusteDto } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { createLogger } from '@shared/utils/logger';
 import { Virheet } from '@shared/stores/virheet';
@@ -15,12 +15,14 @@ export class ToteutussuunnitelmaStore {
     navigation: null as NavigationNodeDto | null,
     toteutussuunnitelmaStatus: null as Validointi | null,
     julkaisut: null as JulkaisuBaseDto[] | null,
+    vanhentunutPohjaperusteDto: null as VanhentunutPohjaperusteDto | null,
   })
 
   public readonly toteutussuunnitelma = computed(() => this.state.toteutussuunnitelma);
   public readonly navigation = computed(() => this.state.navigation);
   public readonly toteutussuunnitelmaStatus = computed(() => this.state.toteutussuunnitelmaStatus);
   public readonly julkaisut = computed(() => this.state.julkaisut);
+  public readonly vanhentunutPohjaperusteDto = computed(() => this.state.vanhentunutPohjaperusteDto);
 
   public async init(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
     this.state.toteutussuunnitelma = null;
@@ -32,6 +34,7 @@ export class ToteutussuunnitelmaStore {
       this.state.julkaisut = (await Julkaisut.getJulkaisut(toteutussuunnitelmaId, koulutustoimijaId)).data;
       await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
       await this.updateValidation(koulutustoimijaId, toteutussuunnitelmaId);
+      this.state.vanhentunutPohjaperusteDto = (await Opetussuunnitelmat.getPaivitettavaOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
     }
     catch (e) {
       logger.error(e);
@@ -58,6 +61,11 @@ export class ToteutussuunnitelmaStore {
       julkaisu
     )).data;
     this.state.julkaisut?.unshift(uusiJulkaisu);
+  }
+
+  public async paiviteOpetussunnitelmanPeruste() {
+    await Opetussuunnitelmat.paivitaOpetussuunnitelmanPeruste(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id));
+    this.state.vanhentunutPohjaperusteDto = null;
   }
 
   public async palautaJulkaisu(revision: number) {
