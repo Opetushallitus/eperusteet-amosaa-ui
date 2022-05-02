@@ -70,8 +70,10 @@
               <b-form-group :label="$t('voimassaolo')">
                 <div class="d-flex align-items-center">
                   <EpDatepicker v-model="suunnitelma.voimaantulo" />
-                  <div class="ml-2 mr-2">-</div>
-                  <EpDatepicker v-model="suunnitelma.paatospaivamaara" />
+                  <template v-if="suunnitelma.voimassaoloLoppuu">
+                    <div class="ml-2 mr-2">-</div>
+                    <EpDatepicker v-model="suunnitelma.voimassaoloLoppuu" />
+                  </template>
                 </div>
               </b-form-group>
             </b-col>

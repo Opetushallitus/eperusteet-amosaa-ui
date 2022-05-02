@@ -105,7 +105,7 @@ export default class RouteYleisnakyma extends Vue {
       this.$success(this.$t('tutkinnon-peruste-paivitetty') as string);
     }
     catch (e) {
-      this.$fail(this.$t('paivitys-epaonnistui') as string);
+      this.$fail(this.$t('virhe-palvelu-virhe') as string);
     }
 
     this.syncing = false;
