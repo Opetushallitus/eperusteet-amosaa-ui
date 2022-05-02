@@ -44,7 +44,7 @@
                 <div class="d-flex align-content-around flex-wrap">
                   <ep-datepicker v-model="data.opetussuunnitelma.voimaantulo" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.voimaantulo"/>
                   <template v-if="opetussuunnitelmaVoimassaoloLoppu">
-                    <div class="ml-2 mr-2 mt-2">-</div>
+                    <div class="ml-2 mr-2" :class="{'mt-2': isEditing}">-</div>
                     <ep-datepicker v-model="data.opetussuunnitelma.voimassaoloLoppuu" :is-editing="isEditing" type="sd"/>
                   </template>
                 </div>
