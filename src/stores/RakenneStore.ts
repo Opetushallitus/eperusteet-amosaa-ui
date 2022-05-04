@@ -35,45 +35,10 @@ export class RakenneStore implements IEditoitava {
   async load() {
     const otsikot = (await Sisaltoviitteet.getOtsikot(this.opetussuunnitelmaId, this.koulutustoimijaId)).data;
     const root = _.find(otsikot, otsikko => _.isNil(_.get(otsikko, '_vanhempi'))) as SisaltoViiteRakenneDto;
-
-    const perusRakenne = _.map(this.lapsetRakenteesta(otsikot, root.lapset, [
-      SisaltoViiteKevytDtoTyyppiEnum.TEKSTIKAPPALE,
-      SisaltoViiteKevytDtoTyyppiEnum.OPINTOKOKONAISUUS,
-      SisaltoViiteKevytDtoTyyppiEnum.KOULUTUKSENOSA,
-      SisaltoViiteKevytDtoTyyppiEnum.KOULUTUKSENOSAT,
-      SisaltoViiteKevytDtoTyyppiEnum.LAAJAALAINENOSAAMINEN,
-    ]),
-    sisaltoviite => this.sisaltoviiteLapsilla(sisaltoviite, otsikot));
-
-    const suorituspolutRoot = _.find(otsikot, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLUT) as any });
-    const suorituspolut = [
-      ...this.lapsetRakenteesta(otsikot, suorituspolutRoot?.lapset),
-      ...this.lapsetRakenteesta(otsikot, root?.lapset, [SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLKU]),
-      ...this.lapsetRakenteesta(otsikot, root?.lapset, [SisaltoViiteKevytDtoTyyppiEnum.OSASUORITUSPOLKU]),
-    ];
-
-    const tutkinnonosatRoot = _.find(otsikot, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSAT) as any });
-    const tutkinnonosat = [
-      ...this.lapsetRakenteesta(otsikot, tutkinnonosatRoot?.lapset),
-      ...this.lapsetRakenteesta(otsikot, root?.lapset, [SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSA]),
-    ];
-
+    const rakenne = _.map(this.lapsetRakenteesta(otsikot, root.lapset), sisaltoviite => this.sisaltoviiteLapsilla(sisaltoviite, otsikot));
     return {
       otsikot,
-      rakenteet: [{
-        otsikko: ToteutusPerusrakenneOtsikko[this.toteutus],
-        sisalto: perusRakenne,
-        lapset: 'lapset',
-      },
-      ...(this.toteutus === Toteutus.AMMATILLINEN ? [{
-        otsikko: 'suorituspolut',
-        sisalto: suorituspolut,
-      }] : []),
-      ...(this.toteutus === Toteutus.AMMATILLINEN ? [{
-        otsikko: 'tutkinnonosat',
-        sisalto: tutkinnonosat,
-      }] : []),
-      ],
+      rakenne,
     };
   }
 
@@ -95,22 +60,7 @@ export class RakenneStore implements IEditoitava {
 
   async save(data: any) {
     const root = _.find(data.otsikot, otsikko => _.isNil(otsikko._vanhempi)) as SisaltoViiteRakenneDto;
-
-    const suorituspolut = _.find(data.otsikot, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLUT) as any }) as SisaltoViiteRakenneDto;
-    const tutkinnonosat = _.find(data.otsikot, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSAT) as any }) as SisaltoViiteRakenneDto;
-
-    root.lapset = [
-      ...(suorituspolut ? [{
-        ...suorituspolut,
-        lapset: _.get(_.find(data.rakenteet, { otsikko: 'suorituspolut' }), 'sisalto'),
-      }] : []),
-      ...(tutkinnonosat ? [{
-        ...tutkinnonosat,
-        lapset: _.get(_.find(data.rakenteet, { otsikko: 'tutkinnonosat' }), 'sisalto'),
-      }] : []),
-      ..._.get(_.find(data.rakenteet, { otsikko: ToteutusPerusrakenneOtsikko[this.toteutus] }), 'sisalto'),
-    ];
-
+    root.lapset = data.rakenne;
     await Sisaltoviitteet.updateSisaltoViiteRakenne(this.opetussuunnitelmaId, root.id!, this.koulutustoimijaId, root);
     await this.updateNavigation();
   }
