@@ -658,3 +658,18 @@ export const ToteutussuunnitelmaSiirtoKielistykset = {
     siirratoteutus: 'siirra-toteutussuunnitelma',
   },
 };
+
+export const ToteutussuunnitelmaPerustePaivitysKielistykset = {
+  [Toteutus.VAPAASIVISTYSTYO]: {
+    otsikko: 'paivita-perusteet-opetussuunnitelmiisi',
+    teksti: 'paivita-perusteet-opetussuunnitelmiisi-huomioteksti',
+  },
+  [Toteutus.AMMATILLINEN]: {
+    otsikko: 'paivita-tutkinnon-perusteet-toteutussuunnitelmiisi',
+    teksti: 'paivita-tutkinnon-perusteet-toteutussuunnitelmiisi-huomioteksti',
+  },
+  [Toteutus.TUTKINTOONVALMENTAVA]: {
+    otsikko: 'paivita-perusteet-opetussuunnitelmiisi',
+    teksti: 'paivita-perusteet-opetussuunnitelmiisi-huomioteksti',
+  },
+};

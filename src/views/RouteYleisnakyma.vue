@@ -2,8 +2,8 @@
 <div class="yleisnakyma">
 
   <div class="info-box sync-box" v-if="vanhentunutPeruste">
-    <h2>{{$t('paivita-tutkinnon-perusteet-toteutussuunnitelmiisi')}}</h2>
-    <div v-html="$t('paivita-tutkinnon-perusteet-toteutussuunnitelmiisi-huomioteksti')" />
+    <h2>{{$t(perustePaivitysKielistys['otsikko'])}}</h2>
+    <div v-html="$t(perustePaivitysKielistys['teksti'])" />
 
     <div class="d-flex justify-content-end">
       <ep-button @click="paivitaPeruste" :showSpinner="syncing">
@@ -45,7 +45,7 @@ import { AikatauluStore } from '@/stores/AikatauluStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus, ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 
 @Component({
@@ -109,6 +109,10 @@ export default class RouteYleisnakyma extends Vue {
     }
 
     this.syncing = false;
+  }
+
+  get perustePaivitysKielistys() {
+    return ToteutussuunnitelmaPerustePaivitysKielistykset[this.toteutus];
   }
 }
 </script>
