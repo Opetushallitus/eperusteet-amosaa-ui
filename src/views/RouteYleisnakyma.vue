@@ -1,7 +1,7 @@
 <template>
 <div class="yleisnakyma">
 
-  <div class="info-box sync-box" v-if="vanhentunutPeruste">
+  <div class="info-box sync-box" v-if="vanhentunutPeruste" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
     <h2>{{$t(perustePaivitysKielistys['otsikko'])}}</h2>
     <div v-html="$t(perustePaivitysKielistys['teksti'])" />
 
