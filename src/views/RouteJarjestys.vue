@@ -6,26 +6,18 @@
       </template>
 
       <template v-slot:default="{ data, isEditing }">
-
-        <div v-for="(rakenne, index) in data.rakenteet" :key="'rakenne'+index" class="mb-5">
-          <h3>{{$t(rakenne.otsikko)}}</h3>
-
-          <ep-jarjesta v-if="rakenne.sisalto && rakenne.sisalto.length > 0"
+          <ep-jarjesta v-if="data.rakenne"
               :isEditable="isEditing"
-              v-model="rakenne.sisalto"
-              :group="rakenne.otsikko"
-              :child-field="rakenne.lapset">
+              v-model="data.rakenne"
+              :group="'rakenne'"
+              child-field="lapset">
             <template #default="{ node }">
               <span>
                 {{ $kaanna(node.nimi) }}
               </span>
             </template>
+            <div slot="chapter"></div>
           </ep-jarjesta>
-
-          <div v-else class="font-italic">{{$t('rakenne-puuttuu-' + rakenne.otsikko)}}</div>
-
-        </div>
-
       </template>
 
     </EpEditointi>
