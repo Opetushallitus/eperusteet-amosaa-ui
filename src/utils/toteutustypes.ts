@@ -669,7 +669,7 @@ export const ToteutussuunnitelmaPerustePaivitysKielistykset = {
     teksti: 'paivita-tutkinnon-perusteet-toteutussuunnitelmiisi-huomioteksti',
   },
   [Toteutus.TUTKINTOONVALMENTAVA]: {
-    otsikko: 'paivita-perusteet-opetussuunnitelmiisi',
-    teksti: 'paivita-perusteet-opetussuunnitelmiisi-huomioteksti',
+    otsikko: 'paivita-tutkinnon-perusteet-toteutussuunnitelmiisi',
+    teksti: 'paivita-tutkinnon-perusteet-toteutussuunnitelmiisi-huomioteksti',
   },
 };
