@@ -462,12 +462,12 @@ export default class RouteToteutussuunnitelma extends Vue {
         oikeus: 'luonti',
       },
       {
-        ...((!this.isArchived) && {
+        ...((!this.isArchived && (!this.isPublished || this.$hasOikeus('hallinta', 'oph'))) && {
           separator: true,
           oikeus: 'luonti',
         }),
       }, {
-        ...((!this.isArchived) && {
+        ...((!this.isArchived && (!this.isPublished || this.$hasOikeus('hallinta', 'oph'))) && {
           icon: ['far', 'folder'],
           click: vaihdaOpetussunnitelmaTilaConfirm,
           ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
