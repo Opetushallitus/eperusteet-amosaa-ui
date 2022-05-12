@@ -29,6 +29,18 @@
         </b-row>
         <b-row>
           <b-col md="10">
+            <b-form-group>
+              <div slot="label" class="d-flex align-items-center">
+                <div>{{$t('opintokokonaisuuden-koodi')}}</div>
+                <div class="ml-4 material-icons-outlined default-icon clickable" v-b-popover.hover.right="$t('opintokokonaisuus-koodi-selite')">info</div>
+              </div>
+              <div v-if="opintokokonaisuus.koodiArvo">{{opintokokonaisuus.koodiArvo}}</div>
+              <div v-else class="font-italic">{{$t('koodi-generoidaan-julkaisussa')}}</div>
+            </b-form-group>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col md="10">
             <b-form-group :label="$t('kuvaus')  + (isEditing  && tyyppi === TyyppiSource.OMA ? ' *' : '')" required>
               <EpContent
                 v-model="opintokokonaisuus.kuvaus"
