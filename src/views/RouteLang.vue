@@ -47,6 +47,7 @@ import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { getCasKayttajaKieli } from '@shared/api/common';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
+import { localhostOrigin } from '@shared/utils/esikatselu';
 
 const virhekuva = require('@assets/img/images/virhe.png');
 
@@ -104,7 +105,15 @@ export default class RouteLang extends Vue {
   }
 
   get toteutus() {
-    return _.has(this.$route.params, 'toteutus') ? _.get(this.$route.params, 'toteutus') : '';
+    return _.has(this.$route.params, 'toteutus') ? _.get(this.$route.params, 'toteutus') : this.defaultToteutus();
+  }
+
+  defaultToteutus() {
+    if (localhostOrigin()) {
+      return 'ammatillinen';
+    }
+
+    return '';
   }
 
   get headerStyle() {
