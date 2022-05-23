@@ -21,12 +21,13 @@
                 :per-page="perPage"
                 :current-page="currentPage">
           <template v-slot:cell(actions)="row">
-            <div class="float-right">
-                <ep-button @click="siirraToteutussuunnitelma(row.item)"
-                           variant="link">
-                {{ $t(kielistykset['siirratoteutus']) }}
-              </ep-button>
-            </div>
+              <ep-button
+                class="siirra"
+                @click="siirraToteutussuunnitelma(row.item)"
+                v-if="row.item.siirrettavissa"
+                variant="link">
+              {{ $t(kielistykset['siirratoteutus']) }}
+            </ep-button>
           </template>
         </b-table>
         <b-pagination v-model="currentPage"
@@ -53,6 +54,7 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { ToteutussuunnitelmaSiirtoKielistykset } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
+import { OphOrgOid } from '@/stores/kayttaja';
 
 @Component({
   components: {
@@ -102,6 +104,7 @@ export default class EpSiirtoModal extends Vue {
       .map(org => ({
         ...org,
         nimiLocalized: this.$kaanna(org.nimi!),
+        siirrettavissa: org.organisaatio !== OphOrgOid,
       }))
       .filter(this.$filterBy('nimiLocalized', this.nimiFilter))
       .value();
@@ -152,5 +155,9 @@ export default class EpSiirtoModal extends Vue {
 
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
+
+  ::v-deep .siirra .btn .teksti, ::v-deep .siirra .btn{
+    padding-left: 0px !important;
+  }
 
 </style>
