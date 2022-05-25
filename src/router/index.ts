@@ -69,10 +69,10 @@ const router = new VueRouter({
     props,
   },
   {
-    path: '/maintenance/julkaisekaikki',
-    redirect: () => {
+    path: '/maintenance/julkaise/:opstyyppi',
+    redirect: (to) => {
       (async () => {
-        await Maintenance.teeJulkaisut(true);
+        await Maintenance.teeJulkaisut(false, undefined, to.params.opstyyppi);
         console.log('Julkaisut aloitettu');
       })();
       return '/';
