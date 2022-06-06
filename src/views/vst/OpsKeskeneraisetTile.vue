@@ -19,10 +19,11 @@
 </template>
 
 <script lang="ts">
-import { TileBackground, Toteutus } from '@/utils/toteutustypes';
+import { TileBackground } from '@/utils/toteutustypes';
 import * as _ from 'lodash';
 import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import EpProgress from '@shared/components/EpProgressPopover/EpProgress.vue';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

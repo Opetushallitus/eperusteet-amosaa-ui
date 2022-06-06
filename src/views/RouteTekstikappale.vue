@@ -72,7 +72,7 @@ import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
 import { Koulutustyyppi } from '@shared/tyypit';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/generated/amosaa';
 
 @Component({

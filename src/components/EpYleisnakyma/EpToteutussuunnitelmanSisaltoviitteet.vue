@@ -20,7 +20,8 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSmallDataBox from '@shared/components/EpSmallDataBox/EpSmallDataBox.vue';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { SisaltoViiteKevytDtoTyyppiEnum, TutkinnonOsaKevytDtoTyyppiEnum } from '@shared/api/amosaa';
-import { Toteutus, YleisnakymaSisaltoviitteTiedot } from '@/utils/toteutustypes';
+import { YleisnakymaSisaltoviitteTiedot } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

@@ -83,7 +83,7 @@ import _ from 'lodash';
 
 import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
 
-import { ArkistointiTekstit, OpetussuunnitelmalistausKielistykset, TileBackground, ToteutuksenKoulutustyypit, Toteutus } from '@/utils/toteutustypes';
+import { ArkistointiTekstit, OpetussuunnitelmalistausKielistykset, TileBackground, ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
@@ -98,6 +98,7 @@ import { Opetussuunnitelmat, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTilaEnum 
 import { Kielet } from '@shared/stores/kieli';
 import OpsKeskeneraisetTile from './OpsKeskeneraisetTile.vue';
 import OpsJulkaistutTile from './OpsJulkaistutTile.vue';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

@@ -6,7 +6,8 @@
 import _ from 'lodash';
 import { Prop, Vue, Component } from 'vue-property-decorator';
 import EpOppaat from '@shared/components/EpOppaat/EpOppaat.vue';
-import { ToteutuksenKoulutustyypit, Toteutus } from '@/utils/toteutustypes';
+import { ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

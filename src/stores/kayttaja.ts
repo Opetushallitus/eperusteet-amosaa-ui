@@ -6,7 +6,8 @@ import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composit
 import { getSovellusoikeudet, IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
 import { Debounced } from '@shared/utils/delay';
 import { getCasKayttaja } from '@shared/api/common';
-import { Toteutus, ToteutusSovellus } from '@/utils/toteutustypes';
+import { ToteutusSovellus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 Vue.use(VueCompositionApi);
 

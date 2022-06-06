@@ -4,7 +4,7 @@ import { PageOpetussuunnitelmaDto, Opetussuunnitelmat } from '@shared/api/amosaa
 import _ from 'lodash';
 import { IToteutussuunnitelmaProvider } from '@/components/EpToteutussuunnitelmaListaus/types';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 Vue.use(VueCompositionApi);
 

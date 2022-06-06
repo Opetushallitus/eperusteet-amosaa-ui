@@ -154,13 +154,14 @@ import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
-import { OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset, OpetussuunnitelmaOppilaitostyyppi, OpetussuunnitelmaVoimassaoloLoppu } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaTyyppi, ToteutussuunnitelmaTiedotKielistykset, OpetussuunnitelmaOppilaitostyyppi, OpetussuunnitelmaVoimassaoloLoppu } from '@/utils/toteutustypes';
 import { Murupolku } from '@shared/stores/murupolku';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { Koodisto } from '@shared/api/eperusteet';
 import EpSelect from '@shared/components/forms/EpSelect.vue';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

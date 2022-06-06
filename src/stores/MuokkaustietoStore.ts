@@ -35,7 +35,7 @@ export class MuokkaustietoStore implements IMuokkaustietoProvider {
   }
 
   public async update() {
-    if (this.opetussuunnitelma.value.koulutustoimija.id && this.opetussuunnitelma.value.id) {
+    if (this.opetussuunnitelma.value?.koulutustoimija?.id && this.opetussuunnitelma.value?.id) {
       if (this.state.muokkaustiedot && !_.isEmpty(this.state.muokkaustiedot)) {
         this.state.viimeinenHaku = (await Muokkaustiedot.getPerusteenMuokkausTiedotWithLuomisaika(this.opetussuunnitelma.value.koulutustoimija.id, this.opetussuunnitelma.value.id, (_.last(this.state.muokkaustiedot) as any).luotu, this.state.hakuLukumaara) as any).data;
 

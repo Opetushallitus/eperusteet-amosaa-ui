@@ -32,7 +32,7 @@ import { RakenneStore } from '@/stores/RakenneStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpJarjesta from '@shared/components/EpJarjesta/EpJarjesta.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

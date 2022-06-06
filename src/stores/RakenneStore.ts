@@ -3,7 +3,7 @@ import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Sisaltoviitteet, SisaltoViiteKevytDto, SisaltoViiteRakenneDto, SisaltoViiteKevytDtoTyyppiEnum } from '@shared/api/amosaa';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 Vue.use(VueCompositionApi);
 

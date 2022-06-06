@@ -116,7 +116,7 @@ import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Page } from '@shared/tyypit';
 
 import { IToteutussuunnitelmaProvider } from './types';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';

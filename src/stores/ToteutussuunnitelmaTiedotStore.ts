@@ -8,7 +8,7 @@ import { Kielet } from '@shared/stores/kieli';
 import { Revision, Kieli } from '@shared/tyypit';
 import { requiredLokalisoituTeksti } from '@shared/validators/required';
 import { required, minValue, maxValue, requiredIf } from 'vuelidate/lib/validators';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { KuvaStore } from './KuvaStore';
 

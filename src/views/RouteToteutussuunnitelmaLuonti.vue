@@ -118,10 +118,10 @@ import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
-import { OpetussuunnitelmaLuontiKielistykset, TotetusOpetussuunnitelmaRoute, Toteutus } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaLuontiKielistykset, TotetusOpetussuunnitelmaRoute } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
-import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa } from '@shared/utils/perusteet';
+import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
 import { KayttajaStore } from '@/stores/kayttaja';
 
 @Component({

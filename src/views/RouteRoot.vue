@@ -2,6 +2,7 @@
   <div class="home-container minfull">
     <div class="header" ref="header" :style="headerStyle">
       <EpNavbar
+        :class="toteutus"
         :kayttaja="kayttaja"
         :koulutustoimija="koulutustoimija"
         :koulutustoimijat="koulutustoimijatOikeuksilla"
@@ -25,10 +26,9 @@ import { Meta } from '@shared/utils/decorators';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
-import { SovellusTitle, Toteutus } from '@/utils/toteutustypes';
-import { OIKEUS_KAANNOT } from '@shared/plugins/oikeustarkastelu';
-import { Koulutustoimijat } from '@shared/api/amosaa';
-import { KoulutustoimijaDto } from '@shared/generated/amosaa';
+import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
+import { Koulutustoimijat, KoulutustoimijaDto } from '@shared/api/amosaa';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {
@@ -122,7 +122,10 @@ export default class RouteRoot extends Vue {
   }
 
   get headerStyle() {
-    return toteutusBanner(this.toteutus);
+    return {
+      ...toteutusBanner(this.toteutus),
+      ...FrontpageHeaderStyles[this.toteutus],
+    };
   }
 
   get rootNavigation() {
@@ -151,6 +154,21 @@ export default class RouteRoot extends Vue {
     background-repeat: no-repeat;
     @media only screen and (min-width: 2503px)  {
       background-size: 100%;
+    }
+  }
+}
+
+.topbar {
+  &.kotoutumiskoulutus {
+    ::v-deep .navbar .breadcrumb .breadcrumb-item,
+    ::v-deep .navbar .breadcrumb .breadcrumb-item::before,
+    ::v-deep .navbar .breadcrumb .breadcrumb-item a,
+    ::v-deep .navbar #content-lang-selector a,
+    ::v-deep .navbar #content-lang-selector a .kieli-valikko,
+    ::v-deep .navbar #content-lang-selector a .kieli-valikko .kielivalitsin,
+    ::v-deep .navbar .kayttaja #kayttaja-dropdown a,
+    ::v-deep .navbar .kayttaja #kayttaja-dropdown a .kayttaja-valikko {
+      color: #000000;
     }
   }
 }

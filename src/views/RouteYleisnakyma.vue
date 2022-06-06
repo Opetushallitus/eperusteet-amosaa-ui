@@ -45,8 +45,9 @@ import { AikatauluStore } from '@/stores/AikatauluStore';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { Toteutus, ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
+import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

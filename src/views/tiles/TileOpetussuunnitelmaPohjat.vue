@@ -31,7 +31,7 @@ import { KayttajaStore } from '@/stores/kayttaja';
 import { EtusivuDto } from '@shared/api/amosaa';
 import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
 import { watch } from '@vue/composition-api';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

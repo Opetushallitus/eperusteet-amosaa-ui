@@ -3,7 +3,7 @@ import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { PageOpetussuunnitelmaDto, Opetussuunnitelmat } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { IToteutussuunnitelmaProvider } from '@/components/EpToteutussuunnitelmaListaus/types';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 Vue.use(VueCompositionApi);
 
