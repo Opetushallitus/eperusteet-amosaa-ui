@@ -40,6 +40,19 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
     return {
       type: 'koulutuksenosat',
     };
+  case 'koto_kielitaitotaso':
+    return {
+      type: 'koto_kielitaitotaso',
+    };
+  case 'koto_laajaalainenosaaminen':
+    return {
+      type: 'koto_laajaalainenosaaminen',
+    };
+  case 'koto_opinto':
+    return {
+      type: 'koto_opinto',
+    };
+
   default:
     console.error('Unknown route', route.name, route);
     break;

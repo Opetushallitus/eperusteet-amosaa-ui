@@ -188,25 +188,25 @@
               </div>
             </template>
 
-            <template v-slot:kotokielitaitotaso="{ item }">
+            <template v-slot:koto_kielitaitotaso="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'kotokielitaitotaso', params: {sisaltoviiteId: item.id} }">
+                <router-link :to="{ name: 'koto_kielitaitotaso', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
               </div>
             </template>
 
-            <template v-slot:kotoopinto="{ item }">
+            <template v-slot:koto_opinto="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'kotoopinto', params: {sisaltoviiteId: item.id} }">
+                <router-link :to="{ name: 'koto_opinto', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
               </div>
             </template>
 
-            <template v-slot:kotolaajaalainenosaaminen="{ item }">
+            <template v-slot:koto_laajaalainenosaaminen="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'kotolaajaalainenosaaminen', params: {sisaltoviiteId: item.id} }">
+                <router-link :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
                 </router-link>
               </div>

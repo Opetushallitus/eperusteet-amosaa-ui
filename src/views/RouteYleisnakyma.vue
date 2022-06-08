@@ -1,7 +1,8 @@
 <template>
 <div class="yleisnakyma">
 
-  <div class="info-box sync-box" v-if="vanhentunutPeruste" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
+  <EpSpinner v-if="vanhentunutPeruste === null" />
+  <div class="info-box sync-box" v-else-if="vanhentunutPeruste && !perustePaivitetty" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
     <h2>{{$t(perustePaivitysKielistys['otsikko'])}}</h2>
     <div v-html="$t(perustePaivitysKielistys['teksti'])" />
 
@@ -48,6 +49,7 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { Toteutus } from '@shared/utils/perusteet';
+import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 
 @Component({
   components: {
@@ -57,6 +59,7 @@ import { Toteutus } from '@shared/utils/perusteet';
     EpViimeaikainenToiminta,
     EpToteutussuunnitelmanTiedotteet,
     EpButton,
+    EpSpinner,
   },
 })
 export default class RouteYleisnakyma extends Vue {
@@ -82,6 +85,7 @@ export default class RouteYleisnakyma extends Vue {
   private toteutus!: Toteutus;
 
   private syncing = false;
+  private perustePaivitetty = false;
 
   async mounted() {
     await this.muokkaustietoStore.refetch();
@@ -96,14 +100,15 @@ export default class RouteYleisnakyma extends Vue {
   }
 
   get vanhentunutPeruste() {
-    return !!this.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
+    return this.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
   }
 
   async paivitaPeruste() {
     try {
       this.syncing = true;
       await this.toteutussuunnitelmaStore.paiviteOpetussunnitelmanPeruste();
-      this.$success(this.$t('tutkinnon-peruste-paivitetty') as string);
+      this.perustePaivitetty = true;
+      this.$success(this.$t('peruste-paivitetty') as string);
     }
     catch (e) {
       this.$fail(this.$t('virhe-palvelu-virhe') as string);

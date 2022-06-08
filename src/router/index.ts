@@ -341,17 +341,17 @@ const router = new VueRouter({
         props,
       }, {
         path: 'kotokielitaitotaso/:sisaltoviiteId',
-        name: 'kotokielitaitotaso',
+        name: 'koto_kielitaitotaso',
         component: RouteKotoKielitaitotaso,
         props,
       }, {
         path: 'kotolaajaalainenosaaminen/:sisaltoviiteId',
-        name: 'kotolaajaalainenosaaminen',
+        name: 'koto_laajaalainenosaaminen',
         component: RouteKotoLaajaAlainenOsaaminen,
         props,
       }, {
         path: 'kotopinto/:sisaltoviiteId',
-        name: 'kotoopinto',
+        name: 'koto_opinto',
         component: RouteKotoOpinto,
         props,
       },

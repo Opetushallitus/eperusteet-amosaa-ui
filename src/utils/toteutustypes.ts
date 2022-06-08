@@ -15,13 +15,6 @@ import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perustee
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { TuvaTekstikappaleStore } from '@/stores/TuvaTekstikappaleStore';
 
-// export enum Toteutus {
-//   VAPAASIVISTYSTYO = 'vapaasivistystyo',
-//   AMMATILLINEN = 'ammatillinen',
-//   TUTKINTOONVALMENTAVA = 'tutkintoonvalmentava',
-//   KOTOUTUMISKOULUTUS = 'kotoutumiskoulutus',
-// };
-
 export const ToteutuksenKoulutustyypit = {
   [Toteutus.VAPAASIVISTYSTYO]: EperusteetKoulutustyyppiRyhmat.vapaasivistystyo,
   [Toteutus.AMMATILLINEN]: EperusteetKoulutustyyppiRyhmat.ammatillinen,
@@ -855,4 +848,11 @@ export const ToteutussuunnitelmaPerustePaivitysKielistykset = {
     otsikko: 'paivita-perusteet-opetussuunnitelmiisi',
     teksti: 'paivita-perusteet-opetussuunnitelmiisi-huomioteksti',
   },
+};
+
+export const PdfLuontiSelite = {
+  [Toteutus.VAPAASIVISTYSTYO]: 'luo-pdf-selite',
+  [Toteutus.AMMATILLINEN]: 'luo-pdf-selite-amosaa',
+  [Toteutus.TUTKINTOONVALMENTAVA]: 'luo-pdf-selite',
+  [Toteutus.KOTOUTUMISKOULUTUS]: 'luo-pdf-selite',
 };

@@ -4,7 +4,7 @@
       <template #header="{ data }">
         <h2 class="m-0">{{ $kaanna(data.perusteenOsa.nimi) }}</h2>
       </template>
-      <template #default="{ data, isEditing, validation, data: { perusteenOsa, kotoLaajaAlainenOsaaminen } }">
+      <template #default="{ isEditing, data: { perusteenOsa, kotoLaajaAlainenOsaaminen } }">
 
         <EpContent
           class="mb-4"
@@ -49,6 +49,7 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { YleinenSisaltoViiteStore } from '@/stores/YleinenSisaltoViiteStore';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
+import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -71,7 +72,6 @@ export default class RouteKotoLaajaAlainenOsaaminen extends Vue {
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
   private editointiStore: EditointiStore | null = null;
-  private laajaAlaisetOsaamiset: any[] = [];
 
   @Watch('sisaltoviiteId', { immediate: true })
   sisaltoviiteChange() {
@@ -100,9 +100,7 @@ export default class RouteKotoLaajaAlainenOsaaminen extends Vue {
           this.koulutustoimijaId,
           this.sisaltoviiteId,
           this.versionumero,
-          this,
-          () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
-          this.toteutussuunnitelmaStore.toteutussuunnitelma.value));
+          this.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
     }
   }
 

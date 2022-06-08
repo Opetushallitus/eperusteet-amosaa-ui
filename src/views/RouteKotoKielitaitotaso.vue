@@ -4,7 +4,7 @@
       <template #header="{ data }">
         <h2 class="m-0">{{ $kaanna(data.perusteenOsa.nimi) }}</h2>
       </template>
-      <template #default="{ data, isEditing, validation, data: { perusteenOsa, kotoKielitaitotaso } }">
+      <template #default="{ isEditing, data: { perusteenOsa, kotoKielitaitotaso, perusteenLaajaAlaisetOsaamiset } }">
 
         <EpContent
           class="mb-4"
@@ -18,7 +18,31 @@
           v-model="perusteenOsa.taitotasot"
           :isEditing="false"
           :kuvaHandler="kuvaHandler"
-          taitotasoTyyppi="kielitaitotaso"/>
+          taitotasoTyyppi="kielitaitotaso">
+
+          <template #paikallinentarkennus="{ nimi }">
+              <h4 slot="label" class="mt-4">{{$t('tavoitteiden-paikallinen-tarkennus')}}</h4>
+              <EpContent
+                layout="normal"
+                v-model="kotoTaitotasotByUri[nimi.uri].tavoiteTarkennus"
+                :is-editable="isEditing"
+                v-if="isEditing || kotoTaitotasotByUri[nimi.uri].tavoiteTarkennus"
+                :kuvaHandler="kuvaHandler"/>
+              <EpAlert
+                v-if="!isEditing && !kotoTaitotasotByUri[nimi.uri].tavoiteTarkennus"
+                :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"/>
+          </template>
+
+        </EpKotoTaitotasot>
+
+        <hr/>
+
+        <EpKotoLaajaAlainenOsaaminen
+          v-model="kotoKielitaitotaso.laajaAlaisetOsaamiset"
+          :perusteenLaajaAlaisetOsaamiset="perusteenLaajaAlaisetOsaamiset"
+          :kuvaHandler="kuvaHandler"
+          :isEditing="isEditing"
+        />
 
       </template>
     </EpEditointi>
@@ -33,10 +57,13 @@ import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { YleinenSisaltoViiteStore } from '@/stores/YleinenSisaltoViiteStore';
+import { KotoSisaltoStore } from '@/stores/KotoSisaltoStore';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpKotoTaitotasot from '@shared/components/EpKotoTaitotasot/EpKotoTaitotasot.vue';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpKotoLaajaAlainenOsaaminen from '@/components/EpKotoLaajaAlainenOsaaminen/EpKotoLaajaAlainenOsaaminen.vue';
+import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -44,6 +71,8 @@ import EpKotoTaitotasot from '@shared/components/EpKotoTaitotasot/EpKotoTaitotas
     EpContent,
     EpAlert,
     EpKotoTaitotasot,
+    EpButton,
+    EpKotoLaajaAlainenOsaaminen,
   },
 })
 export default class RouteKotoKielitaitotaso extends Vue {
@@ -60,7 +89,6 @@ export default class RouteKotoKielitaitotaso extends Vue {
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
   private editointiStore: EditointiStore | null = null;
-  private laajaAlaisetOsaamiset: any[] = [];
 
   @Watch('sisaltoviiteId', { immediate: true })
   sisaltoviiteChange() {
@@ -81,17 +109,19 @@ export default class RouteKotoKielitaitotaso extends Vue {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
   }
 
+  get kotoTaitotasotByUri() {
+    return _.keyBy(this.editointiStore?.data.value.kotoKielitaitotaso.taitotasot, 'koodiUri');
+  }
+
   fetch() {
     if (this.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
       this.editointiStore = new EditointiStore(
-        new YleinenSisaltoViiteStore(
+        new KotoSisaltoStore(
           this.toteutussuunnitelmaId,
           this.koulutustoimijaId,
           this.sisaltoviiteId,
           this.versionumero,
-          this,
-          () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
-          this.toteutussuunnitelmaStore.toteutussuunnitelma.value));
+          this.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
     }
   }
 

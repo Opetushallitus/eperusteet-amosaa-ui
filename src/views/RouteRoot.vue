@@ -1,6 +1,6 @@
 <template>
   <div class="home-container minfull">
-    <div class="header" ref="header" :style="headerStyle">
+    <div class="header" ref="header" :style="headerStyle" :class="toteutus">
       <EpNavbar
         :class="toteutus"
         :kayttaja="kayttaja"
@@ -158,7 +158,7 @@ export default class RouteRoot extends Vue {
   }
 }
 
-.topbar {
+.header {
   &.kotoutumiskoulutus {
     ::v-deep .navbar .breadcrumb .breadcrumb-item,
     ::v-deep .navbar .breadcrumb .breadcrumb-item::before,
@@ -167,7 +167,8 @@ export default class RouteRoot extends Vue {
     ::v-deep .navbar #content-lang-selector a .kieli-valikko,
     ::v-deep .navbar #content-lang-selector a .kieli-valikko .kielivalitsin,
     ::v-deep .navbar .kayttaja #kayttaja-dropdown a,
-    ::v-deep .navbar .kayttaja #kayttaja-dropdown a .kayttaja-valikko {
+    ::v-deep .navbar .kayttaja #kayttaja-dropdown a .kayttaja-valikko,
+    ::v-deep .portal-menu h1 .asetukset .hallinta {
       color: #000000;
     }
   }

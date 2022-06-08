@@ -2,8 +2,7 @@ import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { PerusteDto, Ulkopuoliset, PerusteDtoKoulutustyyppiEnum, PerusteKevytDto } from '@shared/api/amosaa';
 import _ from 'lodash';
-import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
-import { Toteutus } from '@shared/utils/perusteet';
+import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { Koulutustyyppi } from '@shared/tyypit';
 
 Vue.use(VueCompositionApi);

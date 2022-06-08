@@ -14,8 +14,6 @@ export class YleinenSisaltoViiteStore extends AbstractSisaltoviiteStore implemen
     public koulutustoimijaId: string,
     public sisaltoviiteId: number,
     public versionumero: number,
-    public el: any,
-    public updateNavigation: Function,
     public opetussuunnitelma: OpetussuunnitelmaDto,
   ) {
     super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero);
@@ -49,7 +47,7 @@ export class YleinenSisaltoViiteStore extends AbstractSisaltoviiteStore implemen
   public features(data: any) {
     return computed(() => {
       return {
-        editable: this.opetussuunnitelma.value?.tyyppi !== 'opspohja',
+        editable: _.toString(this.opetussuunnitelma?.tyyppi) !== 'opspohja',
         removable: true,
         hideable: false,
         recoverable: true,

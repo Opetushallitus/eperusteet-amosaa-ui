@@ -20,7 +20,7 @@
             </EpCollapse>
 
             <EpCollapse v-if="data.pohjanTekstikappale && data.pohjanTekstikappale.teksti">
-              <h4 slot="header">{{$t('pohjan-teksti')}}</h4>
+              <h4 slot="header">{{$t('pohjan-teksti')}} <template v-if="pohja">({{$kaanna(pohja.nimi)}})</template></h4>
               <ep-content layout="normal" v-model="data.pohjanTekstikappale.teksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
               <ep-toggle v-model="data.naytaPohjanTeksti" :is-editing="true" v-if="isEditing">
                 {{$t('nayta-pohjan-teksti')}}
@@ -144,6 +144,10 @@ export default class RouteTekstikappale extends Vue {
     return this.toteutussuunnitelma?.koulutustyyppi as any !== Koulutustyyppi.tutkintoonvalmentava
       || this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS)
       || !this.editointiStore?.data.value.perusteteksti;
+  }
+
+  get pohja() {
+    return this.toteutussuunnitelmaStore.pohja.value;
   }
 }
 </script>
