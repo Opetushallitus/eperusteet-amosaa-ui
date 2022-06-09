@@ -70,7 +70,7 @@
                 </template>
 
                 <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index"
-                  v-oikeustarkastelu="{ oikeus: ratasvalinta.oikeus }">
+                  v-oikeustarkastelu="ratasvalinta.oikeus">
 
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
 
@@ -441,37 +441,37 @@ export default class RouteToteutussuunnitelma extends Vue {
         text: ToteutussuunnitelmaTiedotKielistykset[this.opetussuunnitelmaTyyppi]['title'],
         route: 'toteutussuunnitelmantiedot',
         icon: 'info',
-        oikeus: 'luku',
+        oikeus: { oikeus: 'luku' },
       },
       {
         text: 'kayttooikeudet',
         route: 'oikeudet',
         icon: 'kaytto-oikeus',
-        oikeus: 'luonti',
+        oikeus: { oikeus: 'luonti' },
       },
       {
         text: 'luo-pdf',
         route: 'pdfLuonti',
         icon: 'luo-pdf',
-        oikeus: 'muokkaus',
+        oikeus: { oikeus: 'muokkaus' },
       },
       {
         text: 'poistetut-sisallot',
         route: 'poistetutsisallot',
         icon: 'roskalaatikko',
-        oikeus: 'luonti',
+        oikeus: { oikeus: 'luonti' },
       },
       {
         ...((!this.isArchived && (!this.isPublished || this.$hasOikeus('hallinta', 'oph'))) && {
           separator: true,
-          oikeus: 'luonti',
+          oikeus: { oikeus: 'hallinta', kohde: 'oph' },
         }),
       }, {
         ...((!this.isArchived && (!this.isPublished || this.$hasOikeus('hallinta', 'oph'))) && {
           icon: ['far', 'folder'],
           click: vaihdaOpetussunnitelmaTilaConfirm,
           ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
-          oikeus: 'luonti',
+          oikeus: { oikeus: 'hallinta', kohde: 'oph' },
         }),
       },
     ];
