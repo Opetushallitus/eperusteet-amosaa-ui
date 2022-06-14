@@ -127,7 +127,7 @@ import { requiredOneLang, translated } from '@shared/validators/required';
 import { Kieli } from '@shared/tyypit';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { KoulutustoimijaBaseDto } from '../../eperusteet-frontend-utils/vue/src/generated/amosaa';
-import { Toteutus } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

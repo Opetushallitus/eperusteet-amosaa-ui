@@ -28,10 +28,7 @@ import { Vue, Component, Prop, Provide, Watch } from 'vue-property-decorator';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { KayttajaStore } from '@/stores/kayttaja';
-import { EtusivuDto } from '@shared/api/amosaa';
-import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
-import { watch } from '@vue/composition-api';
-import { Toteutus } from '@/utils/toteutustypes';
+import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

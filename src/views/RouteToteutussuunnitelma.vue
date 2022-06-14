@@ -188,6 +188,30 @@
               </div>
             </template>
 
+            <template v-slot:koto_kielitaitotaso="{ item }">
+              <div class="menu-item">
+                <router-link :to="{ name: 'koto_kielitaitotaso', params: {sisaltoviiteId: item.id} }">
+                  {{ $kaanna(item.label) }}
+                </router-link>
+              </div>
+            </template>
+
+            <template v-slot:koto_opinto="{ item }">
+              <div class="menu-item">
+                <router-link :to="{ name: 'koto_opinto', params: {sisaltoviiteId: item.id} }">
+                  {{ $kaanna(item.label) }}
+                </router-link>
+              </div>
+            </template>
+
+            <template v-slot:koto_laajaalainenosaaminen="{ item }">
+              <div class="menu-item">
+                <router-link :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }">
+                  {{ $kaanna(item.label) }}
+                </router-link>
+              </div>
+            </template>
+
             <template v-slot:new>
               <div class="mb-3">
                 <EpSisaltoLisays
@@ -280,12 +304,13 @@ import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
 import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { Murupolku } from '@shared/stores/murupolku';
-import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, Toteutus, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
+import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { tileBackgroundColor } from '@shared/utils/bannerIcons';
 import { LinkkiHandler, routeToNode } from '@/utils/routing';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {
@@ -493,6 +518,10 @@ export default class RouteToteutussuunnitelma extends Vue {
     return this.toteutus === Toteutus.TUTKINTOONVALMENTAVA;
   }
 
+  get isKoto(): boolean {
+    return this.toteutus === Toteutus.KOTOUTUMISKOULUTUS;
+  }
+
   get tekstikappaleet() {
     return _.filter(this.naviStore!.connected.value, node => node.type === (NavigationNodeDtoTypeEnum.Tekstikappale as string));
   }
@@ -590,7 +619,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get salliTekstikappaleLisays() {
-    return this.isTutkintoonValmentava || this.isVapaaSivistystyo;
+    return this.isTutkintoonValmentava || this.isVapaaSivistystyo || this.isKoto;
   }
 }
 </script>

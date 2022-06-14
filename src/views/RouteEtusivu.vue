@@ -44,8 +44,8 @@ import TileUkk from './tiles/TileUkk.vue';
 import TileTilastot from './tiles/TileTilastot.vue';
 import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
-import { EperusteetKoulutustyyppiRyhmat } from '@shared/utils/perusteet';
-import { SovellusTitle, Toteutus } from '@/utils/toteutustypes';
+import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
+import { SovellusTitle } from '@/utils/toteutustypes';
 import EpFeedbackModal from '@shared/components/EpFeedback/EpFeedbackModal.vue';
 import { PalautteetStore } from '@/stores/PalautteetStore';
 

@@ -7,7 +7,7 @@
     <div class="sisalto">
       <div class="mb-4">
         <h3>{{ $t('luo-ja-lataa-pdf') }}</h3>
-        <p>{{ $t('luo-pdf-selite-amosaa')}}</p>
+        <p>{{ $t(selite)}}</p>
         <ep-pdf-luonti :store="dokumenttiStore" :pdfnimi="$kaanna(opetussuunnitelmanimi)"/>
 
         <h3 class="mt-5">{{$t('lisaasetukset')}}</h3>
@@ -39,6 +39,8 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import EpPdfLuonti from '@shared/components/EpPdfLuonti/EpPdfLuonti.vue';
 import EpFileupload from '@shared/components/EpFileupload/EpFileupload.vue';
 import EpPublicImage from '@shared/components/EpPublicImage/EpPublicImage.vue';
+import { Toteutus } from '@shared/utils/perusteet';
+import { PdfLuontiSelite } from '@/utils/toteutustypes';
 
 @Component({
   components: {
@@ -53,6 +55,9 @@ import EpPublicImage from '@shared/components/EpPublicImage/EpPublicImage.vue';
 export default class RoutePdfLuonti extends Vue {
   @Prop({ required: true })
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
 
   private dokumenttiStore: DokumenttiStore | null = null;
 
@@ -101,6 +106,10 @@ export default class RoutePdfLuonti extends Vue {
 
   removeImage(tyyppi) {
     this.dokumenttiStore!.removeImage(tyyppi);
+  }
+
+  get selite() {
+    return PdfLuontiSelite[this.toteutus];
   }
 }
 

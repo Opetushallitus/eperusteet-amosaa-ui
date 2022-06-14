@@ -3,7 +3,8 @@ import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import * as _ from 'lodash';
 import { ITPalauteProvider, Palaute } from '@shared/stores/types';
 import { Api, PalauteDto, Palautteet } from '@shared/api/amosaa';
-import { PalauteKey, Toteutus, Tutkintorakennepalaute } from '@/utils/toteutustypes';
+import { PalauteKey, Tutkintorakennepalaute } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 Vue.use(VueCompositionApi);
 export class PalautteetStore implements ITPalauteProvider {

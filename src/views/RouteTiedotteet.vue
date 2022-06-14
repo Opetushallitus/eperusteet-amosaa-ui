@@ -26,7 +26,8 @@ import { Debounced } from '@shared/utils/delay';
 
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
 
-import { TiedoteJulkaisupaikka, Toteutus } from '@/utils/toteutustypes';
+import { TiedoteJulkaisupaikka } from '@/utils/toteutustypes';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

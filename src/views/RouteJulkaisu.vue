@@ -126,7 +126,7 @@ import { Component, Mixins, Prop, Vue, Watch } from 'vue-property-decorator';
 
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 
-import { JulkaisuKielistykset, OpetussuunnitelmaTyyppi, Toteutus } from '@/utils/toteutustypes';
+import { JulkaisuKielistykset, OpetussuunnitelmaTyyppi } from '@/utils/toteutustypes';
 
 import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue';
 
@@ -142,6 +142,7 @@ import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButton.vue';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

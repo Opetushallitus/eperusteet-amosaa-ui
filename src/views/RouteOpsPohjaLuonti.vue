@@ -62,10 +62,11 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpetussuunnitelmaLuontiDtoTyyppiEnum, PerusteDto } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
 import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
-import { OpetussuunnitelmaPohjaLuontiStepSetups, Toteutus } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaPohjaLuontiStepSetups } from '@/utils/toteutustypes';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import { Validations } from 'vuelidate-property-decorators';
+import { Toteutus } from '@shared/utils/perusteet';
 
 @Component({
   components: {

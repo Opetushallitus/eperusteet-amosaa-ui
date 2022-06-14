@@ -37,6 +37,9 @@ import RouteOpetussuunnitelmaListaus from '@/views/vst/RouteOpetussuunnitelmaLis
 import RouteOpsPohjaLuonti from '@/views/RouteOpsPohjaLuonti.vue';
 import RouteOppaat from '@/views/RouteOppaat.vue';
 import RouteKoulutuksenOsat from '@/views/RouteKoulutuksenOsat.vue';
+import RouteKotoKielitaitotaso from '@/views/RouteKotoKielitaitotaso.vue';
+import RouteKotoLaajaAlainenOsaaminen from '@/views/RouteKotoLaajaAlainenOsaaminen.vue';
+import RouteKotoOpinto from '@/views/RouteKotoOpinto.vue';
 
 import { stores } from '@/stores/index';
 import { Virheet } from '@shared/stores/virheet';
@@ -335,6 +338,21 @@ const router = new VueRouter({
         path: 'koulutuksenosat',
         name: 'koulutuksenosat',
         component: RouteKoulutuksenOsat,
+        props,
+      }, {
+        path: 'kotokielitaitotaso/:sisaltoviiteId',
+        name: 'koto_kielitaitotaso',
+        component: RouteKotoKielitaitotaso,
+        props,
+      }, {
+        path: 'kotolaajaalainenosaaminen/:sisaltoviiteId',
+        name: 'koto_laajaalainenosaaminen',
+        component: RouteKotoLaajaAlainenOsaaminen,
+        props,
+      }, {
+        path: 'kotopinto/:sisaltoviiteId',
+        name: 'koto_opinto',
+        component: RouteKotoOpinto,
         props,
       },
       ] }, {
