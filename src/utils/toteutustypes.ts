@@ -14,6 +14,7 @@ import { EperusteetPalautekanava, Koulutustyyppi } from '@shared/tyypit';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { TuvaTekstikappaleStore } from '@/stores/TuvaTekstikappaleStore';
+import _ from 'lodash';
 
 export const ToteutuksenKoulutustyypit = {
   [Toteutus.VAPAASIVISTYSTYO]: EperusteetKoulutustyyppiRyhmat.vapaasivistystyo,
@@ -111,6 +112,11 @@ export const TotetusOpetussuunnitelmaRoute = {
 };
 
 export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
+  // PURKKARATKAISU SIIHEN, JOS JOKIN VIRKAILIJA SUORALLA OSOITTEELLA MENEE VIELÄ UUTEEN KÄYTTÖLIITTYMÄÄN
+  if (_.includes(window.location.origin, 'virkailija.')) {
+    return [];
+  }
+
   return [
     ...(stores.kayttajaStore.ophSelected.value ? [] : [{
       component: TileToteutussuunnitelmat,
