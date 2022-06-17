@@ -81,7 +81,7 @@ export class KayttajaStore implements IOikeusProvider {
       this.state.tiedot = (await KayttajaApi.getKayttaja()).data;
       await KayttajaApi.updateKoulutustoimijat();
       this.state.koulutustoimijat = (await KayttajaApi.getKoulutustoimijat()).data;
-      this.fetchOikeudet();
+      await this.fetchOikeudet();
       logger.info('Käyttäjän tiedot', this.tiedot.value);
       this.state.ophKoulutustoimija = (await JulkinenApi.getKoulutustoimijaByOid(OphOrgOid)).data;
     }
