@@ -34,7 +34,7 @@ export class ToteutussuunnitelmaStore {
     try {
       this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
       if (_.get(this.state.toteutussuunnitelma, '_pohja')) {
-        this.state.pohja = (await Opetussuunnitelmat.getOpetussuunnitelmaKevyt(_.get(this.state.toteutussuunnitelma, '_pohja'), koulutustoimijaId)).data;
+        this.state.pohja = (await Opetussuunnitelmat.getOpetussuunnitelmaPohjaKevyt(toteutussuunnitelmaId, koulutustoimijaId)).data;
       }
       this.state.julkaisut = (await Julkaisut.getJulkaisut(toteutussuunnitelmaId, koulutustoimijaId)).data;
       await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
