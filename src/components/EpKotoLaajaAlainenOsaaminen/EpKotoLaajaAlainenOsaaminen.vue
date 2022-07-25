@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h2>{{$t('laaja-alainen-osaaminen')}}</h2>
-    <div class="mb-4">{{$t('koto-laaja-alainen-osaaminen-paikallinen-tarkennus-selite')}}</div>
+    <div class="d-flex mb-4">
+      <h2>{{$t('laaja-alainen-osaaminen')}}</h2>
+      <div class="ml-4 material-icons-outlined default-icon clickable" v-b-popover.hover.right="$t('koto-laaja-alainen-osaaminen-paikallinen-tarkennus-selite')">info</div>
+    </div>
 
     <div v-for="(lao, index) in laajaAlaisetOsaamiset" :key="'lao' + index">
 
