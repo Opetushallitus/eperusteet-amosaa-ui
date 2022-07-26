@@ -9,14 +9,14 @@
     <div v-else>
 
       <div class="row">
-        <div class="col-xl-3 col-md-6 col-sm-12">
+        <div class="col-xl-6 col-md-6 col-sm-12">
           <ep-form-content>
             <label slot="header" v-html="'&nbsp;'"></label>
-            <ep-search v-model="query" :placeholder="$t('etsi-toteutussuunnitelmia')"/>
+            <ep-search max-width v-model="query" :placeholder="$t('etsi-toteutussuunnitelmia')"/>
           </ep-form-content>
         </div>
 
-        <div class="col-xl-3 col-md-6 col-sm-12">
+        <div class="col-xl-6 col-md-6 col-sm-12">
           <ep-form-content name="koulutustyyppi">
             <ep-multi-select :multiple="true"
               id="koulutustyyppiFilter"
@@ -30,7 +30,7 @@
           </ep-form-content>
         </div>
 
-        <div class="col-xl-3 col-md-6 col-sm-12">
+        <div class="col-xl-4 col-md-6 col-sm-12">
           <ep-form-content name="tila">
             <ep-multi-select :multiple="true"
               id="tilaFilter"
@@ -44,7 +44,7 @@
           </ep-form-content>
         </div>
 
-        <div class="col-xl-3 col-md-6 col-sm-12">
+        <div class="col-xl-4 col-md-6 col-sm-12">
           <ep-form-content name="voimassaolo">
             <ep-multi-select :multiple="true"
               id="voimassaoloFilter"
@@ -54,6 +54,21 @@
               :placeholder="$t('kaikki')"
               track-by="value"
               label="text">
+            </ep-multi-select>
+          </ep-form-content>
+        </div>
+
+        <div class="col-xl-4 col-md-6 col-sm-12">
+          <ep-form-content name="julkaisuvuosi">
+            <ep-multi-select :multiple="true"
+              id="julkaisuvuosiFilter"
+              :is-editing="true"
+              :options="julkaisuvuosiItems"
+              v-model="valitutJulkaisuvuodet"
+              :placeholder="$t('kaikki')">
+              <template v-slot:option="{ option }">
+                {{ option }}
+              </template>
             </ep-multi-select>
           </ep-form-content>
         </div>
@@ -85,6 +100,7 @@
             </ep-multi-select>
           </ep-form-content>
         </div>
+
       </div>
 
       <h2 class="mt-5">{{$t('toteutussuunnitelmien-lukumaarat')}} </h2>
@@ -148,11 +164,10 @@ import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
-import { ryhmatKoulutustyypeilla } from '@shared/utils/perusteet';
+import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import * as _ from 'lodash';
 import { TilastotStore } from '@/stores/TilastotStore';
-import { OpetussuunnitelmaTilastoDtoTilaEnum } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 
 @Component({
@@ -168,6 +183,9 @@ export default class RouteTilastot extends Vue {
   @Prop({ required: true })
   private tilastotStore!: TilastotStore;
 
+  @Prop({ required: true })
+  private toteutus!: Toteutus;
+
   private opsPage = 1;
   private ktPage = 1;
   private perPage = 10;
@@ -177,9 +195,10 @@ export default class RouteTilastot extends Vue {
   private valitutVoimassaolot: [] = [];
   private valitutPerusteet: [] = [];
   private valitutKoulutustoimijat: [] = [];
+  private valitutJulkaisuvuodet: [] = [];
 
   async mounted() {
-    await this.tilastotStore.fetch();
+    await this.tilastotStore.fetch(EperusteetKoulutustyyppiRyhmat[this.toteutus]);
   }
 
   get toteutussuunnitelmat() {
@@ -201,6 +220,7 @@ export default class RouteTilastot extends Vue {
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutVoimassaolot) || _.includes(_.map(this.valitutVoimassaolot, 'value'), toteutussuunnitelma.voimassaolo))
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutPerusteet) || _.includes(_.map(this.valitutPerusteet, 'value'), toteutussuunnitelma.perusteId))
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutKoulutustoimijat) || _.includes(_.map(this.valitutKoulutustoimijat, 'value'), toteutussuunnitelma.koulutustoimija!.id))
+      .filter(toteutussuunnitelma => _.isEmpty(this.valitutJulkaisuvuodet) || _.includes(this.valitutJulkaisuvuodet, toteutussuunnitelma.julkaisuVuosi))
       .sortBy(toteutussuunnitelma => Kielet.kaanna(toteutussuunnitelma.nimi))
       .value();
   }
@@ -273,6 +293,15 @@ export default class RouteTilastot extends Vue {
           // $isDisabled: _.size(_.groupBy(this.toteutussuunnitelmatFiltered, 'voimassaolo')[toteutussuunnitelma.voimassaolo!]) === 0,
         };
       })
+      .uniqWith(_.isEqual)
+      .value();
+  }
+
+  get julkaisuvuosiItems() {
+    return _.chain(this.toteutussuunnitelmat)
+      .filter(toteutussuunnitelma => toteutussuunnitelma.julkaisuVuosi !== null)
+      .map(toteutussuunnitelma => toteutussuunnitelma.julkaisuVuosi)
+      .sort()
       .uniqWith(_.isEqual)
       .value();
   }
