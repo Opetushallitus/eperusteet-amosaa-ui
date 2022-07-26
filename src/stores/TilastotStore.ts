@@ -11,7 +11,7 @@ export class TilastotStore {
 
   public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
 
-  public async fetch() {
-    this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getOpetussuunnitelmaTilastot('0')).data as any;
+  public async fetch(koulutustyypit) {
+    this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getOpetussuunnitelmaTilastot(koulutustyypit, '0')).data as any;
   }
 }
