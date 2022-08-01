@@ -461,7 +461,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get ratasvalinnat() {
-    return [
+    let rattaat = [
       {
         text: ToteutussuunnitelmaTiedotKielistykset[this.opetussuunnitelmaTyyppi]['title'],
         route: 'toteutussuunnitelmantiedot',
@@ -486,20 +486,30 @@ export default class RouteToteutussuunnitelma extends Vue {
         icon: 'roskalaatikko',
         oikeus: { oikeus: 'luonti' },
       },
-      {
-        ...((!this.isArchived && (!this.isPublished || this.$hasOikeus('hallinta', 'oph'))) && {
+    ];
+
+    if (!this.isArchived && (this.isDraft || this.$hasOikeus('hallinta', 'oph'))) {
+      let oikeus = { oikeus: 'hallinta', kohde: 'oph' };
+      if (this.isDraft) {
+        oikeus = { oikeus: 'hallinta', kohde: 'toteutussuunnitelma' };
+      }
+
+      rattaat = [
+        ...rattaat,
+        {
           separator: true,
-          oikeus: { oikeus: 'hallinta', kohde: 'oph' },
-        }),
-      }, {
-        ...((!this.isArchived && (!this.isPublished || this.$hasOikeus('hallinta', 'oph'))) && {
+          oikeus,
+        },
+        {
           icon: ['far', 'folder'],
           click: vaihdaOpetussunnitelmaTilaConfirm,
           ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
-          oikeus: { oikeus: 'hallinta', kohde: 'oph' },
-        }),
-      },
-    ];
+          oikeus,
+        },
+      ];
+    }
+
+    return rattaat;
   }
 
   ratasClick(clickFn, meta) {
