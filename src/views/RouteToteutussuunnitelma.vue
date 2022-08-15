@@ -175,7 +175,7 @@
             <template v-slot:koulutuksenosa="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }">
-                  {{ $kaanna(item.label) }}
+                  {{ $kaanna(item.label) }} <span v-if="item.koodi">({{item.koodi}})</span>
                 </router-link>
               </div>
             </template>
