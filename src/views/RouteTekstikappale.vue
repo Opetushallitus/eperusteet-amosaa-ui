@@ -9,11 +9,11 @@
 
         <div class="container">
 
-          <div v-if="data.perusteteksti || data.pohjanTekstikappale">
+          <div v-if="perusteteksti || data.pohjanTekstikappale">
 
-            <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && data.perusteteksti)" :borderBottom="naytaPaikallinenTeksti">
+            <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && perusteteksti)" :borderBottom="naytaPaikallinenTeksti">
               <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
-              <ep-content layout="normal" v-model="data.perusteteksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
+              <ep-content layout="normal" v-model="perusteteksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
               <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
                 {{$t('nayta-perusteen-teksti')}}
               </ep-toggle>
@@ -73,7 +73,7 @@ import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
 import { Koulutustyyppi } from '@shared/tyypit';
 import { Toteutus } from '@shared/utils/perusteet';
-import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/generated/amosaa';
+import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -116,16 +116,23 @@ export default class RouteTekstikappale extends Vue {
     this.fetch();
   }
 
+  @Watch('toteutussuunnitelma', { immediate: true })
+  opetussuunnitelmaChange() {
+    this.fetch();
+  }
+
   fetch() {
-    this.editointiStore = new EditointiStore(
-      this.tekstikappaleStore.create(
-        this.toteutussuunnitelmaId,
-        this.koulutustoimijaId,
-        this.sisaltoviiteId,
-        this.versionumero,
-        this,
-        () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
-        this.toteutussuunnitelmaStore.toteutussuunnitelma));
+    if (this.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
+      this.editointiStore = new EditointiStore(
+        this.tekstikappaleStore.create(
+          this.toteutussuunnitelmaId,
+          this.koulutustoimijaId,
+          this.sisaltoviiteId,
+          this.versionumero,
+          this,
+          () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+          this.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
+    }
   }
 
   get versionumero() {
@@ -148,6 +155,14 @@ export default class RouteTekstikappale extends Vue {
 
   get pohja() {
     return this.toteutussuunnitelmaStore.pohja.value;
+  }
+
+  get perusteteksti() {
+    if (this.editointiStore?.data?.value?.perusteenOsa) {
+      return this.editointiStore?.data?.value?.perusteenOsa.teksti;
+    }
+
+    return this.editointiStore?.data?.value?.perusteteksti;
   }
 }
 </script>
