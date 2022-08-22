@@ -16,7 +16,7 @@ export class TuvaTekstikappaleStore extends TekstikappaleStore implements ITekst
     public versionumero?: number,
     public el?: any,
     public updateNavigation?: Function,
-    public opetussuunnitelma?: Computed<OpetussuunnitelmaDto>,
+    public opetussuunnitelma?: OpetussuunnitelmaDto,
   ) {
     super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation, opetussuunnitelma);
   }
@@ -24,7 +24,7 @@ export class TuvaTekstikappaleStore extends TekstikappaleStore implements ITekst
   public features(data: any) {
     return computed(() => {
       return {
-        editable: this.opetussuunnitelma!.value?.tyyppi !== 'opspohja' || !data?.perusteteksti,
+        editable: _.toString(this.opetussuunnitelma?.tyyppi) !== 'opspohja' || !data?.perusteteksti,
         removable: !data?.pohjanTekstikappale?.teksti,
         hideable: false,
         recoverable: true,
@@ -39,7 +39,7 @@ export class TuvaTekstikappaleStore extends TekstikappaleStore implements ITekst
     versionumero: number,
     el: any,
     updateNavigation: Function,
-    opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
+    opetussuunnitelma: OpetussuunnitelmaDto) {
     return new TuvaTekstikappaleStore(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation, opetussuunnitelma);
   }
 }

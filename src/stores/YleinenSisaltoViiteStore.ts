@@ -10,11 +10,11 @@ Vue.use(VueCompositionApi);
 
 export class YleinenSisaltoViiteStore extends AbstractSisaltoviiteStore implements IEditoitava {
   constructor(
-    public opetussuunnitelmaId: number,
-    public koulutustoimijaId: string,
-    public sisaltoviiteId: number,
-    public versionumero: number,
-    public opetussuunnitelma: OpetussuunnitelmaDto,
+    public opetussuunnitelmaId?: number,
+    public koulutustoimijaId?: string,
+    public sisaltoviiteId?: number,
+    public versionumero?: number,
+    public opetussuunnitelma?: OpetussuunnitelmaDto,
   ) {
     super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero);
   }
@@ -25,7 +25,7 @@ export class YleinenSisaltoViiteStore extends AbstractSisaltoviiteStore implemen
 
   async load() {
     let data = await this.fetchSisaltoviite();
-    if (data.perusteenOsaId && this.opetussuunnitelma.peruste) {
+    if (data.perusteenOsaId && this.opetussuunnitelma?.peruste) {
       const perusteenOsa = (await Perusteet.getPerusteenOsa(this.opetussuunnitelma.peruste!.id!, data.perusteenOsaId)).data;
       data = {
         ...data,

@@ -4,7 +4,7 @@ import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, Opetussuunni
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko, Koulutustyyppi } from '@shared/tyypit';
-import { Computed } from '@shared/utils/interfaces';
+import { YleinenSisaltoViiteStore } from './YleinenSisaltoViiteStore';
 
 Vue.use(VueCompositionApi);
 
@@ -15,10 +15,10 @@ export interface ITekstikappale {
     versionumero: number,
     el: any,
     updateNavigation: Function,
-    opetussuunnitelma: Computed<OpetussuunnitelmaDto>): TekstikappaleStore
+    opetussuunnitelma: OpetussuunnitelmaDto): TekstikappaleStore
 }
 
-export class TekstikappaleStore implements IEditoitava, ITekstikappale {
+export class TekstikappaleStore extends YleinenSisaltoViiteStore implements IEditoitava, ITekstikappale {
   constructor(
     public opetussuunnitelmaId?: number,
     public koulutustoimijaId?: string,
@@ -26,43 +26,15 @@ export class TekstikappaleStore implements IEditoitava, ITekstikappale {
     public versionumero?: number,
     public el?: any,
     public updateNavigation?: Function,
-    public opetussuunnitelma?: Computed<OpetussuunnitelmaDto>,
+    public opetussuunnitelma?: OpetussuunnitelmaDto,
   ) {
+    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, opetussuunnitelma);
   }
 
   async cancel() {
   }
 
-  async editAfterLoad() {
-    return false;
-  }
-
   async history() {
-  }
-
-  async load() {
-    if (this.versionumero) {
-      const revisions = (await Sisaltoviitteet.getSisaltoviiteRevisions(this.opetussuunnitelmaId!, this.sisaltoviiteId!, this.koulutustoimijaId!)).data as Revision[];
-      const rev = revisions[revisions.length - this.versionumero];
-      return (await Sisaltoviitteet.getSisaltoviiteRevision(this.opetussuunnitelmaId!, this.sisaltoviiteId!, rev.numero, this.koulutustoimijaId!)).data;
-    }
-    else {
-      return (await Sisaltoviitteet.getSisaltoviiteTekstit(this.opetussuunnitelmaId!, this.sisaltoviiteId!, this.koulutustoimijaId!)).data;
-    }
-  }
-
-  async save(data: any) {
-    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId!, this.sisaltoviiteId!, this.koulutustoimijaId!, data);
-  }
-
-  async restore(rev: number) {
-    const restoring = (await Sisaltoviitteet.getSisaltoviiteRevision(this.opetussuunnitelmaId!, this.sisaltoviiteId!, rev, this.koulutustoimijaId!)).data;
-    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId!, this.sisaltoviiteId!, this.koulutustoimijaId!, restoring);
-  }
-
-  async revisions() {
-    const data = (await Sisaltoviitteet.getSisaltoviiteRevisions(this.opetussuunnitelmaId!, this.sisaltoviiteId!, this.koulutustoimijaId!)).data;
-    return data as Revision[];
   }
 
   async start() {
@@ -78,25 +50,6 @@ export class TekstikappaleStore implements IEditoitava, ITekstikappale {
   public readonly validator = computed(() => {
     return {};
   });
-
-  public async lock() {
-    try {
-      const res = await SisaltoviiteLukko.getLock(_.toNumber(this.koulutustoimijaId), this.opetussuunnitelmaId!, this.sisaltoviiteId!);
-      return res.data as ILukko;
-    }
-    catch (err) {
-      return null;
-    }
-  }
-
-  public async acquire() {
-    const res = await SisaltoviiteLukko.lock(_.toNumber(this.koulutustoimijaId), this.opetussuunnitelmaId!, this.sisaltoviiteId!);
-    return res.data as ILukko;
-  }
-
-  public async release() {
-    await SisaltoviiteLukko.unlock(_.toNumber(this.koulutustoimijaId), this.opetussuunnitelmaId!, this.sisaltoviiteId!);
-  }
 
   public features(data: any) {
     return computed(() => {
@@ -128,7 +81,7 @@ export class TekstikappaleStore implements IEditoitava, ITekstikappale {
     versionumero: number,
     el: any,
     updateNavigation: Function,
-    opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
+    opetussuunnitelma: OpetussuunnitelmaDto) {
     return new TekstikappaleStore(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation, opetussuunnitelma);
   }
 }
