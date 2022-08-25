@@ -29,7 +29,7 @@ export class KayttoOikeudetStore {
 
   public async paivitaKayttajat() {
     try {
-      this.state.kayttajat = (await Koulutustoimijat.getKaikkiKayttajat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
+      this.state.kayttajat = (await Koulutustoimijat.getYstavaOrganisaatioKayttajat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
     }
     catch (err) {
       this.state.kayttajat = [];
