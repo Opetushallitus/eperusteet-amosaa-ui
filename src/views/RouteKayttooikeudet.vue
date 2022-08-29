@@ -1,7 +1,7 @@
 <template>
   <div class="kayttooikeudet">
     <div class="ylapaneeli d-flex align-items-center">
-      <h2 class="otsikko">{{$t('kayttooikeudet')}}</h2>
+      <h2 class="otsikko">{{$t('ystava-organisaatioiden-kayttooikeudet')}}</h2>
     </div>
 
     <ep-spinner v-if="!kayttajat" />
