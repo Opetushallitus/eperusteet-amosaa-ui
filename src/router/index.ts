@@ -326,7 +326,7 @@ const router = new VueRouter({
         props,
       }, {
         path: 'oikeudet',
-        name: 'oikeudet',
+        name: 'ystava-organisaatioiden-kayttooikeudet',
         component: RouteKayttooikeudet,
         props,
       }, {
