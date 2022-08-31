@@ -6,7 +6,7 @@ import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composit
 import { getSovellusoikeudet, IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
 import { Debounced } from '@shared/utils/delay';
 import { getCasKayttaja } from '@shared/api/common';
-import { ToteutusSovellus } from '@/utils/toteutustypes';
+import { ToteutusSovellus, ToteutusSovellusRole } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
 
 Vue.use(VueCompositionApi);
@@ -79,8 +79,8 @@ export class KayttajaStore implements IOikeusProvider {
       logger.info('Haetaan käyttäjän tiedot');
       this.state.casKayttaja = await getCasKayttaja();
       this.state.tiedot = (await KayttajaApi.getKayttaja()).data;
-      await KayttajaApi.updateKoulutustoimijat();
-      this.state.koulutustoimijat = (await KayttajaApi.getKoulutustoimijat()).data;
+      await KayttajaApi.updateKoulutustoimijat(ToteutusSovellusRole(this.state.toteutus));
+      this.state.koulutustoimijat = (await KayttajaApi.getKoulutustoimijat(ToteutusSovellusRole(this.state.toteutus))).data;
       await this.fetchOikeudet();
       logger.info('Käyttäjän tiedot', this.tiedot.value);
       this.state.ophKoulutustoimija = (await JulkinenApi.getKoulutustoimijaByOid(OphOrgOid)).data;
@@ -96,7 +96,7 @@ export class KayttajaStore implements IOikeusProvider {
       this.state.toteutussuunnitelmaOikeudet[_.get(tyoryhmaOikeus, '_opetussuunnitelma')] = (tyoryhmaOikeus.oikeus as any);
     });
 
-    this.state.koulutustoimijaOikeudet = (await Kayttajaoikeudet.getKoulutustoimijaOikeudet()).data;
+    this.state.koulutustoimijaOikeudet = (await Kayttajaoikeudet.getKoulutustoimijaOikeudet(ToteutusSovellusRole(this.state.toteutus))).data;
 
     const setOikeudet = (koulutustoimijat, oikeus) => {
       _.forEach(koulutustoimijat, koulutustoimija => {
