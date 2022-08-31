@@ -1,21 +1,11 @@
 <template>
   <div class="home-container minfull">
     <div class="header" ref="header" :style="headerStyle">
-      <EpNavbar :kayttaja="kayttaja" />
-      <div class="container">
-        <div class="container-fluid">
-          <div class="row no-gutters">
-            <div class="col my-4 px-3 px-md-0">
-              <h1>{{ $t('amosaa-tervetuloa', { nimi }) }}</h1>
-              <p>{{ $t('amosaa-tervetuloa-kuvaus') }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <EpNavbar :kayttaja="kayttaja" :rootNavigation="rootNavigation"/>
     </div>
     <div>
     <div class="container my-5">
-      <div v-if="!koulutustoimijaId">
+      <div v-if="koulutustoimijaId === null">
         <EpSpinner />
       </div>
 
@@ -48,6 +38,7 @@ import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { getCasKayttajaKieli } from '@shared/api/common';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { localhostOrigin } from '@shared/utils/esikatselu';
+import { Toteutus } from '@shared/utils/perusteet';
 
 const virhekuva = require('@assets/img/images/virhe.png');
 
@@ -118,6 +109,15 @@ export default class RouteLang extends Vue {
 
   get headerStyle() {
     return toteutusBanner(this.toteutus);
+  }
+
+  get rootNavigation() {
+    return {
+      name: 'root',
+      params: {
+        toteutus: this.toteutus,
+      },
+    };
   }
 }
 </script>

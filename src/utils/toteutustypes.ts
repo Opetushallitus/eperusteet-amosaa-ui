@@ -23,6 +23,8 @@ export const ToteutuksenKoulutustyypit = {
   [Toteutus.KOTOUTUMISKOULUTUS]: EperusteetKoulutustyyppiRyhmat.kotoutumiskoulutus,
 };
 
+export const ToteutusSovellusRole = (toteutus) => 'ROLE_' + ToteutusSovellus[toteutus];
+
 export const ToteutusSovellus = {
   [Toteutus.VAPAASIVISTYSTYO]: 'APP_EPERUSTEET_VST',
   [Toteutus.AMMATILLINEN]: 'APP_EPERUSTEET_AMOSAA',
