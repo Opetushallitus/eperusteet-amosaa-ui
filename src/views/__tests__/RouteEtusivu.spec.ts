@@ -15,10 +15,9 @@ describe('RouteEtusivu tiles', () => {
   const kayttajaStore = mock(KayttajaStore);
 
   function mountWrapper(hasOikeus) {
-    kayttajaStore.hasOikeus = jest.fn( () => {
-      return hasOikeus ;
+    kayttajaStore.hasOikeus = jest.fn(() => {
+      return hasOikeus;
     });
-
     const localVue = createLocalVue();
     const koulutustoimijaId = '1';
     const kieliStore = mock(KieliStore);
@@ -30,24 +29,24 @@ describe('RouteEtusivu tiles', () => {
     const tiles = [
       {
         props: {
-          text: "test-tile-1"
+          text: 'test-tile-1',
         },
       },
       {
         props: {
-          text: "test-tile-2"
+          text: 'test-tile-2',
         },
         oikeustarkastelu: {
-          oikeus: "luku"
-        }
+          oikeus: 'luku',
+        },
       },
       {
         props: {
-          text: "test-tile-3"
+          text: 'test-tile-3',
         },
         oikeustarkastelu: {
-          oikeus: "hallinta"
-        }
+          oikeus: 'hallinta',
+        },
       },
     ];
     return mount(RouteEtusivu, {
