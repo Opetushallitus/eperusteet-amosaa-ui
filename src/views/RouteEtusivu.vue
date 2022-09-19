@@ -14,10 +14,9 @@
     </Portal>
     <div class="container tile-container">
       <div class="d-flex flex-row flex-wrap justify-content-center">
-        <component v-for="(tile, index) in tiles" :key="'tile'+index"
+        <component v-for="(tile, index) in tilesFiltered" :key="'tile'+index"
           :is="tile.component"
           v-bind="tile.props"
-          v-oikeustarkastelu="tile.oikeustarkastelu"
         />
       </div>
     </div>
@@ -88,6 +87,10 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
 
   @Prop({ required: true })
   private palautteetStore!: PalautteetStore;
+
+  get tilesFiltered() {
+    return _.filter(this.tiles, tile => (!tile.oikeustarkastelu || this.kayttajaStore.hasOikeus(tile.oikeustarkastelu?.oikeus, tile.oikeustarkastelu?.kohde)));
+  }
 
   @Meta
   getMetaInfo() {
