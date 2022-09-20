@@ -16,9 +16,8 @@
             {{$t('jotpa')}}
           </div>
         </div>
-        <div class="opsbox__info--footer mt-auto">
+        <div class="opsbox__info--footer mt-auto" v-if="ops.viimeisinJulkaisuAika">
           {{$t('julkaistu')}} {{$sd(ops.viimeisinJulkaisuAika)}}
-
         </div>
       </div>
     </RouterLink>
