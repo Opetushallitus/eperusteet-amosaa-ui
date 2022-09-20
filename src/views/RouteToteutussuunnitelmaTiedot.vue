@@ -97,6 +97,8 @@
               </b-form-group>
             </b-col>
           </b-row>
+          <EpJotpaSelect v-model="data.opetussuunnitelma" :toteutus="toteutus" :isEditing="isEditing"/>
+
         </b-container>
 
         <div v-if="data.peruste">
@@ -162,6 +164,7 @@ import EpSelect from '@shared/components/forms/EpSelect.vue';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
 import { Toteutus } from '@shared/utils/perusteet';
+import EpJotpaSelect from '@/components/EpJotpa/EpJotpaSelect.vue';
 
 @Component({
   components: {
@@ -173,6 +176,7 @@ import { Toteutus } from '@shared/utils/perusteet';
     EpSiirtoModal,
     EpToggle,
     EpSelect,
+    EpJotpaSelect,
   },
 })
 export default class RouteToteutussuunnitelmaTiedot extends Vue {

@@ -112,6 +112,11 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
         paatospaivamaara: {
           'max-value': peruste && peruste.voimassaoloLoppuu ? maxValue(peruste.voimassaoloLoppuu) : '',
         },
+        jotpatyyppi: {
+          required: requiredIf((value) => {
+            return !!value.jotpa;
+          }),
+        },
       },
     };
   });

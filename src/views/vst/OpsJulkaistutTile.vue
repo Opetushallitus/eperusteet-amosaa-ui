@@ -7,9 +7,18 @@
       tag="a"
       :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
       :key="ops.id">
-      <div class="opsbox__info opsbox__info--published d-flex justify-content-center align-items-center">
+      <div class="opsbox__info opsbox__info--published d-flex flex-column">
         <div class="opsbox__name">
           {{ $kaanna(ops.nimi) }}
+        </div>
+        <div>
+          <div v-if="ops.jotpatyyppi" class="opsbox__jotpa">
+            {{$t('jotpa')}}
+          </div>
+        </div>
+        <div class="opsbox__info--footer mt-auto">
+          {{$t('julkaistu')}} {{$sd(ops.viimeisinJulkaisuAika)}}
+
         </div>
       </div>
     </RouterLink>
@@ -59,6 +68,7 @@ $new-tile-bottom-bg-color:#0f3284;
   }
 
   &__info {
+    color: #2B2B2B;
     border-radius: 0 0 $box-radius $box-radius;
     text-align: center;
     height: 92px;
@@ -71,16 +81,35 @@ $new-tile-bottom-bg-color:#0f3284;
 
     &--published {
       height: 100%;
+      padding-top: 80px;
+    }
+
+    &--footer {
+      padding-top: 5px;
+      border-top: 1px solid $gray-lighten-9;
+      color: $gray-lighten-11;
+      font-size: 0.8rem;
     }
   }
 
   &__name {
-    color: #2B2B2B;
+
     text-align: center;
     hyphens: none;
     font-size: 14px;
     font-weight: 600;
   }
+
+  &__jotpa {
+    padding: 2px 15px;
+    display: inline-block;
+    margin-top: 5px;
+    color: $white;
+    background-color: $jotpa-color;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+  }
+
 }
 
 </style>
