@@ -85,6 +85,8 @@
                 </b-table>
               </b-form-group>
 
+              <EpJotpaSelect v-if="pohjanTyyppi && pohjanTyyppi !== 'peruste'" :toteutus="toteutus" :isEditing="true" v-model="jotpa" asRows/>
+
             </div>
            </div>
         </template>
@@ -108,9 +110,7 @@ import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSteps, { Step } from '@shared/components/EpSteps/EpSteps.vue';
 import * as _ from 'lodash';
-import { Kielet } from '@shared/stores/kieli';
-import { requiredOneLang, minValue, notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
-import { ToteutussuunnitelmatStore } from '@/stores/ToteutussuunnitelmatStore';
+import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
@@ -123,6 +123,8 @@ import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
 import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
 import { KayttajaStore } from '@/stores/kayttaja';
+import EpToggle from '@shared/components/forms/EpToggle.vue';
+import EpJotpaSelect, { JotpaType } from '@/components/EpJotpa/EpJotpaSelect.vue';
 
 @Component({
   components: {
@@ -131,6 +133,8 @@ import { KayttajaStore } from '@/stores/kayttaja';
     EpField,
     EpSpinner,
     EpSteps,
+    EpToggle,
+    EpJotpaSelect,
   },
   validations() {
     return {
@@ -179,6 +183,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private nimi: any | null = null;
   private tutkinnonosaKoodit: string[] = [];
   private toteutussuunnitelmaPohjatStore: OpetussuunnitelmaPohjatStore | null = null;
+  private jotpa: JotpaType = { jotpa: false, jotpatyyppi: null };
 
   async mounted() {
     this.toteutussuunnitelmaPohjatStore = new OpetussuunnitelmaPohjatStore();
@@ -265,7 +270,6 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       ],
     };
   }
-
   get kielistykset() {
     return {
       'ops': OpetussuunnitelmaLuontiKielistykset[this.toteutus],
@@ -324,6 +328,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
         nimi: this.nimi,
         tutkinnonOsaKoodiIncludes: this.tutkinnonosaKoodit,
         koulutustyyppi: this.peruste ? undefined : this.koulutustyyppi,
+        jotpatyyppi: this.jotpa ? this.jotpa.jotpatyyppi as any : null,
       });
 
       this.$router.push({
@@ -384,6 +389,15 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
         tutkinnonosaKoodit: {
           'min-length': minLength(1),
           required,
+        },
+      };
+    }
+
+    if (this.jotpa?.jotpa) {
+      validation = {
+        ...validation,
+        jotpa: {
+          jotpatyyppi: notNull(),
         },
       };
     }

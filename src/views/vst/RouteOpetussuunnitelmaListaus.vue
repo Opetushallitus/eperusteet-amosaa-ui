@@ -10,9 +10,15 @@
           @restore="onRestoreOps"
           :title="kaannokset['arkistoidut']"/>
       </div>
-      <b-form-group :label="$t('nimi')">
-        <EpSearch v-model="rajain" :placeholder="$t('etsi')"/>
-      </b-form-group>
+      <div class="d-flex">
+        <b-form-group :label="$t('nimi')" class="col-6 col-lg-4">
+          <EpSearch maxWidth v-model="rajain" :placeholder="$t('etsi')"/>
+        </b-form-group>
+        <b-form-group class="ml-4 mt-3" v-if="toteutus === 'vapaasivistystyo'">
+          <label>&nbsp;</label>
+          <EpToggle v-model="jotpa" checkbox>{{$t('nayta-vain-jotpa-rahoitteiset')}}</EpToggle>
+        </b-form-group>
+      </div>
     </template>
     <b-container fluid class="pl-0">
       <b-row>
@@ -99,6 +105,7 @@ import { Kielet } from '@shared/stores/kieli';
 import OpsKeskeneraisetTile from './OpsKeskeneraisetTile.vue';
 import OpsJulkaistutTile from './OpsJulkaistutTile.vue';
 import { Toteutus } from '@shared/utils/perusteet';
+import EpToggle from '@shared/components/forms/EpToggle.vue';
 
 @Component({
   components: {
@@ -111,6 +118,7 @@ import { Toteutus } from '@shared/utils/perusteet';
     EpSpinner,
     OpsKeskeneraisetTile,
     OpsJulkaistutTile,
+    EpToggle,
   },
 })
 export default class RouteOpetussuunnitelmaListaus extends Vue {
@@ -124,6 +132,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   private opsTyyppi!: 'ops' | 'opspohja';
 
   private rajain = '';
+  private jotpa: boolean = false;
   private opslista: OpetussuunnitelmaDto[] | null = null;
   private ystavien: OpetussuunnitelmaDto[] | null = [];
 
@@ -148,7 +157,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   get hasRajain() {
-    return !_.isEmpty(this.rajain);
+    return !_.isEmpty(this.rajain) || this.jotpa;
   }
 
   get jarjestetyt() {
@@ -157,6 +166,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
         _.toLower(_.get(ops, 'nimi.' + Kielet.getSisaltoKieli.value)),
         _.toLower(this.rajain)
       ))
+      .filter(ops => !this.jotpa || !!ops.jotpatyyppi)
       .sortBy('luotu')
       .reverse()
       .value();

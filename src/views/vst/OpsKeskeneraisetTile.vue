@@ -13,6 +13,9 @@
           <div class="opsbox__name">
             {{ $kaanna(ops.nimi) }}
           </div>
+          <div v-if="ops.jotpatyyppi" class="opsbox__jotpa">
+            {{$t('jotpa')}}
+          </div>
         </div>
       </RouterLink>
   </div>
@@ -100,6 +103,16 @@ $new-tile-bottom-bg-color:#0f3284;
     hyphens: none;
     font-size: 14px;
     font-weight: 600;
+  }
+
+  &__jotpa {
+    padding: 2px 15px;
+    display: inline-block;
+    margin-top: 5px;
+    color: $white;
+    background-color: $jotpa-color;
+    border-radius: 1rem;
+    font-size: 0.8rem;
   }
 }
 </style>
