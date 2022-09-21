@@ -124,7 +124,7 @@ import { createLogger } from '@shared/utils/logger';
 import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
 import { KayttajaStore } from '@/stores/kayttaja';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
-import EpJotpaSelect, { JotpaType } from '@/components/EpJotpa/EpJotpaSelect.vue';
+import EpJotpaSelect, { OpsJotpa } from '@/components/EpJotpa/EpJotpaSelect.vue';
 
 @Component({
   components: {
@@ -183,7 +183,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private nimi: any | null = null;
   private tutkinnonosaKoodit: string[] = [];
   private toteutussuunnitelmaPohjatStore: OpetussuunnitelmaPohjatStore | null = null;
-  private jotpa: JotpaType = { jotpa: false, jotpatyyppi: null };
+  private jotpa: OpsJotpa = { jotpa: false, jotpatyyppi: null };
 
   async mounted() {
     this.toteutussuunnitelmaPohjatStore = new OpetussuunnitelmaPohjatStore();
