@@ -1,5 +1,5 @@
 <template>
-  <b-row v-if="toteutus === 'vapaasivistystyo'">
+  <b-row v-if="toteutus === 'vapaasivistystyo' && !value.peruste">
     <b-col :cols="asRows ? 12 : 6">
       <b-form-group :label="$t('jotpa-koulutus')">
         <EpToggle v-model="jotpaSelect" checkbox v-if="isEditing">{{$t('koulutus-on-jotpa-rahoitteinen')}}</EpToggle>
@@ -32,7 +32,8 @@ import EpToggle from '@shared/components/forms/EpToggle.vue';
 import { Toteutus } from '@shared/utils/perusteet';
 import { OpetussuunnitelmaBaseDtoJotpatyyppiEnum } from '@shared/generated/amosaa';
 
-export interface JotpaType {
+export interface OpsJotpa {
+  peruste?: any;
   jotpa: boolean;
   jotpatyyppi: OpetussuunnitelmaBaseDtoJotpatyyppiEnum | null;
 }
@@ -44,7 +45,7 @@ export interface JotpaType {
 })
 export default class EpJotpaSelect extends Vue {
   @Prop({ required: true })
-  private value!: JotpaType;
+  private value!: OpsJotpa;
 
   @Prop({ required: true })
   private toteutus!: Toteutus;
