@@ -7,7 +7,32 @@
 
            <div class="row">
             <div class="col-sm-10 mb-4">
-              <b-form-group class="mt-4 pt-2 " :label="$t('kayta-pohjana')+' *'" v-if="pohjanValinta">
+              <b-form-group class="mt-4 pt-2 " v-if="pohjanValinta">
+                <div slot="label" class="d-flex">
+                  <span>{{$t('kayta-pohjana')+' *'}}</span>
+                  <span class="material-icons-outlined ml-2 default-icon clickable" id="infopopup">info</span>
+                  <b-popover
+                    target="infopopup"
+                    triggers="hover click blur">
+                      <div class="mb-3">
+                        <span class="font-weight-bold">{{$t('perusteprojekti')}}: </span>
+                        <span>{{$t('uusi-opetussuunnitelma-ohje-perusteprojekti')}}</span>
+                      </div>
+                      <div class="mb-3">
+                        <span class="font-weight-bold">{{$t('opetussuunnitelman-pohja')}}: </span>
+                        <span>{{$t('uusi-opetussuunnitelma-ohje-opetussuunnitelman-pohja')}}</span>
+                      </div>
+                      <div class="mb-3">
+                        <span class="font-weight-bold">{{$t('toinen-opetussuunnitelma')}}: </span>
+                        <span>{{$t('uusi-opetussuunnitelma-ohje-toinen-opetussuunnitelma')}}</span>
+                      </div>
+                      <div class="mb-3">
+                        <span class="font-weight-bold">{{$t('luo-uusi-ilman-pohjaa')}}: </span>
+                        <span>{{$t('uusi-opetussuunnitelma-ohje-luo-uusi-ilman-pohjaa')}}</span>
+                      </div>
+
+                  </b-popover>
+                </div>
                 <b-form-radio v-for="(radiobutton, index) in tyypinRadioButtons" :key="'radiobutton'+index" class="p-2 pl-4" v-model="pohjanTyyppi" :value="radiobutton.value" :disabled="radiobutton.disabled">
                   {{$t(radiobutton.text)}}
                 </b-form-radio>
@@ -85,7 +110,7 @@
                 </b-table>
               </b-form-group>
 
-              <EpJotpaSelect v-if="pohjanTyyppi && pohjanTyyppi !== 'peruste'" :toteutus="toteutus" :isEditing="true" v-model="jotpa" asRows/>
+              <EpJotpaSelect v-if="pohjanTyyppi && pohjanTyyppi === 'pohjaton'" :toteutus="toteutus" :isEditing="true" v-model="jotpa" asRows/>
 
             </div>
            </div>
