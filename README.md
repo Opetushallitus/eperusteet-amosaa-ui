@@ -37,10 +37,16 @@ kanssa, joten ylläpidetään ohjeita vain yhdessä paikassa.
 - [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/tutkintoonvalmentava/fi)
 - [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/uusi/#/tutkintoonvalmentava/fi)
 
+### koto
+
+- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/kotoutumiskoulutus/fi)
+- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/kotoutumiskoulutus/fi)
+- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/uusi/#/kotoutumiskoulutus/fi)
+
 
 
 ### 3.1. Continuous integration
 
-https://app.travis-ci.com/github/Opetushallitus/eperusteet-amosaa-ui
+https://github.com/Opetushallitus/eperusteet-amosaa-ui/actions
 
 
