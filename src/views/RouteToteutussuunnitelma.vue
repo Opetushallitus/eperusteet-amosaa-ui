@@ -470,7 +470,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       },
       {
         text: 'ystava-organisaatioiden-kayttooikeudet',
-        route: 'oikeudet',
+        route: 'ystava-organisaatioiden-kayttooikeudet',
         icon: 'kaytto-oikeus',
         oikeus: { oikeus: 'luonti' },
       },
