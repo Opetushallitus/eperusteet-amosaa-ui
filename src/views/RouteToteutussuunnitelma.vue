@@ -75,6 +75,7 @@
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
 
                   <b-dropdown-item v-if="ratasvalinta.route" :to="{ name: ratasvalinta.route }">
+                    {{ratasvalinta.route}}
                     <fas :icon="ratasvalinta.icon" />
                     {{ $t(ratasvalinta.text) }}
                   </b-dropdown-item>

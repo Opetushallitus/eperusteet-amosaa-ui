@@ -169,6 +169,12 @@ const logger = createLogger('RouteOrganisaatio');
   },
 })
 export default class RouteOrganisaatio extends Vue {
+  @Prop({ required: true })
+  private kayttajaStore!: KayttajaStore;
+
+  @Prop({ required: true })
+  private koulutustoimijaId!: string;
+
   private editointiStore: EditointiStore | null = null;
   private hierarkia: OrganisaatioHierarkiaDto | null = null;
   private ystavat: KoulutustoimijaYstavaDto[] | null = null;
@@ -187,30 +193,40 @@ export default class RouteOrganisaatio extends Vue {
     OrganizationEventBus.$on('laheta-yhteistyopyynto', this.lahetaYhteistyopyynto);
   }
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
-
   @Watch('koulutustoimijaId', { immediate: true })
   async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
     if (newValue && newValue !== oldValue) {
-      this.fetch();
+      await this.fetch();
     }
   }
 
   async fetch() {
     this.editointiStore = new EditointiStore(new OrganisaatioStore(this.koulutustoimijaId));
 
-    const res = _.map(await (Promise.all([
-      Koulutustoimijat.getHierarkia(this.koulutustoimijaId),
-      Koulutustoimijat.getOmatYstavat(this.koulutustoimijaId),
-      Koulutustoimijat.getPyynnot(this.koulutustoimijaId),
-      Koulutustoimijat.getYhteistyoKoulutustoimijat(this.koulutustoimijaId),
-    ])), 'data') as any;
+    try {
+      const res = _.map(await (Promise.all([
+        Koulutustoimijat.getHierarkia(this.koulutustoimijaId),
+        Koulutustoimijat.getOmatYstavat(this.koulutustoimijaId),
+        Koulutustoimijat.getPyynnot(this.koulutustoimijaId),
+        Koulutustoimijat.getYhteistyoKoulutustoimijat(this.koulutustoimijaId),
+      ])), 'data') as any;
 
-    this.hierarkia = res[0];
-    this.ystavat = res[1];
-    this.pyynnot = res[2];
-    this.yhteistyoKoulutustoimijat = res[3];
+      this.hierarkia = res[0] || this.koulutustoimija;
+      this.ystavat = res[1];
+      this.pyynnot = res[2];
+      this.yhteistyoKoulutustoimijat = res[3];
+    }
+    catch (e) {
+      this.$fail(this.$t('virhe-palvelu-virhe') as string);
+      this.hierarkia = {};
+      this.ystavat = [];
+      this.pyynnot = [];
+      this.yhteistyoKoulutustoimijat = [];
+    }
+  }
+
+  get koulutustoimija() {
+    return this.kayttajaStore.koulutustoimija.value;
   }
 
   get hierarkiaFlatten() {
