@@ -130,7 +130,7 @@ export default class RouteRoot extends Vue {
 
   get rootNavigation() {
     return {
-      name: 'root',
+      name: 'rootToteutus',
       params: {
         toteutus: this.toteutus,
       },
