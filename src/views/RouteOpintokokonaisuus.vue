@@ -6,7 +6,7 @@
       </template>
       <template v-slot:default="{ data, isEditing, validation, data: { opintokokonaisuus }, data: { opintokokonaisuus: { tyyppi } } }">
         <b-row>
-          <b-col md="7" v-if="tyyppi === TyyppiSource.OMA || tyyppi === TyyppiSource.PERUSTEESTA && !isEditing">
+          <b-col md="6" v-if="tyyppi === TyyppiSource.OMA || tyyppi === TyyppiSource.PERUSTEESTA && !isEditing">
             <b-form-group
               :label="$t(tyyppikielistys['nimiotsikko']) + (isEditing ? ' *' : '')"
               required>
@@ -16,14 +16,33 @@
                 :validation="validation.tekstiKappale.nimi"/>
             </b-form-group>
           </b-col>
-          <b-col md="3">
-            <b-form-group :label="$t('laajuus') + (isEditing ? ' *' : '')" required>
-              <EpLaajuusInput
-                v-model="opintokokonaisuus.laajuus"
-                :is-editing="isEditing"
-                :validation="validation.opintokokonaisuus.laajuus">
-                {{$t('opintopiste')}}
-              </EpLaajuusInput>
+          <b-col md="4">
+            <b-form-group required>
+              <div slot="label" class="d-flex align-items-center">
+                <div>{{$t('laajuus') + (isEditing ? ' *' : '')}}</div>
+              </div>
+              <div class="d-flex align-items-center">
+                <EpLaajuusInput
+                  v-model="opintokokonaisuus.laajuus"
+                  :is-editing="isEditing"
+                  :validation="validation.opintokokonaisuus.laajuus"
+                  :laajuus-yksikko="opintokokonaisuus.laajuusYksikko">
+                </EpLaajuusInput>
+                <EpMultiSelect
+                  v-if="isEditing"
+                  v-model="opintokokonaisuus.laajuusYksikko"
+                  :options="laajuusYksikot"
+                  :close-on-select="true"
+                  :clear-on-select="false"
+                  :placeholder="$t('valitse-laajuus-yksikko')">
+                  <template slot="singleLabel" slot-scope="{ option }">
+                    {{ $t(option.toLowerCase() + '-lyhenne') }}
+                  </template>
+                  <template slot="option" slot-scope="{ option }">
+                    {{ $t(option.toLowerCase() + '-partitiivi') }}
+                  </template>
+                </EpMultiSelect>
+              </div>
             </b-form-group>
           </b-col>
         </b-row>
@@ -213,7 +232,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import draggable from 'vuedraggable';
 
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
@@ -235,6 +254,8 @@ import { KuvaStore } from '@/stores/KuvaStore';
 import { Murupolku } from '@shared/stores/murupolku';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import EpOpintokokonaisuusArviointiImport from '@/components/EpOpintokokonaisuusArviointiImport/EpOpintokokonaisuusArviointiImport.vue';
+import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
+import { OpintokokonaisuusDtoLaajuusYksikkoEnum } from '@shared/generated/amosaa';
 
 enum TyyppiSource {
   PERUSTEESTA = 'perusteesta',
@@ -243,6 +264,7 @@ enum TyyppiSource {
 
 @Component({
   components: {
+    EpMultiSelect,
     EpEditointi,
     EpField,
     EpContent,
@@ -380,6 +402,18 @@ export default class RouteOpintokokonaisuus extends Vue {
         name: 'arvioinnit',
       },
     };
+  }
+
+  get laajuusYksikot() {
+    return [
+      OpintokokonaisuusDtoLaajuusYksikkoEnum.OPINTOPISTE,
+      OpintokokonaisuusDtoLaajuusYksikkoEnum.OPINTOVIIKKO,
+      OpintokokonaisuusDtoLaajuusYksikkoEnum.TUNTI,
+      OpintokokonaisuusDtoLaajuusYksikkoEnum.VIIKKO,
+      OpintokokonaisuusDtoLaajuusYksikkoEnum.OSAAMISPISTE,
+      OpintokokonaisuusDtoLaajuusYksikkoEnum.VUOSI,
+      OpintokokonaisuusDtoLaajuusYksikkoEnum.VUOSIVIIKKOTUNTI,
+    ];
   }
 
   get kuvaHandler() {
