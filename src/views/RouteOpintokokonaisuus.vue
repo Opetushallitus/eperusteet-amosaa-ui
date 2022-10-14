@@ -21,7 +21,7 @@
               <div slot="label" class="d-flex align-items-center">
                 <div>{{$t('laajuus') + (isEditing ? ' *' : '')}}</div>
               </div>
-              <div class="d-flex align-items-center">
+              <div class="d-flex">
                 <EpLaajuusInput
                   v-model="opintokokonaisuus.laajuus"
                   :is-editing="isEditing"
@@ -34,7 +34,8 @@
                   :options="laajuusYksikot"
                   :close-on-select="true"
                   :clear-on-select="false"
-                  :placeholder="$t('valitse-laajuus-yksikko')">
+                  :placeholder="$t('valitse-laajuus-yksikko')"
+                  :validation="validation.opintokokonaisuus.laajuusYksikko">
                   <template slot="singleLabel" slot-scope="{ option }">
                     {{ $t(option.toLowerCase() + '-lyhenne') }}
                   </template>
