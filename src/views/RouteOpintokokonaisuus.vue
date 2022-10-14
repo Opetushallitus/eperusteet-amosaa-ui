@@ -28,21 +28,11 @@
                   :validation="validation.opintokokonaisuus.laajuus"
                   :laajuus-yksikko="opintokokonaisuus.laajuusYksikko">
                 </EpLaajuusInput>
-                <EpMultiSelect
-                  v-if="isEditing"
+                <EpLaajuusYksikkoInput
                   v-model="opintokokonaisuus.laajuusYksikko"
-                  :options="laajuusYksikot"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  :placeholder="$t('valitse-laajuus-yksikko')"
+                  v-if="isEditing"
                   :validation="validation.opintokokonaisuus.laajuusYksikko">
-                  <template slot="singleLabel" slot-scope="{ option }">
-                    {{ $t(option.toLowerCase() + '-lyhenne') }}
-                  </template>
-                  <template slot="option" slot-scope="{ option }">
-                    {{ $t(option.toLowerCase() + '-partitiivi') }}
-                  </template>
-                </EpMultiSelect>
+                </EpLaajuusYksikkoInput>
               </div>
             </b-form-group>
           </b-col>
@@ -240,6 +230,7 @@ import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpLaajuusInput from '@shared/components/forms/EpLaajuusInput.vue';
+import EpLaajuusYksikkoInput from '@shared/components/forms/EpLaajuusYksikkoInput.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
@@ -255,8 +246,6 @@ import { KuvaStore } from '@/stores/KuvaStore';
 import { Murupolku } from '@shared/stores/murupolku';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import EpOpintokokonaisuusArviointiImport from '@/components/EpOpintokokonaisuusArviointiImport/EpOpintokokonaisuusArviointiImport.vue';
-import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
-import { OpintokokonaisuusDtoLaajuusYksikkoEnum } from '@shared/generated/amosaa';
 
 enum TyyppiSource {
   PERUSTEESTA = 'perusteesta',
@@ -265,7 +254,6 @@ enum TyyppiSource {
 
 @Component({
   components: {
-    EpMultiSelect,
     EpEditointi,
     EpField,
     EpContent,
@@ -276,6 +264,7 @@ enum TyyppiSource {
     EpKoodistoSelect,
     draggable,
     EpOpintokokonaisuusArviointiImport,
+    EpLaajuusYksikkoInput,
   },
 })
 export default class RouteOpintokokonaisuus extends Vue {
@@ -403,18 +392,6 @@ export default class RouteOpintokokonaisuus extends Vue {
         name: 'arvioinnit',
       },
     };
-  }
-
-  get laajuusYksikot() {
-    return [
-      OpintokokonaisuusDtoLaajuusYksikkoEnum.OPINTOPISTE,
-      OpintokokonaisuusDtoLaajuusYksikkoEnum.OPINTOVIIKKO,
-      OpintokokonaisuusDtoLaajuusYksikkoEnum.TUNTI,
-      OpintokokonaisuusDtoLaajuusYksikkoEnum.VIIKKO,
-      OpintokokonaisuusDtoLaajuusYksikkoEnum.OSAAMISPISTE,
-      OpintokokonaisuusDtoLaajuusYksikkoEnum.VUOSI,
-      OpintokokonaisuusDtoLaajuusYksikkoEnum.VUOSIVIIKKOTUNTI,
-    ];
   }
 
   get kuvaHandler() {
