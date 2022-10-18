@@ -6,7 +6,7 @@
       </template>
       <template v-slot:default="{ data, isEditing, validation, data: { opintokokonaisuus }, data: { opintokokonaisuus: { tyyppi } } }">
         <b-row>
-          <b-col md="6" v-if="tyyppi === TyyppiSource.OMA || tyyppi === TyyppiSource.PERUSTEESTA && !isEditing">
+          <b-col md="7" v-if="tyyppi === TyyppiSource.OMA || tyyppi === TyyppiSource.PERUSTEESTA && !isEditing">
             <b-form-group
               :label="$t(tyyppikielistys['nimiotsikko']) + (isEditing ? ' *' : '')"
               required>
@@ -16,24 +16,13 @@
                 :validation="validation.tekstiKappale.nimi"/>
             </b-form-group>
           </b-col>
-          <b-col md="4">
-            <b-form-group required>
-              <div slot="label" class="d-flex align-items-center">
-                <div>{{$t('laajuus') + (isEditing ? ' *' : '')}}</div>
-              </div>
-              <div class="d-flex">
-                <EpLaajuusInput
-                  v-model="opintokokonaisuus.laajuus"
-                  :is-editing="isEditing"
-                  :validation="validation.opintokokonaisuus.laajuus"
-                  :laajuus-yksikko="opintokokonaisuus.laajuusYksikko">
-                </EpLaajuusInput>
-                <EpLaajuusYksikkoInput
-                  v-model="opintokokonaisuus.laajuusYksikko"
-                  v-if="isEditing"
-                  :validation="validation.opintokokonaisuus.laajuusYksikko">
-                </EpLaajuusYksikkoInput>
-              </div>
+          <b-col md="3">
+            <b-form-group :label="$t('laajuus') + (isEditing ? ' *' : '')" required>
+              <EpLaajuusYksikkoInput
+                v-model="opintokokonaisuus"
+                :is-editing="isEditing"
+                :validation="validation.opintokokonaisuus">
+              </EpLaajuusYksikkoInput>
             </b-form-group>
           </b-col>
         </b-row>
@@ -229,7 +218,6 @@ import draggable from 'vuedraggable';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
-import EpLaajuusInput from '@shared/components/forms/EpLaajuusInput.vue';
 import EpLaajuusYksikkoInput from '@shared/components/forms/EpLaajuusYksikkoInput.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
@@ -257,14 +245,13 @@ enum TyyppiSource {
     EpEditointi,
     EpField,
     EpContent,
-    EpLaajuusInput,
+    EpLaajuusYksikkoInput,
     EpInput,
     EpButton,
     EpAlert,
     EpKoodistoSelect,
     draggable,
     EpOpintokokonaisuusArviointiImport,
-    EpLaajuusYksikkoInput,
   },
 })
 export default class RouteOpintokokonaisuus extends Vue {
