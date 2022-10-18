@@ -93,6 +93,9 @@ export class OpintokokonaisuusStore implements IEditoitava {
           required,
           'min-length': minValue(this.opintokokonaisuus?.opintokokonaisuus?.minimilaajuus || 0),
         },
+        laajuusYksikko: {
+          required,
+        },
         kuvaus: translated([kieli]),
         tavoitteet: {
           'min-length': minLength(0),

@@ -18,12 +18,11 @@
           </b-col>
           <b-col md="3">
             <b-form-group :label="$t('laajuus') + (isEditing ? ' *' : '')" required>
-              <EpLaajuusInput
-                v-model="opintokokonaisuus.laajuus"
+              <EpLaajuusYksikkoInput
+                v-model="opintokokonaisuus"
                 :is-editing="isEditing"
-                :validation="validation.opintokokonaisuus.laajuus">
-                {{$t('opintopiste')}}
-              </EpLaajuusInput>
+                :validation="validation.opintokokonaisuus">
+              </EpLaajuusYksikkoInput>
             </b-form-group>
           </b-col>
         </b-row>
@@ -213,13 +212,13 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import draggable from 'vuedraggable';
 
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
-import EpLaajuusInput from '@shared/components/forms/EpLaajuusInput.vue';
+import EpLaajuusYksikkoInput from '@shared/components/forms/EpLaajuusYksikkoInput.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
@@ -246,7 +245,7 @@ enum TyyppiSource {
     EpEditointi,
     EpField,
     EpContent,
-    EpLaajuusInput,
+    EpLaajuusYksikkoInput,
     EpInput,
     EpButton,
     EpAlert,
