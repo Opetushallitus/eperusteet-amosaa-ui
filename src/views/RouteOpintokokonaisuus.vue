@@ -17,7 +17,7 @@
             </b-form-group>
           </b-col>
           <b-col md="3">
-            <b-form-group :label="$t('laajuus') + (isEditing ? ' *' : '')" required>
+            <b-form-group :label="$t('laajuus')">
               <EpLaajuusYksikkoInput
                 v-model="opintokokonaisuus"
                 :is-editing="isEditing"
