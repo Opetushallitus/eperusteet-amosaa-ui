@@ -4,61 +4,15 @@
     <Portal to="headerExtension">
       <div class="portal-menu d-flex">
         <div class="upper-left d-flex justify-content-center">
-          <EpProgressPopover :slices="progressSlices" :popup-style="popupStyle" :height="60" :width="60">
-            <template v-slot:header>
-              <div class="row flex-column align-items-center">
-                <span class="validation-text pb-2">
-                  {{ $t(tila) }}
-                </span>
-                <b-button class="px-3 py-1" variant="primary" v-if="isDraft && isOpsPohja" @click="makeReady">
-                  {{$t('aseta-valmiiksi')}}
-                </b-button>
-                <b-button class="px-3 py-1" variant="primary" :to="{ name: 'julkaise' }" v-else-if="!isOpsPohja && isDraft && !isPublished && !isArchived">
-                  {{ $t('siirry-julkaisunakymaan') }}
-                </b-button>
-
-              </div>
-            </template>
-            <div v-if="validationCategories" class="d-flex flex-column align-items-center">
-              <b-button
-                v-if="(isPublished || isReady) && !isOpsPohja"
-                variant="primary"
-                :to="{ name: 'julkaise' }">{{ $t('siirry-julkaisunakymaan') }}
-              </b-button>
-              <template v-if="isArchived">
-                <b-button
-                  variant="primary"
-                  @click="restore">{{ $t('palauta') }}
-                </b-button>
-                <div class="font-size-08 mt-2 text-center">
-                  {{
-                    isVapaaSivistystyo ?
-                    $t('voit-palauttaa-arkistoidun-opetussuunnitelman-luonnostilaan') :
-                    $t('voit-palauttaa-arkistoidun-toteutussuunnitelman-luonnostilaan')
-                  }}
-                </div>
-              </template>
-              <div v-if="!isArchived">
-                <div class="pl-3 pt-2 pb-1 row" v-if="validationCategories.length === 0">
-                  <div class="col-1">
-                    <fas class="text-success" icon="check-circle"/>
-                  </div>
-                  <div class="col">
-                    {{ $t('suunnitelmassa-ei-virheita') }}
-                  </div>
-                </div>
-                <div class="pl-3 pt-2 pb-1 row" v-for="category in validationCategories" :key="category">
-                  <div class="col-1">
-                    <fas class="text-danger" icon="info-circle"/>
-                  </div>
-                  <div class="col">
-                    <span>{{ $t(category) }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <EpSpinner v-else />
-          </EpProgressPopover>
+          <EpValidPopover
+            :validoitava="toteutussuunnitelma"
+            :validoinnit="validoinnit"
+            :julkaisemattomiaMuutoksia="onkoJulkaisemattomiaMuutoksia"
+            :julkaistava="!isOpsPohja"
+            @asetaValmiiksi="asetaValmiiksi"
+            @palauta="palauta"
+            :tyyppi="toteutus ==='ammatillinen' ? 'toteutussuunnitelma' : 'opetussuunnitelma'"
+          />
         </div>
         <div class="flex-grow-1 align-self-center">
           <div class="mb-5 p-2" v-if="toteutussuunnitelma">
@@ -297,8 +251,8 @@ import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTe
 import EpProgressPopover from '@shared/components/EpProgressPopover/EpProgressPopover.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
+import EpValidPopover from '@shared/components/EpValidPopover/EpValidPopover.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
-import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
@@ -322,6 +276,7 @@ import { Toteutus } from '@shared/utils/perusteet';
     EpTekstikappaleLisays,
     EpProgressPopover,
     EpSpinner,
+    EpValidPopover,
   },
   inject: [],
 })
@@ -432,7 +387,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       this.updateNavigation);
   }
 
-  async restore() {
+  async palauta() {
     await vaihdaOpetussunnitelmaTilaConfirm(
       this,
       {
@@ -557,23 +512,15 @@ export default class RouteToteutussuunnitelma extends Vue {
     ], osa => chapterStringSort(osa.chapter));
   }
 
-  get validationCategories(): string[] | undefined {
+  get validoinnit() {
     if (this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
-      return _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value.virheet)
-        .keyBy('syy')
-        .keys()
-        .value();
-    }
-  }
-
-  get progressSlices(): number[] | undefined {
-    if (this.isArchived) {
-      return [0];
-    }
-    else if (this.validationCategories) {
-      return _.chain(this.validationCategories)
-        .map(category => 0.5)
-        .value();
+      return {
+        virheet: _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value.virheet)
+          .keyBy('syy')
+          .keys()
+          .value(),
+        huomautukset: [],
+      };
     }
   }
 
@@ -585,10 +532,6 @@ export default class RouteToteutussuunnitelma extends Vue {
 
       return _.toLower(this.toteutussuunnitelma?.tila);
     }
-  }
-
-  get popupStyle(): { background: string; } | undefined {
-    return tileBackgroundColor(this.toteutussuunnitelma?.peruste ? this.toteutussuunnitelma?.peruste?.koulutustyyppi : this.toteutussuunnitelma?.koulutustyyppi);
   }
 
   get julkaisut() {
@@ -615,7 +558,7 @@ export default class RouteToteutussuunnitelma extends Vue {
     return this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
   }
 
-  async makeReady() {
+  async asetaValmiiksi() {
     await vaihdaOpetussunnitelmaTilaConfirm(
       this,
       {
@@ -630,6 +573,10 @@ export default class RouteToteutussuunnitelma extends Vue {
 
   get salliTekstikappaleLisays() {
     return this.isTutkintoonValmentava || this.isVapaaSivistystyo || this.isKoto;
+  }
+
+  get onkoJulkaisemattomiaMuutoksia() {
+    return this.toteutussuunnitelmaStore.julkaisemattomiaMuutoksia.value;
   }
 }
 </script>

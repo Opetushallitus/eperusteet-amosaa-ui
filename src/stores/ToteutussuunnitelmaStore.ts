@@ -17,6 +17,7 @@ export class ToteutussuunnitelmaStore {
     toteutussuunnitelmaStatus: null as Validointi | null,
     julkaisut: null as JulkaisuBaseDto[] | null,
     vanhentunutPohjaperusteDto: null as VanhentunutPohjaperusteDto | null,
+    julkaisemattomiaMuutoksia: null as boolean | null,
   })
 
   public readonly toteutussuunnitelma = computed(() => this.state.toteutussuunnitelma);
@@ -25,12 +26,14 @@ export class ToteutussuunnitelmaStore {
   public readonly toteutussuunnitelmaStatus = computed(() => this.state.toteutussuunnitelmaStatus);
   public readonly julkaisut = computed(() => this.state.julkaisut);
   public readonly vanhentunutPohjaperusteDto = computed(() => this.state.vanhentunutPohjaperusteDto);
+  public readonly julkaisemattomiaMuutoksia = computed(() => this.state.julkaisemattomiaMuutoksia);
 
   public async init(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
     this.state.toteutussuunnitelma = null;
     this.state.julkaisut = null;
     this.state.toteutussuunnitelmaStatus = null;
     this.state.navigation = null;
+    this.state.julkaisemattomiaMuutoksia = null;
     try {
       this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
       if (_.get(this.state.toteutussuunnitelma, '_pohja')) {
@@ -40,11 +43,16 @@ export class ToteutussuunnitelmaStore {
       await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
       await this.updateValidation(koulutustoimijaId, toteutussuunnitelmaId);
       this.state.vanhentunutPohjaperusteDto = (await Opetussuunnitelmat.getPaivitettavaOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
+      await this.fetchJulkaisemattomiaMuutoksia();
     }
     catch (e) {
       logger.error(e);
       Virheet.lisaaVirhe({});
     }
+  }
+
+  public async fetchJulkaisemattomiaMuutoksia() {
+    this.state.julkaisemattomiaMuutoksia = (await Julkaisut.onkoMuutoksia(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
   }
 
   public async create(ktId: string, toteutussuunnitelma: OpetussuunnitelmaLuontiDto) {
@@ -66,6 +74,7 @@ export class ToteutussuunnitelmaStore {
       julkaisu
     )).data;
     this.state.julkaisut?.unshift(uusiJulkaisu);
+    await this.fetchJulkaisemattomiaMuutoksia();
   }
 
   public async paiviteOpetussunnitelmanPeruste() {
