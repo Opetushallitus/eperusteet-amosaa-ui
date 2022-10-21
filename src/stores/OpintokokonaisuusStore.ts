@@ -1,15 +1,12 @@
 import Vue from 'vue';
-import VueCompositionApi, { computed } from '@vue/composition-api';
-
 import _ from 'lodash';
-import { minLength, required, minValue } from 'vuelidate/lib/validators';
-
+import VueCompositionApi, { computed } from '@vue/composition-api';
+import { minLength, required, requiredIf } from 'vuelidate/lib/validators';
 import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko } from '@shared/tyypit';
 import { Kielet } from '@shared/stores/kieli';
 import { translated } from '@shared/validators/required';
-import { Validations } from 'vuelidate-property-decorators';
 import { Computed } from '@shared/utils/interfaces';
 
 Vue.use(VueCompositionApi);
@@ -90,11 +87,14 @@ export class OpintokokonaisuusStore implements IEditoitava {
       },
       opintokokonaisuus: {
         laajuus: {
-          required,
-          'min-length': minValue(this.opintokokonaisuus?.opintokokonaisuus?.minimilaajuus || 0),
+          required: requiredIf((value) => {
+            return value.laajuusYksikko;
+          }),
         },
         laajuusYksikko: {
-          required,
+          required: requiredIf((value) => {
+            return value.laajuus > 0;
+          }),
         },
         kuvaus: translated([kieli]),
         tavoitteet: {
