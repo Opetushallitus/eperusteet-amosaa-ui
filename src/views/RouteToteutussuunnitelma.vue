@@ -87,7 +87,7 @@
             <template v-slot:tutkinnonosa="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }">
-                  {{ $kaanna(item.label) }}
+                  {{ $kaanna(item.label) || $t('nimeton-tutkinnonosa') }}
                 </router-link>
               </div>
             </template>
@@ -104,7 +104,7 @@
               <div class="menu-item">
                 <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
                 <router-link :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }">
-                  {{ $kaanna(item.label) }}
+                  {{ $kaanna(item.label) || $t('nimetön-tekstikappale') }}
                 </router-link>
               </div>
             </template>
@@ -261,7 +261,6 @@ import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
-import { tileBackgroundColor } from '@shared/utils/bannerIcons';
 import { LinkkiHandler, routeToNode } from '@/utils/routing';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 import { Toteutus } from '@shared/utils/perusteet';
