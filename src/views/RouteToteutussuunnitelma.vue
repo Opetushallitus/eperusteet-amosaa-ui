@@ -195,7 +195,7 @@
                     @save="tallennaUusiOpintokokonaisuus"
                     :tekstikappaleet="perusteenOsat"
                     :paatasovalinta="true"
-                    :otsikkoRequired="false"
+                    :otsikkoRequired="true"
                     modalId="opintokokonaisuusLisays">
                     <template v-slot:lisays-btn-text>
                       {{$t('uusi-opintokokonaisuus')}}
@@ -381,6 +381,9 @@ export default class RouteToteutussuunnitelma extends Vue {
       {
         tyyppi: _.toLower(MatalaTyyppiEnum.OPINTOKOKONAISUUS),
         opintokokonaisuus: { tyyppi: 'oma' as string },
+        tekstiKappale: {
+          nimi: otsikko,
+        },
       } as SisaltoviiteMatalaDto,
       this,
       this.updateNavigation);
