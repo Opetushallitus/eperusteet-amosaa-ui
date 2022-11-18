@@ -30,10 +30,7 @@
               {{ $t('ei-hakutuloksia') }}
             </div>
             <div class="d-flex flex-wrap">
-              <div
-                v-if="!hasRajain"
-                class="opsbox"
-                v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'opetussuunnitelma' }">
+              <div v-if="!hasRajain && hasLuontiOikeus" class="opsbox">
                 <RouterLink tag="a" :to="{ name: kaannokset['uusiRoute'] }">
                   <div class="opsbox__new">
                     <div class="opsbox__plus-icon">
@@ -230,6 +227,10 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 
   get kaannokset() {
     return OpetussuunnitelmalistausKielistykset[this.toteutus][this.opsTyyppi];
+  }
+
+  get hasLuontiOikeus() {
+    return this.$hasOikeus('luonti', 'opetussuunnitelma');
   }
 }
 </script>
