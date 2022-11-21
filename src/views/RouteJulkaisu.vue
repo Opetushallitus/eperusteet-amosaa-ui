@@ -109,7 +109,7 @@
             <ep-content v-model="julkaisu.tiedote"
                         layout="full"
                         :is-editable="true" />
-            <EpJulkaisuButton class="mt-3" :julkaise="julkaise" v-oikeustarkastelu="{ oikeus: 'muokkaus' }"/>
+            <EpJulkaisuButton class="mt-3" :julkaise="julkaise" v-oikeustarkastelu="{ oikeus: 'muokkaus' }" :julkaisuKesken="julkaisuKesken"/>
           </b-form-group>
         </div>
 
@@ -249,6 +249,10 @@ export default class RouteJulkaisu extends Vue {
     catch (err) {
       this.$fail(this.$t('palautus-epaonnistui') as string);
     }
+  }
+
+  get julkaisuKesken() {
+    return this.toteutussuunnitelmaStore.viimeisinJulkaisuTila.value === 'KESKEN';
   }
 }
 </script>
