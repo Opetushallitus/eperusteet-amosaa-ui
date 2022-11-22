@@ -88,7 +88,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
       opintokokonaisuus: {
         laajuus: {
           required: requiredIf((value) => {
-            return value.laajuusYksikko;
+            return !!value.laajuusYksikko;
           }),
         },
         laajuusYksikko: {
