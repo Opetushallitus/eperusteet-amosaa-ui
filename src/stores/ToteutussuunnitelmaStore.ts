@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { OpetussuunnitelmaDto, Opetussuunnitelmat, NavigationNodeDto, OpetussuunnitelmaLuontiDto, Validointi, JulkaisuBaseDto, Julkaisut, VanhentunutPohjaperusteDto, OpetussuunnitelmaBaseDto } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, Opetussuunnitelmat, NavigationNodeDto, OpetussuunnitelmaLuontiDto, Validointi, JulkaisuBaseDto, Julkaisut, VanhentunutPohjaperusteDto, OpetussuunnitelmaBaseDto, JulkaisuBaseDtoTilaEnum } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { createLogger } from '@shared/utils/logger';
 import { Virheet } from '@shared/stores/virheet';
@@ -44,9 +44,9 @@ export class ToteutussuunnitelmaStore {
       }
       this.state.julkaisut = (await Julkaisut.getJulkaisut(toteutussuunnitelmaId, koulutustoimijaId)).data;
       await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
-      await this.updateValidation(koulutustoimijaId, toteutussuunnitelmaId);
+      await this.updateValidation();
+      await this.fetchJulkaisut();
       this.state.vanhentunutPohjaperusteDto = (await Opetussuunnitelmat.getPaivitettavaOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
-      await this.fetchJulkaisemattomiaMuutoksia();
     }
     catch (e) {
       logger.error(e);
@@ -66,30 +66,37 @@ export class ToteutussuunnitelmaStore {
     this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, koulutustoimijaId)).data;
   }
 
-  public async updateValidation(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
-    this.state.toteutussuunnitelmaStatus = (await Opetussuunnitelmat.validoiOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
+  public async updateValidation() {
+    this.state.toteutussuunnitelmaStatus = (await Opetussuunnitelmat.validoiOpetussuunnitelma(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+    await this.fetchJulkaisemattomiaMuutoksia();
+  }
+
+  async updateCurrent() {
+    this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+    await this.updateValidation();
   }
 
   async fetchJulkaisut() {
     this.state.julkaisut = (await Julkaisut.getJulkaisut(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
-    await this.fetchViimeisinJulkaisuTila();
-    await this.pollTila();
-    await this.fetchJulkaisemattomiaMuutoksia();
+    if (_.includes(_.map(this.state.julkaisut, 'tila'), JulkaisuBaseDtoTilaEnum.KESKEN)) {
+      await this.fetchViimeisinJulkaisuTila();
+      await this.pollTila();
+    }
   }
 
   async fetchViimeisinJulkaisuTila() {
     this.state.viimeisinJulkaisuTila = (await Julkaisut.viimeisinJulkaisuTila(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
 
-    if (this.state.viimeisinJulkaisuTila !== 'KESKEN' && this.state.tilaPolling !== null) {
+    if (this.state.viimeisinJulkaisuTila !== JulkaisuBaseDtoTilaEnum.KESKEN) {
       clearInterval(this.state.tilaPolling);
       this.state.tilaPolling = null;
-      await this.fetchJulkaisut();
-      this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+      this.state.julkaisut = (await Julkaisut.getJulkaisut(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+      await this.updateCurrent();
     }
   }
 
   async pollTila() {
-    if (this.state.viimeisinJulkaisuTila === 'KESKEN') {
+    if (this.state.viimeisinJulkaisuTila === JulkaisuBaseDtoTilaEnum.KESKEN) {
       this.state.tilaPolling = setInterval(() => this.fetchViimeisinJulkaisuTila(), 2500);
     }
   }

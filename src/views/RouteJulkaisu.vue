@@ -176,7 +176,7 @@ export default class RouteJulkaisu extends Vue {
   };
 
   async mounted() {
-    await this.toteutussuunnitelmaStore.updateValidation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.toteutussuunnitelmaStore.updateValidation();
   }
 
   get suunnitelma() {
