@@ -226,7 +226,7 @@ export default class RouteJulkaisu extends Vue {
     try {
       await this.toteutussuunnitelmaStore.julkaise(this.julkaisu);
       this.julkaisu.tiedote = {};
-      this.$success(this.$t(this.kielistykset['julkaisuOnnistui']) as string);
+      this.$success(this.$t('julkaisu-kaynnistetty') as string);
     }
     catch (err) {
       this.$fail(this.$t('julkaisu-epaonnistui-' + OpetussuunnitelmaTyyppi[this.toteutus] + '-' + err.response?.data?.syy) as string);
