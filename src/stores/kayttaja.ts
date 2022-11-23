@@ -66,7 +66,7 @@ export class KayttajaStore implements IOikeusProvider {
   public readonly organisaatioOikeudet = computed(() => this.state.organisaatioOikeudet);
   public readonly toteutussuunnitelmaOikeudet = computed(() => this.state.toteutussuunnitelmaOikeudet);
   public readonly nimi = computed(() => parsiEsitysnimi(this.state.tiedot));
-  public readonly isAdmin = computed(() => _.includes(this.state.tiedot?.oikeudet || [], 'ROLE_EPERUSTEET_ADMIN'));
+  public readonly isAdmin = computed(() => this.hasOikeus('hallinta', 'oph'));
   public readonly koulutustoimijat = computed(() => this.state.koulutustoimijat);
   public readonly ophSelected = computed(() => this.state.koulutustoimijaId === this.getOphKtId());
   public readonly ophKtId = computed(() => this.state.ophKoulutustoimija?.id);

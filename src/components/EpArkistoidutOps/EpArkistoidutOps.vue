@@ -32,7 +32,7 @@
             variant="link"
             icon="peruuta"
             @click="$emit('restore', data.item)"
-            v-oikeustarkastelu="{ oikeus: 'luonti' }">
+            v-if="$hasOikeus('luonti') || $isAdmin()">
             {{ $t('palauta') }}
           </EpButton>
         </template>
