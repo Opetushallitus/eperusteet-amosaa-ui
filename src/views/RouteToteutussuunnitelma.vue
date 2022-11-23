@@ -446,8 +446,11 @@ export default class RouteToteutussuunnitelma extends Vue {
     ];
 
     if (!this.isArchived && (this.isDraft || this.$hasOikeus('hallinta', 'oph'))) {
-      let oikeus = { oikeus: 'hallinta', kohde: 'oph' };
-      if (this.isDraft) {
+      let oikeus;
+      if (this.$hasOikeus('hallinta', 'oph')) {
+        oikeus = { oikeus: 'hallinta', kohde: 'oph' };
+      }
+      else if (this.isDraft) {
         oikeus = { oikeus: 'hallinta', kohde: 'toteutussuunnitelma' };
       }
 
@@ -549,7 +552,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   get isDraft(): boolean | undefined {
-    return this.tila === (this.julkaisut ? _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS) : undefined);
+    return !this.isPublished && this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
   }
 
   get isArchived(): boolean {
