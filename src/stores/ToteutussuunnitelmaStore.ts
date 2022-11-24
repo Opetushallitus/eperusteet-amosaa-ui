@@ -67,8 +67,10 @@ export class ToteutussuunnitelmaStore {
   }
 
   public async updateValidation() {
-    this.state.toteutussuunnitelmaStatus = (await Opetussuunnitelmat.validoiOpetussuunnitelma(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
-    await this.fetchJulkaisemattomiaMuutoksia();
+    if (this.toteutussuunnitelma.value) {
+      this.state.toteutussuunnitelmaStatus = (await Opetussuunnitelmat.validoiOpetussuunnitelma(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+      await this.fetchJulkaisemattomiaMuutoksia();
+    }
   }
 
   async updateCurrent() {
@@ -102,7 +104,7 @@ export class ToteutussuunnitelmaStore {
   }
 
   public async julkaise(julkaisu: JulkaisuBaseDto) {
-    await Julkaisut.teeJulkaisu(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id));
+    await Julkaisut.teeJulkaisu(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id), julkaisu);
     await this.fetchJulkaisut();
     if (!_.includes(_.map(this.state.julkaisut, 'tila'), JulkaisuBaseDtoTilaEnum.KESKEN)) {
       await this.updateCurrent();
