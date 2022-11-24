@@ -107,7 +107,7 @@
           <b-form-group :label="$t('julkaisun-tiedote')">
             <div class="font-size-08 mb-2">{{$t('tiedote-naytetaan-tyoryhmalle-taman-sivun-julkaisuhistoriassa')}}</div>
             <ep-content v-model="julkaisu.tiedote"
-                        layout="full"
+                        layout="simplified"
                         :is-editable="true" />
             <EpJulkaisuButton class="mt-3" :julkaise="julkaise" v-oikeustarkastelu="{ oikeus: 'muokkaus' }" :julkaisuKesken="julkaisuKesken"/>
           </b-form-group>
@@ -224,6 +224,7 @@ export default class RouteJulkaisu extends Vue {
 
   async julkaise() {
     try {
+      console.log(this.julkaisu);
       await this.toteutussuunnitelmaStore.julkaise(this.julkaisu);
       this.julkaisu.tiedote = {};
       this.$success(this.$t('julkaisu-kaynnistetty') as string);
