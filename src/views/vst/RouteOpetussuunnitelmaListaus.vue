@@ -1,67 +1,102 @@
 <template>
-  <EpMainView>
+  <EpMainView :container="true">
     <template slot="header">
       <h1 class="mb-3">{{ $t(kaannokset['otsikko']) }}</h1>
       <div class="d-md-flex justify-content-between">
         <p class="mt-2">{{ $t(kaannokset['kuvaus']) }}</p>
         <EpArkistoidutOps
-          v-if="poistetut.length > 0"
+          v-if="poistetut && poistetut.length > 0"
           :opetussuunnitelmat="poistetut"
           @restore="onRestoreOps"
           :title="kaannokset['arkistoidut']"/>
       </div>
       <div class="d-flex">
         <b-form-group :label="$t('nimi')" class="col-6 col-lg-4">
-          <EpSearch maxWidth v-model="rajain" :placeholder="$t('etsi')"/>
+          <EpSearch maxWidth v-model="query.nimi" :placeholder="$t('etsi')"/>
+        </b-form-group>
+        <b-form-group :label="$t('koulutustoimija')" class="col-6 col-lg-4" v-if="$isAdmin()">
+          <EpMultiSelect
+            class="multiselect"
+            v-model="valitutKoulutustoimijat"
+            :enable-empty-option="true"
+            :placeholder="$t('kaikki')"
+            :is-editing="true"
+            :options="koulutustoimijat"
+            :multiple="true"
+            track-by="id">
+            <template slot="option" slot-scope="{ option }">
+              {{ $kaanna(option.nimi) }}
+            </template>
+
+            <template slot="selection" slot-scope="{ values }">
+              <span v-if="values.length > 1">{{$t('valittu')}} {{values.length}} {{$t('koulutustoimijaa')}}</span>
+              <span v-if="values.length === 1">{{$kaanna(values[0].nimi)}}</span>
+            </template>
+          </EpMultiSelect>
         </b-form-group>
         <b-form-group class="ml-4 mt-3" v-if="toteutus === 'vapaasivistystyo'">
           <label>&nbsp;</label>
-          <EpToggle v-model="jotpa" checkbox>{{$t('nayta-vain-jotpa-rahoitteiset')}}</EpToggle>
+          <EpToggle v-model="query.jotpa" checkbox>{{$t('nayta-vain-jotpa-rahoitteiset')}}</EpToggle>
         </b-form-group>
       </div>
     </template>
-    <b-container fluid class="pl-0">
+    <b-container fluid class="mt-2 pl-0" slot="custom-content">
       <b-row>
         <b-col>
           <div class="ops">
-            <EpSpinner v-if="!opslista" />
-            <h2>{{ $t(kaannokset['keskeneraiset']) }}</h2>
-            <div class="ops__info" v-if="keskeneraiset.length === 0 && hasRajain">
-              {{ $t('ei-hakutuloksia') }}
-            </div>
-            <div class="d-flex flex-wrap">
-              <div
-                v-if="!hasRajain"
-                class="opsbox"
-                v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'opetussuunnitelma' }">
-                <RouterLink tag="a" :to="{ name: kaannokset['uusiRoute'] }">
-                  <div class="opsbox__new">
-                    <div class="opsbox__plus-icon">
-                      <fas icon="plussa"></fas>
+            <EpSpinner v-if="!opetussuunnitelmat" />
+            <template v-else>
+              <h2>{{ $t(kaannokset['keskeneraiset']) }}</h2>
+              <div class="d-flex flex-wrap">
+                <div
+                  class="opsbox"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'opetussuunnitelma' }">
+                  <RouterLink tag="a" :to="{ name: kaannokset['uusiRoute'] }">
+                    <div class="opsbox__new">
+                      <div class="opsbox__plus-icon">
+                        <fas icon="plussa"></fas>
+                      </div>
+                      <div class="opsbox__text">
+                        {{ $t('luo-uusi') }}
+                      </div>
                     </div>
-                    <div class="opsbox__text">
-                      {{ $t('luo-uusi') }}
-                    </div>
+                  </RouterLink>
+                </div>
+                  <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in opetussuunnitelmat" :key="ops.id"/>
+                  <div class="ops__info mt-4 ml-4" v-if="opetussuunnitelmat.length === 0">
+                    <EpAlert :ops="true" :text="$t('ei-hakutuloksia')" class="mt-4" />
                   </div>
-                </RouterLink>
               </div>
-                <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in keskeneraiset" :key="ops.id"/>
-            </div>
+
+              <b-pagination
+                class="mt-3"
+                v-model="opsSivu"
+                :total-rows="opetussuunnitelmatKokonaismaara"
+                :per-page="query.sivukoko"
+                align="center" />
+
+            </template>
           </div>
           <div class="ops">
             <h2 class="mt-4">{{ $t(kaannokset['julkaistut']) }}</h2>
 
-            <div class="info" v-if="julkaistut.length === 0">
-              <div v-if="hasRajain">
-                {{ $t('ei-hakutuloksia') }}
-              </div>
-              <EpAlert v-else :ops="true" :text="$t(kaannokset['eiJulkaistuja'])" class="mt-4" />
+            <EpSpinner v-if="!julkaistut" />
+
+            <div class="info" v-if="julkaistut && julkaistut.length === 0">
+              <EpAlert :ops="true" :text="$t(kaannokset['eiJulkaistuja'])" class="mt-4" />
             </div>
 
             <div class="d-flex flex-wrap">
               <OpsJulkaistutTile :ops="ops" v-for="ops in julkaistut" :key="'julkaistu-' + ops.id"/>
             </div>
+            <b-pagination
+                class="mt-3"
+                v-model="julkaisutSivu"
+                :total-rows="julkaistutKokonaismaara"
+                :per-page="query.sivukoko"
+                align="center" />
           </div>
+
          <div class="ops" v-if="ystavienKeskeneraiset.length > 0">
            <h2 class="mt-4">{{ $t(kaannokset['ystavien'] + '-keskeneraiset') }}</h2>
 
@@ -86,26 +121,25 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import _ from 'lodash';
-
 import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
-
 import { ArkistointiTekstit, OpetussuunnitelmalistausKielistykset, TileBackground, ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
-
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import KoulutustyyppiSelect from '@shared/components/forms/EpKoulutustyyppiSelect.vue';
 import EpProgress from '@shared/components/EpProgressPopover/EpProgress.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-
 import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
-import { Opetussuunnitelmat, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
-import { Kielet } from '@shared/stores/kieli';
+import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
 import OpsKeskeneraisetTile from './OpsKeskeneraisetTile.vue';
 import OpsJulkaistutTile from './OpsJulkaistutTile.vue';
 import { Toteutus } from '@shared/utils/perusteet';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
+import { KayttajaStore } from '@/stores/kayttaja';
+import { OpetussuunnitelmatStore } from '@/stores/OpetussuunnitelmatStore';
+import { Debounced } from '@shared/utils/delay';
+import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 
 @Component({
   components: {
@@ -119,6 +153,7 @@ import EpToggle from '@shared/components/forms/EpToggle.vue';
     OpsKeskeneraisetTile,
     OpsJulkaistutTile,
     EpToggle,
+    EpMultiSelect,
   },
 })
 export default class RouteOpetussuunnitelmaListaus extends Vue {
@@ -129,20 +164,87 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   private toteutus!: Toteutus;
 
   @Prop({ required: true })
+  private kayttajaStore!: KayttajaStore;
+
+  @Prop({ required: true })
+  private opetussuunnitelmatStore!: OpetussuunnitelmatStore;
+
+  @Prop({ required: true })
   private opsTyyppi!: 'ops' | 'opspohja';
 
-  private rajain = '';
-  private jotpa: boolean = false;
-  private opslista: OpetussuunnitelmaDto[] | null = null;
-  private ystavien: OpetussuunnitelmaDto[] | null = [];
+  private sivut = {
+    keskeneraisetSivu: 0,
+    julkaistutSivu: 0,
+  };
 
-  mounted() {
-    this.init();
+  private query: any = {
+    koulutustoimijat: [],
+    koulutustyyppi: this.koulutustyypit,
+    tyyppi: this.opsTyyppi,
+    nimi: '',
+    jotpa: false,
+  };
+
+  async mounted() {
+    await this.init();
   }
 
   @Watch('koulutustoimijaId')
-  koulutustoimijaChange() {
-    this.init();
+  async koulutustoimijaChange() {
+    await this.init();
+  }
+
+  protected async init() {
+    this.opetussuunnitelmatStore.init(this.koulutustoimijaId, this.query, this.$isAdmin());
+  }
+
+  @Debounced(300)
+  @Watch('query', { deep: true })
+  async queryUpdate() {
+    await this.init();
+  }
+
+  @Watch('opsSivu')
+  async opsSivuUpdate() {
+    await this.initKeskeneraiset();
+  }
+
+  @Watch('julkaisutSivu')
+  async julkaisutSivuUpdate() {
+    await this.initJulkaistut();
+  }
+
+  get koulutustoimijat() {
+    return this.kayttajaStore.koulutustoimijat.value;
+  }
+
+  get valitutKoulutustoimijat() {
+    return _.filter(this.koulutustoimijat, (kt: any) => _.includes(this.query.koulutustoimijat, kt.id));
+  }
+
+  set valitutKoulutustoimijat(value: any[]) {
+    if (_.size(value) === 0) {
+      this.query.koulutustoimijat = [];
+    }
+    else {
+      this.query.koulutustoimijat = _.map(value, 'id');
+    }
+  }
+
+  get opsSivu() {
+    return this.sivut.keskeneraisetSivu + 1;
+  }
+
+  set opsSivu(sivu) {
+    this.sivut.keskeneraisetSivu = sivu - 1;
+  }
+
+  get julkaisutSivu() {
+    return this.sivut.julkaistutSivu + 1;
+  }
+
+  set julkaisutSivu(sivu) {
+    this.sivut.julkaistutSivu = sivu - 1;
   }
 
   async onRestoreOps({ id }: { id: number }) {
@@ -151,42 +253,13 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
       {
         ...ArkistointiTekstit.palautus[this.toteutus].meta,
         toteutussuunnitelmaId: id,
-        callback: async () => this.init(),
+        callback: async () => {
+          await this.initKeskeneraiset();
+          await this.initJulkaistut();
+          await this.opetussuunnitelmatStore.fetchPoistetut(this.koulutustoimijaId, this.query);
+        },
       },
     );
-  }
-
-  get hasRajain() {
-    return !_.isEmpty(this.rajain) || this.jotpa;
-  }
-
-  get jarjestetyt() {
-    return _(this.opslista)
-      .filter((ops: OpetussuunnitelmaDto) => _.includes(
-        _.toLower(_.get(ops, 'nimi.' + Kielet.getSisaltoKieli.value)),
-        _.toLower(this.rajain)
-      ))
-      .filter(ops => !this.jotpa || !!ops.jotpatyyppi)
-      .sortBy('luotu')
-      .reverse()
-      .value();
-  }
-
-  get arkistoimattomat() {
-    return _.reject(this.jarjestetyt, (ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'poistettu');
-  }
-
-  get keskeneraiset() {
-    return _.chain(this.arkistoimattomat)
-      .reject((ops: OpetussuunnitelmaDto) => (ops.tila as string) === this.kaannokset['julkaisuTila'])
-      .value();
-  }
-
-  get julkaistut() {
-    return _.chain(this.arkistoimattomat)
-      .filter((ops: OpetussuunnitelmaDto) => (ops.tila as string) === this.kaannokset['julkaisuTila'])
-      .map((ops: OpetussuunnitelmaDto) => this.opsBannerImage(ops))
-      .value();
   }
 
   opsBannerImage(ops) {
@@ -194,23 +267,41 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   get poistetut() {
-    return _.filter(this.jarjestetyt, (ops: OpetussuunnitelmaDto) => (ops.tila as string) === 'poistettu');
+    return this.opetussuunnitelmatStore.arkistoidutOpetussuunnitelmat.value;
   }
 
   get koulutustyypit() {
-    return ToteutuksenKoulutustyypit[this.toteutus];
+    return ToteutuksenKoulutustyypit[this.toteutus] as string[];
   }
 
-  protected async init() {
-    this.opslista = null;
-    if (this.opsTyyppi === 'ops') {
-      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit, 'OPS')).data;
-      this.ystavien = (await Opetussuunnitelmat.getAllOtherOrgsOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit)).data;
-    }
+  async initKeskeneraiset() {
+    await this.opetussuunnitelmatStore.fetchKeskeneraiset(this.koulutustoimijaId, { ...this.query, sivu: this.sivut.keskeneraisetSivu });
+  }
 
-    if (this.opsTyyppi === 'opspohja') {
-      this.opslista = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(this.koulutustoimijaId, this.koulutustyypit, 'OPSPOHJA')).data;
+  async initJulkaistut() {
+    await this.opetussuunnitelmatStore.fetchJulkaistut(this.koulutustoimijaId, { ...this.query, sivu: this.sivut.julkaistutSivu });
+  }
+
+  get opetussuunnitelmat() {
+    return this.opetussuunnitelmatStore.opetussuunnitelmat.value?.data;
+  }
+
+  get julkaistut() {
+    if (this.opetussuunnitelmatStore.julkaistutOpetussuunnitelmat.value) {
+      return _.map(this.opetussuunnitelmatStore.julkaistutOpetussuunnitelmat.value?.data, ops => this.opsBannerImage(ops));
     }
+  }
+
+  get opetussuunnitelmatKokonaismaara() {
+    return this.opetussuunnitelmatStore.opetussuunnitelmat.value?.kokonaismäärä;
+  }
+
+  get julkaistutKokonaismaara() {
+    return this.opetussuunnitelmatStore.julkaistutOpetussuunnitelmat.value?.kokonaismäärä;
+  }
+
+  get ystavien() {
+    return this.opetussuunnitelmatStore.ystavienOpetussuunnitelmat.value;
   }
 
   get ystavienKeskeneraiset() {
