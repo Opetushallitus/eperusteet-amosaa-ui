@@ -114,11 +114,6 @@ export const TotetusOpetussuunnitelmaRoute = {
 };
 
 export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
-  // PURKKARATKAISU SIIHEN, JOS JOKIN VIRKAILIJA SUORALLA OSOITTEELLA MENEE VIELÄ UUTEEN KÄYTTÖLIITTYMÄÄN
-  if (_.includes(window.location.origin, 'virkailija.')) {
-    return [];
-  }
-
   return [
     {
       component: TileToteutussuunnitelmat,

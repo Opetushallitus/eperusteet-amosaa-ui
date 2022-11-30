@@ -198,8 +198,8 @@ export default class EpTutkinnonosaTuonti extends Vue {
     await this.tutkinnonosatTuontiStore!.tuoSisaltoa(this.toteutussuunnitelmaId, this.koulutustoimijaId, _.map(this.selectedTutkinnonosat, 'id') as number[]);
     this.tutkinnonosatTuontiStore!.clear();
     this.$success(this.$t('tutkinnon-osat-tuotu-onnistuneesti') as string);
-    await this.updateNavigation();
     this.close();
+    setTimeout(() => this.updateNavigation(), 300);
   }
 
   close() {

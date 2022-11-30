@@ -1,5 +1,5 @@
-import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
+import Vue from 'vue';
 import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
@@ -44,21 +44,20 @@ export class TutkinnonOsaStore implements IEditoitava {
       Arviointiasteikot.getAllArviointiasteikot(),
     ])), 'data');
 
+    if (tutkinnonosaViite.linkattuPeruste) {
+      this.perusteId = tutkinnonosaViite.linkattuPeruste;
+    }
+
     let perusteId = tutkinnonosaViite.peruste ? tutkinnonosaViite.peruste.id : this.perusteId;
     const peruste = (await Perusteet.getPeruste(perusteId)).data;
 
-    if (tutkinnonosaViite.tosa.tyyppi === 'perusteesta') {
+    if (tutkinnonosaViite.tosa.tyyppi === 'perusteesta' || tutkinnonosaViite.perusteentutkinnonosa) {
       perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
       perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
       this.setArvioinnit(perusteenTutkinnonosa, arviointiasteikot);
     }
     else {
       this.setArvioinnit(tutkinnonosaViite.tosa.omatutkinnonosa, arviointiasteikot);
-    }
-
-    if (tutkinnonosaViite.perusteentutkinnonosa) {
-      perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(this.perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
-      perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(this.perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
     }
 
     const tutkintonimikeKoodit = _.map(await Promise.all(_.chain(peruste.tutkintonimikkeet)
@@ -76,7 +75,15 @@ export class TutkinnonOsaStore implements IEditoitava {
       },
       perusteenTutkinnonosaViite,
       perusteenTutkinnonosa,
-      omaTutkinnonosa: tutkinnonosaViite.tosa.omatutkinnonosa,
+      omaTutkinnonosa: {
+        koodi: null,
+        laajuus: null,
+        geneerinenarviointi: null,
+        ammattitaitovaatimukset: {},
+        arviointi: null,
+        ammattitaidonOsoittamistavat: null,
+        ...tutkinnonosaViite.tosa.omatutkinnonosa,
+      },
       osaamisalat: peruste.osaamisalat,
       tutkintonimikkeet: tutkintonimikeKoodit,
       arviointiasteikot,
@@ -84,8 +91,11 @@ export class TutkinnonOsaStore implements IEditoitava {
   }
 
   setArvioinnit(tutkinnonosa, arviointiasteikot) {
-    if (tutkinnonosa && tutkinnonosa.geneerinenArviointiasteikko) {
-      const arviointiAsteikko = _.keyBy(arviointiasteikot, 'id')[tutkinnonosa.geneerinenArviointiasteikko._arviointiAsteikko];
+    const asteikko = _.get(tutkinnonosa, '.geneerinenArviointiasteikko.arviointiAsteikko');
+    const asteikkoId = _.get(tutkinnonosa, '.geneerinenArviointiasteikko._arviointiAsteikko');
+
+    if (!asteikko && asteikkoId) {
+      const arviointiAsteikko = _.keyBy(arviointiasteikot, 'id')[asteikkoId];
       const osaamistasot = _.keyBy(arviointiAsteikko.osaamistasot, 'id');
       tutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit = _.map(tutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit, otKriteeri => {
         return {

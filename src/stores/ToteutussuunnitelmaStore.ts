@@ -19,7 +19,7 @@ export class ToteutussuunnitelmaStore {
     julkaisemattomiaMuutoksia: null as boolean | null,
     viimeisinJulkaisuTila: null as string | null,
     tilaPolling: null as any | null,
-  })
+  });
 
   public readonly toteutussuunnitelma = computed(() => this.state.toteutussuunnitelma);
   public readonly pohja = computed(() => this.state.pohja);
@@ -62,6 +62,19 @@ export class ToteutussuunnitelmaStore {
 
   public async initNavigation(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
     this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, koulutustoimijaId)).data;
+    const tpakolliset = this.naviFind('tutkinnonosat_pakolliset');
+    const tpaikalliset = this.naviFind('tutkinnonosat_paikalliset');
+    const ttuodut = this.naviFind('tutkinnonosat_tuodut');
+
+    if (tpakolliset) {
+      tpakolliset.id = Number.MAX_SAFE_INTEGER - 1;
+    }
+    if (tpaikalliset) {
+      tpaikalliset.id = Number.MAX_SAFE_INTEGER - 2;
+    }
+    if (ttuodut) {
+      ttuodut.id = Number.MAX_SAFE_INTEGER - 3;
+    }
   }
 
   public async updateValidation() {
@@ -120,5 +133,21 @@ export class ToteutussuunnitelmaStore {
       this.toteutussuunnitelma.value?.koulutustoimija?.id as any,
     )).data;
     this.state.julkaisut?.unshift(uusiJulkaisu);
+  }
+
+  public naviFind(navitype: string) {
+    const stack = [] as any[];
+    stack.push(...(this.state!.navigation!.children || []));
+
+    while (!_.isEmpty(stack)) {
+      const head = stack.pop();
+      if (head.type === navitype) {
+        return head;
+      }
+
+      if (head.children) {
+        stack.push(...head.children);
+      }
+    }
   }
 }

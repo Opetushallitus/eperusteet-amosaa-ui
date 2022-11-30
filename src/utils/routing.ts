@@ -26,6 +26,16 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
       type: 'tekstikappale',
       id: Number(route.params?.sisaltoviiteId!),
     };
+  case 'osaalue':
+    return {
+      type: 'osaalue',
+      id: Number(route.params?.osaalueId!),
+    };
+  case 'tutkinnonosa':
+    return {
+      type: 'tutkinnonosa',
+      id: Number(route.params?.sisaltoviiteId!),
+    };
   case 'opintokokonaisuus':
     return {
       type: 'opintokokonaisuus',
@@ -35,6 +45,10 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
     return {
       type: 'koulutuksenosa',
       id: Number(route.params?.sisaltoviiteId!),
+    };
+  case 'tutkinnonosat':
+    return {
+      type: 'tutkinnonosat',
     };
   case 'koulutuksenosat':
     return {
@@ -68,6 +82,18 @@ export function nodeToRoute(node: NavigationNodeDto): Location | null {
 
   switch (node.type) {
   case 'tutkinnonosat':
+    return {
+      name: 'tutkinnonosat',
+    };
+  case 'tutkinnonosat_tuodut':
+    return {
+      name: 'tutkinnonosat',
+    };
+  case 'tutkinnonosat_pakolliset':
+    return {
+      name: 'tutkinnonosat',
+    };
+  case 'tutkinnonosat_paikalliset':
     return {
       name: 'tutkinnonosat',
     };

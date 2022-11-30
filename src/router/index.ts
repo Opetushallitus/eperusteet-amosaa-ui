@@ -38,6 +38,7 @@ import RouteKoulutuksenOsat from '@/views/RouteKoulutuksenOsat.vue';
 import RouteKotoKielitaitotaso from '@/views/RouteKotoKielitaitotaso.vue';
 import RouteKotoLaajaAlainenOsaaminen from '@/views/RouteKotoLaajaAlainenOsaaminen.vue';
 import RouteKotoOpinto from '@/views/RouteKotoOpinto.vue';
+import RouteOsaAlue from '@/views/RouteOsaAlue.vue';
 
 import { stores } from '@/stores/index';
 import { createLogger } from '@shared/utils/logger';
@@ -279,7 +280,12 @@ const router = new VueRouter({
         component: RouteTutkinnonosa,
         props,
       }, {
-        path: 'suorituspolut/:sisaltoviiteId',
+        path: 'tutkinnonosa/:sisaltoviiteId/osaalue/:osaalueId/:tyyppi',
+        name: 'osaalue',
+        component: RouteOsaAlue,
+        props,
+      }, {
+        path: 'suorituspolut',
         name: 'suorituspolut',
         component: RouteSuorituspolut,
         props,
@@ -287,11 +293,6 @@ const router = new VueRouter({
         path: 'suorituspolku/:sisaltoviiteId',
         name: 'suorituspolku',
         component: RouteSuorituspolku,
-        props,
-      }, {
-        path: 'osasuorituspolku/:sisaltoviiteId',
-        name: 'osasuorituspolku',
-        component: RouteOsaSuorituspolku,
         props,
       }, {
         path: 'opintokokonaisuus/:sisaltoviiteId',
