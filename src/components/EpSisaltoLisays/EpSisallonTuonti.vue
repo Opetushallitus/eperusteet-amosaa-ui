@@ -88,7 +88,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Mixins, Vue, Watch, Inject } from 'vue-property-decorator';
+import { Prop, Component, Mixins, Vue, Watch, InjectReactive } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import { OpetussuunnitelmaDto, SisaltoViiteKevytDto } from '@shared/api/amosaa';
@@ -130,7 +130,7 @@ export default class EpSisallonTuonti extends Vue {
   @Prop({ required: true })
   private updateNavigation!: Function;
 
-  @Inject({ from: 'koulutustoimija' })
+  @InjectReactive('koulutustoimija')
   private readonly koulutustoimija!: any;
 
   private query = {} as any;
@@ -255,7 +255,7 @@ export default class EpSisallonTuonti extends Vue {
       sortable: false,
     }];
 
-    if (!this.koulutustoimija.organisaatioRyhma) {
+    if (!this.koulutustoimija?.organisaatioRyhma) {
       tableFields = [
         ...tableFields,
         {
@@ -334,7 +334,7 @@ export default class EpSisallonTuonti extends Vue {
   }
 
   get kaannokset() {
-    return kaannokset[this.koulutustoimija.organisaatioRyhma ? 'organisaatioRyhma' : 'default'];
+    return kaannokset[this.koulutustoimija?.organisaatioRyhma ? 'organisaatioRyhma' : 'default'];
   }
 }
 

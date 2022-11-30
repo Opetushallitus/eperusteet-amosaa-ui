@@ -5,25 +5,32 @@
         <h2 class="m-0">{{ $kaanna(data.tutkinnonosaViite.tekstiKappale.nimi) }}</h2>
       </template>
       <template v-slot:default="{ data, isEditing, validation }">
+        <b-form-group class="flex-grow-1 mr-5" :label="$t('tutkinnon-osan-nimi') +' *'"
+          v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta' && isEditing">
+          <ep-field v-model="data.tutkinnonosaViite.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
+        </b-form-group>
 
         <div class="d-flex justify-content-between">
-
-          <b-form-group class="flex-grow-1 mr-5" :label="$t('tutkinnon-osan-nimi') +' *'"
-            v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta' && isEditing">
-            <ep-field v-model="data.tutkinnonosaViite.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
+          <b-form-group class="flex-grow-1 mr-5" :label="$t('koodi')" v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta'">
+            <ep-field v-model="data.omaTutkinnonosa.koodi" type="string" :is-editing="isEditing"></ep-field>
           </b-form-group>
 
           <b-form-group :label="$t('laajuus')">
             <div class="d-flex">
               <span v-if="data.tutkinnonosaViite.tosa.tyyppi === 'perusteesta'">{{data.perusteenTutkinnonosaViite.laajuus}}</span>
-              <ep-field v-else type="number" v-model="data.tutkinnonosaViite.tosa.omatutkinnonosa.laajuus" :is-editing="isEditing"></ep-field>
+              <ep-field v-else-if="data.omaTutkinnonosa" type="number" v-model="data.omaTutkinnonosa.laajuus" :is-editing="isEditing"></ep-field>
+              <span class="mr-1" v-else>-</span>
               <div class="ml-1" :class="{'ml-2 pt-1': isEditing}">{{$t('osaamispiste')}}</div>
             </div>
           </b-form-group>
-
         </div>
 
-        <h3 v-if="isEditing">{{$t('tutkinnon-osan-kuvaus')}}</h3>
+        <div v-if="data.perusteenTutkinnonosa">
+          <h3>{{$t('tutkinnon-osan-kuvaus')}}</h3>
+          <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.kuvaus" />
+        </div>
+
+        <h3 v-if="isEditing">{{$t('paikallinen-tarkennus')}}</h3>
         <ep-content layout="normal" v-model="data.tutkinnonosaViite.tekstiKappale.teksti" :is-editable="isEditing"> </ep-content>
 
         <h3 v-if="isEditing && data.tutkinnonosaViite.tosa.vapaat.length > 0" class="pt-5 pb-3">{{$t('tekstikappaleet')}}</h3>
@@ -51,97 +58,31 @@
           {{ $t('lisaa-tekstikappale') }}
         </ep-button>
 
-        <b-tabs class="ml-0 pl-0 mt-4">
+        <div class="alert alert-info" v-if="data.tutkinnonosaViite.tyyppi === 'linkki'">
+          <router-link :to="{ name: 'tutkinnonosa', params: { toteutussuunnitelmaId: data.tutkinnonosaViite.linkattuOps, sisaltoviiteId: data.tutkinnonosaViite.linkattuSisaltoViiteId } }">
+            {{ $t('siirry-alkuperaiseen-toteutukseen') }}
+          </router-link>
+        </div>
+
+        <div v-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'reformi_tutke2'">
+          <EpYhteiset v-model="data.tutkinnonosaViite" :perusteen="data.perusteenTutkinnonosa" :is-editing="isEditing" />
+        </div>
+        <div v-else-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'tutke2'">
+          {{ $t('vanhoja-perustetyyppeja-ei-tueta') }}
+        </div>
+        <b-tabs class="ml-0 pl-0 mt-4" v-else>
           <b-tab :title="$t('paikallinen-toteutus')">
 
             <h3 class="mt-4">{{$t('toteutukset')}}</h3>
 
-             <draggable
-                v-bind="toteutuksetOptions"
-                tag="div"
-                v-model="data.tutkinnonosaViite.tosa.toteutukset">
-
-              <ep-collapse class="toteutus" v-for="(toteutus, index) in data.tutkinnonosaViite.tosa.toteutukset" :key="'toteutus'+index" :borderBottom="false" >
-                <h4 slot="header" v-if="!isEditing">{{$kaanna(toteutus.otsikko)}}</h4>
-
-                <div v-if="isEditing" slot="header" class="d-flex">
-                  <fas icon="raahaus" class="raahaus"/>
-                  <h4 slot="header">{{$t('toteutuksen-otsikko')}}</h4>
-                </div>
-
-                <ep-field v-if="isEditing" v-model="toteutus.otsikko" :is-editing="isEditing"></ep-field>
-
-                <div class="pl-1 pr-4">
-                  <ep-collapse :collapsable="!isEditing">
-                    <h4 slot="header">{{$t('tutkintonimikkeet-ja-osaamisalat')}}</h4>
-                    <b-table striped responsive :items="tutkintonimiketaulu(toteutus.koodit)" :fields="tutkintonimikeFields" v-if="toteutus.koodit.length > 0">
-                      <template v-slot:cell(poista)="data">
-                        <ep-button class="p-0" variant="link" icon="roskalaatikko" @click="poistaTutkintonimike(toteutus, data.item.koodiUri)">
-                          {{ $t('poista') }}
-                        </ep-button>
-                      </template>
-                    </b-table>
-
-                    <ep-button v-if="isEditing" variant="outline-primary" icon="plussa" @click="avaaTutkintonimikeModal(toteutus)">
-                      {{ $t('liita-tutkintonimike-tai-osaamisala') }}
-                    </ep-button>
-
-                  </ep-collapse>
-
-                  <ep-collapse :collapsable="!isEditing">
-                    <h4 slot="header">{{$t('tavat-ja-ymparisto')}}</h4>
-                    <ep-content layout="normal" v-model="toteutus.tavatjaymparisto.teksti" :is-editable="isEditing"> </ep-content>
-                  </ep-collapse>
-
-                  <ep-collapse :borderBottom="toteutus.vapaat.length > 0" :collapsable="!isEditing">
-                    <h4 slot="header">{{$t('osaamisen-arvioinnista')}}</h4>
-                    <ep-content layout="normal" v-model="toteutus.arvioinnista.teksti" :is-editable="isEditing"> </ep-content>
-                  </ep-collapse>
-
-                  <ep-collapse v-for="(vapaateksti, index) in toteutus.vapaat" :key="'vapaateksti'+index" :borderBottom="toteutus.vapaat.length > index+1" :collapsable="!isEditing">
-                    <h4 slot="header" v-if="!isEditing">{{$kaanna(vapaateksti.nimi)}}</h4>
-                    <h4 slot="header" v-if="isEditing">{{$t('tekstikappaleen-otsikko')}}</h4>
-                    <ep-field v-if="isEditing" v-model="vapaateksti.nimi" :is-editing="isEditing"></ep-field>
-
-                    <h4 class="pt-3" v-if="isEditing">{{$t('tekstikappaleen-sisalto')}}</h4>
-                    <ep-content layout="normal" v-model="vapaateksti.teksti" :is-editable="isEditing"> </ep-content>
-
-                    <div class="d-flex justify-content-between pt-3" v-if="isEditing">
-                      <ep-button variant="outline-primary" icon="plussa" v-if="index+1 === toteutus.vapaat.length" @click="lisaaTekstikappale(toteutus)">
-                        {{ $t('lisaa-tekstikappale') }}
-                      </ep-button>
-                      <div v-else/>
-
-                      <ep-button variant="link" icon="roskalaatikko" @click="poistaTekstikappale(toteutus, vapaateksti)">
-                        {{ $t('poista-tekstikappale') }}
-                      </ep-button>
-                    </div>
-                  </ep-collapse>
-
-                  <ep-button variant="outline-primary" icon="plussa" v-if="isEditing && toteutus.vapaat.length === 0" @click="lisaaTekstikappale(toteutus)">
-                    {{ $t('lisaa-tekstikappale') }}
-                  </ep-button>
-
-                </div>
-
-                <div class="d-flex justify-content-end pt-2 pr-4" v-if="isEditing">
-                  <ep-button v-if="isEditing" variant="link" icon="roskalaatikko" @click="poistaToteutus(data.tutkinnonosaViite.tosa, toteutus)">
-                    {{ $t('poista-toteutus') }}
-                  </ep-button>
-                </div>
-
-              </ep-collapse>
-            </draggable>
-
-            <ep-button v-if="isEditing" variant="outline-primary" icon="plussa" @click="lisaaToteutus(data.tutkinnonosaViite.tosa)">
-              {{ $t('lisaa-toteutus') }}
-            </ep-button>
-
+            <EpPaikallisetToteutukset v-model="data.tutkinnonosaViite.tosa.toteutukset"
+                                      :isEditing="isEditing && data.tutkinnonosaViite.tyyppi !== 'linkki'"
+                                      :osaamisalat="osaamisalat"
+                                      :tutkintonimikkeet="tutkintonimikkeet" />
           </b-tab>
 
-          <b-tab :title="$t('perusteen-sisalto')">
-
-            <div class="d-flex pt-3" v-if="tutkinnonosaPerusteesta">
+          <b-tab v-if="tutkinnonosaPerusteesta" :title="$t('perusteen-sisalto')">
+            <div class="d-flex pt-3">
               <b-form-group :label="$t('luotu')" class="flex-fill">
                 <span>{{$sdt(data.perusteenTutkinnonosa.luotu)}}</span>
               </b-form-group>
@@ -159,110 +100,47 @@
               </div>
             </div>
 
-            <ep-collapse>
-              <h3 slot="header">{{$t('ammattitaitovaatimukset')}}</h3>
-              <ep-content v-if="tutkinnonosaPerusteesta" layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaitovaatimukset" :is-editable="false" />
-            </ep-collapse>
+            <EpPerusteenTutkinnonOsa :tutkinnonosa="data.perusteenTutkinnonosa"
+                                     :arviointiasteikot="data.arviointiasteikot" />
+          </b-tab>
 
-              <ep-collapse>
-                <h3 slot="header">{{$t('ammattitaitovaatimukset')}}</h3>
-                <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaitovaatimukset" :is-editable="false" />
-              </ep-collapse>
+          <b-tab v-else :title="$t('sisalto')">
+            <b-form-group>
+              <h3 slot="label" class="pt-3">{{$t('ammattitaitovaatimukset')}}</h3>
+              <EpAmmattitaitovaatimukset v-model="data.omaTutkinnonosa.ammattitaitovaatimukset" :is-editing="isEditing" />
+            </b-form-group>
 
-              <ep-ammatillinen-arvioinnin-kohdealueet v-if="tutkinnonosaPerusteesta" :showHeader="false"
-                :arvioinninKohdealueet="data.perusteenTutkinnonosa.arviointi.arvioinninKohdealueet"
-                :arviointiasteikot="data.arviointiasteikot"/>
+            <b-form-group>
+              <h3 slot="label" class="pt-3">{{$t('geneerinen-arviointi')}}</h3>
+              <GeneerinenArviointi :is-editing="isEditing" v-model="data.omaTutkinnonosa.geneerinenarviointi"></GeneerinenArviointi>
+            </b-form-group>
 
-              <ep-ammatillinen-arvioinnin-kohdealueet v-else :showHeader="false"
-                :arvioinninKohdealueet="data.omaTutkinnonosa.arviointi.arvioinninKohdealueet"
-                :arviointiasteikot="data.arviointiasteikot" />
-
-              <div v-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.geneerinenArviointiasteikko" class="ml-2">
-
-                  <b-table striped :items="data.perusteenTutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit" :fields="osaamistasonKriteeritFields">
-                    <template v-slot:cell(osaamistaso)="{item}">
-                      {{$kaanna(item.osaamistaso.otsikko)}}
-                    </template>
-
-                    <template v-slot:cell(kriteerit)="{item}">
-                      <ul>
-                        <li v-for="(kriteeri, index) in item.kriteerit" :key="'kriteeri'+index">
-                          {{$kaanna(kriteeri)}}
-                        </li>
-                      </ul>
-                    </template>
-                  </b-table>
-
-              </div>
-
-              <ep-collapse>
-                <h3 slot="header">{{$t('ammattitaidon-osoittaminen')}}</h3>
-                <ep-content layout="normal" v-model="data.perusteenTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="false" />
-              </ep-collapse>
-
-            <ep-collapse>
-              <h3 slot="header">{{$t('ammattitaidon-osoittaminen')}}</h3>
-              <ep-content layout="normal" v-if="tutkinnonosaPerusteesta" v-model="data.perusteenTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="false" />
-              <ep-content layout="normal" v-else v-model="data.omaTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="isEditing" />
-            </ep-collapse>
-
-            <div v-if="tutkinnonosaPerusteesta" >
-              <ep-collapse v-for="(vapaaTeksti, index) in data.perusteenTutkinnonosa.vapaatTekstit" :key="'vapaaTekstit'+index">
-                <h3 slot="header">{{$kaanna(vapaaTeksti.nimi)}}</h3>
-                <ep-content layout="normal" v-model="vapaaTeksti.teksti" :is-editable="false" />
-              </ep-collapse>
-            </div>
+            <b-form-group>
+              <h3 slot="label" class="pt-3">{{$t('ammattitaidon-osoittamistavat')}}</h3>
+              <ep-content layout="normal" v-model="data.omaTutkinnonosa.ammattitaidonOsoittamistavat" :is-editable="isEditing"> </ep-content>
+            </b-form-group>
 
           </b-tab>
+
         </b-tabs>
 
       </template>
 
     </EpEditointi>
-
-    <b-modal ref="tutkintonimikeModal" id="tutkintonimikeModal" size="lg" :hide-header-close="true" @ok="lisaaTutkintonimikeOsaamisalat">
-
-      <template v-slot:modal-title>
-        {{$t('liita-tutkintonimike-tai-osaamisala')}}
-      </template>
-
-      <b-table striped responsive :items="tutkintonimikkeet" :fields="modalFields" selectable select-mode="multi" @row-selected="onTutkintonimikeSelected" selected-variant=''>
-        <template v-slot:cell(nimi)="data">
-          <fas v-if="data.rowSelected" icon="check-square" class="checked mr-2"/>
-          <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
-          {{$kaanna(data.item.nimi)}}
-        </template>
-      </b-table>
-
-      <b-table striped responsive :items="osaamisalat" :fields="modalFields" selectable select-mode="multi" @row-selected="onOsaamisalaSelected" selected-variant=''>
-        <template v-slot:cell(nimi)="data">
-          <fas v-if="data.rowSelected" icon="check-square" class="checked mr-2"/>
-          <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
-          {{$kaanna(data.item.nimi)}}
-        </template>
-      </b-table>
-
-      <template v-slot:modal-cancel>
-        {{ $t('peruuta')}}
-      </template>
-      <template v-slot:modal-ok >
-        {{ $t('liita-valitut')}}
-      </template>
-
-    </b-modal>
-
   </div>
 </template>
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import { TutkinnonOsaStore } from '@/stores/TutkinnonOsaStore';
+import EpPerusteenTutkinnonOsa from '@/components/EpAmmatillinen/EpPerusteenTutkinnonOsa.vue';
+import EpPaikallisetToteutukset from '@/components/EpAmmatillinen/EpPaikallisetToteutukset.vue';
+import EpYhteiset from '@/components/EpAmmatillinen/EpYhteiset.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
-import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
@@ -271,25 +149,30 @@ import EpField from '@shared/components/forms/EpField.vue';
 import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto } from '@shared/api/amosaa';
 import draggable from 'vuedraggable';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
+import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
 import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillinenArvioinninKohdealueet/EpAmmatillinenArvioinninKohdealueet.vue';
 
 @Component({
   components: {
-    EpEditointi,
+    EpAmmatillinenArvioinninKohdealueet,
+    EpAmmattitaitovaatimukset,
     EpButton,
+    EpCollapse,
+    EpContent,
+    EpEditointi,
+    EpField,
+    EpPaikallisetToteutukset,
+    EpPerusteenTutkinnonOsa,
     EpSearch,
     EpSpinner,
-    EpContent,
-    EpCollapse,
-    EpField,
+    EpYhteiset,
+    GeneerinenArviointi,
     draggable,
-    EpAmmattitaitovaatimukset,
-    EpAmmatillinenArvioinninKohdealueet,
   },
 })
 export default class RouteTutkinnonosa extends Vue {
   @Prop({ required: true })
-  private koulutustoimijaId!: string | number;
+  private koulutustoimijaId!: string;
 
   @Prop({ required: true })
   private toteutussuunnitelmaId!: string | number;
@@ -301,11 +184,6 @@ export default class RouteTutkinnonosa extends Vue {
   private sisaltoviiteId!: string | number;
 
   private editointiStore: EditointiStore | null = null;
-
-  private valitutTutkintonimikkeet: any[] = [];
-  private valitutOsaamisalat: any[] = [];
-  private valittuToteutus: TutkinnonosaToteutusDto | null = null;
-  private fetching = false;
 
   @Watch('toteutussuunnitelma', { immediate: true })
   toteutussuunnitelmaChange() {
@@ -358,10 +236,6 @@ export default class RouteTutkinnonosa extends Vue {
     }
   }
 
-  tutkintonimiketaulu(koodit: string[]) {
-    return _.map(koodit, koodi => this.tutkintonimikeOsaamisalatByKoodiUri[koodi]);
-  }
-
   get tutkintonimikkeet() {
     if (this.editointiStore && this.editointiStore.data.value) {
       return _.map(this.editointiStore.data.value.tutkintonimikkeet, tutkintonimike => {
@@ -374,6 +248,7 @@ export default class RouteTutkinnonosa extends Vue {
         };
       });
     }
+    return null;
   }
 
   get osaamisalat() {
@@ -386,56 +261,7 @@ export default class RouteTutkinnonosa extends Vue {
         };
       });
     }
-  }
-
-  get tutkintonimikeetByKoodiUri() {
-    return _.keyBy(this.tutkintonimikkeet, 'koodiUri');
-  }
-
-  get osaamisalatByKoodiUri() {
-    return _.keyBy(this.osaamisalat, 'koodiUri');
-  }
-
-  get tutkintonimikeOsaamisalatByKoodiUri() {
-    return {
-      ...this.tutkintonimikeetByKoodiUri,
-      ...this.osaamisalatByKoodiUri,
-    };
-  }
-
-  get defaultFields() {
-    return [{
-      key: 'nimi',
-      label: this.$t('nimi') as string,
-      thStyle: { width: '40%' },
-      formatter: (value: any, key: string, item: any) => {
-        return this.$kaanna(value);
-      },
-    }, {
-      key: 'koodiArvo',
-      label: this.$t('koodi') as string,
-    }] as any[];
-  }
-
-  get modalFields() {
-    return this.defaultFields;
-  }
-
-  get tutkintonimikeFields() {
-    let fields = this.defaultFields;
-
-    if (this.editointiStore!.isEditing.value) {
-      fields = [
-        ...fields,
-        {
-          key: 'poista',
-          label: '',
-          class: 'text-right',
-        },
-      ];
-    }
-
-    return fields;
+    return null;
   }
 
   lisaaTekstikappale(toteutus: TutkinnonosaToteutusDto | TutkinnonosaDto) {
@@ -449,62 +275,8 @@ export default class RouteTutkinnonosa extends Vue {
     toteutus.vapaat = _.filter(toteutus.vapaat, vpTeksti => vpTeksti !== vapaaTeksti);
   }
 
-  lisaaToteutus(tosa: TutkinnonosaDto) {
-    tosa.toteutukset = [
-      ..._.toArray(tosa.toteutukset),
-      {
-        tavatjaymparisto: {},
-        arvioinnista: {},
-        vapaat: [],
-        koodit: [],
-      },
-    ];
-  }
-
   poistaToteutus(tosa: TutkinnonosaDto, toteutus: TutkinnonosaToteutusDto) {
     tosa.toteutukset = _.filter(tosa.toteutukset, tosaToteutus => tosaToteutus !== toteutus);
-  }
-
-  poistaTutkintonimike(toteutus: TutkinnonosaToteutusDto, koodiUri: string) {
-    toteutus.koodit = _.filter(toteutus.koodit, koodi => koodi !== koodiUri);
-  }
-
-  avaaTutkintonimikeModal(toteutus: TutkinnonosaToteutusDto) {
-    this.valittuToteutus = toteutus;
-    (this as any).$refs.tutkintonimikeModal.show();
-  }
-
-  lisaaTutkintonimikeOsaamisalat() {
-    if (this.valittuToteutus) {
-      this.valittuToteutus.koodit = _.uniq([
-        ..._.toArray(this.valittuToteutus.koodit),
-        ...this.valitutTutkintonimikkeet,
-        ...this.valitutOsaamisalat,
-      ]);
-    }
-  }
-
-  onTutkintonimikeSelected(items: any) {
-    this.valitutTutkintonimikkeet = _.map(items, 'koodiUri');
-  }
-
-  onOsaamisalaSelected(items: any) {
-    this.valitutOsaamisalat = _.map(items, 'koodiUri');
-  }
-
-  get toteutuksetOptions() {
-    return {
-      animation: 300,
-      emptyInsertThreshold: 10,
-      disabled: !this.editointiStore!.isEditing.value,
-      forceFallback: true,
-      group: {
-        name: 'toteutukset',
-        pull: 'clone',
-        put: false,
-        revertClone: true,
-      },
-    };
   }
 
   get osaamistasonKriteeritFields() {

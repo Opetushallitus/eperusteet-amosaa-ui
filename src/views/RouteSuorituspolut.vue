@@ -21,7 +21,7 @@
         <b-table striped hover responsive :items="data.suorituspolkuViitteet" :fields="fields">
           <template v-slot:cell(tekstiKappale.nimi)="data">
             <router-link :to="{ name: 'suorituspolku', params: { sisaltoviiteId: data.item.id } }">
-              {{ $kaanna(data.item.tekstiKappale.nimi) }}
+              {{ $kaanna(data.item.tekstiKappale.nimi) || $t('nimeton') }}
             </router-link>
           </template>
         </b-table>
@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { SuorituspolutStore } from '@/stores/SuorituspolutStore';
