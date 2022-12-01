@@ -26,13 +26,12 @@ export class OpetussuunnitelmatStore {
     this.state.ystavienOpetussuunnitelmat = null;
     this.state.arkistoidutOpetussuunnitelmat = null;
 
-    await this.fetchKeskeneraiset(ktId, query);
-    await this.fetchJulkaistut(ktId, query);
-    await this.fetchPoistetut(ktId, query);
-
-    if (!admin) {
-      this.fetchYstavien(ktId, query);
-    }
+    await Promise.all([
+      this.fetchKeskeneraiset(ktId, query),
+      this.fetchJulkaistut(ktId, query),
+      this.fetchPoistetut(ktId, query),
+      ...(!admin ? this.fetchYstavien(ktId, query) : []) as any,
+    ]);
   }
 
   public async fetchKeskeneraiset(ktId, query: any) {

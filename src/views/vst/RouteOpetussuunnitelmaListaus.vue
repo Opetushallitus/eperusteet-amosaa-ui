@@ -23,7 +23,8 @@
             :is-editing="true"
             :options="koulutustoimijat"
             :multiple="true"
-            track-by="id">
+            track-by="id"
+            :search-identity="koulutustoimijaSearchIdentity">
             <template slot="option" slot-scope="{ option }">
               {{ $kaanna(option.nimi) }}
             </template>
@@ -215,7 +216,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   }
 
   get koulutustoimijat() {
-    return this.kayttajaStore.koulutustoimijat.value;
+    return _.sortBy(this.kayttajaStore.koulutustoimijat.value, kt => this.$kaanna(kt.nimi!));
   }
 
   get valitutKoulutustoimijat() {
@@ -321,6 +322,10 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 
   get kaannokset() {
     return OpetussuunnitelmalistausKielistykset[this.toteutus][this.opsTyyppi];
+  }
+
+  koulutustoimijaSearchIdentity(obj: any) {
+    return _.toLower(this.$kaanna(obj.nimi));
   }
 }
 </script>
