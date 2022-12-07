@@ -41,6 +41,6 @@ export class SisaltotuontiStore {
   }
 
   public async tuoSisaltoa(sisaltoIdt: number[]) {
-    await Sisaltoviitteet.copyMultipleSisaltoviite(this.opetusuunnitelmaId, this.koulutustoimijaId, sisaltoIdt);
+    await Sisaltoviitteet.linkkaaUusiSisalto(this.opetusuunnitelmaId, this.koulutustoimijaId, sisaltoIdt);
   }
 }
