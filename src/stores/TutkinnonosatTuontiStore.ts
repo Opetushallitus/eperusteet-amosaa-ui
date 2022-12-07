@@ -72,7 +72,7 @@ export class TutkinnonosatTuontiStore {
   }
 
   public async tuoSisaltoa(toteutussuunnitelmaId: number, koulutustoimijaId: string, sisaltoIdt: number[]) {
-    await Sisaltoviitteet.copyMultipleSisaltoviite(toteutussuunnitelmaId, koulutustoimijaId, sisaltoIdt);
+    await Sisaltoviitteet.linkkaaUusiSisalto(toteutussuunnitelmaId, koulutustoimijaId, sisaltoIdt);
   }
 
   clear() {
