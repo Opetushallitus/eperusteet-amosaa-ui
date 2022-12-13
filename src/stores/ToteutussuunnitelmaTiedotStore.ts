@@ -49,7 +49,7 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
     return {
       opetussuunnitelma: {
         ...opetussuunnitelma,
-        toteutussuunnitelmaUrl: buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${opetussuunnitelma.id}/${this.opetussuunnitelmaEsikatseluToteutus(opetussuunnitelma)}`),
+        toteutussuunnitelmaUrl: buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${opetussuunnitelma.id}`, `/${this.opetussuunnitelmaEsikatseluToteutus(opetussuunnitelma)}`),
       },
       peruste: this.peruste,
     };

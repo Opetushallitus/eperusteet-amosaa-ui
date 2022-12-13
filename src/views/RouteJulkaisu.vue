@@ -184,7 +184,7 @@ export default class RouteJulkaisu extends Vue {
   }
 
   get esikatseluUrl() {
-    return buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${this.suunnitelma!.id}/${this.toteutus}`);
+    return buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${this.suunnitelma!.id}`, `/${this.toteutus}`);
   }
 
   get hasNoErrors(): boolean {
