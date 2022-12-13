@@ -45,43 +45,40 @@
       <b-row>
         <b-col>
           <div class="ops">
-            <EpSpinner v-if="!opetussuunnitelmat" />
-            <template v-else>
-              <h2>{{ $t(kaannokset['keskeneraiset']) }}</h2>
-              <div class="d-flex flex-wrap">
-                <div
-                  class="opsbox"
-                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'opetussuunnitelma' }">
-                  <RouterLink tag="a" :to="{ name: kaannokset['uusiRoute'] }">
-                    <div class="opsbox__new">
-                      <div class="opsbox__plus-icon">
-                        <fas icon="plussa"></fas>
-                      </div>
-                      <div class="opsbox__text">
-                        {{ $t('luo-uusi') }}
-                      </div>
+            <h2>{{ $t(kaannokset['keskeneraiset']) }}</h2>
+            <EpSpinner v-if="!opetussuunnitelmat || isUpdatingOpsSivu" />
+            <div class="d-flex flex-wrap">
+              <div
+                class="opsbox"
+                v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'opetussuunnitelma' }">
+                <RouterLink tag="a" :to="{ name: kaannokset['uusiRoute'] }">
+                  <div class="opsbox__new">
+                    <div class="opsbox__plus-icon">
+                      <fas icon="plussa"></fas>
                     </div>
-                  </RouterLink>
-                </div>
-                  <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in opetussuunnitelmat" :key="ops.id"/>
-                  <div class="ops__info mt-4 ml-4" v-if="opetussuunnitelmat.length === 0">
-                    <EpAlert :ops="true" :text="$t('ei-hakutuloksia')" class="mt-4" />
+                    <div class="opsbox__text">
+                      {{ $t('luo-uusi') }}
+                    </div>
                   </div>
+                </RouterLink>
               </div>
+                <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in opetussuunnitelmat" :key="ops.id"/>
+                <div class="ops__info mt-4 ml-4" v-if="opetussuunnitelmat.length === 0">
+                  <EpAlert :ops="true" :text="$t('ei-hakutuloksia')" class="mt-4" />
+                </div>
+            </div>
 
-              <b-pagination
-                class="mt-3"
-                v-model="opsSivu"
-                :total-rows="opetussuunnitelmatKokonaismaara"
-                :per-page="query.sivukoko"
-                align="center" />
+            <b-pagination
+              class="mt-3"
+              v-model="opsSivu"
+              :total-rows="opetussuunnitelmatKokonaismaara"
+              :per-page="9"
+              align="center" />
 
-            </template>
           </div>
           <div class="ops">
             <h2 class="mt-4">{{ $t(kaannokset['julkaistut']) }}</h2>
-
-            <EpSpinner v-if="!julkaistut" />
+            <EpSpinner v-if="!julkaistut || isUpdatingJulkaistutSivu" />
 
             <div class="info" v-if="julkaistut && julkaistut.length === 0">
               <EpAlert :ops="true" :text="$t(kaannokset['eiJulkaistuja'])" class="mt-4" />
@@ -94,7 +91,7 @@
                 class="mt-3"
                 v-model="julkaisutSivu"
                 :total-rows="julkaistutKokonaismaara"
-                :per-page="query.sivukoko"
+                :per-page="10"
                 align="center" />
           </div>
 
@@ -123,7 +120,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import _ from 'lodash';
 import EpArkistoidutOps from '@/components/EpArkistoidutOps/EpArkistoidutOps.vue';
-import { ArkistointiTekstit, OpetussuunnitelmalistausKielistykset, TileBackground, ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
+import { ArkistointiTekstit, OpetussuunnitelmalistausKielistykset, ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
@@ -132,7 +129,7 @@ import EpProgress from '@shared/components/EpProgressPopover/EpProgress.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { koulutusTyyppiTile } from '@shared/utils/bannerIcons';
-import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
 import OpsKeskeneraisetTile from './OpsKeskeneraisetTile.vue';
 import OpsJulkaistutTile from './OpsJulkaistutTile.vue';
 import { Toteutus } from '@shared/utils/perusteet';
@@ -186,6 +183,9 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
     jotpa: false,
   };
 
+  private isUpdatingOpsSivu = false;
+  private isUpdatingJulkaistutSivu = false;
+
   async mounted() {
     await this.init();
   }
@@ -207,12 +207,16 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
 
   @Watch('opsSivu')
   async opsSivuUpdate() {
+    this.isUpdatingOpsSivu = true;
     await this.initKeskeneraiset();
+    this.isUpdatingOpsSivu = false;
   }
 
   @Watch('julkaisutSivu')
   async julkaisutSivuUpdate() {
+    this.isUpdatingJulkaistutSivu = true;
     await this.initJulkaistut();
+    this.isUpdatingJulkaistutSivu = true;
   }
 
   get koulutustoimijat() {
@@ -314,10 +318,6 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
       .filter(ystavaOps => ystavaOps.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU))
       .map(ystavaOps => this.opsBannerImage(ystavaOps))
       .value();
-  }
-
-  get backgroundStyle() {
-    return TileBackground[this.toteutus];
   }
 
   get kaannokset() {
