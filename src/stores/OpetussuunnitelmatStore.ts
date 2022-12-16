@@ -1,8 +1,6 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { PageOpetussuunnitelmaDto, Opetussuunnitelmat, OpetussuunnitelmaDto, OpetussuunnitelmaBaseDto } from '@shared/api/amosaa';
-import _ from 'lodash';
-import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
+import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Page } from '@shared/tyypit';
 
 Vue.use(VueCompositionApi);
@@ -35,7 +33,7 @@ export class OpetussuunnitelmatStore {
   }
 
   public async fetchKeskeneraiset(ktId, query: any) {
-    this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, undefined, { params: { ...query, julkaistu: false, sivukoko: 9 } })).data as Page<OpetussuunnitelmaDto>;
+    this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, undefined, { params: { ...query, julkaistuTaiValmis: false, sivukoko: 9 } })).data as Page<OpetussuunnitelmaDto>;
   }
 
   public async fetchPoistetut(ktId, query: any) {
@@ -43,7 +41,7 @@ export class OpetussuunnitelmatStore {
   }
 
   public async fetchJulkaistut(ktId, query: any) {
-    this.state.julkaistutOpetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, undefined, { params: { ...query, julkaistu: true, sivukoko: 10 } })).data as Page<OpetussuunnitelmaDto>;
+    this.state.julkaistutOpetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, undefined, { params: { ...query, julkaistuTaiValmis: true, sivukoko: 10 } })).data as Page<OpetussuunnitelmaDto>;
   }
 
   public async fetchYstavien(ktId, query: any) {

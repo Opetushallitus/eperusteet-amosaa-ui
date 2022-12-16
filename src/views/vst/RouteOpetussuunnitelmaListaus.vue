@@ -62,10 +62,10 @@
                   </div>
                 </RouterLink>
               </div>
-                <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in opetussuunnitelmat" :key="ops.id"/>
-                <div class="ops__info mt-4 ml-4" v-if="opetussuunnitelmat.length === 0">
-                  <EpAlert :ops="true" :text="$t('ei-hakutuloksia')" class="mt-4" />
-                </div>
+              <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in opetussuunnitelmat" :key="ops.id"/>
+              <div class="ops__info mt-4 ml-4" v-if="opetussuunnitelmat && opetussuunnitelmat.length === 0">
+                <EpAlert :ops="true" :text="$t('ei-hakutuloksia')" class="mt-4" />
+              </div>
             </div>
 
             <b-pagination
@@ -74,8 +74,8 @@
               :total-rows="opetussuunnitelmatKokonaismaara"
               :per-page="9"
               align="center" />
-
           </div>
+
           <div class="ops">
             <h2 class="mt-4">{{ $t(kaannokset['julkaistut']) }}</h2>
             <EpSpinner v-if="!julkaistut || isUpdatingJulkaistutSivu" />
@@ -95,21 +95,21 @@
                 align="center" />
           </div>
 
-         <div class="ops" v-if="ystavienKeskeneraiset.length > 0">
-           <h2 class="mt-4">{{ $t(kaannokset['ystavien'] + '-keskeneraiset') }}</h2>
+          <div class="ops" v-if="ystavienKeskeneraiset.length > 0">
+            <h2 class="mt-4">{{ $t(kaannokset['ystavien'] + '-keskeneraiset') }}</h2>
 
-           <div class="d-flex flex-wrap">
+            <div class="d-flex flex-wrap">
              <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in ystavienKeskeneraiset" :key="'ystava-keskenerainen-' + ops.id"/>
-           </div>
-         </div>
+            </div>
+          </div>
 
-         <div class="ops" v-if="ystavienJulkaistut.length > 0">
-           <h2 class="mt-4">{{ $t(kaannokset['ystavien'] + '-julkaistut') }}</h2>
+          <div class="ops" v-if="ystavienJulkaistut.length > 0">
+            <h2 class="mt-4">{{ $t(kaannokset['ystavien'] + '-julkaistut') }}</h2>
 
-           <div class="d-flex flex-wrap">
+            <div class="d-flex flex-wrap">
              <OpsJulkaistutTile :ops="ops" v-for="ops in ystavienJulkaistut" :key="'ystava-julkaistu-' + ops.id"/>
-           </div>
-         </div>
+            </div>
+          </div>
         </b-col>
       </b-row>
     </b-container>
