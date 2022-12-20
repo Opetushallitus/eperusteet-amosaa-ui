@@ -45,8 +45,10 @@
       <b-row>
         <b-col>
           <div class="ops">
-            <h2>{{ $t(kaannokset['keskeneraiset']) }}</h2>
-            <EpSpinner v-if="!opetussuunnitelmat || isUpdatingOpsSivu" />
+            <div class="d-flex">
+              <h2>{{ $t(kaannokset['keskeneraiset']) }}</h2>
+              <EpSpinner v-if="!opetussuunnitelmat || isUpdatingOpsSivu" />
+            </div>
             <div class="d-flex flex-wrap">
               <div
                 class="opsbox"
@@ -76,10 +78,11 @@
               align="center" />
           </div>
 
-          <div class="ops">
-            <h2 class="mt-4">{{ $t(kaannokset['julkaistut']) }}</h2>
-            <EpSpinner v-if="!julkaistut || isUpdatingJulkaistutSivu" />
-
+          <div class="ops mt-4">
+            <div class="d-flex">
+              <h2>{{ $t(kaannokset['julkaistut']) }}</h2>
+              <EpSpinner v-if="!julkaistut || isUpdatingJulkaistutSivu" />
+            </div>
             <div class="info" v-if="julkaistut && julkaistut.length === 0">
               <EpAlert :ops="true" :text="$t(kaannokset['eiJulkaistuja'])" class="mt-4" />
             </div>
@@ -138,6 +141,7 @@ import { KayttajaStore } from '@/stores/kayttaja';
 import { OpetussuunnitelmatStore } from '@/stores/OpetussuunnitelmatStore';
 import { Debounced } from '@shared/utils/delay';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
+import { Kielet } from '@shared/stores/kieli';
 
 @Component({
   components: {
@@ -181,6 +185,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
     tyyppi: this.opsTyyppi,
     nimi: '',
     jotpa: false,
+    kieli: Kielet.getSisaltoKieli.value,
   };
 
   private isUpdatingOpsSivu = false;
@@ -190,9 +195,21 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
     await this.init();
   }
 
+  get kieli() {
+    return Kielet.getSisaltoKieli.value;
+  }
+
   @Watch('koulutustoimijaId')
   async koulutustoimijaChange() {
     await this.init();
+  }
+
+  @Watch('kieli')
+  async kieliChange() {
+    this.query = {
+      ...this.query,
+      kieli: this.kieli,
+    };
   }
 
   protected async init() {
