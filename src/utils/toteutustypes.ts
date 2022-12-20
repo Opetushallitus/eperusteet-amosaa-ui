@@ -120,7 +120,7 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
   }
 
   return [
-    ...(stores.kayttajaStore.ophSelected.value ? [] : [{
+    {
       component: TileToteutussuunnitelmat,
       props: {
         kayttajaStore: stores.kayttajaStore,
@@ -132,7 +132,7 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
       oikeustarkastelu: {
         oikeus: 'luku',
       },
-    }]),
+    },
     {
       component: TileKoulutustoimijanYhteinenOsuus,
       props: {
@@ -196,7 +196,7 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
 
 const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
   return [
-    ...(stores.kayttajaStore.ophSelected.value ? [] : [{
+    {
       component: TileToteutussuunnitelmat,
       props: {
         kayttajaStore: stores.kayttajaStore,
@@ -220,7 +220,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
       oikeustarkastelu: {
         oikeus: 'luku',
       },
-    }]),
+    },
     {
       component: TileOpetussuunnitelmaPohjat,
       props: {
@@ -287,7 +287,7 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
 
 const tutkintoonvalmentavatiles = (stores, { koulutustoimijaId, toteutus }) => {
   return [
-    ...(stores.kayttajaStore.ophSelected.value ? [] : [{
+    {
       component: TileToteutussuunnitelmat,
       props: {
         kayttajaStore: stores.kayttajaStore,
@@ -300,7 +300,7 @@ const tutkintoonvalmentavatiles = (stores, { koulutustoimijaId, toteutus }) => {
       oikeustarkastelu: {
         oikeus: 'luku',
       },
-    }]),
+    },
     ...(stores.kayttajaStore.ophSelected.value ? [{
       component: TileOpetussuunnitelmaPohjat,
       props: {
