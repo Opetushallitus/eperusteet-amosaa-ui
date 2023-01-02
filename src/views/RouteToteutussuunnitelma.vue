@@ -202,10 +202,8 @@
 
             <template v-slot:new>
               <div class="mb-3">
-                <!-- FIXME -->
 
                 <EpTekstikappaleLisays
-                  v-if="salliTekstikappaleLisays"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   @save="tallennaUusiTekstikappale"
                   :tekstikappaleet="perusteenOsat"
@@ -716,10 +714,6 @@ export default class RouteToteutussuunnitelma extends Vue {
         callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
       },
     );
-  }
-
-  get salliTekstikappaleLisays() {
-    return true;
   }
 
   get onkoJulkaisemattomiaMuutoksia() {

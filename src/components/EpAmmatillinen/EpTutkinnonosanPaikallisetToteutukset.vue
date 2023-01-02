@@ -12,8 +12,7 @@
           v-model="toteutukset">
 
         <ep-collapse class="toteutus" v-for="(toteutus, index) in toteutukset" :key="'toteutus'+index" :borderBottom="false" >
-          <!-- <h4 slot="header" v-if="!isEditing">{{$kaanna(toteutus.otsikko)}}</h4> -->
-          <EpPaikallinenToteutus v-model="toteutukset[index]"
+          <EpTutkinnonosanPaikallinenToteutus v-model="toteutukset[index]"
                                  @poista="poistaToteutus(index)"
                                  :isEditing="isEditing"
                                  :osaamisalat="osaamisalat"
@@ -37,7 +36,7 @@ import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
-import EpPaikallinenToteutus from './EpPaikallinenToteutus.vue';
+import EpTutkinnonosanPaikallinenToteutus from './EpTutkinnonosanPaikallinenToteutus.vue';
 import draggable from 'vuedraggable';
 
 @Component({
@@ -47,11 +46,11 @@ import draggable from 'vuedraggable';
     EpCollapse,
     EpContent,
     EpField,
-    EpPaikallinenToteutus,
+    EpTutkinnonosanPaikallinenToteutus,
     draggable,
   },
 })
-export default class EpPaikallisetToteutukset extends Vue {
+export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
   @Prop({ default: false })
   isEditing!: boolean;
 
