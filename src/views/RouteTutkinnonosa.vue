@@ -5,6 +5,12 @@
         <h2 class="m-0">{{ $kaanna(data.tutkinnonosaViite.tekstiKappale.nimi) }}</h2>
       </template>
       <template v-slot:default="{ data, isEditing, validation }">
+        <div class="alert alert-info" v-if="data.tutkinnonosaViite.tyyppi === 'linkki'">
+          <router-link :to="{ name: 'tutkinnonosa', params: { toteutussuunnitelmaId: data.tutkinnonosaViite.linkattuOps, sisaltoviiteId: data.tutkinnonosaViite.linkattuSisaltoViiteId } }">
+            {{ $t('siirry-alkuperaiseen-toteutukseen') }}
+          </router-link>
+        </div>
+
         <b-form-group class="flex-grow-1 mr-5" :label="$t('tutkinnon-osan-nimi') +' *'"
           v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta' && isEditing">
           <ep-field v-model="data.tutkinnonosaViite.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
@@ -58,12 +64,6 @@
           {{ $t('lisaa-tekstikappale') }}
         </ep-button>
 
-        <div class="alert alert-info" v-if="data.tutkinnonosaViite.tyyppi === 'linkki'">
-          <router-link :to="{ name: 'tutkinnonosa', params: { toteutussuunnitelmaId: data.tutkinnonosaViite.linkattuOps, sisaltoviiteId: data.tutkinnonosaViite.linkattuSisaltoViiteId } }">
-            {{ $t('siirry-alkuperaiseen-toteutukseen') }}
-          </router-link>
-        </div>
-
         <div v-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'reformi_tutke2'">
           <EpYhteiset v-model="data.tutkinnonosaViite" :perusteen="data.perusteenTutkinnonosa" :is-editing="isEditing" />
         </div>
@@ -75,7 +75,7 @@
 
             <h3 class="mt-4">{{$t('toteutukset')}}</h3>
 
-            <EpPaikallisetToteutukset v-model="data.tutkinnonosaViite.tosa.toteutukset"
+            <EpTutkinnonosanPaikallisetToteutukset v-model="data.tutkinnonosaViite.tosa.toteutukset"
                                       :isEditing="isEditing && data.tutkinnonosaViite.tyyppi !== 'linkki'"
                                       :osaamisalat="osaamisalat"
                                       :tutkintonimikkeet="tutkintonimikkeet" />
@@ -135,7 +135,7 @@ import _ from 'lodash';
 import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import { TutkinnonOsaStore } from '@/stores/TutkinnonOsaStore';
 import EpPerusteenTutkinnonOsa from '@/components/EpAmmatillinen/EpPerusteenTutkinnonOsa.vue';
-import EpPaikallisetToteutukset from '@/components/EpAmmatillinen/EpPaikallisetToteutukset.vue';
+import EpTutkinnonosanPaikallisetToteutukset from '@/components/EpAmmatillinen/EpTutkinnonosanPaikallisetToteutukset.vue';
 import EpYhteiset from '@/components/EpAmmatillinen/EpYhteiset.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
@@ -161,7 +161,7 @@ import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillin
     EpContent,
     EpEditointi,
     EpField,
-    EpPaikallisetToteutukset,
+    EpTutkinnonosanPaikallisetToteutukset,
     EpPerusteenTutkinnonOsa,
     EpSearch,
     EpSpinner,

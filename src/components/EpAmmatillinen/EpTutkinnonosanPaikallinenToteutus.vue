@@ -124,7 +124,7 @@ import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto } from '@share
     EpField,
   },
 })
-export default class EpPaikallinenToteutus extends Vue {
+export default class EpTutkinnonosanPaikallinenToteutus extends Vue {
   @Prop({ default: false })
   isEditing!: boolean;
 
