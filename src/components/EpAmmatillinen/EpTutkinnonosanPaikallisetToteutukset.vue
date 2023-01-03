@@ -1,9 +1,11 @@
 <template>
   <div>
     <div v-if="!isEditing && toteutukset && toteutukset.length === 0">
-      <EpAlert
-        :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
-        class="pb-3"/>
+      <slot name="ei-sisaltoa">
+        <EpAlert
+          :text="$t('ei-sisaltoa') + '. ' + (tyyppi !== 'linkki' ? $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.' : '')"
+          class="pb-3"/>
+      </slot>
     </div>
     <div v-else>
       <draggable
@@ -12,6 +14,13 @@
           v-model="toteutukset">
 
         <ep-collapse class="toteutus" v-for="(toteutus, index) in toteutukset" :key="'toteutus'+index" :borderBottom="false" >
+          <template slot="header">
+            <div v-if="isEditing" class="d-flex align-items-end">
+              <fas icon="raahaus" class="raahaus"/>
+              <h4 class="mb-0">{{$t('toteutuksen-otsikko')}}</h4>
+            </div>
+            <h4 v-else>{{$kaanna(toteutus.otsikko)}}</h4>
+          </template>
           <EpTutkinnonosanPaikallinenToteutus v-model="toteutukset[index]"
                                  @poista="poistaToteutus(index)"
                                  :isEditing="isEditing"
@@ -63,6 +72,9 @@ export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
   @Prop({ required: true })
   osaamisalat!: any;
 
+  @Prop({ required: true })
+  tyyppi!: any;
+
   get toteutukset() {
     return this.value;
   }
@@ -75,7 +87,7 @@ export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
     return {
       animation: 300,
       emptyInsertThreshold: 10,
-      // disabled: !this.editointiStore!.isEditing.value,
+      disabled: !this.isEditing,
       forceFallback: true,
       group: {
         name: 'toteutukset',

@@ -1,6 +1,6 @@
 <template>
   <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore" :versionumero="versionumero">
+    <EpEditointi :store="editointiStore" :versionumero="versionumero" :labelCopyConfirm="'kopioidaanko-tutkinnonosa'">
       <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $kaanna(data.tutkinnonosaViite.tekstiKappale.nimi) }}</h2>
       </template>
@@ -22,11 +22,11 @@
           </b-form-group>
 
           <b-form-group :label="$t('laajuus')">
-            <div class="d-flex">
+            <div class="d-flex align-items-center" >
               <span v-if="data.tutkinnonosaViite.tosa.tyyppi === 'perusteesta'">{{data.perusteenTutkinnonosaViite.laajuus}}</span>
               <ep-field v-else-if="data.omaTutkinnonosa" type="number" v-model="data.omaTutkinnonosa.laajuus" :is-editing="isEditing"></ep-field>
               <span class="mr-1" v-else>-</span>
-              <div class="ml-1" :class="{'ml-2 pt-1': isEditing}">{{$t('osaamispiste')}}</div>
+              <div class="ml-1">{{$t('osaamispiste')}}</div>
             </div>
           </b-form-group>
         </div>
@@ -78,7 +78,8 @@
             <EpTutkinnonosanPaikallisetToteutukset v-model="data.tutkinnonosaViite.tosa.toteutukset"
                                       :isEditing="isEditing && data.tutkinnonosaViite.tyyppi !== 'linkki'"
                                       :osaamisalat="osaamisalat"
-                                      :tutkintonimikkeet="tutkintonimikkeet" />
+                                      :tutkintonimikkeet="tutkintonimikkeet"
+                                      :tyyppi="data.tutkinnonosaViite.tyyppi"/>
           </b-tab>
 
           <b-tab v-if="tutkinnonosaPerusteesta" :title="$t('perusteen-sisalto')">
