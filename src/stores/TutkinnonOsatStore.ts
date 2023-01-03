@@ -18,6 +18,10 @@ export class TutkinnonOsatStore implements IEditoitava {
   public readonly tutkinnonosat = computed(() => this.state.tutkinnonosat);
 
   public readonly fetch = watch([this.opetussuunnitelma], async () => {
+    await this.refetch();
+  });
+
+  public async refetch() {
     this.state.tutkinnonosat = null;
     if (this.opetussuunnitelma.value) {
       const tutkinnonosaViitteet = (await Sisaltoviitteet.getTutkinnonosat(this.opetussuunnitelma.value.id, this.opetussuunnitelma.value.koulutustoimija.id)).data;
@@ -35,7 +39,7 @@ export class TutkinnonOsatStore implements IEditoitava {
         };
       });
     }
-  });
+  }
 
   async acquire() {
     return null;

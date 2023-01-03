@@ -123,7 +123,7 @@ export default class RouteTutkinnonosat extends Vue {
         return item.perusteenTutkinnonosaViite ? item.perusteenTutkinnonosaViite.laajuus + ' ' + this.$t('osaamispiste') : '';
       },
     }, {
-      key: 'muokattu',
+      key: 'tutkinnonosaViite.tosa.muokattu',
       sortable: true,
       label: this.$t('muokattu') as string,
       formatter: (value: any, key: string, item: any) => {
@@ -134,6 +134,7 @@ export default class RouteTutkinnonosat extends Vue {
 
   async updateNavigation() {
     await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.tutkinnonOsatStore.refetch();
   }
 }
 </script>

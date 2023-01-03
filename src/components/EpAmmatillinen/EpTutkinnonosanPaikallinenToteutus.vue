@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div v-if="isEditing" slot="header" class="d-flex">
-      <fas icon="raahaus" class="raahaus"/>
-      <h4 slot="header">{{$t('toteutuksen-otsikko')}}</h4>
-    </div>
-
     <ep-field v-if="isEditing" v-model="toteutus.otsikko" :is-editing="isEditing"></ep-field>
 
     <div class="pl-1 pr-4">

@@ -38,6 +38,8 @@
 
       <ep-spinner v-if="!tutkinnonosat" />
 
+      <div v-else-if="tutkinnonosat.length == 0">{{$t('ei-hakutuloksia')}}</div>
+
       <div v-else>
         <b-table
           responsive
@@ -76,7 +78,7 @@
 
       <div slot="modal-footer">
         <ep-button @click="close" variant="link">{{ $t('peruuta')}}</ep-button>
-        <ep-button @click="save">{{ $t('tuo-valitut-sisallot')}}</ep-button>
+        <ep-button @click="save" :disabled="selectedTutkinnonosat.length == 0">{{ $t('tuo-valitut-sisallot')}}</ep-button>
       </div>
     </b-modal>
   </div>
@@ -130,6 +132,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
       tyyppi: 'TUTKINNONOSA',
       sortDesc: false,
       opetussuunnitelmaId: null,
+      notInOpetussuunnitelmaId: this.toteutussuunnitelmaId,
     } as any;
 
     this.page = 0;
@@ -137,7 +140,11 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   get toteutussuunnitelmat() {
-    return this.tutkinnonosatTuontiStore?.toteutussuunnitelmat.value || null;
+    if (this.tutkinnonosatTuontiStore?.toteutussuunnitelmat.value) {
+      return _.filter(this.tutkinnonosatTuontiStore?.toteutussuunnitelmat.value, tots => tots.id !== _.toNumber(this.toteutussuunnitelmaId));
+    }
+
+    return null;
   }
 
   kaannaNimi({ nimi }) {
@@ -199,7 +206,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
     this.tutkinnonosatTuontiStore!.clear();
     this.$success(this.$t('tutkinnon-osat-tuotu-onnistuneesti') as string);
     this.close();
-    setTimeout(() => this.updateNavigation(), 300);
+    this.updateNavigation();
   }
 
   close() {

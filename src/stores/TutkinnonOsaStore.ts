@@ -154,13 +154,24 @@ export class TutkinnonOsaStore implements IEditoitava {
     return {};
   });
 
+  async copy(data) {
+    const kopioituViite = (await Sisaltoviitteet.kopioiLinkattuSisalto(this.opetussuunnitelmaId, this.koulutustoimijaId, data.tutkinnonosaViite.id)).data;
+    this.el.$router.push({
+      name: 'tutkinnonosa',
+      params: {
+        sisaltoviiteId: kopioituViite.id,
+      },
+    });
+  }
+
   public features(data: any) {
     return computed(() => {
       return {
-        editable: true,
+        editable: data.tutkinnonosaViite.tyyppi !== 'linkki',
         removable: true,
         hideable: false,
-        recoverable: true,
+        recoverable: data.tutkinnonosaViite.tyyppi !== 'linkki',
+        copyable: data.tutkinnonosaViite.tyyppi === 'linkki',
       } as EditoitavaFeatures;
     });
   }
