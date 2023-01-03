@@ -1,11 +1,9 @@
 <template>
   <div>
     <div v-if="!isEditing && toteutukset && toteutukset.length === 0">
-      <slot name="ei-sisaltoa">
-        <EpAlert
-          :text="$t('ei-sisaltoa') + '. ' + (tyyppi !== 'linkki' ? $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.' : '')"
-          class="pb-3"/>
-      </slot>
+      <EpAlert
+        :text="$t('ei-sisaltoa') + '. ' + (tyyppi !== 'linkki' ? $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.' : '')"
+        class="pb-3"/>
     </div>
     <div v-else>
       <draggable
