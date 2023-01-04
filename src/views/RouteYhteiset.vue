@@ -5,7 +5,8 @@
       :koulutustoimija-id="koulutustoimijaId"
       :tyypit="tyypit"
       :filters="['voimassaolo','tila']"
-      :fieldKeys="tableFields">
+      :fieldKeys="tableFields"
+      :kayttajaStore="kayttajaStore">
       <div slot="header" class="d-flex justify-content-between">
         <h2>{{ $t('koulutustoimijan-yhteinen-osuus') }}</h2>
 
@@ -28,6 +29,7 @@ import EpToteutussuunnitelmaListaus from '@/components/EpToteutussuunnitelmaList
 import EpIcon from '@shared/components/EpIcon/EpIcon.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { IToteutussuunnitelmaProvider } from '@/components/EpToteutussuunnitelmaListaus/types';
+import { KayttajaStore } from '@/stores/kayttaja';
 
 @Component({
   components: {
@@ -46,6 +48,9 @@ export default class RouteYhteiset extends Vue {
 
   @Prop({ required: true })
   private tyypit!: string[];
+
+  @Prop({ required: true })
+  kayttajaStore!: KayttajaStore;
 
   get tableFields() {
     return ['nimi', 'tila', 'muokattu', 'voimaantulo', 'paatospaivamaara'];
