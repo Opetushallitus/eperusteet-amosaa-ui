@@ -6,7 +6,8 @@
       :tyypit="tyypit"
       :filters="filters"
       :fieldKeys="tableFields"
-      nameLabel="nimi-tai-koulutuskoodi">
+      nameLabel="nimi-tai-koulutuskoodi"
+      :kayttajaStore="kayttajaStore">
 
       <div slot="header" class="d-flex justify-content-between">
         <h2>{{ $t(topic) }}</h2>
