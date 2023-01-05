@@ -4,7 +4,8 @@ import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteM
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, Kieli } from '@shared/tyypit';
-import { koodiValidator } from '@shared/validators/required';
+import { requiredOneLang } from '@shared/validators/required';
+import { required } from 'vuelidate/lib/validators';
 
 Vue.use(VueCompositionApi);
 
@@ -150,8 +151,18 @@ export class TutkinnonOsaStore implements IEditoitava {
       name: 'tutkinnonosat',
     });
   }
+
   public readonly validator = computed(() => {
-    return {};
+    return {
+      tutkinnonosaViite: {
+        tekstiKappale: {
+          nimi: {
+            required,
+            ...requiredOneLang(),
+          },
+        },
+      },
+    };
   });
 
   async copy(data) {
