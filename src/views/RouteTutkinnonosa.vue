@@ -13,7 +13,11 @@
 
         <b-form-group class="flex-grow-1 mr-5" :label="$t('tutkinnon-osan-nimi') +' *'"
           v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta' && isEditing">
-          <ep-field v-model="data.tutkinnonosaViite.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
+          <ep-field
+            v-model="data.tutkinnonosaViite.tekstiKappale.nimi"
+            :is-editing="isEditing"
+            :validation="$v.nimi">
+          </ep-field>
         </b-form-group>
 
         <div class="d-flex justify-content-between">
@@ -133,7 +137,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch, Mixins } from 'vue-property-decorator';
 import { TutkinnonOsaStore } from '@/stores/TutkinnonOsaStore';
 import EpPerusteenTutkinnonOsa from '@/components/EpAmmatillinen/EpPerusteenTutkinnonOsa.vue';
 import EpTutkinnonosanPaikallisetToteutukset from '@/components/EpAmmatillinen/EpTutkinnonosanPaikallisetToteutukset.vue';
@@ -152,6 +156,10 @@ import draggable from 'vuedraggable';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
 import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillinenArvioinninKohdealueet/EpAmmatillinenArvioinninKohdealueet.vue';
+import { Validations } from 'vuelidate-property-decorators';
+import { requiredOneLang } from '@shared/validators/required';
+import { required } from 'vuelidate/lib/validators';
+import { validationMixin } from 'vuelidate';
 
 @Component({
   components: {
@@ -171,7 +179,7 @@ import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillin
     draggable,
   },
 })
-export default class RouteTutkinnonosa extends Vue {
+export default class RouteTutkinnonosa extends Mixins(validationMixin) {
   @Prop({ required: true })
   private koulutustoimijaId!: string;
 
@@ -185,6 +193,10 @@ export default class RouteTutkinnonosa extends Vue {
   private sisaltoviiteId!: string | number;
 
   private editointiStore: EditointiStore | null = null;
+
+  mounted() {
+    this.$v.$touch();
+  }
 
   @Watch('toteutussuunnitelma', { immediate: true })
   toteutussuunnitelmaChange() {
@@ -289,6 +301,15 @@ export default class RouteTutkinnonosa extends Vue {
       key: 'kriteerit',
       label: this.$t('kriteerit') as string,
     }] as any[];
+  }
+
+  get nimi() {
+    return this.editointiStore?.data?.value?.tutkinnonosaViite.tekstiKappale.nimi;
+  }
+
+  @Validations()
+  validations = {
+    nimi: requiredOneLang(),
   }
 }
 </script>
