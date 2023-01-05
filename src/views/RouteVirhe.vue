@@ -2,6 +2,7 @@
 <div class="container my-5">
   <div class="px-3 px-md-0">
     <h2>{{ $t('virhe-nakyma-otsikko') }}</h2>
+    <h3>{{ virheIlmoitus }}</h3>
     <div class="virhekuva">
       <img :src="virhekuva" :alt="$t('virhe-kuva-teksti')">
     </div>
@@ -20,7 +21,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { createLogger } from '@shared/utils/logger';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
-import { SovellusVirhe } from '@shared/tyypit';
 
 const virhekuva = require('@assets/img/images/virhe.png');
 
@@ -33,6 +33,10 @@ const logger = createLogger('Virhe');
   },
 })
 export default class VirheRoute extends Vue {
+  get virheIlmoitus() {
+    return this.$route.query && this.$route.query.errorMessage ? this.$route.query.errorMessage : null;
+  }
+
   get virhekuva() {
     return virhekuva;
   }
