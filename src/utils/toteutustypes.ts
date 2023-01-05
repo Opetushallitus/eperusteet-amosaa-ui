@@ -477,7 +477,7 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
     perustetyyppi: 'peruste',
     salliEsikatselu: 'salli-toteutussuunnitelman-esikatselu',
     esikatselu: 'esikatsele-toteutussuunnitelmaa',
-    tiivistelma: 'tutkinnon-suorittaneen-osaaminen',
+    tiivistelma: 'opetussuunnitelma-tiivistelma',
   },
   [Toteutus.KOTOUTUMISKOULUTUS]: {
     title: 'opetussuunnitelman-tiedot',
