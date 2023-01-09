@@ -1,9 +1,7 @@
 <template>
 <div v-if="!isInitializing">
   <router-view/>
-  <notifications style="margin-right: 6px; margin-top: 90px;"
-                 position="top right"
-                 :max="3" />
+  <EpNotification></EpNotification>
 </div>
 </template>
 
@@ -11,8 +9,13 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Kayttajat } from '@/stores/kayttaja';
 import { delay } from '@shared/utils/delay';
+import EpNotification from '@shared/components/EpNotification/EpNotification.vue';
 
-@Component
+@Component({
+  components: {
+    EpNotification,
+  },
+})
 export default class App extends Vue {
   private isInitializing = true;
 
