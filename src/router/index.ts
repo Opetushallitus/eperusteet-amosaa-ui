@@ -1,9 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueMeta from 'vue-meta';
-import * as _ from 'lodash';
-
-import RouteVirhe from '@/views/RouteVirhe.vue';
+import EpErrorPage from '@shared/components/EpErrorPage/EpErrorPage.vue';
 import RouteLang from '@/views/RouteLang.vue';
 import RouteRoot from '@/views/RouteRoot.vue';
 import RouteEtusivu from '@/views/RouteEtusivu.vue';
@@ -42,8 +40,6 @@ import RouteKotoLaajaAlainenOsaaminen from '@/views/RouteKotoLaajaAlainenOsaamin
 import RouteKotoOpinto from '@/views/RouteKotoOpinto.vue';
 
 import { stores } from '@/stores/index';
-import { Virheet } from '@shared/stores/virheet';
-import { SovellusVirhe } from '@shared/tyypit';
 import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
@@ -93,7 +89,7 @@ const router = new VueRouter({
     children: [{
       path: 'virhe',
       name: 'virhe',
-      component: RouteVirhe,
+      component: EpErrorPage,
     }, {
       path: '',
       name: 'home',
@@ -395,12 +391,6 @@ const router = new VueRouter({
 });
 
 export default router;
-
-Virheet.onError((virhe: SovellusVirhe) => {
-  router.push({
-    name: 'virhe',
-  });
-});
 
 router.beforeEach(async (to, from, next) => {
   const koulutustoimijaId = String(to.params.koulutustoimijaId);
