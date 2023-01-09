@@ -40,10 +40,13 @@ import RouteKotoLaajaAlainenOsaaminen from '@/views/RouteKotoLaajaAlainenOsaamin
 import RouteKotoOpinto from '@/views/RouteKotoOpinto.vue';
 
 import { stores } from '@/stores/index';
+import { Virheet } from '@shared/stores/virheet';
+import { SovellusVirhe } from '@shared/tyypit';
 import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
 import { Maintenance } from '@shared/api/amosaa';
+import { Kielet } from '@shared/stores/kieli';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -384,6 +387,9 @@ const router = new VueRouter({
         logger.error('Unknown route', to);
         return {
           name: 'virhe',
+          query: {
+            errorMessage: Kielet.kaannaOlioTaiTeksti('virhe-sivua-ei-loytynyt'),
+          },
         };
       },
     }],
@@ -391,6 +397,12 @@ const router = new VueRouter({
 });
 
 export default router;
+
+Virheet.onError((virhe: SovellusVirhe) => {
+  router.push({
+    name: 'virhe',
+  });
+});
 
 router.beforeEach(async (to, from, next) => {
   const koulutustoimijaId = String(to.params.koulutustoimijaId);
