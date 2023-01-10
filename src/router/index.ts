@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueMeta from 'vue-meta';
-import RouteVirhe from '@/views/RouteVirhe.vue';
+import EpErrorPage from '@shared/components/EpErrorPage/EpErrorPage.vue';
 import RouteLang from '@/views/RouteLang.vue';
 import RouteRoot from '@/views/RouteRoot.vue';
 import RouteEtusivu from '@/views/RouteEtusivu.vue';
@@ -44,7 +44,6 @@ import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
 import { Maintenance } from '@shared/api/amosaa';
-import { Kielet } from '@shared/stores/kieli';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -90,7 +89,10 @@ const router = new VueRouter({
     children: [{
       path: 'virhe',
       name: 'virhe',
-      component: RouteVirhe,
+      component: EpErrorPage,
+      props: {
+        paluukohde: 'home',
+      },
     }, {
       path: '',
       name: 'home',
@@ -386,7 +388,7 @@ const router = new VueRouter({
         return {
           name: 'virhe',
           query: {
-            errorMessage: Kielet.kaannaOlioTaiTeksti('virhe-sivua-ei-loytynyt'),
+            virhekoodi: '404',
           },
         };
       },
