@@ -90,6 +90,9 @@ const router = new VueRouter({
       path: 'virhe',
       name: 'virhe',
       component: EpErrorPage,
+      props: {
+        paluukohde: 'home',
+      },
     }, {
       path: '',
       name: 'home',
