@@ -44,7 +44,6 @@ import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
 import { Maintenance } from '@shared/api/amosaa';
-import { Kielet } from '@shared/stores/kieli';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -386,7 +385,7 @@ const router = new VueRouter({
         return {
           name: 'virhe',
           query: {
-            errorMessage: Kielet.kaannaOlioTaiTeksti('virhe-sivua-ei-loytynyt'),
+            virhekoodi: '404',
           },
         };
       },
