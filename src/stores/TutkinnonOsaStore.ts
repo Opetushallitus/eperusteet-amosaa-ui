@@ -157,8 +157,16 @@ export class TutkinnonOsaStore implements IEditoitava {
       tutkinnonosaViite: {
         tekstiKappale: {
           nimi: {
-            required,
             ...requiredOneLang(),
+          },
+        },
+        tosa: {
+          toteutukset: {
+            $each: {
+              otsikko: {
+                ...requiredOneLang(),
+              },
+            },
           },
         },
       },

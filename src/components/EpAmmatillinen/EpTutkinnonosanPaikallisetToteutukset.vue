@@ -14,8 +14,8 @@
         <ep-collapse class="toteutus" v-for="(toteutus, index) in toteutukset" :key="'toteutus'+index" :borderBottom="false" >
           <template slot="header">
             <div v-if="isEditing" class="d-flex align-items-end">
-              <fas icon="raahaus" class="raahaus"/>
-              <h4 class="mb-0">{{$t('toteutuksen-otsikko')}}</h4>
+              <fas icon="raahaus" class="order-handle"/>
+              <h4 class="mb-0">{{$t('toteutuksen-otsikko')}}<span v-if="isEditing"> *</span></h4>
             </div>
             <h4 v-else>{{$kaanna(toteutus.otsikko)}}</h4>
           </template>
@@ -87,6 +87,7 @@ export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
       emptyInsertThreshold: 10,
       disabled: !this.isEditing,
       forceFallback: true,
+      handle: '.order-handle',
       group: {
         name: 'toteutukset',
         pull: 'clone',
