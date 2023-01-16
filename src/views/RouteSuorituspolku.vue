@@ -37,13 +37,11 @@
           <div class="st-header">
             <div class="d-flex justify-content-between w-100">
               <div class="w-75">
-                <div class="d-flex">
-                  <div>
-                    <span class="font-weight-bold">
-                      {{ $t('rakenne') }}
-                    </span>
-                    <b-button variant="link" @click="toggleOpen()">{{ $t('avaa-sulje') }}</b-button>
+                <div class="d-flex align-items-center">
+                  <div class="font-weight-bold mr-5">
+                    {{ $t('rakenne') }}
                   </div>
+                  <b-button variant="link" @click="toggleOpen()">{{ $t('avaa-sulje-kaikki') }}</b-button>
                   <div class="ml-5">
                     <b-button variant="link" @click="toggleKuvaukset()">
                       {{ $t(naytaKuvaukset ? 'piilota-kuvaukset' : 'nayta-kuvaukset') }}
@@ -62,7 +60,7 @@
             </div>
 
           </div>
-          <div>
+          <div class="suorituspolku-sisalto">
             <EpSuorituspolkuNode v-model="data.suorituspolku"
                                  :is-editing="isEditing"
                                  :tutkinnon-osat="supportData.tutkinnonOsat"
@@ -71,7 +69,8 @@
                                  :liitettavat-osat="supportData.liitettavatOsat"
                                  :nayta-kuvaukset="naytaKuvaukset"
                                  :nayta-piilotetut="naytaPoistetut"
-                                 :node="supportData.rakenne" />
+                                 :node="supportData.rakenne"
+                                 :naytaRakenne="naytaRakenne" />
           </div>
         </div>
       </template>
@@ -126,6 +125,7 @@ export default class RouteSuorituspolku extends Vue {
   private editointiStore: EditointiStore | null = null;
   private naytaPoistetut = false;
   private naytaKuvaukset = false;
+  private naytaRakenne = true;
 
   @Watch('toteutussuunnitelma', { immediate: true })
   toteutussuunnitelmaChange() {
@@ -183,6 +183,7 @@ export default class RouteSuorituspolku extends Vue {
   }
 
   toggleOpen() {
+    this.naytaRakenne = !this.naytaRakenne;
   }
 
   toggleKuvaukset() {
@@ -204,6 +205,10 @@ export default class RouteSuorituspolku extends Vue {
 
   .st-header {
     padding: 20px 20px 0px 20px;
+  }
+
+  .suorituspolku-sisalto{
+    padding-bottom: 20px;
   }
 }
 

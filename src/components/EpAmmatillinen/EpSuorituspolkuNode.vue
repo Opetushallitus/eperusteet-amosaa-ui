@@ -83,7 +83,8 @@
                                :nayta-piilotetut="naytaPiilotetut"
                                :nayta-kuvaukset="naytaKuvaukset"
                                :viimeinen="idx === node.osat.length - 1"
-                               :depth="depth + 1" />
+                               :depth="depth + 1"
+                               :naytaRakenne="naytaRakenne"/>
         </div>
       </div>
     </div>
@@ -160,6 +161,9 @@ export default class EpSuorituspolkuNode extends Vue {
 
   @Prop({ default: false })
   naytaKuvaukset!: boolean;
+
+  @Prop({ default: false })
+  naytaRakenne!: boolean;
 
   @Prop({ default: false })
   naytaPiilotetut!: boolean;
@@ -343,6 +347,11 @@ export default class EpSuorituspolkuNode extends Vue {
 
   toggleOsat() {
     this.showOsat = !this.showOsat;
+  }
+
+  @Watch('naytaRakenne')
+  updateNaytaRakenne() {
+    this.showOsat = this.depth === 0 || this.naytaRakenne;
   }
 
   toggleKuvaus() {
