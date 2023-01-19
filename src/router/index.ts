@@ -17,7 +17,6 @@ import RouteTutkinnonosat from '@/views/RouteTutkinnonosat.vue';
 import RouteTutkinnonosa from '@/views/RouteTutkinnonosa.vue';
 import RouteSuorituspolut from '@/views/RouteSuorituspolut.vue';
 import RouteSuorituspolku from '@/views/RouteSuorituspolku.vue';
-import RouteOsaSuorituspolku from '@/views/RouteOsaSuorituspolku.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
 import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
 import RouteToteutussuunnitelmaLuonti from '@/views/RouteToteutussuunnitelmaLuonti.vue';
@@ -45,6 +44,7 @@ import { createLogger } from '@shared/utils/logger';
 import { changeLang } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
 import { Maintenance } from '@shared/api/amosaa';
+import _ from 'lodash';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -56,6 +56,7 @@ const logger = createLogger('Router');
 const props = (route: any) => {
   return {
     ...route.params,
+    ..._.mapValues(route.query, value => !_.isNaN(_.toNumber(value)) ? _.toNumber(value) : value),
     ...stores,
   };
 };
@@ -285,13 +286,18 @@ const router = new VueRouter({
         component: RouteOsaAlue,
         props,
       }, {
-        path: 'suorituspolut',
+        path: 'suorituspolut/:sisaltoviiteId',
         name: 'suorituspolut',
         component: RouteSuorituspolut,
         props,
       }, {
         path: 'suorituspolku/:sisaltoviiteId',
         name: 'suorituspolku',
+        component: RouteSuorituspolku,
+        props,
+      }, {
+        path: 'osasuorituspolku/:sisaltoviiteId',
+        name: 'osasuorituspolku',
         component: RouteSuorituspolku,
         props,
       }, {

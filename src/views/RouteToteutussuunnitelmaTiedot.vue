@@ -40,7 +40,7 @@
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group :label="$t('voimassaolo')">
+              <b-form-group :label="$t('voimassaolo-alkaa')">
                 <div class="d-flex align-content-around flex-wrap">
                   <ep-datepicker v-model="data.opetussuunnitelma.voimaantulo" :is-editing="isEditing" type="sd" :validation="validation.opetussuunnitelma.voimaantulo"/>
                   <template v-if="opetussuunnitelmaVoimassaoloLoppu">

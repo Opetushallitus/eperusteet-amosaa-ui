@@ -452,7 +452,7 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
     perustetyyppi: 'tutkinto',
     salliEsikatselu: 'salli-toteutussuunnitelman-esikatselu',
     esikatselu: 'esikatsele-toteutussuunnitelmaa',
-    tiivistelma: 'tutkinnon-suorittaneen-osaaminen',
+    tiivistelma: 'kuvaus',
   },
   [Toteutus.VAPAASIVISTYSTYO]: {
     title: 'opetussuunnitelman-tiedot',
@@ -744,7 +744,7 @@ export const OpetussuunnitelmaLuontiKielistykset = {
     radioButtons: [
       {
         value: 'peruste',
-        text: 'perusteprojektia',
+        text: 'tutkinnon-perustetta',
       },
       {
         value: 'toteutussuunnitelma',

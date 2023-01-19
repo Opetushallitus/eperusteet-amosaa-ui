@@ -1,6 +1,6 @@
 <template>
   <div id="scroll-anchor" v-if="editointiStore">
-    <EpEditointi :store="editointiStore">
+    <EpEditointi :store="editointiStore" :versionumero="versionumero">
       <template v-slot:header="{ data, supportData, isEditing }">
         <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
       </template>
@@ -9,10 +9,10 @@
           <ep-field v-model="data.tekstiKappale.nimi" :is-editing="true"></ep-field>
         </b-form-group>
 
-        <b-form-group :label="$t('suorituspolku-kuvaus')" v-if="isEditing">
-          <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="true"></ep-content>
-          <div class="mt-3">
-            <EpToggle :value="data.tyyppi === 'osasuorituspolku'" @input="toggleTyyppi(data)" :is-editing="true" class="">
+        <b-form-group :label="$t('suorituspolku-kuvaus')">
+          <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing"></ep-content>
+          <div class="mt-3" v-if="isEditing">
+            <EpToggle :value="data.tyyppi === 'osasuorituspolku'" @input="toggleTyyppi(data)" :is-editing="isEditing">
               {{ $t('osasuorituspolku') }}
             </EpToggle>
           </div>
@@ -27,7 +27,7 @@
         <b-form-group :label="$t('tutkinnon-kuvaus')" v-else>
           <ep-content layout="normal" v-model="supportData.rakenne.kuvaus"></ep-content>
           <div class="mt-3" v-if="isEditing">
-            <EpToggle v-model="data.suorituspolku.naytaKuvausJulkisesti" :is-editing="true">
+            <EpToggle v-model="data.naytaPerusteenTeksti" :is-editing="true">
               {{ $t('nayta-kuvaus-julkisesti') }}
             </EpToggle>
           </div>
@@ -122,6 +122,9 @@ export default class RouteSuorituspolku extends Vue {
   @Prop({ required: true })
   private sisaltoviiteId!: string | number;
 
+  @Prop({ required: false })
+  private versionumero!: number;
+
   private editointiStore: EditointiStore | null = null;
   private naytaPoistetut = false;
   private naytaKuvaukset = false;
@@ -167,7 +170,7 @@ export default class RouteSuorituspolku extends Vue {
           _.toString(this.koulutustoimijaId),
           _.toNumber(this.sisaltoviiteId),
           this.perusteId!,
-          null as unknown as number,
+          this.versionumero,
           this,
           false));
     }

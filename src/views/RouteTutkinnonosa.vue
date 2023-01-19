@@ -137,7 +137,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Vue, Watch, Mixins } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch, Mixins, InjectReactive } from 'vue-property-decorator';
 import { TutkinnonOsaStore } from '@/stores/TutkinnonOsaStore';
 import EpPerusteenTutkinnonOsa from '@/components/EpAmmatillinen/EpPerusteenTutkinnonOsa.vue';
 import EpTutkinnonosanPaikallisetToteutukset from '@/components/EpAmmatillinen/EpTutkinnonosanPaikallisetToteutukset.vue';
@@ -158,7 +158,6 @@ import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi
 import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillinenArvioinninKohdealueet/EpAmmatillinenArvioinninKohdealueet.vue';
 import { Validations } from 'vuelidate-property-decorators';
 import { requiredOneLang } from '@shared/validators/required';
-import { required } from 'vuelidate/lib/validators';
 import { validationMixin } from 'vuelidate';
 
 @Component({
