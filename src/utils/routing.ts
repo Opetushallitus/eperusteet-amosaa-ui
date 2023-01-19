@@ -36,6 +36,20 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
       type: 'tutkinnonosa',
       id: Number(route.params?.sisaltoviiteId!),
     };
+  case 'suorituspolut':
+    return {
+      type: 'suorituspolut',
+    };
+  case 'suorituspolku':
+    return {
+      type: 'suorituspolku',
+      id: Number(route.params?.sisaltoviiteId!),
+    };
+  case 'osasuorituspolku':
+    return {
+      type: 'osasuorituspolku',
+      id: Number(route.params?.sisaltoviiteId!),
+    };
   case 'opintokokonaisuus':
     return {
       type: 'opintokokonaisuus',

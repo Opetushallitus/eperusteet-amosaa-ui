@@ -12,10 +12,13 @@
           v-model="toteutukset">
 
         <ep-collapse class="toteutus" v-for="(toteutus, index) in toteutukset" :key="'toteutus'+index" :borderBottom="false" >
-          <template slot="header">
+          <template slot="header" slot-scope="{ toggled }">
             <div v-if="isEditing" class="d-flex align-items-end">
               <fas icon="raahaus" class="order-handle"/>
-              <h4 class="mb-0">{{$t('toteutuksen-otsikko')}}<span v-if="isEditing"> *</span></h4>
+              <h4 class="mb-0">
+                <span v-if="toggled || !toteutus.otsikko || !toteutus.otsikko[kieli]">{{$t('toteutuksen-otsikko')}}<span v-if="isEditing"> *</span></span>
+                <span v-else-if="!toggled">{{$kaanna(toteutus.otsikko)}}</span>
+              </h4>
             </div>
             <h4 v-else>{{$kaanna(toteutus.otsikko)}}</h4>
           </template>
@@ -45,6 +48,7 @@ import EpField from '@shared/components/forms/EpField.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpTutkinnonosanPaikallinenToteutus from './EpTutkinnonosanPaikallinenToteutus.vue';
 import draggable from 'vuedraggable';
+import { Kielet } from '@shared/stores/kieli';
 
 @Component({
   components: {
@@ -110,6 +114,10 @@ export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
 
   poistaToteutus(idx: number) {
     this.toteutukset = _.reject(this.toteutukset, (v, tIdx: number) => idx === tIdx);
+  }
+
+  get kieli() {
+    return Kielet.getSisaltoKieli.value;
   }
 }
 </script>

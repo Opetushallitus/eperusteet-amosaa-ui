@@ -43,13 +43,7 @@ export class SisaltoEditStore implements IEditoitava {
   async fetch(addPerusteData: (data: any) => void) {
     let result = {};
     if (!this.uusi) {
-      if (this.versionumero) {
-        const revisions = (await Sisaltoviitteet.getSisaltoviiteRevisions(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId)).data as Revision[];
-        const rev = revisions[revisions.length - this.versionumero];
-        return Sisaltoviitteet.getSisaltoviiteRevision(this.opetussuunnitelmaId, this.sisaltoViiteId, rev.numero, this.koulutustoimijaId);
-      }
-
-      const { data } = await Sisaltoviitteet.getSisaltoviiteTekstit(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId)!;
+      const { data } = await this.fetchWithVersion();
       result = data;
 
       if (data.tyyppi === _.toLower(MatalaTyyppiEnum.OSASUORITUSPOLKU) || data.tyyppi === _.toLower(MatalaTyyppiEnum.SUORITUSPOLKU)) {
@@ -88,6 +82,17 @@ export class SisaltoEditStore implements IEditoitava {
     return {
       ...result,
     };
+  }
+
+  async fetchWithVersion() {
+    if (this.versionumero) {
+      const revisions = (await Sisaltoviitteet.getSisaltoviiteRevisions(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId)).data as Revision[];
+      const rev = revisions[revisions.length - this.versionumero];
+      return Sisaltoviitteet.getSisaltoviiteRevision(this.opetussuunnitelmaId, this.sisaltoViiteId, rev.numero, this.koulutustoimijaId);
+    }
+    else {
+      return Sisaltoviitteet.getSisaltoviiteTekstit(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId)!;
+    }
   }
 
   async save(data: any) {
@@ -130,7 +135,7 @@ export class SisaltoEditStore implements IEditoitava {
         editable: true,
         removable: true,
         hideable: false,
-        recoverable: false,
+        recoverable: true,
       } as EditoitavaFeatures;
     });
   }

@@ -13,24 +13,11 @@
                   <span class="material-icons-outlined ml-2 default-icon clickable" id="infopopup">info</span>
                   <b-popover
                     target="infopopup"
-                    triggers="hover click blur">
-                      <div class="mb-3">
-                        <span class="font-weight-bold">{{$t('perusteprojekti')}}: </span>
-                        <span>{{$t('uusi-opetussuunnitelma-ohje-perusteprojekti')}}</span>
+                    triggers="hover click blur" v-if="tyypinRadioButtons">
+                      <div class="mb-3" v-for="(radiobutton, index) in tyypinRadioButtons" :key="'infopopup'+index">
+                        <span class="font-weight-bold">{{$t(radiobutton.text)}}: </span>
+                        <span>{{$t('uusi-opetussuunnitelma-ohje-' + radiobutton.text)}}</span>
                       </div>
-                      <div class="mb-3">
-                        <span class="font-weight-bold">{{$t('opetussuunnitelman-pohja')}}: </span>
-                        <span>{{$t('uusi-opetussuunnitelma-ohje-opetussuunnitelman-pohja')}}</span>
-                      </div>
-                      <div class="mb-3">
-                        <span class="font-weight-bold">{{$t('toinen-opetussuunnitelma')}}: </span>
-                        <span>{{$t('uusi-opetussuunnitelma-ohje-toinen-opetussuunnitelma')}}</span>
-                      </div>
-                      <div class="mb-3">
-                        <span class="font-weight-bold">{{$t('luo-uusi-ilman-pohjaa')}}: </span>
-                        <span>{{$t('uusi-opetussuunnitelma-ohje-luo-uusi-ilman-pohjaa')}}</span>
-                      </div>
-
                   </b-popover>
                 </div>
                 <b-form-radio v-for="(radiobutton, index) in tyypinRadioButtons" :key="'radiobutton'+index" class="p-2 pl-4" v-model="pohjanTyyppi" :value="radiobutton.value" :disabled="radiobutton.disabled">
@@ -347,14 +334,15 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       const luotu = await this.toteutussuunnitelmaStore.create(_.toString(this.koulutustoimijaId), {
         perusteId: this.peruste ? this.peruste.id : undefined,
         perusteDiaarinumero: this.peruste ? this.peruste.diaarinumero : undefined,
-        opsId: this.toteutussuunnitelma ? this.toteutussuunnitelma.id : undefined,
+        opsId: this.pohjanTyyppi !== 'ophPohja' ? this.toteutussuunnitelma?.id : undefined,
+        _pohja: this.pohjanTyyppi === 'ophPohja' ? this.toteutussuunnitelma?.id as any : undefined,
         tyyppi: this.tyyppi as any,
         suoritustapa: this.tallennettavaSuoritustapa,
         nimi: this.nimi,
         tutkinnonOsaKoodiIncludes: this.tutkinnonosaKoodit,
         koulutustyyppi: this.peruste ? undefined : this.koulutustyyppi,
         jotpatyyppi: this.jotpa ? this.jotpa.jotpatyyppi as any : null,
-      });
+      } as any);
 
       this.$router.push({
         name: 'toteutussuunnitelma',

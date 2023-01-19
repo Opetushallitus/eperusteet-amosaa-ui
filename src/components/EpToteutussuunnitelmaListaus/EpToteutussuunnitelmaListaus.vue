@@ -141,6 +141,7 @@ import { IToteutussuunnitelmaProvider } from './types';
 import { Toteutus } from '@shared/utils/perusteet';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
+import { Debounced } from '@shared/utils/delay';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
@@ -207,6 +208,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
     await this.fetch(koulutustoimijaId, this.query);
   }
 
+  @Debounced(500)
   @Watch('query', { deep: true, immediate: true })
   async onQueryChange(query: any) {
     await this.fetch(_.toNumber(this.$route.params.koulutustoimijaId), query);

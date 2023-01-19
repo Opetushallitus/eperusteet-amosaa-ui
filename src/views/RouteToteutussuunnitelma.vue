@@ -121,7 +121,7 @@
             <template v-slot:suorituspolku="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }">
-                  {{ $kaanna(item.label) }}
+                  {{ $kaanna(item.label) || $t('nimeton-suorituspolku')}}
                 </router-link>
               </div>
             </template>
@@ -129,7 +129,7 @@
             <template v-slot:osasuorituspolku="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }">
-                  {{ $kaanna(item.label) }}
+                  {{ $kaanna(item.label) || $t('nimeton-osasuorituspolku')}}
                 </router-link>
               </div>
             </template>
@@ -240,6 +240,34 @@
                     </template>
                   </EpTekstikappaleLisays>
 
+                  <EpTekstikappaleLisays
+                  v-if="isAmmatillinen"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
+                  :hide-taso="true"
+                  @save="lisaaUusiSuorituspolku"
+                  :tekstikappaleet="perusteenOsat"
+                  :paatasovalinta="true"
+                  :otsikkoNimi="'suorituspolku-nimi'"
+                  :otsikkoRequired="true"
+                  modalId="suorituspolkuLisays">
+                  <template v-slot:lisays-btn-text>
+                    {{$t('uusi-suorituspolku')}}
+                  </template>
+                  <template v-slot:modal-title>
+                    {{$t('uusi-suorituspolku')}}
+                  </template>
+                  <template v-slot:footer-lisays-btn-text>
+                    {{$t('lisaa-suorituspolku')}}
+                  </template>
+                  <template v-slot:header>
+                    {{$t('suorituspolun-sijainti')}}
+                  </template>
+                  <template v-slot:default="{tekstikappale}">
+                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                    {{ $kaanna(tekstikappale.label) }}
+                  </template>
+                </EpTekstikappaleLisays>
+
                 <EpTekstikappaleLisays
                     v-if="isAmmatillinen"
                     v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
@@ -261,34 +289,6 @@
                     </template>
                     <template v-slot:header>
                       {{$t('tutkinnonosan-sijainti')}}
-                    </template>
-                    <template v-slot:default="{tekstikappale}">
-                      <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                      {{ $kaanna(tekstikappale.label) }}
-                    </template>
-                  </EpTekstikappaleLisays>
-
-                <EpTekstikappaleLisays
-                    v-if="isAmmatillinen"
-                    v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                    :hide-taso="true"
-                    @save="lisaaUusiSuorituspolku"
-                    :tekstikappaleet="perusteenOsat"
-                    :paatasovalinta="true"
-                    :otsikkoNimi="'suorituspolku-nimi'"
-                    :otsikkoRequired="true"
-                    modalId="suorituspolkuLisays">
-                    <template v-slot:lisays-btn-text>
-                      {{$t('uusi-suorituspolku')}}
-                    </template>
-                    <template v-slot:modal-title>
-                      {{$t('uusi-suorituspolku')}}
-                    </template>
-                    <template v-slot:footer-lisays-btn-text>
-                      {{$t('lisaa-suorituspolku')}}
-                    </template>
-                    <template v-slot:header>
-                      {{$t('suorituspolun-sijainti')}}
                     </template>
                     <template v-slot:default="{tekstikappale}">
                       <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
@@ -347,6 +347,8 @@ import { KayttajaStore } from '@/stores/kayttaja';
 import { LinkkiHandler, routeToNode } from '@/utils/routing';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 import { Toteutus } from '@shared/utils/perusteet';
+import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
+import { KuvaStore } from '@/stores/KuvaStore';
 
 @Component({
   components: {
@@ -555,6 +557,11 @@ export default class RouteToteutussuunnitelma extends Vue {
   @ProvideReactive('linkkiHandler')
   get linkkiHandler() {
     return new LinkkiHandler();
+  }
+
+  @ProvideReactive('kuvaHandler')
+  get kuvaHandler() {
+    return createKuvaHandler(new KuvaStore(_.toNumber(this.toteutussuunnitelmaId), this.koulutustoimijaId));
   }
 
   get ratasvalinnat() {
