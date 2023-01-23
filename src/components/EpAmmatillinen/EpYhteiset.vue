@@ -27,7 +27,7 @@
       </div>
     </ep-collapse>
 
-    <ep-collapse :borderBottom="false" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
+    <ep-collapse :borderBottom="false" :class="{'pt-0 pb-0': isEditing}">
       <h3 slot="header">{{ $t('paikalliset-osa-alueet') }}</h3>
       <div class="osaalue" v-for="(osaalue, idx) in paikallisetOsaAlueet" :key="'paikallinen-' + idx">
         <span class="nimi">
@@ -37,11 +37,12 @@
         </span>
         <span class="koodi" v-if="osaalue.koodi"> ({{ osaalue.koodi }})</span>
       </div>
-      <div v-if="isEditing">
-        <EpInput v-model="uudenNimi" is-editing="true"></EpInput>
-        <EpButton class="mt-2" @click="lisaaPaikallinen()">{{ $t('lisaa-uusi') }}</EpButton>
-      </div>
     </ep-collapse>
+
+    <div v-if="isEditing">
+      <EpInput v-model="uudenNimi" :is-editing="true"></EpInput>
+      <EpButton class="mt-2" @click="lisaaPaikallinen()">{{ $t('lisaa-uusi') }}</EpButton>
+    </div>
 
   </div>
 </template>

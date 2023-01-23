@@ -9,13 +9,13 @@ Vue.use(VueCompositionApi);
 
 export class SisaltoEditStore implements IEditoitava {
   constructor(
-    private opetussuunnitelmaId: number,
-    private koulutustoimijaId: string,
-    private sisaltoViiteId: number,
-    private perusteId: number,
-    private versionumero: number,
-    private el: any,
-    private uusi: boolean) {
+    public opetussuunnitelmaId: number,
+    public koulutustoimijaId: string,
+    public sisaltoViiteId: number,
+    public perusteId: number,
+    public versionumero: number,
+    public el: any,
+    public uusi: boolean) {
   }
 
   async acquire() {
@@ -119,12 +119,13 @@ export class SisaltoEditStore implements IEditoitava {
   async start() {
   }
 
-  async remove() {
+  async remove(data) {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId);
     this.el.$router.push({
       name: 'poistetutsisallot',
     });
   }
+
   public readonly validator = computed(() => {
     return {};
   });
