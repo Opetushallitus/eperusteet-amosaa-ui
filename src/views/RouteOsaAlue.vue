@@ -2,12 +2,22 @@
   <div id="scroll-anchor" v-if="editointiStore">
     <EpEditointi :store="editointiStore">
       <template v-slot:header="{ data, supportData }">
-        <h2 class="m-0" v-if="perusteenOsaAlue">{{ $kaanna(perusteenOsaAlue.nimi) }}</h2>
+        <h2 class="m-0">
+          <span v-if="perusteenOsaAlue">{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
+          <span v-if="osaAlueValue.nimi">{{ $kaanna(osaAlueValue.nimi) }}</span>
+          <span v-if="osaAlueValue.piilotettu">({{ $t('piilotettu') }})</span>
+        </h2>
       </template>
       <template v-slot:default="{ data, supportData, isEditing }">
+
         <div class="d-flex flex-lg-wrap justify-content-between">
-          <b-form-group class="flex-grow-1 mr-6" :label="$t('osa-alueen-nimi')" v-if="perusteenOsaAlue">
-            <span>{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
+          <b-form-group class="flex-grow-1 mr-6" :label="$t('osa-alueen-nimi')" v-if="isEditing">
+            <ep-field
+              v-if="tyyppi === 'paikallinen'"
+              v-model="data.osaAlueet[osaAlueIdx].nimi"
+              :is-editing="isEditing">
+            </ep-field>
+            <span v-else>{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
           </b-form-group>
 
           <b-form-group class="flex-grow-1 mr-6" :label="$t('koodi')" v-if="perusteenOsaAlue">
@@ -40,6 +50,7 @@ import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
 import Osaamistavoitteet from '@/components/EpAmmatillinen/Osaamistavoitteet.vue';
+import { OsaAlueStore } from '@/stores/OsaAlueStore';
 
 @Component({
   components: {
@@ -147,14 +158,15 @@ export default class RouteOsaAlue extends Vue {
   fetchImpl() {
     if (this.toteutussuunnitelma) {
       this.editointiStore = new EditointiStore(
-        new SisaltoEditStore(
+        new OsaAlueStore(
           _.toNumber(this.toteutussuunnitelmaId),
           _.toString(this.koulutustoimijaId),
           _.toNumber(this.sisaltoviiteId),
           this.perusteId!,
           null as unknown as number,
           this,
-          false));
+          false,
+          _.toNumber(this.osaalueId)));
     }
   }
 }
