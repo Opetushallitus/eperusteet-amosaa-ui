@@ -72,7 +72,7 @@
                 <ep-toggle v-model="data.opetussuunnitelma.esikatseltavissa" :is-editing="isEditing" v-if="isEditing || !data.opetussuunnitelma.esikatseltavissa">
                   {{$t(kielistykset['salliEsikatselu'])}}
                 </ep-toggle>
-                <ep-external-link :url="data.opetussuunnitelma.toteutussuunnitelmaUrl" v-if="!isEditing && data.opetussuunnitelma.esikatseltavissa">
+                <ep-external-link :url="data.opetussuunnitelma.toteutussuunnitelmaUrl" v-if="!isEditing && data.opetussuunnitelma.esikatseltavissa" :class="{'disabled-events': data.opetussuunnitelma.tila === 'poistettu'}">
                   {{$t(kielistykset['esikatselu'])}}
                 </ep-external-link>
               </b-form-group>
