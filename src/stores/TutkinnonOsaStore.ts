@@ -61,11 +61,6 @@ export class TutkinnonOsaStore implements IEditoitava {
       this.setArvioinnit(tutkinnonosaViite.tosa.omatutkinnonosa, arviointiasteikot);
     }
 
-    const tutkintonimikeKoodit = _.map(await Promise.all(_.chain(peruste.tutkintonimikkeet)
-      .map('tutkintonimikeUri')
-      .map((tutkintonimikeUri: string) => Koodistot.getKoodistoKoodiByUri(tutkintonimikeUri))
-      .value()), 'data');
-
     return {
       tutkinnonosaViite: {
         ...tutkinnonosaViite,
@@ -85,8 +80,6 @@ export class TutkinnonOsaStore implements IEditoitava {
         ammattitaidonOsoittamistavat: null,
         ...tutkinnonosaViite.tosa.omatutkinnonosa,
       },
-      osaamisalat: peruste.osaamisalat,
-      tutkintonimikkeet: tutkintonimikeKoodit,
       arviointiasteikot,
     };
   }

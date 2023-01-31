@@ -81,8 +81,6 @@
 
             <EpTutkinnonosanPaikallisetToteutukset v-model="data.tutkinnonosaViite.tosa.toteutukset"
                                       :isEditing="isEditing && data.tutkinnonosaViite.tyyppi !== 'linkki'"
-                                      :osaamisalat="osaamisalat"
-                                      :tutkintonimikkeet="tutkintonimikkeet"
                                       :tyyppi="data.tutkinnonosaViite.tyyppi"/>
           </b-tab>
 
@@ -246,34 +244,6 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
     if (this.editointiStore && this.editointiStore.data.value) {
       return this.editointiStore.data.value.tutkinnonosaViite.tosa.tyyppi === 'perusteesta';
     }
-  }
-
-  get tutkintonimikkeet() {
-    if (this.editointiStore && this.editointiStore.data.value) {
-      return _.map(this.editointiStore.data.value.tutkintonimikkeet, tutkintonimike => {
-        return {
-          ...tutkintonimike,
-          nimi: _.reduce(tutkintonimike.metadata, function(md: any, param) {
-            md[_.toLower(param.kieli)] = param.nimi;
-            return md;
-          }, {}),
-        };
-      });
-    }
-    return null;
-  }
-
-  get osaamisalat() {
-    if (this.editointiStore && this.editointiStore.data.value) {
-      return _.map(this.editointiStore!.data.value.osaamisalat, osaamisala => {
-        return {
-          ...osaamisala,
-          koodiArvo: osaamisala.arvo,
-          koodiUri: osaamisala.uri,
-        };
-      });
-    }
-    return null;
   }
 
   lisaaTekstikappale(toteutus: TutkinnonosaToteutusDto | TutkinnonosaDto) {
