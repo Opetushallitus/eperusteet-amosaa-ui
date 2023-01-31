@@ -49,13 +49,22 @@
           @sort-changed="sortingChanged"
           :sort-by.sync="sortBy"
           :sort-desc.sync="query.sortDesc"
-          :fields="tutkinnonosatFields">
-          <template v-slot:cell(tekstiKappale.nimi)="{ item }">
+          :fields="tutkinnonosatFields"
+          no-sort-reset>
+          <template v-slot:head(valitse-kaikki)="{ item }">
+            <div class="selectable" @click="selectAllRows()">
+              <fas v-if="valitseKaikki" icon="check-square" class="checked mr-2"/>
+              <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+            </div>
+          </template>
+          <template v-slot:cell(valitse-kaikki)="{ item }">
             <div class="selectable" @click="selectRow(item)">
               <fas v-if="item.selected" icon="check-square" class="checked mr-2"/>
               <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
-              <span>{{$kaanna(item.tekstiKappale.nimi)}}</span>
             </div>
+          </template>
+          <template v-slot:cell(tekstiKappale.nimi)="{ item }">
+            <span>{{$kaanna(item.tekstiKappale.nimi)}}</span>
           </template>
         </b-table>
         <b-pagination v-if="totalRows > sisaltoSivuKoko"
@@ -121,6 +130,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
   private query = {} as any;
   private sivu = 0;
   private sisaltoSivuKoko = 10;
+  private valitseKaikki = false;
 
   private selectedTutkinnonosat: SisaltoviiteLaajaDto[] = [];
 
@@ -225,6 +235,16 @@ export default class EpTutkinnonosaTuonti extends Vue {
     }
   }
 
+  selectAllRows() {
+    this.valitseKaikki = !this.valitseKaikki;
+    if (this.valitseKaikki) {
+      this.selectedTutkinnonosat = (this.tutkinnonosat || []) as SisaltoviiteLaajaDto[];
+    }
+    else {
+      this.selectedTutkinnonosat = [];
+    }
+  }
+
   sortingChanged(sort) {
     this.query = {
       ...this.query,
@@ -237,41 +257,46 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   get tutkinnonosatFields() {
-    return [{
-      key: 'tekstiKappale.nimi',
-      label: this.$t('nimi'),
-      sortable: true,
-      thStyle: { width: '40%' },
-    }, {
-      key: 'opetussuunnitelma.voimaantulo',
-      label: this.$t('voimaantulo'),
-      sortable: false,
-      formatter: (value: any, key: string, item: any) => {
-        return value ? this.$sd(value) : '';
+    return [
+      {
+        key: 'valitse-kaikki',
+        sortable: false,
       },
-    }, {
-      key: 'laajuus',
-      label: this.$t('laajuus'),
-      sortable: false,
-      formatter: (value: any, key: string, item: any) => {
-        if (item.tosa.omatutkinnonosa && item.tosa.omatutkinnonosa.laajuus) {
-          return item.tosa.omatutkinnonosa.laajuus;
-        }
+      {
+        key: 'tekstiKappale.nimi',
+        label: this.$t('nimi'),
+        sortable: true,
+        thStyle: { width: '40%' },
+      }, {
+        key: 'opetussuunnitelma.voimaantulo',
+        label: this.$t('voimaantulo'),
+        sortable: false,
+        formatter: (value: any, key: string, item: any) => {
+          return value ? this.$sd(value) : '';
+        },
+      }, {
+        key: 'laajuus',
+        label: this.$t('laajuus'),
+        sortable: false,
+        formatter: (value: any, key: string, item: any) => {
+          if (item.tosa.omatutkinnonosa && item.tosa.omatutkinnonosa.laajuus) {
+            return item.tosa.omatutkinnonosa.laajuus;
+          }
 
-        if (item.perusteenTutkinnonosa) {
-          return item.perusteenTutkinnonosa.laajuus;
-        }
+          if (item.perusteenTutkinnonosa) {
+            return item.perusteenTutkinnonosa.laajuus;
+          }
 
-        return '';
-      },
-    }, {
-      key: 'opetussuunnitelma.nimi',
-      label: this.$t('opetussuunnitelma'),
-      sortable: false,
-      formatter: (value: any, key: string, item: any) => {
-        return this.$kaanna(value);
-      },
-    }];
+          return '';
+        },
+      }, {
+        key: 'opetussuunnitelma.nimi',
+        label: this.$t('opetussuunnitelma'),
+        sortable: false,
+        formatter: (value: any, key: string, item: any) => {
+          return this.$kaanna(value);
+        },
+      }];
   }
 
   get valittuFields() {

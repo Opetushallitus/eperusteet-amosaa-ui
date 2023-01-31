@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
-import { Opetussuunnitelmat, OpetussuunnitelmaDto, Sisaltoviitteet, PageSisaltoviiteLaajaDto, Perusteet, SisaltoviiteLaajaDto } from '@shared/api/amosaa';
+import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
+import { Opetussuunnitelmat, OpetussuunnitelmaDto, Sisaltoviitteet, Perusteet, SisaltoviiteLaajaDto } from '@shared/api/amosaa';
 import { Debounced } from '@shared/utils/delay';
 import { AmmatillisetKoulutustyypit, perusteenSuoritustapa } from '@shared/utils/perusteet';
 import * as _ from 'lodash';

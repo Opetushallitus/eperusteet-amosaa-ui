@@ -24,9 +24,7 @@
           </template>
           <EpTutkinnonosanPaikallinenToteutus v-model="toteutukset[index]"
                                  @poista="poistaToteutus(index)"
-                                 :isEditing="isEditing"
-                                 :osaamisalat="osaamisalat"
-                                 :tutkintonimikkeet="tutkintonimikkeet" />
+                                 :isEditing="isEditing"/>
         </ep-collapse>
       </draggable>
     </div>
@@ -67,12 +65,6 @@ export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
 
   @Prop({ required: true })
   value!: any;
-
-  @Prop({ required: true })
-  tutkintonimikkeet!: any;
-
-  @Prop({ required: true })
-  osaamisalat!: any;
 
   @Prop({ required: true })
   tyyppi!: any;
