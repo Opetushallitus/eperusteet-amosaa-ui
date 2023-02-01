@@ -11,6 +11,10 @@
               :label="$t(tyyppikielistys['nimiotsikko']) + (isEditing ? ' *' : '')"
               required>
               <EpField
+                v-if="opintokokonaisuus.koodiArvo"
+                v-model="opintokokonaisuus.kooditettuNimi"/>
+              <EpField
+                v-else
                 v-model="data.tekstiKappale.nimi"
                 :is-editing="isEditing"
                 :validation="validation.tekstiKappale.nimi"/>
