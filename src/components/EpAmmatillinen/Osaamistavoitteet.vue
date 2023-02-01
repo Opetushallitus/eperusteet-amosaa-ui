@@ -2,7 +2,11 @@
   <div>
     <ep-collapse :borderBottom="true">
       <h3 slot="header">{{ nimi }}</h3>
-      <EpAmmattitaitovaatimukset tavoitekoodisto="osaamistavoitteet" :value="perusteenOsaamistavoite.tavoitteet" :is-editing="false" />
+      <EpAmmattitaitovaatimukset
+        v-if="perusteenOsaamistavoite"
+        tavoitekoodisto="osaamistavoitteet"
+        :value="perusteenOsaamistavoite.tavoitteet"
+        :is-editing="false" />
     </ep-collapse>
 
     <ep-collapse :borderBottom="true" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
