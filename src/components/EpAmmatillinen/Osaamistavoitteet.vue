@@ -1,24 +1,8 @@
 <template>
   <div>
-    <ep-collapse :borderBottom="true" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
-      <h3 slot="header">{{ $t('paikallinen-toteutus') }}</h3>
-
-      <div v-if="this.tyyppi === 'valinnainen'">
-        <EpToggle v-if="isEditing" :is-editing="true" v-model="value.piilotettu">{{ $t('piilota-osa-alue') }}</EpToggle>
-        <div class="mb-3"></div>
-      </div>
-
-      <h4>{{$t('toteutustavat-ja-oppimisymparisto')}}</h4>
-      <ep-content layout="normal" v-model="value.tavatjaymparisto" :is-editable="isEditing" />
-
-      <h4 class="mt-3">{{$t('osaamisen-arvioinnista')}}</h4>
-      <ep-content layout="normal" v-model="value.arvioinnista" :is-editable="isEditing"> </ep-content>
-
-    </ep-collapse>
-
-    <ep-collapse :borderBottom="true" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
-      <h3 slot="header" v-if="!isEditing">{{ nimi }}</h3>
-      <EpAmmattitaitovaatimukset tavoitekoodisto="osaamistavoitteet" v-model="value.osaamistavoitteet" :is-editing="isEditing" />
+    <ep-collapse :borderBottom="true">
+      <h3 slot="header">{{ nimi }}</h3>
+      <EpAmmattitaitovaatimukset tavoitekoodisto="osaamistavoitteet" :value="perusteenOsaamistavoite.tavoitteet" :is-editing="false" />
     </ep-collapse>
 
     <ep-collapse :borderBottom="true" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
@@ -33,7 +17,6 @@
         {{ $t('perusteella-virheellinen-arviointi') }}
       </div>
     </ep-collapse>
-
   </div>
 </template>
 
@@ -94,7 +77,7 @@ export default class Osaamistavoitteet extends Vue {
       if (this.tyyppi === 'pakollinen') {
         return this.perusteData.pakollisetOsaamistavoitteet;
       }
-      else if (this.tyyppi === 'pakollinen') {
+      else if (this.tyyppi === 'valinnainen') {
         return this.perusteData.valinnaisetOsaamistavoitteet;
       }
     }

@@ -29,6 +29,24 @@
           </b-form-group>
         </div>
 
+        <ep-collapse :borderBottom="true" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
+          <h3 slot="header">{{ $t('paikallinen-toteutus') }}</h3>
+
+          <div v-if="tyyppi === 'valinnainen'">
+            <EpToggle v-if="isEditing" :is-editing="true" v-model="data.osaAlueet[osaAlueIdx].piilotettu">{{ $t('piilota-osa-alue') }}</EpToggle>
+            <div class="mb-3"></div>
+          </div>
+
+          <h4>{{$t('toteutustavat-ja-oppimisymparisto')}}</h4>
+          <ep-content layout="normal" v-model="data.osaAlueet[osaAlueIdx].tavatjaymparisto" :is-editable="isEditing" />
+
+          <h4 class="mt-4">{{$t('osaamisen-arvioinnista')}}</h4>
+          <ep-content layout="normal" v-model="data.osaAlueet[osaAlueIdx].arvioinnista" :is-editable="isEditing"> </ep-content>
+
+          <hr v-if="data.osaAlueet[osaAlueIdx].vapaat.length > 1" class="mt-5"/>
+          <EpVapaatTekstit v-model="data.osaAlueet[osaAlueIdx].vapaat" :isEditing="isEditing"/>
+        </ep-collapse>
+
         <Osaamistavoitteet v-model="data.osaAlueet[osaAlueIdx]"
                            :is-editing="isEditing"
                            :tyyppi="tyyppi"
@@ -48,9 +66,9 @@ import EpField from '@shared/components/forms/EpField.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
 import Osaamistavoitteet from '@/components/EpAmmatillinen/Osaamistavoitteet.vue';
 import { OsaAlueStore } from '@/stores/OsaAlueStore';
+import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
 
 @Component({
   components: {
@@ -60,6 +78,7 @@ import { OsaAlueStore } from '@/stores/OsaAlueStore';
     EpEditointi,
     EpField,
     Osaamistavoitteet,
+    EpVapaatTekstit,
   },
 })
 export default class RouteOsaAlue extends Vue {
