@@ -2,7 +2,7 @@
   <div id="scroll-anchor" v-if="editointiStore" >
     <EpEditointi :store="editointiStore" :versionumero="versionumero" :labelCopyConfirm="'kopioidaanko-tutkinnonosa'">
       <template v-slot:header="{ data }">
-        <h2 class="m-0">{{ $kaanna(data.tutkinnonosaViite.tekstiKappale.nimi) }}</h2>
+        <h2 class="m-0">{{ $kaanna(data.tutkinnonosaViite.tekstiKappale.nimi) }}<span v-if="laajuus">, {{laajuus}} {{$t('osaamispiste')}}</span></h2>
       </template>
       <template v-slot:default="{ data, isEditing, validation }">
         <div class="alert alert-info" v-if="data.tutkinnonosaViite.tyyppi === 'linkki'">
@@ -25,12 +25,9 @@
             <ep-field v-model="data.omaTutkinnonosa.koodi" type="string" :is-editing="isEditing"></ep-field>
           </b-form-group>
 
-          <b-form-group :label="$t('laajuus')">
+          <b-form-group :label="$t('laajuus')" v-if="data.omaTutkinnonosa && isEditing">
             <div class="d-flex align-items-center" >
-              <span v-if="data.tutkinnonosaViite.tosa.tyyppi === 'perusteesta'">{{data.perusteenTutkinnonosaViite.laajuus}}</span>
-              <ep-field v-else-if="data.omaTutkinnonosa" type="number" v-model="data.omaTutkinnonosa.laajuus" :is-editing="isEditing"></ep-field>
-              <span class="mr-1" v-else>-</span>
-              <div class="ml-1">{{$t('osaamispiste')}}</div>
+              <ep-field type="number" v-model="data.omaTutkinnonosa.laajuus" :is-editing="isEditing"></ep-field>
             </div>
           </b-form-group>
         </div>
@@ -274,6 +271,10 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
 
   get nimi() {
     return this.editointiStore?.data?.value?.tutkinnonosaViite.tekstiKappale.nimi;
+  }
+
+  get laajuus() {
+    return this.editointiStore?.data?.value?.perusteenTutkinnonosaViite?.laajuus || this.editointiStore?.data?.value?.omaTutkinnonosa?.laajuus;
   }
 
   @Validations()

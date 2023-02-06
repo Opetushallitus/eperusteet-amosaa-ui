@@ -83,7 +83,7 @@
             </template>
 
             <template v-slot:tutkinnonosat_paikalliset>
-              <div class="menu-item">
+              <div class="menu-item clickable">
                 {{ $t('tutkinnonosat-paikalliset') }}
               </div>
             </template>
