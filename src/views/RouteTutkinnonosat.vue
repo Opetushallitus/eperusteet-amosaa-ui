@@ -120,7 +120,8 @@ export default class RouteTutkinnonosat extends Vue {
       sortable: true,
       label: this.$t('laajuus') as string,
       formatter: (value: any, key: string, item: any) => {
-        return item.perusteenTutkinnonosaViite ? item.perusteenTutkinnonosaViite.laajuus + ' ' + this.$t('osaamispiste') : '';
+        const laajuus = item.perusteenTutkinnonosaViite?.laajuus || item.tutkinnonosaViite?.tosa?.omatutkinnonosa?.laajuus;
+        return laajuus ? laajuus + ' ' + this.$t('osaamispiste') : '';
       },
     }, {
       key: 'tutkinnonosaViite.tosa.muokattu',

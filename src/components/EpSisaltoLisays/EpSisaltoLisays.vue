@@ -42,9 +42,6 @@
 import _ from 'lodash';
 import { Prop, Component, Mixins, Vue } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import EpField from '@shared/components/forms/EpField.vue';
-import EpSelect from '@shared/components/forms/EpSelect.vue';
-import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { SisaltoviiteMatalaDto, MatalaTyyppiEnum, SisaltoViiteKevytDtoTyyppiEnum, NavigationNodeDto, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';

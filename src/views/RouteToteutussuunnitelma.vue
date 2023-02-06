@@ -205,7 +205,7 @@
 
                 <EpTekstikappaleLisays
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                  @save="tallennaUusiTekstikappale"
+                  :tallenna="tallennaUusiTekstikappale"
                   :tekstikappaleet="perusteenOsat"
                   :paatasovalinta="true">
                   <template v-slot:default="{tekstikappale}">
@@ -217,7 +217,7 @@
                 <EpTekstikappaleLisays
                     v-if="isVapaaSivistystyo"
                     v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                    @save="tallennaUusiOpintokokonaisuus"
+                    :tallenna="tallennaUusiOpintokokonaisuus"
                     :tekstikappaleet="perusteenOsat"
                     :paatasovalinta="true"
                     :otsikkoRequired="true"
@@ -244,7 +244,7 @@
                   v-if="isAmmatillinen"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :hide-taso="true"
-                  @save="lisaaUusiSuorituspolku"
+                  :tallenna="lisaaUusiSuorituspolku"
                   :tekstikappaleet="perusteenOsat"
                   :paatasovalinta="true"
                   :otsikkoNimi="'suorituspolku-nimi'"
@@ -271,7 +271,7 @@
                 <EpTekstikappaleLisays
                     v-if="isAmmatillinen"
                     v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                    @save="lisaaUusiTutkinnonOsa"
+                    :tallenna="lisaaUusiTutkinnonOsa"
                     :hide-taso="true"
                     :tekstikappaleet="perusteenOsat"
                     :otsikkoNimi="'tutkinnonosa-nimi'"
@@ -444,7 +444,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   async tallennaUusiTekstikappale(otsikko, valittuTekstikappale) {
     const parentId = valittuTekstikappale?.id ? valittuTekstikappale.id : this.navigation.value!.id!;
 
-    TekstikappaleStore.add(
+    await TekstikappaleStore.add(
       this.toteutussuunnitelmaId,
       parentId,
       this.koulutustoimijaId,
