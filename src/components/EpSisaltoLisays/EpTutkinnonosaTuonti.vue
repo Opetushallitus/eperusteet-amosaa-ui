@@ -12,12 +12,14 @@
         {{ $t('tuo-tutkinnon-osa') }}
       </template>
 
+      <div class="mb-4">{{ $t('tutkinnon-osa-tuonti-modal-selite') }}</div>
+
       <div class="d-flex">
         <b-form-group class="w-50" :label="$t('tutkinnon-osan-nimi')">
           <ep-search v-model="query.nimi" :placeholder="$t('etsi-tutkinnon-osaa')"/>
         </b-form-group>
 
-        <b-form-group class="ml-auto w-50" :label="$t('toteutussuunnitelma')">
+        <b-form-group class="ml-auto w-50" :label="$t('toteutussuunnitelma-jaettu-tai-yhteinen-osa')">
           <ep-spinner v-if="!toteutussuunnitelmat" />
           <EpMultiSelect
             v-else
@@ -294,7 +296,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
         },
       }, {
         key: 'opetussuunnitelma.nimi',
-        label: this.$t('opetussuunnitelma'),
+        label: this.$t('suunnitelma-tai-osa'),
         sortable: false,
         formatter: (value: any, key: string, item: any) => {
           return this.$kaanna(value);
