@@ -44,13 +44,15 @@
         <b-table
           responsive
           striped
+          hover
           :items="tutkinnonosatWithSelected"
           no-local-sorting
           @sort-changed="sortingChanged"
           :sort-by.sync="sortBy"
           :sort-desc.sync="query.sortDesc"
           :fields="tutkinnonosatFields"
-          no-sort-reset>
+          no-sort-reset
+          @row-clicked="selectRow">
           <template v-slot:head(valitse-kaikki)="{ item }">
             <div class="selectable" @click="selectAllRows()">
               <fas v-if="valitseKaikki" icon="check-square" class="checked mr-2"/>
@@ -58,7 +60,7 @@
             </div>
           </template>
           <template v-slot:cell(valitse-kaikki)="{ item }">
-            <div class="selectable" @click="selectRow(item)">
+            <div class="selectable">
               <fas v-if="item.selected" icon="check-square" class="checked mr-2"/>
               <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
             </div>
@@ -196,6 +198,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   async queryFetch() {
+    this.valitseKaikki = false;
     await this.tutkinnonosatTuontiStore!.fetch(this.toteutussuunnitelmaId, this.koulutustoimijaId, { ...this.query, sivu: this.sivu });
   }
 

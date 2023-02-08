@@ -140,6 +140,7 @@ export class TutkinnonOsaStore implements IEditoitava {
 
   async remove() {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId, this.tutkinnonosaId, this.koulutustoimijaId);
+    await this.el.updateNavigation();
     this.el.$router.push({
       name: 'tutkinnonosat',
     });
@@ -168,6 +169,7 @@ export class TutkinnonOsaStore implements IEditoitava {
 
   async copy(data) {
     const kopioituViite = (await Sisaltoviitteet.kopioiLinkattuSisalto(this.opetussuunnitelmaId, this.koulutustoimijaId, data.tutkinnonosaViite.id)).data;
+    await this.el.updateNavigation();
     this.el.$router.push({
       name: 'tutkinnonosa',
       params: {

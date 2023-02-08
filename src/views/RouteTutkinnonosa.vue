@@ -20,8 +20,8 @@
           </ep-field>
         </b-form-group>
 
-        <div class="d-flex justify-content-between">
-          <b-form-group class="flex-grow-1 mr-5" :label="$t('koodi')" v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta'">
+        <div class="d-flex justify-content-between" v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta'">
+          <b-form-group class="flex-grow-1 mr-5" :label="$t('koodi')">
             <ep-field v-model="data.omaTutkinnonosa.koodi" type="string" :is-editing="isEditing"></ep-field>
           </b-form-group>
 
@@ -178,7 +178,7 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
   private koulutustoimijaId!: string;
 
   @Prop({ required: true })
-  private toteutussuunnitelmaId!: string | number;
+  private toteutussuunnitelmaId!: number;
 
   @Prop({ required: true })
   private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
@@ -280,6 +280,10 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
   @Validations()
   validations = {
     nimi: requiredOneLang(),
+  }
+
+  async updateNavigation() {
+    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
   }
 }
 </script>
