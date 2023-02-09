@@ -243,10 +243,13 @@ export default class EpTutkinnonosaTuonti extends Vue {
   selectAllRows() {
     this.valitseKaikki = !this.valitseKaikki;
     if (this.valitseKaikki) {
-      this.selectedTutkinnonosat = (this.tutkinnonosat || []) as SisaltoviiteLaajaDto[];
+      this.selectedTutkinnonosat = [
+        ...this.selectedTutkinnonosat,
+        ...(this.tutkinnonosat || []) as SisaltoviiteLaajaDto[],
+      ];
     }
     else {
-      this.selectedTutkinnonosat = [];
+      this.selectedTutkinnonosat = _.filter(this.selectedTutkinnonosat, sel => !_.includes(_.map(this.tutkinnonosat, 'id'), sel.id));
     }
   }
 
