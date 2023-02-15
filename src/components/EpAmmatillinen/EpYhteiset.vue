@@ -4,7 +4,7 @@
       <h3 slot="header">{{ $t('pakolliset-osa-alueet') }}</h3>
       <div class="osaalue" v-for="(osaalue, idx) in pakollisetOsaAlueet" :key="'pakollinen-' + idx">
         <span class="nimi">
-          <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id, tyyppi: 'pakollinen' } }">
+          <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id, tyyppi: 'pakollinen' } }" :is="isEditing ? 'span' : 'router-link'">
             {{ $kaanna(osaalue.perusteenData.nimi) }}
           </router-link>
         </span>
@@ -16,7 +16,7 @@
       <h3 slot="header">{{ $t('valinnaiset-osa-alueet') }}</h3>
       <div class="osaalue" :class="{ 'piilotettu': osaalue.piilotettu }" v-for="(osaalue, idx) in valinnaisetOsaAlueet" :key="'valinnainen-' + idx">
         <span class="nimi">
-          <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id, tyyppi: 'valinnainen' } }">
+          <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id, tyyppi: 'valinnainen' } }" :is="isEditing ? 'span' : 'router-link'">
             {{ $kaanna(osaalue.perusteenData.nimi) }}
             <span v-if="osaalue.piilotettu">
               ({{ $t('piilotettu') }})
@@ -31,7 +31,7 @@
       <h3 slot="header">{{ $t('paikalliset-osa-alueet') }}</h3>
       <div class="osaalue" v-for="(osaalue, idx) in paikallisetOsaAlueet" :key="'paikallinen-' + idx">
         <span class="nimi">
-          <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id, tyyppi: 'paikallinen' } }">
+          <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id, tyyppi: 'paikallinen' } }" :is="isEditing ? 'span' : 'router-link'">
             {{ $kaanna(osaalue.nimi) }}
           </router-link>
         </span>
