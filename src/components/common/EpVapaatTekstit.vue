@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ep-collapse v-for="(vapaateksti, index) in value" :key="'vapaateksti'+index" :borderBottom="value.length > index+1" :collapsable="!isEditing" :usePadding="false" class="mt-4">
+    <div v-for="(vapaateksti, index) in value" :key="'vapaateksti'+index" class="mt-4">
       <h4 slot="header" v-if="!isEditing">{{$kaanna(vapaateksti.nimi)}}</h4>
       <h4 slot="header" v-if="isEditing">{{$t('tekstikappaleen-otsikko')}}</h4>
       <ep-field v-if="isEditing" v-model="vapaateksti.nimi" :is-editing="isEditing"></ep-field>
@@ -18,7 +18,9 @@
           {{ $t('poista-tekstikappale') }}
         </ep-button>
       </div>
-    </ep-collapse>
+
+      <hr v-if="value.length > index+1" />
+    </div>
 
     <ep-button variant="outline-primary" icon="plussa" v-if="isEditing &&value.length === 0" @click="lisaaTekstikappale()">
       {{ $t('lisaa-tekstikappale') }}
