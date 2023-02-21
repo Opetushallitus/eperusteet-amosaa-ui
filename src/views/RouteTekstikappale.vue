@@ -130,7 +130,7 @@ export default class RouteTekstikappale extends Vue {
           this.sisaltoviiteId,
           this.versionumero,
           this,
-          () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+          () => this.toteutussuunnitelmaStore.initNavigation(),
           this.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
     }
   }

@@ -157,7 +157,7 @@ export default class RouteSuorituspolut extends Vue {
   }
 
   async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.toteutussuunnitelmaStore.initNavigation();
   }
 }
 </script>

@@ -107,6 +107,7 @@ export default class RouteYleisnakyma extends Vue {
     try {
       this.syncing = true;
       await this.toteutussuunnitelmaStore.paiviteOpetussunnitelmanPeruste();
+      await this.toteutussuunnitelmaStore.initNavigation();
       this.perustePaivitetty = true;
       this.$success(this.$t('peruste-paivitetty') as string);
     }

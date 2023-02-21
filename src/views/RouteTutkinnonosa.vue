@@ -283,7 +283,7 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
   }
 
   async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.toteutussuunnitelmaStore.initNavigation();
   }
 }
 </script>

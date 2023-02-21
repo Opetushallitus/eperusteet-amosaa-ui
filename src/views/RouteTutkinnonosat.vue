@@ -134,7 +134,7 @@ export default class RouteTutkinnonosat extends Vue {
   }
 
   async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.toteutussuunnitelmaStore.initNavigation();
     await this.tutkinnonOsatStore.refetch();
   }
 }

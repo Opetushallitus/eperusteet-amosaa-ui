@@ -42,8 +42,7 @@ export abstract class ToteutussuunnitelmaRoute extends Vue {
   }
 
   async updateNavigation() {
-    console.log(this);
-    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.toteutussuunnitelmaStore.initNavigation();
   }
 
   get toteutussuunnitelma() {

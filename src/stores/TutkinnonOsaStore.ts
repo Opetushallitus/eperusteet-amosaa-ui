@@ -53,9 +53,16 @@ export class TutkinnonOsaStore implements IEditoitava {
     const peruste = (await Perusteet.getPeruste(perusteId)).data;
 
     if (tutkinnonosaViite.tosa.tyyppi === 'perusteesta' || tutkinnonosaViite.perusteentutkinnonosa) {
-      perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
-      perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
-      this.setArvioinnit(perusteenTutkinnonosa, arviointiasteikot);
+      try {
+        perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
+        perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
+        this.setArvioinnit(perusteenTutkinnonosa, arviointiasteikot);
+      }
+      catch (e) {
+        this.el.$warning('perusteen-tutkinnon-osaa-ei-loydy');
+        perusteenTutkinnonosaViite = {};
+        perusteenTutkinnonosa = {};
+      }
     }
     else {
       this.setArvioinnit(tutkinnonosaViite.tosa.omatutkinnonosa, arviointiasteikot);

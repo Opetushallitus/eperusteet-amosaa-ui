@@ -42,7 +42,7 @@ export class ToteutussuunnitelmaStore {
         this.state.pohja = (await Opetussuunnitelmat.getOpetussuunnitelmaPohjaKevyt(toteutussuunnitelmaId, koulutustoimijaId)).data;
       }
       this.state.julkaisut = (await Julkaisut.getJulkaisut(toteutussuunnitelmaId, koulutustoimijaId)).data;
-      await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
+      await this.initNavigation();
       await this.updateValidation();
       await this.fetchJulkaisut();
       this.state.vanhentunutPohjaperusteDto = (await Opetussuunnitelmat.getPaivitettavaOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
@@ -60,8 +60,8 @@ export class ToteutussuunnitelmaStore {
     return (await Opetussuunnitelmat.addOpetussuunnitelma(ktId, toteutussuunnitelma)).data;
   }
 
-  public async initNavigation(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
-    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, koulutustoimijaId)).data;
+  public async initNavigation() {
+    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
     const tpakolliset = this.naviFind('tutkinnonosat_pakolliset');
     const tpaikalliset = this.naviFind('tutkinnonosat_paikalliset');
     const ttuodut = this.naviFind('tutkinnonosat_tuodut');

@@ -438,7 +438,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.toteutussuunnitelmaStore.initNavigation();
   }
 
   async tallennaUusiTekstikappale(otsikko, valittuTekstikappale) {
