@@ -281,7 +281,7 @@ const router = new VueRouter({
         component: RouteTutkinnonosa,
         props,
       }, {
-        path: 'tutkinnonosa/:sisaltoviiteId/osaalue/:osaalueId/:tyyppi',
+        path: 'tutkinnonosa/:sisaltoviiteId/osaalue/:osaalueId',
         name: 'osaalue',
         component: RouteOsaAlue,
         props,

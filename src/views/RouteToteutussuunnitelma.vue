@@ -94,6 +94,24 @@
               </div>
             </template>
 
+            <template v-slot:pakolliset_osaalueet>
+              <div class="menu-item faded pb-0">
+                {{ $t('pakolliset-osa-alueet') }}
+              </div>
+            </template>
+
+            <template v-slot:valinnaiset_osaalueet>
+              <div class="menu-item mt-4 faded pb-0">
+                {{ $t('valinnaiset-osa-alueet') }}
+              </div>
+            </template>
+
+            <template v-slot:paikalliset_osaalueet>
+              <div class="menu-item mt-4 faded pb-0">
+                {{ $t('paikalliset-osa-alueet') }}
+              </div>
+            </template>
+
             <template v-slot:suorituspolut="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }">
@@ -196,6 +214,14 @@
               <div class="menu-item">
                 <router-link :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) }}
+                </router-link>
+              </div>
+            </template>
+
+            <template v-slot:osaalue="{ item }">
+              <div class="menu-item">
+                <router-link  :to="{ name: 'osaalue', params: { osaalueId: item.id } }">
+                  {{ $kaanna(item.label) }} <span class="faded" v-if="item.koodi">({{item.koodi.toUpperCase()}})</span>
                 </router-link>
               </div>
             </template>
@@ -807,6 +833,10 @@ export default class RouteToteutussuunnitelma extends Vue {
   margin-left: 35px;
   margin-bottom: 10px;
   margin-right: 35px;
+}
+
+.faded {
+  color: $gray-lighten-1;
 }
 
 </style>

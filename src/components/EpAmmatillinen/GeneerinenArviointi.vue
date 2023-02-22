@@ -1,5 +1,8 @@
 <template>
   <div v-if="vaihtoehdot">
+    <slot name="header">
+      <h4>{{ $t('arviointi') }}</h4>
+    </slot>
     <div v-if="isEditing">
       <b-form-group>
         <b-form-radio v-model="model"
@@ -10,10 +13,7 @@
     </div>
     <div v-else>
       <div v-if="valittu && osaamistasot">
-        <ep-form-content>
-          <slot name="header">
-            <label>{{ $t('arviointi') }}</label>
-          </slot>
+        <ep-form-content class="m-3">
           <div>{{$kaanna(valittu.kohde)}}</div>
           <b-container fluid class="osaamistasot mt-3">
             <b-row v-for="(osaamistasonKriteeri,index) in valittu.osaamistasonKriteerit" :key="'osaamistasokriteeri'+index">
@@ -44,7 +44,6 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import * as _ from 'lodash';
 
@@ -94,8 +93,7 @@ export default class GeneerinenArviointi extends Vue {
   }
 
   async mounted() {
-    const geneeriset = await PerusteetStore.fetchGeneeriset();
-    this.vaihtoehdot = _.filter(geneeriset, 'valittavissa');
+    this.vaihtoehdot = await PerusteetStore.fetchGeneeriset();
     this.asteikot = await PerusteetStore.fetchArviointiasteikot();
   }
 }

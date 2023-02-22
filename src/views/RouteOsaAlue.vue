@@ -23,34 +23,63 @@
           <b-form-group class="flex-grow-1 mr-6" :label="$t('koodi')" v-if="perusteenOsaAlue">
             <span>{{ perusteenOsaAlue.koodi.arvo }}</span>
           </b-form-group>
-
-          <b-form-group class="flex-grow-1 mr-6" :label="$t('tutkinnon-osa')" v-if="perusteenOsaAlue">
-            <router-link :to="{ name: 'tutkinnonosa' }">{{ $kaanna(supportData.tutkinnonOsa.nimi) }}</router-link>
-          </b-form-group>
         </div>
 
-        <ep-collapse :borderBottom="true" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
-          <h3 slot="header">{{ $t('paikallinen-toteutus') }}</h3>
+        <b-form-group class="" :label="$t('tutkinnon-osa')" v-if="supportData.tutkinnonOsa">
+          <router-link :to="{ name: 'tutkinnonosa' }">{{ $kaanna(supportData.tutkinnonOsa.nimi) }}</router-link>
+        </b-form-group>
 
-          <div v-if="tyyppi === 'valinnainen'">
-            <EpToggle v-if="isEditing" :is-editing="true" v-model="data.osaAlueet[osaAlueIdx].piilotettu">{{ $t('piilota-osa-alue') }}</EpToggle>
-            <div class="mb-3"></div>
-          </div>
+        <b-tabs class="ml-0 pl-0 mt-4">
+          <b-tab :title="$t('paikallinen-toteutus')" class="mt-4">
+            <div v-if="tyyppi === 'valinnainen'">
+              <EpToggle v-if="isEditing" :is-editing="true" v-model="data.osaAlueet[osaAlueIdx].piilotettu">{{ $t('piilota-osa-alue') }}</EpToggle>
+            </div>
 
-          <h4>{{$t('toteutustavat-ja-oppimisymparisto')}}</h4>
-          <ep-content layout="normal" v-model="data.osaAlueet[osaAlueIdx].tavatjaymparisto" :is-editable="isEditing" />
+            <h3 class="mt-4 mb-4">{{$t('toteutukset')}}</h3>
+            <EpOsaAlueToteutukset v-model="data.osaAlueet[osaAlueIdx].toteutukset" :isEditing="isEditing"/>
+          </b-tab>
 
-          <h4 class="mt-4">{{$t('osaamisen-arvioinnista')}}</h4>
-          <ep-content layout="normal" v-model="data.osaAlueet[osaAlueIdx].arvioinnista" :is-editable="isEditing"> </ep-content>
+          <b-tab v-if="tyyppi === 'paikallinen'" :title="$t('sisalto')">
+            <h3 class="mt-4 mb-4">{{$t('sisalto')}}</h3>
 
-          <hr v-if="data.osaAlueet[osaAlueIdx].vapaat.length > 1" class="mt-5"/>
-          <EpVapaatTekstit v-model="data.osaAlueet[osaAlueIdx].vapaat" :isEditing="isEditing"/>
-        </ep-collapse>
+            <b-form-group>
+              <h4 slot="label" class="pt-3">{{$t('laajuus')}}</h4>
+              <div class="d-flex align-items-center" >
+                <ep-field type="number" v-model="data.osaAlueet[osaAlueIdx].laajuus" :is-editing="isEditing"></ep-field>
+                <div class="ml-2">{{ $t('osaamispiste') }}</div>
+              </div>
+            </b-form-group>
 
-        <Osaamistavoitteet v-model="data.osaAlueet[osaAlueIdx]"
+            <b-form-group>
+              <h4 slot="label" class="pt-3">{{$t('osaamistavoitteet')}}</h4>
+              <EpAmmattitaitovaatimukset v-model="data.osaAlueet[osaAlueIdx].osaamistavoitteet"
+                                 :kohdealueettomat="false"
+                                 :kaannos-tavoiteet="$t('tavoitteet')"
+                                 :kaannos-lisaa-kohdealue="$t('lisaa-tavoiteryhma')"
+                                 :kaannos-lisaa-ammattitaitovaatimus="$t('lisaa-tavoite')"
+                                 kaannos-kohdealueet=""
+                                 :kaannos-kohdealue="$t('tavoitteiden-otsikko')"
+                                 :kaannos-vaatimukset="$t('tavoitteet')"
+                                 :kaannos-kohde="$t('opiskelija')"
+                                 tavoitekoodisto=""
+                                 :show-kohde="false"
+                                 :is-editing="isEditing" />
+
+            </b-form-group>
+
+            <b-form-group>
+              <GeneerinenArviointi :is-editing="isEditing" v-model="data.osaAlueet[osaAlueIdx].geneerinenarviointi"></GeneerinenArviointi>
+            </b-form-group>
+          </b-tab>
+
+          <b-tab v-else :title="$t('perusteen-sisalto')">
+            <Osaamistavoitteet v-model="data.osaAlueet[osaAlueIdx]"
                            :is-editing="isEditing"
                            :tyyppi="tyyppi"
                            :peruste-data="perusteenOsaAlue" />
+          </b-tab>
+        </b-tabs>
+
       </template>
     </EpEditointi>
   </div>
@@ -68,7 +97,11 @@ import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import Osaamistavoitteet from '@/components/EpAmmatillinen/Osaamistavoitteet.vue';
 import { OsaAlueStore } from '@/stores/OsaAlueStore';
-import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
+import EpInput from '@shared/components/forms/EpInput.vue';
+import EpOsaAlueToteutukset from '@shared/components/EpTutkinnonosa/EpOsaAlueToteutukset.vue';
+import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
+import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
+import EpToggle from '@shared/components/forms/EpToggle.vue';
 
 @Component({
   components: {
@@ -78,7 +111,11 @@ import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
     EpEditointi,
     EpField,
     Osaamistavoitteet,
-    EpVapaatTekstit,
+    EpInput,
+    EpOsaAlueToteutukset,
+    EpAmmattitaitovaatimukset,
+    GeneerinenArviointi,
+    EpToggle,
   },
 })
 export default class RouteOsaAlue extends Vue {
@@ -100,7 +137,7 @@ export default class RouteOsaAlue extends Vue {
   private editointiStore: EditointiStore | null = null;
 
   get tyyppi() {
-    return this.$route.params.tyyppi;
+    return this.osaAlueValue?.tyyppi;
   }
 
   get osaamistavoitteidenNimi() {
@@ -172,6 +209,11 @@ export default class RouteOsaAlue extends Vue {
     this.fetch();
   }
 
+  @Watch('osaalueId', { immediate: true })
+  osaalueIdChange() {
+    this.fetch();
+  }
+
   private fetch = _.debounce(this.fetchImpl, 100);
 
   fetchImpl() {
@@ -194,4 +236,5 @@ export default class RouteOsaAlue extends Vue {
 <style scoped lang="scss">
 @import '@shared/styles/_variables.scss';
 @import '@shared/styles/_mixins.scss';
+
 </style>
