@@ -20,6 +20,10 @@
           </ep-field>
         </b-form-group>
 
+        <b-form-group :label="$t('koodi')" v-if="data.perusteenTutkinnonosa">
+          <span>{{ data.perusteenTutkinnonosa.koodi.arvo }}</span>
+        </b-form-group>
+
         <div class="d-flex justify-content-between" v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta'">
           <b-form-group class="flex-grow-1 mr-5" :label="$t('koodi')">
             <ep-field v-model="data.omaTutkinnonosa.koodi" type="string" :is-editing="isEditing"></ep-field>
@@ -82,24 +86,6 @@
           </b-tab>
 
           <b-tab v-if="tutkinnonosaPerusteesta" :title="$t('perusteen-sisalto')">
-            <div class="d-flex pt-3">
-              <b-form-group :label="$t('luotu')" class="flex-fill">
-                <span>{{$sdt(data.perusteenTutkinnonosa.luotu)}}</span>
-              </b-form-group>
-
-              <div class="d-flex pt-3">
-                <b-form-group :label="$t('luotu')" class="flex-fill">
-                  <span>{{$sdt(data.perusteenTutkinnonosa.luotu)}}</span>
-                </b-form-group>
-
-                <b-form-group :label="$t('muokattu-viimeksi')" class="flex-fill">
-                  <span>{{$sdt(data.perusteenTutkinnonosa.muokattu)}}</span>
-                </b-form-group>
-
-                <div class="flex-fill" />
-              </div>
-            </div>
-
             <EpPerusteenTutkinnonOsa :tutkinnonosa="data.perusteenTutkinnonosa"
                                      :arviointiasteikot="data.arviointiasteikot" />
           </b-tab>

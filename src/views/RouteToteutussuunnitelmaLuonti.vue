@@ -72,6 +72,8 @@
                 <ep-field v-model="nimi" :is-editing="true" :validation="$v.nimi"></ep-field>
               </b-form-group>
 
+              <div v-if="korvaavaPeruste" class="korvaavaPeruste" v-html="$t('tutkinnolla-korvaava-peruste-selite', {korvaavaPerusteNimi})"/>
+
               <b-form-group :label="$t(kaannokset.tutkinnonosatLabel) +' *'" v-if="tutkinnonosatValinta">
                 <ep-spinner v-if="!tutkinnonosat" />
 
@@ -124,7 +126,7 @@ import EpSteps, { Step } from '@shared/components/EpSteps/EpSteps.vue';
 import * as _ from 'lodash';
 import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto, Perusteet } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
@@ -133,7 +135,7 @@ import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatSt
 import { OpetussuunnitelmaLuontiKielistykset, TotetusOpetussuunnitelmaRoute } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
-import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
+import { EperusteetKoulutustyyppiRyhmat, isAmmatillinenKoulutustyyppi, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
 import { KayttajaStore } from '@/stores/kayttaja';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpJotpaSelect, { OpsJotpa } from '@/components/EpJotpa/EpJotpaSelect.vue';
@@ -196,6 +198,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private tutkinnonosaKoodit: string[] = [];
   private toteutussuunnitelmaPohjatStore: OpetussuunnitelmaPohjatStore | null = null;
   private jotpa: OpsJotpa = { jotpa: false, jotpatyyppi: null };
+  private korvaavaPeruste: PerusteDto | null = null;
 
   async mounted() {
     this.toteutussuunnitelmaPohjatStore = new OpetussuunnitelmaPohjatStore();
@@ -230,6 +233,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   onPohjantyyppiChange() {
     this.peruste = null;
     this.toteutussuunnitelma = null;
+    this.korvaavaPeruste = null;
   }
 
   get steps() {
@@ -489,6 +493,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   @Watch('toteutussuunnitelma')
   async toteutussuunnitelmaChange() {
     this.tutkinnonosaKoodit = [];
+
+    if (this.toteutussuunnitelma && isAmmatillinenKoulutustyyppi(this.toteutussuunnitelma.peruste?.koulutustyyppi)) {
+      this.korvaavaPeruste = (await Perusteet.getKoulutuskoodillaKorvaavaPeruste(this.toteutussuunnitelma?.id!, _.toString(this.koulutustoimijaId))).data;
+    }
   }
 
   get tutkinnonosatValinta() {
@@ -529,6 +537,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       }
     }
   }
+
+  get korvaavaPerusteNimi() {
+    return `${this.$kaanna(this.korvaavaPeruste?.nimi!)} (${this.korvaavaPeruste?.diaarinumero}, ${this.$sd(this.korvaavaPeruste?.voimassaoloAlkaa!)} - ${(this.korvaavaPeruste?.voimassaoloLoppuu ? this.$sd(this.korvaavaPeruste?.voimassaoloLoppuu) : '')})`;
+  }
 }
 </script>
 
@@ -545,6 +557,14 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
 .checked {
   color: $paletti-blue;
+}
+
+.korvaavaPeruste {
+  border-radius: 10px;
+  border: 1px solid $blue-lighten-3;
+  padding: 12px;
+  margin-right: 10px;
+  background-color: $blue-lighten-4;
 }
 
 </style>
