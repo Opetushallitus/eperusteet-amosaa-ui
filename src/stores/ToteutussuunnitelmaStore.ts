@@ -42,9 +42,9 @@ export class ToteutussuunnitelmaStore {
         this.state.pohja = (await Opetussuunnitelmat.getOpetussuunnitelmaPohjaKevyt(toteutussuunnitelmaId, koulutustoimijaId)).data;
       }
       this.state.julkaisut = (await Julkaisut.getJulkaisut(toteutussuunnitelmaId, koulutustoimijaId)).data;
-      await this.initNavigation();
-      await this.updateValidation();
-      await this.fetchJulkaisut();
+      this.initNavigation();
+      this.updateValidation();
+      this.fetchJulkaisut();
       this.state.vanhentunutPohjaperusteDto = (await Opetussuunnitelmat.getPaivitettavaOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
     }
     catch (e) {

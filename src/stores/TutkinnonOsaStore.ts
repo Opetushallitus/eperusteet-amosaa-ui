@@ -123,6 +123,7 @@ export class TutkinnonOsaStore implements IEditoitava {
       data.tutkinnonosaViite.tosa.omatutkinnonosa = data.omaTutkinnonosa;
     }
     await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.tutkinnonosaId, this.koulutustoimijaId, data.tutkinnonosaViite);
+    await this.el.updateNavigation();
   }
 
   async release() {
