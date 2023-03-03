@@ -230,6 +230,10 @@ export default class RouteOsaAlue extends Vue {
           _.toNumber(this.osaalueId)));
     }
   }
+
+  async updateNavigation() {
+    await this.toteutussuunnitelmaStore.initNavigation();
+  }
 }
 </script>
 

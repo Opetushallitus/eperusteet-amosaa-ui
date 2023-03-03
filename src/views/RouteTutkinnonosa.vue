@@ -70,7 +70,13 @@
         </ep-button>
 
         <div v-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'reformi_tutke2'">
-          <EpYhteiset v-model="data.tutkinnonosaViite" :perusteen="data.perusteenTutkinnonosa" :is-editing="isEditing" />
+          <EpYhteiset v-model="data.tutkinnonosaViite" :perusteen="data.perusteenTutkinnonosa" :is-editing="isEditing">
+            <div slot="uusiosaalue" v-if="!isEditing">
+              <ep-button @click="lisaaOsaAlue()" variant="outline" icon="plus" :show-spinner="lisataanOsaAlue">
+                {{ $t('lisaa-osa-alue') }}
+              </ep-button>
+            </div>
+          </EpYhteiset>
         </div>
         <div v-else-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'tutke2'">
           {{ $t('vanhoja-perustetyyppeja-ei-tueta') }}
@@ -132,7 +138,7 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
-import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto } from '@shared/api/amosaa';
+import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto, OmaOsaAlueDtoTyyppiEnum } from '@shared/api/amosaa';
 import draggable from 'vuedraggable';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
@@ -140,6 +146,7 @@ import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillin
 import { Validations } from 'vuelidate-property-decorators';
 import { requiredOneLang } from '@shared/validators/required';
 import { validationMixin } from 'vuelidate';
+import { Kielet } from '@shared/stores/kieli';
 
 @Component({
   components: {
@@ -173,6 +180,7 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
   private sisaltoviiteId!: string | number;
 
   private editointiStore: EditointiStore | null = null;
+  private lisataanOsaAlue = false;
 
   mounted() {
     this.$v.$touch();
@@ -270,6 +278,20 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
 
   async updateNavigation() {
     await this.toteutussuunnitelmaStore.initNavigation();
+  }
+
+  async lisaaOsaAlue() {
+    this.lisataanOsaAlue = true;
+    const uusiOsaAlueId = await TutkinnonOsaStore.lisaaOsaAlue(this.toteutussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, this);
+    await this.updateNavigation();
+    if (uusiOsaAlueId) {
+      this.$router.push({
+        name: 'osaalue',
+        params: {
+          osaalueId: _.toString(uusiOsaAlueId),
+        },
+      });
+    }
   }
 }
 </script>

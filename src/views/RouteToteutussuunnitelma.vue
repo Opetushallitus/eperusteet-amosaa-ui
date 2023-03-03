@@ -48,12 +48,14 @@
       </div>
     </Portal>
 
-    <EpSidebar v-if="navigation" :show-social="false">
+    <EpSidebar :show-social="false">
       <template v-slot:bar>
         <div class="m-3 ml-4 mr-4">
           <EpSearch v-model="query" />
         </div>
-        <div class="navigation">
+
+        <EpSpinner v-if="!navigationValue" />
+        <div class="navigation" v-else>
           <EpTreeNavibar
             :store="naviStore"
             show-all-toggle

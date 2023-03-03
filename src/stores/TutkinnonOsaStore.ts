@@ -1,11 +1,11 @@
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import Vue from 'vue';
-import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
+import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto, OmaOsaAlueDtoTyyppiEnum } from '@shared/api/amosaa';
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, Kieli } from '@shared/tyypit';
 import { requiredOneLang } from '@shared/validators/required';
-import { required } from 'vuelidate/lib/validators';
+import { Kielet } from '@shared/stores/kieli';
 
 Vue.use(VueCompositionApi);
 
@@ -196,5 +196,20 @@ export class TutkinnonOsaStore implements IEditoitava {
         copyable: data.tutkinnonosaViite.tyyppi === 'linkki',
       } as EditoitavaFeatures;
     });
+  }
+
+  public static async lisaaOsaAlue(opetussuunnitelmaId, tutkinnonosaId, koulutustoimijaId, el) {
+    const sisaltoviite = (await (Sisaltoviitteet.getSisaltoviiteTekstit(opetussuunnitelmaId, tutkinnonosaId, koulutustoimijaId))).data;
+    const aiemmatIdt = _.map(sisaltoviite.osaAlueet, 'id');
+    sisaltoviite.osaAlueet = [
+      ...(sisaltoviite.osaAlueet || []),
+      {
+        tyyppi: _.toLower(OmaOsaAlueDtoTyyppiEnum.PAIKALLINEN),
+        nimi: { [Kielet.getSisaltoKieli.value]: el.$t('nimeton-osa-alue') },
+      } as any,
+    ];
+
+    await Sisaltoviitteet.updateTekstiKappaleViite(opetussuunnitelmaId, tutkinnonosaId, koulutustoimijaId, sisaltoviite as any);
+    return _.get(_.find((await (Sisaltoviitteet.getSisaltoviiteTekstit(opetussuunnitelmaId, tutkinnonosaId, koulutustoimijaId))).data.osaAlueet, osaalue => !_.includes(aiemmatIdt, osaalue.id)), 'id');
   }
 }

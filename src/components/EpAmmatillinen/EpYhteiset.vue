@@ -39,10 +39,7 @@
       </div>
     </ep-collapse>
 
-    <div v-if="isEditing">
-      <EpInput v-model="uudenNimi" :is-editing="true"></EpInput>
-      <EpButton class="mt-2" @click="lisaaPaikallinen()">{{ $t('lisaa-uusi') }}</EpButton>
-    </div>
+    <slot name="uusiosaalue" />
 
   </div>
 </template>

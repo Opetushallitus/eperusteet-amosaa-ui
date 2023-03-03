@@ -24,21 +24,25 @@ export class OsaAlueStore extends SisaltoEditStore {
         editable: true,
         removable: osaAlue?.tyyppi === 'paikallinen',
         hideable: osaAlue?.tyyppi !== 'paikallinen',
-        isHidden: osaAlue.piilotettu,
+        isHidden: osaAlue?.piilotettu,
         recoverable: false,
       } as EditoitavaFeatures;
     });
   }
 
   async remove(data) {
-    data.osaAlueet = _.filter(data.osaAlueet, osaAlue => osaAlue.id !== this.osaAlueId);
-    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId, data);
+    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId, {
+      ...data,
+      osaAlueet: _.filter(data.osaAlueet, osaAlue => osaAlue.id !== this.osaAlueId),
+    });
     this.el.$router.push({
       name: 'tutkinnonosa',
       params: {
         sisaltoviiteId: this.sisaltoViiteId,
       },
     });
+
+    await this.el.updateNavigation();
   }
 
   async hide(data) {

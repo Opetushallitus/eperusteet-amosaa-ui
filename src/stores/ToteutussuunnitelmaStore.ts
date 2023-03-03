@@ -62,19 +62,6 @@ export class ToteutussuunnitelmaStore {
 
   public async initNavigation() {
     this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
-    const tpakolliset = this.naviFind('tutkinnonosat_pakolliset');
-    const tpaikalliset = this.naviFind('tutkinnonosat_paikalliset');
-    const ttuodut = this.naviFind('tutkinnonosat_tuodut');
-
-    if (tpakolliset) {
-      tpakolliset.id = Number.MAX_SAFE_INTEGER - 1;
-    }
-    if (tpaikalliset) {
-      tpaikalliset.id = Number.MAX_SAFE_INTEGER - 2;
-    }
-    if (ttuodut) {
-      ttuodut.id = Number.MAX_SAFE_INTEGER - 3;
-    }
   }
 
   public async updateValidation() {
