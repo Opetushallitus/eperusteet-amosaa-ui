@@ -1,10 +1,10 @@
 <template>
-  <div class="paikallinentoteutus px-3">
+  <div class="paikallinentoteutus w-100">
     <ep-field v-if="isEditing" v-model="toteutus.otsikko" :is-editing="isEditing"></ep-field>
 
     <div class="pl-1 mt-3">
       <h4 slot="header" class="mt-3">{{$t('tavat-ja-ymparisto')}}</h4>
-      <ep-content flayout="normal" v-model="toteutus.tavatjaymparisto.teksti" :is-editable="isEditing"> </ep-content>
+      <ep-content layout="normal" v-model="toteutus.tavatjaymparisto.teksti" :is-editable="isEditing"> </ep-content>
 
       <h4 slot="header" class="mt-3">{{$t('osaamisen-arvioinnista')}}</h4>
       <ep-content layout="normal" v-model="toteutus.arvioinnista.teksti" :is-editable="isEditing"> </ep-content>
@@ -21,7 +21,9 @@
         v-if="isEditing"
         checkbox
         v-model="toteutus.oletustoteutus">
-        {{$t('tallenna-oletustoteutuksena')}}
+        <slot name="oletustoteutus">
+          {{$t('tallenna-oletustoteutuksena-tutkinnon-osaan')}}
+        </slot>
       </EpToggle>
       <ep-button v-if="isEditing" variant="link" icon="roskalaatikko" @click="poistaToteutus">
         {{ $t('poista-toteutus') }}
@@ -39,7 +41,6 @@ import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
-import { TutkinnonosaToteutusDto } from '@shared/api/amosaa';
 import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
 
 @Component({
@@ -52,15 +53,12 @@ import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
     EpToggle,
   },
 })
-export default class EpTutkinnonosanPaikallinenToteutus extends Vue {
+export default class EpPaikallinenToteutus extends Vue {
   @Prop({ default: false })
   isEditing!: boolean;
 
   @Prop({ required: true })
   value!: any;
-
-  private valittuToteutus: TutkinnonosaToteutusDto | null = null;
-  private fetching = false;
 
   get toteutus() {
     return this.value;

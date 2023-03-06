@@ -8,7 +8,10 @@
             centered
             hide-footer>
       <template v-slot:modal-title>
-        {{ $t('tuo-oletustoteutus-tutkinnon-osaan') }}
+        <slot name="title">
+          {{ $t('tuo-oletustoteutus-tutkinnon-osaan') }}
+        </slot>
+
       </template>
 
       <ep-spinner v-if="!oletustoteutukset" />
@@ -21,15 +24,20 @@
           :per-page="10"
           :current-page="page"
           :fields="fields"
-          :items="oletustoteutuksetSisaltoviitteella"
+          :items="oletustoteutukset"
           @row-clicked="selectRow">
+          <template #head(lahde)>
+            <slot name="luotu">
+              {{ $t('luotu-tutkinnon-osassa') }}
+            </slot>
+          </template>
         </b-table>
         <b-pagination v-if="oletustoteutukset"
             v-model="page"
             :total-rows="oletustoteutukset.length"
             :per-page="10"
             align="center"
-            aria-controls="tuo-tutkinnon-osa"></b-pagination>
+            aria-controls="tuo-oletustoteutus"></b-pagination>
       </div>
     </b-modal>
   </div>
@@ -39,8 +47,7 @@
 import * as _ from 'lodash';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import { TutkinnonosaApi, TutkinnonosaDto } from '@shared/api/amosaa';
-import { SisaltoViiteDto } from '@shared/generated/amosaa';
+import { OletusToteutusDto, TutkinnonosaApi, TutkinnonosaDto } from '@shared/api/amosaa';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 
 @Component({
@@ -51,22 +58,10 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 })
 export default class EpOletustoteutusTuonti extends Vue {
   private page = 1;
-  private sisaltoviitteet: SisaltoViiteDto[] | null = null;
+  private oletustoteutukset: OletusToteutusDto[] | null = null;
 
-  get oletustoteutukset() {
-    if (this.sisaltoviitteet) {
-      return _.filter(_.flatMap(_.map(this.sisaltoviitteet, 'tosa.toteutukset')), 'oletustoteutus');
-    }
-  }
-
-  get oletustoteutuksetSisaltoviitteella() {
-    return _.map(this.oletustoteutukset, oletustoteutus => {
-      return {
-        ...oletustoteutus,
-        sisaltoviite: _.find(this.sisaltoviitteet, sisaltoviite => _.includes(sisaltoviite.tosa?.toteutukset, oletustoteutus)),
-      };
-    });
-  }
+  @Prop({ required: true })
+  private fetch!: Function;
 
   get fields() {
     return [
@@ -78,34 +73,28 @@ export default class EpOletustoteutusTuonti extends Vue {
           return this.$kaanna(item.otsikko);
         },
       }, {
-        key: 'tutkinnonosa',
+        key: 'lahde',
         label: this.$t('luotu-tutkinnon-osassa'),
         sortable: false,
         formatter: (value: any, key: string, item: any) => {
-          return this.$kaanna(item.sisaltoviite.tekstiKappale.nimi);
+          return this.$kaanna(item.lahdeNimi);
         },
       }];
   }
 
-  get toteutussuunnitelmaId() {
-    return _.toNumber(this.$route.params.toteutussuunnitelmaId);
-  }
-
-  get koulutustoimijaId() {
-    return this.$route.params.toteutussuunnitelmaId;
-  }
-
   selectRow(toteutus) {
     this.$emit('lisaaOletustoteutus', {
-      ..._.omit(toteutus, ['id', 'sisaltoviite', 'oletustoteutus']),
-      vapaat: _.map(toteutus.vapaat, vapaa => _.omit(vapaa, 'id')),
+      ..._.omit(toteutus, ['id']),
+      tavatjaymparisto: { ..._.omit(toteutus.tavatjaymparisto, ['id']) },
+      arvioinnista: { ..._.omit(toteutus.arvioinnista, ['id']) },
+      vapaat: _.map(toteutus.vapaat, obj => _.omit(obj, 'id')),
     });
     (this as any).$bvModal.hide('tuoOletusotteutus');
   }
 
   async openModal() {
     (this as any).$bvModal.show('tuoOletusotteutus');
-    this.sisaltoviitteet = (await TutkinnonosaApi.haeOletusTutkinnonosaToteutukset(this.toteutussuunnitelmaId, this.koulutustoimijaId)).data;
+    this.oletustoteutukset = await this.fetch();
   }
 }
 </script>

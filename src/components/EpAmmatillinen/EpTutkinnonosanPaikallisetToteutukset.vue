@@ -22,7 +22,7 @@
             </div>
             <h4 v-else>{{$kaanna(toteutus.otsikko)}}</h4>
           </div>
-          <EpTutkinnonosanPaikallinenToteutus v-model="toteutukset[index]" @poista="poistaToteutus(index)" :isEditing="isEditing"/>
+          <EpPaikallinenToteutus v-model="toteutukset[index]" @poista="poistaToteutus(index)" :isEditing="isEditing"/>
         </ep-collapse>
       </draggable>
     </div>
@@ -32,7 +32,7 @@
         {{ $t('lisaa-toteutus') }}
       </ep-button>
 
-      <EpOletustoteutusTuonti v-if="isEditing" @lisaaOletustoteutus="lisaaOletustoteutus"/>
+      <EpOletustoteutusTuonti v-if="isEditing" @lisaaOletustoteutus="lisaaOletustoteutus" :fetch="haeOletusTutkinnonosaToteutukset"/>
     </div>
 
   </div>
@@ -46,10 +46,11 @@ import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
-import EpTutkinnonosanPaikallinenToteutus from './EpTutkinnonosanPaikallinenToteutus.vue';
+import EpPaikallinenToteutus from '@/components/EpAmmatillinen/EpPaikallinenToteutus.vue';
 import EpOletustoteutusTuonti from '@/components/EpSisaltoLisays/EpOletustoteutusTuonti.vue';
 import draggable from 'vuedraggable';
 import { Kielet } from '@shared/stores/kieli';
+import { TutkinnonosaApi } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -58,7 +59,7 @@ import { Kielet } from '@shared/stores/kieli';
     EpCollapse,
     EpContent,
     EpField,
-    EpTutkinnonosanPaikallinenToteutus,
+    EpPaikallinenToteutus,
     draggable,
     EpOletustoteutusTuonti,
   },
@@ -121,6 +122,18 @@ export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
 
   get kieli() {
     return Kielet.getSisaltoKieli.value;
+  }
+
+  get toteutussuunnitelmaId() {
+    return _.toNumber(this.$route.params.toteutussuunnitelmaId);
+  }
+
+  get koulutustoimijaId() {
+    return this.$route.params.toteutussuunnitelmaId;
+  }
+
+  async haeOletusTutkinnonosaToteutukset() {
+    return (await TutkinnonosaApi.haeOletusTutkinnonosaToteutukset(this.toteutussuunnitelmaId, this.koulutustoimijaId)).data;
   }
 }
 </script>

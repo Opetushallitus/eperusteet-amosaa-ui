@@ -14,7 +14,7 @@
           <b-form-group class="flex-grow-1 mr-6" :label="$t('osa-alueen-nimi')" v-if="isEditing">
             <ep-field
               v-if="tyyppi === 'paikallinen'"
-              v-model="data.osaAlueet[osaAlueIdx].nimi"a
+              v-model="data.osaAlueet[osaAlueIdx].nimi"
               :is-editing="isEditing">
             </ep-field>
             <span v-else>{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
