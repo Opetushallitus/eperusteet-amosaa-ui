@@ -805,7 +805,7 @@ export default class RouteToteutussuunnitelma extends Vue {
 
 .menu-item {
   font-size: 14px;
-  padding: 7px 10px 7px 10px;
+  padding: 7px 5px 7px 10px;
 
   a {
     &.router-link-exact-active {

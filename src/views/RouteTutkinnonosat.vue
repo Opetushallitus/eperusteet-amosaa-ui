@@ -26,6 +26,7 @@
             <template v-slot:cell(tutkinnonosaViite.tekstiKappale.nimi)="data">
               <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
                 {{ $kaanna(data.item.nimi) }}
+                <span class="paikallinen" v-if="data.item.tutkinnonosaViite.tosa.tyyppi === 'oma'">({{$t('tutkinnon-osa-paikallinen-merkki')}})</span>
               </router-link>
             </template>
           </b-table>
@@ -143,4 +144,9 @@ export default class RouteTutkinnonosat extends Vue {
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
 
+ .paikallinen {
+    color: $black;
+    font-size: 0.9rem;
+    font-weight: 600;
+ }
 </style>
