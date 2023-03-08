@@ -222,7 +222,7 @@
 
             <template v-slot:osaalue="{ item }">
               <div class="menu-item">
-                <router-link  :to="{ name: 'osaalue', params: { osaalueId: item.id } }">
+                <router-link  :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }">
                   {{ $kaanna(item.label) }} <span class="faded" v-if="item.koodi">({{item.koodi.toUpperCase()}})</span>
                 </router-link>
               </div>
