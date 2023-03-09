@@ -97,6 +97,9 @@ export class SisaltoEditStore implements IEditoitava {
 
   async save(data: any) {
     await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId, data);
+    if (this.el.updateNavigation) {
+      await this.el.updateNavigation();
+    }
   }
 
   async release() {

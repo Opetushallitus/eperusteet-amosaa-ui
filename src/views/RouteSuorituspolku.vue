@@ -196,6 +196,10 @@ export default class RouteSuorituspolku extends Vue {
   togglePoistetut() {
     this.naytaPoistetut = !this.naytaPoistetut;
   }
+
+  async updateNavigation() {
+    await this.toteutussuunnitelmaStore.initNavigation();
+  }
 }
 </script>
 

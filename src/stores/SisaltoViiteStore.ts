@@ -11,16 +11,12 @@ export class SisaltoViiteStore {
     sisaltoviitteet: null as SisaltoViiteKevytDto[] | null,
   })
 
-  constructor(private opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
-  }
-
   public readonly sisaltoviitteet = computed(() => this.state.sisaltoviitteet);
-  public readonly fetch = watch([this.opetussuunnitelma], async () => {
+
+  async fetch(opetussuunnitelmaId: number, koulutustoimijaId: string) {
     this.state.sisaltoviitteet = null;
-    if (this.opetussuunnitelma.value) {
-      this.state.sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(this.opetussuunnitelma.value.id, _.toString(this.opetussuunnitelma.value.koulutustoimija.id))).data;
-    }
-  });
+    this.state.sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(opetussuunnitelmaId, koulutustoimijaId)).data;
+  }
 
   public static async add(opsId: number, svId: number, ktId: string, sisaltoviite: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
     const added = (await Sisaltoviitteet.addTekstiKappaleLapsi(opsId, svId, ktId, sisaltoviite)).data;

@@ -76,7 +76,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
 import EpAmmatillinenArvioinninKohdealueet from '@/components/EpAmmatillinen/EpAmmatillinenArvioinninKohdealueet.vue';
-import GeneerinenArviointiTaulukko from '@/components/EpAmmatillinen/GeneerinenArviointiTaulukko.vue';
+import GeneerinenArviointiTaulukko from '@shared/components/EpTutkinnonosa/GeneerinenArviointiTaulukko.vue';
 import EpValmaTelmaSisalto from '@/components/EpAmmatillinen/EpValmaTelmaSisalto.vue';
 import _ from 'lodash';
 
