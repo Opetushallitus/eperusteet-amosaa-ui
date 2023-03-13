@@ -124,6 +124,9 @@ export class SisaltoEditStore implements IEditoitava {
 
   async remove(data) {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId);
+    if (this.el.updateNavigation) {
+      await this.el.updateNavigation();
+    }
     this.el.$router.push({
       name: 'poistetutsisallot',
     });
