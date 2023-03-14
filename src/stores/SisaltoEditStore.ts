@@ -70,6 +70,9 @@ export class SisaltoEditStore implements IEditoitava {
         };
       }
       else if (data.tosa && data.tosa.perusteentutkinnonosa) {
+        if (data.linkattuPeruste) {
+          this.perusteId = data.linkattuPeruste;
+        }
         const tutkinnonOsa = (await Perusteet.getPerusteTutkinnonOsa(this.perusteId, data.tosa!.perusteentutkinnonosa!)).data as any;
         const tutkinnonOsaViite = (await Perusteet.getTutkinnonOsaViite(this.perusteId, 'reformi', data.tosa!.perusteentutkinnonosa!)).data;
         addPerusteData({

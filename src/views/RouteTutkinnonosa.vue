@@ -71,7 +71,7 @@
 
         <div v-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'reformi_tutke2'">
           <EpYhteiset v-model="data.tutkinnonosaViite" :perusteen="data.perusteenTutkinnonosa" :is-editing="isEditing">
-            <div slot="uusiosaalue" v-if="!isEditing">
+            <div slot="uusiosaalue" v-if="!isEditing && data.tutkinnonosaViite.tyyppi !== 'linkki'">
               <ep-button @click="lisaaOsaAlue()" variant="outline" icon="plus" :show-spinner="lisataanOsaAlue">
                 {{ $t('lisaa-osa-alue') }}
               </ep-button>

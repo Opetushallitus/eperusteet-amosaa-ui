@@ -21,9 +21,9 @@ export class OsaAlueStore extends SisaltoEditStore {
     const osaAlue = _.find(data.osaAlueet, { id: this.osaAlueId });
     return computed(() => {
       return {
-        editable: true,
-        removable: osaAlue?.tyyppi === 'paikallinen',
-        hideable: osaAlue?.tyyppi !== 'paikallinen',
+        editable: data.tyyppi !== 'linkki',
+        removable: data.tyyppi !== 'linkki' && osaAlue?.tyyppi === 'paikallinen',
+        hideable: data.tyyppi !== 'linkki' && osaAlue?.tyyppi !== 'paikallinen',
         isHidden: osaAlue?.piilotettu,
         recoverable: false,
       } as EditoitavaFeatures;
