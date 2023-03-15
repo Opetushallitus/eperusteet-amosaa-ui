@@ -5,8 +5,7 @@
     </template>
 
     <b-dropdown-item>
-      <ep-tekstikappale-lisays :tekstikappaleet="tekstikappaleet" :paatasovalinta="true" @save="lisaaUusiTekstikappale">
-        <span slot="lisays-btn">{{$t('uusi-tekstikappale')}}</span>
+      <ep-tekstikappale-lisays :tekstikappaleet="tekstikappaleet" :paatasovalinta="true" :tallenna="lisaaUusiTekstikappale">
         <template v-slot:default="{tekstikappale}">
           {{$kaanna(tekstikappale.label)}}
         </template>
