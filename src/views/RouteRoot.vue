@@ -1,6 +1,6 @@
 <template>
   <div class="home-container minfull">
-    <div class="header" ref="header" :style="headerStyle" :class="toteutus">
+    <div class="header" ref="header" :style="headerStyle" :class="toteutus" id="scroll-anchor">
       <EpNavbar
         :class="toteutus"
         :kayttaja="kayttaja"

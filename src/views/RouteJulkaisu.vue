@@ -230,7 +230,7 @@ export default class RouteJulkaisu extends Vue {
       this.$success(this.$t('julkaisu-kaynnistetty') as string);
     }
     catch (err) {
-      this.$fail(this.$t('julkaisu-epaonnistui-' + OpetussuunnitelmaTyyppi[this.toteutus] + '-' + err.response?.data?.syy) as string);
+      this.$warning(this.$t('julkaisu-epaonnistui-' + OpetussuunnitelmaTyyppi[this.toteutus] + '-' + err.response?.data?.syy) as string);
     }
   }
 

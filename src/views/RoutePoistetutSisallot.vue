@@ -119,7 +119,7 @@ export default class RoutePoistetutSisallot extends Vue {
 
       if (palauta) {
         await this.poistetutStore.palauta(poistettu.id);
-        await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+        await this.toteutussuunnitelmaStore.initNavigation();
         this.$success(this.$t('sisalto-palautettu-onnistuneesti') as string);
       };
     }

@@ -60,7 +60,7 @@ export default class RouteJarjestys extends Vue {
       new RakenneStore(
         this.toteutussuunnitelmaId,
         this.koulutustoimijaId,
-        async () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+        async () => this.toteutussuunnitelmaStore.initNavigation(),
         this.toteutus,
       ));
   }

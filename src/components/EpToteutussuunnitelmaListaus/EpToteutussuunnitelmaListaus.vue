@@ -12,7 +12,7 @@
           <label>{{ $t(nameLabel) }}</label>
           <EpSearch v-model="query.nimi" :placeholder="$t('etsi')" :maxWidth="true"/>
         </div>
-        <div class="col-12 col-lg-3 col-md-4 m-2" v-if="filtersInclude('tyyppi')">
+        <div class="col-12 col-lg-2 col-md-3 m-2" v-if="filtersInclude('tyyppi')">
           <label>{{ $t('tyyppi') }}</label>
           <EpMultiSelect v-model="tyyppi"
                     :enable-empty-option="true"
@@ -27,7 +27,7 @@
             </template>
           </EpMultiSelect>
         </div>
-        <div class="col-12 col-lg-3 col-md-4 m-2" v-if="filtersInclude('voimassaolo')">
+        <div class="col-12 col-lg-2 col-md-3 m-2" v-if="filtersInclude('voimassaolo')">
           <label>{{ $t('voimassaolo') }}</label>
           <EpMultiSelect v-model="voimassaolo"
                     :enable-empty-option="true"
@@ -39,6 +39,28 @@
             </template>
             <template slot="option" slot-scope="{ option }">
               {{ $t('ajoitus-' + option.toLowerCase()) }}
+            </template>
+          </EpMultiSelect>
+        </div>
+        <div class="col-12 col-lg-2 col-md-3 m-2" v-if="$isAdmin()">
+          <label>{{$t('koulutustoimija')}}</label>
+          <EpMultiSelect
+            class="multiselect"
+            v-model="valitutKoulutustoimijat"
+            :enable-empty-option="true"
+            :placeholder="$t('kaikki')"
+            :is-editing="true"
+            :options="koulutustoimijat"
+            :multiple="true"
+            track-by="id"
+            :search-identity="koulutustoimijaSearchIdentity">
+            <template slot="option" slot-scope="{ option }">
+              {{ $kaanna(option.nimi) }}
+            </template>
+
+            <template slot="selection" slot-scope="{ values }">
+              <span v-if="values.length > 1">{{$t('valittu')}} {{values.length}} {{$t('koulutustoimijaa')}}</span>
+              <span v-if="values.length === 1">{{$kaanna(values[0].nimi)}}</span>
             </template>
           </EpMultiSelect>
         </div>
@@ -69,7 +91,7 @@
           :sort-by.sync="sort.sortBy"
           :sort-desc.sync="sort.sortDesc">
           <template v-slot:cell(nimi)="data">
-            <router-link :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: data.item.id } }">
+            <router-link :to="{ name: 'toteutussuunnitelma', params: { koulutustoimijaId: data.item.koulutustoimija.id, toteutussuunnitelmaId: data.item.id } }">
               {{ $kaanna(data.item.nimi) }}
             </router-link>
           </template>
@@ -118,6 +140,8 @@ import { Page } from '@shared/tyypit';
 import { IToteutussuunnitelmaProvider } from './types';
 import { Toteutus } from '@shared/utils/perusteet';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
+import { KayttajaStore } from '@/stores/kayttaja';
+import { Debounced } from '@shared/utils/delay';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
@@ -151,6 +175,9 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   @Prop({ required: true })
   private tyypit!: string[];
 
+  @Prop({ required: true })
+  private kayttajaStore!: KayttajaStore;
+
   private tyyppi: string | null = null;
   private voimassaolo: string | null = null;
   private tila: string[] | null = ['luonnos', 'julkaistu'];
@@ -169,6 +196,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
     nimi: '',
     jarjestysOrder: false,
     jarjestysTapa: 'nimi',
+    koulutustoimijat: [],
   } as any;
 
   async mounted() {
@@ -180,6 +208,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
     await this.fetch(koulutustoimijaId, this.query);
   }
 
+  @Debounced(500)
   @Watch('query', { deep: true, immediate: true })
   async onQueryChange(query: any) {
     await this.fetch(_.toNumber(this.$route.params.koulutustoimijaId), query);
@@ -374,6 +403,27 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
 
   filtersInclude(filter: any) {
     return !this.filters || _.includes(this.filters, filter);
+  }
+
+  get koulutustoimijat() {
+    return _.sortBy(this.kayttajaStore.koulutustoimijat.value, kt => this.$kaanna(kt.nimi!));
+  }
+
+  get valitutKoulutustoimijat() {
+    return _.filter(this.koulutustoimijat, (kt: any) => _.includes(this.query.koulutustoimijat, kt.id));
+  }
+
+  set valitutKoulutustoimijat(value: any[]) {
+    if (_.size(value) === 0) {
+      this.query.koulutustoimijat = [];
+    }
+    else {
+      this.query.koulutustoimijat = _.map(value, 'id');
+    }
+  }
+
+  koulutustoimijaSearchIdentity(obj: any) {
+    return _.toLower(this.$kaanna(obj.nimi));
   }
 }
 </script>

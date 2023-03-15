@@ -114,11 +114,6 @@ export const TotetusOpetussuunnitelmaRoute = {
 };
 
 export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
-  // PURKKARATKAISU SIIHEN, JOS JOKIN VIRKAILIJA SUORALLA OSOITTEELLA MENEE VIELÄ UUTEEN KÄYTTÖLIITTYMÄÄN
-  if (_.includes(window.location.origin, 'virkailija.')) {
-    return [];
-  }
-
   return [
     {
       component: TileToteutussuunnitelmat,
@@ -457,7 +452,7 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
     perustetyyppi: 'tutkinto',
     salliEsikatselu: 'salli-toteutussuunnitelman-esikatselu',
     esikatselu: 'esikatsele-toteutussuunnitelmaa',
-    tiivistelma: 'tutkinnon-suorittaneen-osaaminen',
+    tiivistelma: 'kuvaus',
   },
   [Toteutus.VAPAASIVISTYSTYO]: {
     title: 'opetussuunnitelman-tiedot',
@@ -749,7 +744,7 @@ export const OpetussuunnitelmaLuontiKielistykset = {
     radioButtons: [
       {
         value: 'peruste',
-        text: 'perusteprojektia',
+        text: 'tutkinnon-perustetta',
       },
       {
         value: 'toteutussuunnitelma',

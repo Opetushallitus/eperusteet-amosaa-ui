@@ -7,65 +7,32 @@ import { IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
 
 Vue.use(VueCompositionApi);
 
-export class TutkinnonOsatStore implements IEditoitava {
+export class TutkinnonOsatStore {
   private state = reactive({
     tutkinnonosat: null as any | null,
   })
 
-  constructor(private opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
-  }
-
   public readonly tutkinnonosat = computed(() => this.state.tutkinnonosat);
 
-  public readonly fetch = watch([this.opetussuunnitelma], async () => {
+  public async fetch(toteutussuunnitelmaId: number, koulutustoimijaId: string, perusteId: number) {
     this.state.tutkinnonosat = null;
-    if (this.opetussuunnitelma.value) {
-      const tutkinnonosaViitteet = (await Sisaltoviitteet.getTutkinnonosat(this.opetussuunnitelma.value.id, this.opetussuunnitelma.value.koulutustoimija.id)).data;
+    const tutkinnonosaViitteet = (await Sisaltoviitteet.getTutkinnonosat(toteutussuunnitelmaId, koulutustoimijaId)).data;
+    const perusteIds = [perusteId, ..._.uniq(_.map(_.filter(tutkinnonosaViitteet, 'linkattuPeruste'), 'linkattuPeruste'))];
 
-      let perusteenTutkinnonosaViitteet = {};
-      if (this.opetussuunnitelma.value.peruste && _.size(tutkinnonosaViitteet) > 0) {
-        perusteenTutkinnonosaViitteet = _.keyBy((await Perusteet.getTutkinnonOsaViitteet(this.opetussuunnitelma.value.peruste.id, 'reformi')).data as any[], '_tutkinnonOsa');
-      }
-
-      this.state.tutkinnonosat = _.map(tutkinnonosaViitteet, (tutkinnonosaViite, index) => {
-        return {
-          jarjestysnro: index + 1,
-          tutkinnonosaViite,
-          perusteenTutkinnonosaViite: perusteenTutkinnonosaViitteet[tutkinnonosaViite.tosa?.perusteentutkinnonosa!],
-        };
-      });
+    let perusteenTutkinnonosaViitteet = {};
+    if (_.size(perusteIds) > 0 && _.size(tutkinnonosaViitteet) > 0) {
+      perusteenTutkinnonosaViitteet = _.chain(await Promise.all(_.map(perusteIds, async (perusteId) => (await Perusteet.getTutkinnonOsaViitteet(perusteId!, 'reformi')).data as any[])))
+        .flatMap()
+        .keyBy('_tutkinnonOsa')
+        .value();
     }
-  });
 
-  async acquire() {
-    return null;
+    this.state.tutkinnonosat = _.map(tutkinnonosaViitteet, (tutkinnonosaViite, index) => {
+      return {
+        jarjestysnro: index + 1,
+        tutkinnonosaViite,
+        perusteenTutkinnonosaViite: perusteenTutkinnonosaViitteet[tutkinnonosaViite.tosa?.perusteentutkinnonosa!],
+      };
+    });
   }
-
-  async cancel() {
-  }
-
-  async editAfterLoad() {
-    return false;
-  }
-
-  async history() {
-  }
-
-  async load() {
-    return this.tutkinnonosat;
-  }
-
-  async release() {
-  }
-
-  async lock() {
-    return null;
-  }
-
-  async start() {
-  }
-
-  public readonly validator = computed(() => {
-    return {};
-  });
 }

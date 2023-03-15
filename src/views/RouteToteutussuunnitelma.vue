@@ -48,12 +48,14 @@
       </div>
     </Portal>
 
-    <EpSidebar v-if="navigation" :show-social="false">
+    <EpSidebar :show-social="false">
       <template v-slot:bar>
         <div class="m-3 ml-4 mr-4">
           <EpSearch v-model="query" />
         </div>
-        <div class="navigation">
+
+        <EpSpinner v-if="!navigationValue" />
+        <div class="navigation" v-else>
           <EpTreeNavibar
             :store="naviStore"
             show-all-toggle
@@ -76,10 +78,54 @@
               </div>
             </template>
 
+            <template v-slot:tutkinnonosat_pakolliset>
+              <div class="menu-item">
+                {{ $t('tutkinnonosat-pakolliset') }}
+              </div>
+            </template>
+
+            <template v-slot:tutkinnonosat_paikalliset>
+              <div class="menu-item clickable">
+                {{ $t('tutkinnonosat-paikalliset') }}
+              </div>
+            </template>
+
+            <template v-slot:tutkinnonosat_tuodut>
+              <div class="menu-item">
+                {{ $t('tutkinnonosat-tuodut') }}
+              </div>
+            </template>
+
+            <template v-slot:pakolliset_osaalueet>
+              <div class="menu-item faded pb-0">
+                {{ $t('pakolliset-osa-alueet') }}
+              </div>
+            </template>
+
+            <template v-slot:valinnaiset_osaalueet>
+              <div class="menu-item mt-4 faded pb-0">
+                {{ $t('valinnaiset-osa-alueet') }}
+              </div>
+            </template>
+
+            <template v-slot:paikalliset_osaalueet>
+              <div class="menu-item mt-4 faded pb-0">
+                {{ $t('paikalliset-osa-alueet') }}
+              </div>
+            </template>
+
             <template v-slot:suorituspolut="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }">
                   {{ $t('suorituspolut') }}
+                </router-link>
+              </div>
+            </template>
+
+            <template v-slot:linkki="{ item }">
+              <div class="menu-item">
+                <router-link :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }">
+                  {{ $kaanna(item.label) }}
                 </router-link>
               </div>
             </template>
@@ -95,7 +141,15 @@
             <template v-slot:suorituspolku="{ item }">
               <div class="menu-item">
                 <router-link :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }">
-                  {{ $kaanna(item.label) }}
+                  {{ $kaanna(item.label) || $t('nimeton-suorituspolku')}}
+                </router-link>
+              </div>
+            </template>
+
+            <template v-slot:osasuorituspolku="{ item }">
+              <div class="menu-item">
+                <router-link :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }">
+                  {{ $kaanna(item.label) || $t('nimeton-osasuorituspolku')}}
                 </router-link>
               </div>
             </template>
@@ -166,21 +220,20 @@
               </div>
             </template>
 
+            <template v-slot:osaalue="{ item }">
+              <div class="menu-item">
+                <router-link  :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }">
+                  {{ $kaanna(item.label) }} <span class="faded" v-if="item.koodi">({{item.koodi.toUpperCase()}})</span>
+                </router-link>
+              </div>
+            </template>
+
             <template v-slot:new>
               <div class="mb-3">
-                <EpSisaltoLisays
-                  v-if="isAmmatillinen"
-                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                  :toteutussuunnitelmaId="toteutussuunnitelmaId"
-                  :koulutustoimijaId="koulutustoimijaId"
-                  :navigation="navigation.value"
-                  :updateNavigation="updateNavigation"
-                  :toteutussuunnitelma="toteutussuunnitelma"/>
 
                 <EpTekstikappaleLisays
-                  v-if="salliTekstikappaleLisays"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                  @save="tallennaUusiTekstikappale"
+                  :tallenna="tallennaUusiTekstikappale"
                   :tekstikappaleet="perusteenOsat"
                   :paatasovalinta="true">
                   <template v-slot:default="{tekstikappale}">
@@ -192,7 +245,7 @@
                 <EpTekstikappaleLisays
                     v-if="isVapaaSivistystyo"
                     v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                    @save="tallennaUusiOpintokokonaisuus"
+                    :tallenna="tallennaUusiOpintokokonaisuus"
                     :tekstikappaleet="perusteenOsat"
                     :paatasovalinta="true"
                     :otsikkoRequired="true"
@@ -214,6 +267,63 @@
                       {{ $kaanna(tekstikappale.label) }}
                     </template>
                   </EpTekstikappaleLisays>
+
+                  <EpTekstikappaleLisays
+                  v-if="isAmmatillinen"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
+                  :hide-taso="true"
+                  :tallenna="lisaaUusiSuorituspolku"
+                  :tekstikappaleet="perusteenOsat"
+                  :paatasovalinta="true"
+                  :otsikkoNimi="'suorituspolku-nimi'"
+                  :otsikkoRequired="true"
+                  modalId="suorituspolkuLisays">
+                  <template v-slot:lisays-btn-text>
+                    {{$t('uusi-suorituspolku')}}
+                  </template>
+                  <template v-slot:modal-title>
+                    {{$t('uusi-suorituspolku')}}
+                  </template>
+                  <template v-slot:footer-lisays-btn-text>
+                    {{$t('lisaa-suorituspolku')}}
+                  </template>
+                  <template v-slot:header>
+                    {{$t('suorituspolun-sijainti')}}
+                  </template>
+                  <template v-slot:default="{tekstikappale}">
+                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                    {{ $kaanna(tekstikappale.label) }}
+                  </template>
+                </EpTekstikappaleLisays>
+
+                <EpTekstikappaleLisays
+                    v-if="isAmmatillinen"
+                    v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
+                    :tallenna="lisaaUusiTutkinnonOsa"
+                    :hide-taso="true"
+                    :tekstikappaleet="perusteenOsat"
+                    :otsikkoNimi="'tutkinnonosa-nimi'"
+                    :paatasovalinta="true"
+                    :otsikkoRequired="true"
+                    modalId="tutkinnonOsanLisays">
+                    <template v-slot:lisays-btn-text>
+                      {{$t('luonti-tutkinnon-osa')}}
+                    </template>
+                    <template v-slot:modal-title>
+                      {{$t('luonti-tutkinnon-osa')}}
+                    </template>
+                    <template v-slot:footer-lisays-btn-text>
+                      {{$t('luonti-tutkinnon-osa')}}
+                    </template>
+                    <template v-slot:header>
+                      {{$t('tutkinnonosan-sijainti')}}
+                    </template>
+                    <template v-slot:default="{tekstikappale}">
+                      <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                      {{ $kaanna(tekstikappale.label) }}
+                    </template>
+                  </EpTekstikappaleLisays>
+
                 </div>
             </template>
 
@@ -241,7 +351,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Watch, Prop, Component, Vue, Provide, ProvideReactive } from 'vue-property-decorator';
+import { Watch, Prop, Component, Vue, ProvideReactive } from 'vue-property-decorator';
 import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
 import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
@@ -253,6 +363,7 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import EpValidPopover from '@shared/components/EpValidPopover/EpValidPopover.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
+import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { Meta } from '@shared/utils/decorators';
@@ -264,6 +375,8 @@ import { KayttajaStore } from '@/stores/kayttaja';
 import { LinkkiHandler, routeToNode } from '@/utils/routing';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 import { Toteutus } from '@shared/utils/perusteet';
+import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
+import { KuvaStore } from '@/stores/KuvaStore';
 
 @Component({
   components: {
@@ -295,8 +408,10 @@ export default class RouteToteutussuunnitelma extends Vue {
   @Prop({ required: true })
   private toteutus!: Toteutus;
 
-  @Provide('koulutustoimija')
-  private koulutustoimija = this.kayttajaStore.koulutustoimija.value;
+  @ProvideReactive('koulutustoimija')
+  get koulutustoimija() {
+    return this.kayttajaStore.koulutustoimija.value || null;
+  }
 
   private isInitializing = false;
   private naviStore: EpTreeNavibarStore | null = null;
@@ -351,13 +466,13 @@ export default class RouteToteutussuunnitelma extends Vue {
   }
 
   async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.toteutussuunnitelmaStore.initNavigation();
   }
 
   async tallennaUusiTekstikappale(otsikko, valittuTekstikappale) {
     const parentId = valittuTekstikappale?.id ? valittuTekstikappale.id : this.navigation.value!.id!;
 
-    TekstikappaleStore.add(
+    await TekstikappaleStore.add(
       this.toteutussuunnitelmaId,
       parentId,
       this.koulutustoimijaId,
@@ -370,6 +485,61 @@ export default class RouteToteutussuunnitelma extends Vue {
       this,
       this.updateNavigation);
   }
+
+  async lisaaUusiTutkinnonOsa(otsikko) {
+    const parent = this.toteutussuunnitelmaStore.naviFind('tutkinnonosat');
+    const uusi = await SisaltoEditStore.addNewSisalto(
+      this.toteutussuunnitelmaId,
+      parent.id,
+      this.koulutustoimijaId, {
+        tyyppi: _.toLower(MatalaTyyppiEnum.TUTKINNONOSA),
+        tekstiKappale: {
+          nimi: otsikko,
+        },
+        tosa: {
+          tyyppi: 'oma' as string,
+          omatutkinnonosa: {},
+        },
+      });
+
+    await this.updateNavigation();
+    this.$router.push({
+      name: 'tutkinnonosa',
+      params: {
+        sisaltoviiteId: uusi.id as any,
+      },
+    });
+  }
+
+  async lisaaSuorituspolkuImpl(otsikko: any, osapolku: boolean) {
+    const parent = this.toteutussuunnitelmaStore.naviFind('suorituspolut');
+    const uusi = await SisaltoEditStore.addNewSisalto(
+      this.toteutussuunnitelmaId,
+      parent.id,
+      this.koulutustoimijaId, {
+        tyyppi: osapolku
+          ? _.toLower(MatalaTyyppiEnum.OSASUORITUSPOLKU)
+          : _.toLower(MatalaTyyppiEnum.SUORITUSPOLKU),
+        tekstiKappale: {
+          nimi: otsikko,
+        },
+        tosa: {
+          tyyppi: 'oma' as string,
+          omatutkinnonosa: {},
+        },
+      });
+
+    await this.updateNavigation();
+    this.$router.push({
+      name: 'suorituspolku',
+      params: {
+        sisaltoviiteId: uusi.id as any,
+      },
+    });
+  }
+
+  lisaaUusiSuorituspolku = (otsikko: any) => this.lisaaSuorituspolkuImpl(otsikko, false);
+  lisaaUusiOsaSuorituspolku = (otsikko: any) => this.lisaaSuorituspolkuImpl(otsikko, true);
 
   async tallennaUusiOpintokokonaisuus(otsikko, valittuOpintokokonaisuus) {
     const parentId = valittuOpintokokonaisuus?.id ? valittuOpintokokonaisuus.id : this.navigation.value!.id!;
@@ -415,6 +585,11 @@ export default class RouteToteutussuunnitelma extends Vue {
   @ProvideReactive('linkkiHandler')
   get linkkiHandler() {
     return new LinkkiHandler();
+  }
+
+  @ProvideReactive('kuvaHandler')
+  get kuvaHandler() {
+    return createKuvaHandler(new KuvaStore(_.toNumber(this.toteutussuunnitelmaId), this.koulutustoimijaId));
   }
 
   get ratasvalinnat() {
@@ -576,10 +751,6 @@ export default class RouteToteutussuunnitelma extends Vue {
     );
   }
 
-  get salliTekstikappaleLisays() {
-    return this.isTutkintoonValmentava || this.isVapaaSivistystyo || this.isKoto;
-  }
-
   get onkoJulkaisemattomiaMuutoksia() {
     return this.toteutussuunnitelmaStore.julkaisemattomiaMuutoksia.value;
   }
@@ -634,7 +805,7 @@ export default class RouteToteutussuunnitelma extends Vue {
 
 .menu-item {
   font-size: 14px;
-  padding: 7px 10px 7px 10px;
+  padding: 7px 5px 7px 10px;
 
   a {
     &.router-link-exact-active {
@@ -664,6 +835,10 @@ export default class RouteToteutussuunnitelma extends Vue {
   margin-left: 35px;
   margin-bottom: 10px;
   margin-right: 35px;
+}
+
+.faded {
+  color: $gray-lighten-1;
 }
 
 </style>

@@ -13,24 +13,11 @@
                   <span class="material-icons-outlined ml-2 default-icon clickable" id="infopopup">info</span>
                   <b-popover
                     target="infopopup"
-                    triggers="hover click blur">
-                      <div class="mb-3">
-                        <span class="font-weight-bold">{{$t('perusteprojekti')}}: </span>
-                        <span>{{$t('uusi-opetussuunnitelma-ohje-perusteprojekti')}}</span>
+                    triggers="hover click blur" v-if="tyypinRadioButtons">
+                      <div class="mb-3" v-for="(radiobutton, index) in tyypinRadioButtons" :key="'infopopup'+index">
+                        <span class="font-weight-bold">{{$t(radiobutton.text)}}: </span>
+                        <span>{{$t('uusi-opetussuunnitelma-ohje-' + radiobutton.text)}}</span>
                       </div>
-                      <div class="mb-3">
-                        <span class="font-weight-bold">{{$t('opetussuunnitelman-pohja')}}: </span>
-                        <span>{{$t('uusi-opetussuunnitelma-ohje-opetussuunnitelman-pohja')}}</span>
-                      </div>
-                      <div class="mb-3">
-                        <span class="font-weight-bold">{{$t('toinen-opetussuunnitelma')}}: </span>
-                        <span>{{$t('uusi-opetussuunnitelma-ohje-toinen-opetussuunnitelma')}}</span>
-                      </div>
-                      <div class="mb-3">
-                        <span class="font-weight-bold">{{$t('luo-uusi-ilman-pohjaa')}}: </span>
-                        <span>{{$t('uusi-opetussuunnitelma-ohje-luo-uusi-ilman-pohjaa')}}</span>
-                      </div>
-
                   </b-popover>
                 </div>
                 <b-form-radio v-for="(radiobutton, index) in tyypinRadioButtons" :key="'radiobutton'+index" class="p-2 pl-4" v-model="pohjanTyyppi" :value="radiobutton.value" :disabled="radiobutton.disabled">
@@ -85,6 +72,8 @@
                 <ep-field v-model="nimi" :is-editing="true" :validation="$v.nimi"></ep-field>
               </b-form-group>
 
+              <div v-if="korvaavaPeruste" class="korvaavaPeruste" v-html="$t('tutkinnolla-korvaava-peruste-selite', {korvaavaPerusteNimi})"/>
+
               <b-form-group :label="$t(kaannokset.tutkinnonosatLabel) +' *'" v-if="tutkinnonosatValinta">
                 <ep-spinner v-if="!tutkinnonosat" />
 
@@ -137,7 +126,7 @@ import EpSteps, { Step } from '@shared/components/EpSteps/EpSteps.vue';
 import * as _ from 'lodash';
 import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto, Perusteet } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
@@ -146,7 +135,7 @@ import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatSt
 import { OpetussuunnitelmaLuontiKielistykset, TotetusOpetussuunnitelmaRoute } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
-import { EperusteetKoulutustyyppiRyhmat, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
+import { EperusteetKoulutustyyppiRyhmat, isAmmatillinenKoulutustyyppi, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
 import { KayttajaStore } from '@/stores/kayttaja';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpJotpaSelect, { OpsJotpa } from '@/components/EpJotpa/EpJotpaSelect.vue';
@@ -209,6 +198,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private tutkinnonosaKoodit: string[] = [];
   private toteutussuunnitelmaPohjatStore: OpetussuunnitelmaPohjatStore | null = null;
   private jotpa: OpsJotpa = { jotpa: false, jotpatyyppi: null };
+  private korvaavaPeruste: PerusteDto | null = null;
 
   async mounted() {
     this.toteutussuunnitelmaPohjatStore = new OpetussuunnitelmaPohjatStore();
@@ -243,6 +233,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   onPohjantyyppiChange() {
     this.peruste = null;
     this.toteutussuunnitelma = null;
+    this.korvaavaPeruste = null;
   }
 
   get steps() {
@@ -347,14 +338,15 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       const luotu = await this.toteutussuunnitelmaStore.create(_.toString(this.koulutustoimijaId), {
         perusteId: this.peruste ? this.peruste.id : undefined,
         perusteDiaarinumero: this.peruste ? this.peruste.diaarinumero : undefined,
-        opsId: this.toteutussuunnitelma ? this.toteutussuunnitelma.id : undefined,
+        opsId: this.pohjanTyyppi !== 'ophPohja' ? this.toteutussuunnitelma?.id : undefined,
+        _pohja: this.pohjanTyyppi === 'ophPohja' ? this.toteutussuunnitelma?.id as any : undefined,
         tyyppi: this.tyyppi as any,
         suoritustapa: this.tallennettavaSuoritustapa,
         nimi: this.nimi,
         tutkinnonOsaKoodiIncludes: this.tutkinnonosaKoodit,
         koulutustyyppi: this.peruste ? undefined : this.koulutustyyppi,
         jotpatyyppi: this.jotpa ? this.jotpa.jotpatyyppi as any : null,
-      });
+      } as any);
 
       this.$router.push({
         name: 'toteutussuunnitelma',
@@ -501,6 +493,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   @Watch('toteutussuunnitelma')
   async toteutussuunnitelmaChange() {
     this.tutkinnonosaKoodit = [];
+
+    if (this.toteutussuunnitelma && isAmmatillinenKoulutustyyppi(this.toteutussuunnitelma.peruste?.koulutustyyppi)) {
+      this.korvaavaPeruste = (await Perusteet.getKoulutuskoodillaKorvaavaPeruste(this.toteutussuunnitelma?.id!, _.toString(this.koulutustoimijaId))).data;
+    }
   }
 
   get tutkinnonosatValinta() {
@@ -541,6 +537,10 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       }
     }
   }
+
+  get korvaavaPerusteNimi() {
+    return `${this.$kaanna(this.korvaavaPeruste?.nimi!)} (${this.korvaavaPeruste?.diaarinumero}, ${this.$sd(this.korvaavaPeruste?.voimassaoloAlkaa!)} - ${(this.korvaavaPeruste?.voimassaoloLoppuu ? this.$sd(this.korvaavaPeruste?.voimassaoloLoppuu) : '')})`;
+  }
 }
 </script>
 
@@ -557,6 +557,14 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
 .checked {
   color: $paletti-blue;
+}
+
+.korvaavaPeruste {
+  border-radius: 10px;
+  border: 1px solid $blue-lighten-3;
+  padding: 12px;
+  margin-right: 10px;
+  background-color: $blue-lighten-4;
 }
 
 </style>

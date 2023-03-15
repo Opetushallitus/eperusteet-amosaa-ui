@@ -267,7 +267,7 @@ export default class RouteKoulutuksenOsa extends Vue {
         this.sisaltoviiteId,
         this.versionumero,
         this,
-        () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId),
+        () => this.toteutussuunnitelmaStore.initNavigation(),
         this.toteutussuunnitelmaStore.toteutussuunnitelma));
   }
 

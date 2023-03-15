@@ -81,7 +81,7 @@ export class SuorituspolutStore extends AbstractSisaltoviiteStore implements IEd
         editable: true,
         removable: true,
         hideable: false,
-        recoverable: true,
+        recoverable: false,
         lockable: true,
       } as EditoitavaFeatures;
     });

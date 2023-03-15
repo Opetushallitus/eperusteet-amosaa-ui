@@ -23,7 +23,7 @@
     <div class="col-lg-12 col-xl-6 p-0">
       <ep-toteutussuunnitelman-tiedotteet class="info-box" v-if="peruste" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
       <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma" :toteutus="toteutus"/>
-      <ep-toteutussuunnitelman-sisaltoviitteet class="info-box" :sisaltoViiteStore="sisaltoViiteStore" :toteutus="toteutus"/>
+      <ep-toteutussuunnitelman-sisaltoviitteet class="info-box" :opetussuunnitelma="toteutussuunnitelma" :toteutus="toteutus"/>
     </div>
     <div class="col-lg-12 col-xl-6 p-0 pl-2">
       <ep-viimeaikainen-toiminta class="info-box" :muokkaustietoStore="muokkaustietoStore"/>
@@ -70,9 +70,6 @@ export default class RouteYleisnakyma extends Vue {
   private aikatauluStore!: AikatauluStore;
 
   @Prop({ required: true })
-  private sisaltoViiteStore!: SisaltoViiteStore;
-
-  @Prop({ required: true })
   private muokkaustietoStore!: MuokkaustietoStore;
 
   @Prop({ required: true })
@@ -107,6 +104,7 @@ export default class RouteYleisnakyma extends Vue {
     try {
       this.syncing = true;
       await this.toteutussuunnitelmaStore.paiviteOpetussunnitelmanPeruste();
+      await this.toteutussuunnitelmaStore.initNavigation();
       this.perustePaivitetty = true;
       this.$success(this.$t('peruste-paivitetty') as string);
     }

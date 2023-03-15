@@ -12,12 +12,14 @@
         {{ $t('tuo-tutkinnon-osa') }}
       </template>
 
+      <div class="mb-4">{{ $t('tutkinnon-osa-tuonti-modal-selite') }}</div>
+
       <div class="d-flex">
         <b-form-group class="w-50" :label="$t('tutkinnon-osan-nimi')">
           <ep-search v-model="query.nimi" :placeholder="$t('etsi-tutkinnon-osaa')"/>
         </b-form-group>
 
-        <b-form-group class="ml-auto w-50" :label="$t('toteutussuunnitelma')">
+        <b-form-group class="ml-auto w-50" :label="$t('toteutussuunnitelma-jaettu-tai-yhteinen-osa')">
           <ep-spinner v-if="!toteutussuunnitelmat" />
           <EpMultiSelect
             v-else
@@ -38,22 +40,35 @@
 
       <ep-spinner v-if="!tutkinnonosat" />
 
+      <div v-else-if="tutkinnonosat.length == 0">{{$t('ei-hakutuloksia')}}</div>
+
       <div v-else>
         <b-table
           responsive
           striped
+          hover
           :items="tutkinnonosatWithSelected"
           no-local-sorting
           @sort-changed="sortingChanged"
           :sort-by.sync="sortBy"
           :sort-desc.sync="query.sortDesc"
-          :fields="tutkinnonosatFields">
-          <template v-slot:cell(tekstiKappale.nimi)="{ item }">
-            <div class="selectable" @click="selectRow(item)">
+          :fields="tutkinnonosatFields"
+          no-sort-reset
+          @row-clicked="selectRow">
+          <template v-slot:head(valitse-kaikki)="{ item }">
+            <div class="selectable" @click="selectAllRows()">
+              <fas v-if="valitseKaikki" icon="check-square" class="checked mr-2"/>
+              <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+            </div>
+          </template>
+          <template v-slot:cell(valitse-kaikki)="{ item }">
+            <div class="selectable">
               <fas v-if="item.selected" icon="check-square" class="checked mr-2"/>
               <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
-              <span>{{$kaanna(item.tekstiKappale.nimi)}}</span>
             </div>
+          </template>
+          <template v-slot:cell(tekstiKappale.nimi)="{ item }">
+            <span>{{$kaanna(item.tekstiKappale.nimi)}}</span>
           </template>
         </b-table>
         <b-pagination v-if="totalRows > sisaltoSivuKoko"
@@ -76,7 +91,7 @@
 
       <div slot="modal-footer">
         <ep-button @click="close" variant="link">{{ $t('peruuta')}}</ep-button>
-        <ep-button @click="save">{{ $t('tuo-valitut-sisallot')}}</ep-button>
+        <ep-button @click="save" :disabled="selectedTutkinnonosat.length == 0">{{ $t('tuo-valitut-sisallot')}}</ep-button>
       </div>
     </b-modal>
   </div>
@@ -119,6 +134,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
   private query = {} as any;
   private sivu = 0;
   private sisaltoSivuKoko = 10;
+  private valitseKaikki = false;
 
   private selectedTutkinnonosat: SisaltoviiteLaajaDto[] = [];
 
@@ -130,6 +146,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
       tyyppi: 'TUTKINNONOSA',
       sortDesc: false,
       opetussuunnitelmaId: null,
+      notInOpetussuunnitelmaId: this.toteutussuunnitelmaId,
     } as any;
 
     this.page = 0;
@@ -137,7 +154,11 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   get toteutussuunnitelmat() {
-    return this.tutkinnonosatTuontiStore?.toteutussuunnitelmat.value || null;
+    if (this.tutkinnonosatTuontiStore?.toteutussuunnitelmat.value) {
+      return _.filter(this.tutkinnonosatTuontiStore?.toteutussuunnitelmat.value, tots => tots.id !== _.toNumber(this.toteutussuunnitelmaId));
+    }
+
+    return null;
   }
 
   kaannaNimi({ nimi }) {
@@ -179,6 +200,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   async queryFetch() {
+    this.valitseKaikki = false;
     await this.tutkinnonosatTuontiStore!.fetch(this.toteutussuunnitelmaId, this.koulutustoimijaId, { ...this.query, sivu: this.sivu });
   }
 
@@ -198,8 +220,8 @@ export default class EpTutkinnonosaTuonti extends Vue {
     await this.tutkinnonosatTuontiStore!.tuoSisaltoa(this.toteutussuunnitelmaId, this.koulutustoimijaId, _.map(this.selectedTutkinnonosat, 'id') as number[]);
     this.tutkinnonosatTuontiStore!.clear();
     this.$success(this.$t('tutkinnon-osat-tuotu-onnistuneesti') as string);
-    await this.updateNavigation();
     this.close();
+    this.updateNavigation();
   }
 
   close() {
@@ -218,6 +240,19 @@ export default class EpTutkinnonosaTuonti extends Vue {
     }
   }
 
+  selectAllRows() {
+    this.valitseKaikki = !this.valitseKaikki;
+    if (this.valitseKaikki) {
+      this.selectedTutkinnonosat = [
+        ...this.selectedTutkinnonosat,
+        ...(this.tutkinnonosat || []) as SisaltoviiteLaajaDto[],
+      ];
+    }
+    else {
+      this.selectedTutkinnonosat = _.filter(this.selectedTutkinnonosat, sel => !_.includes(_.map(this.tutkinnonosat, 'id'), sel.id));
+    }
+  }
+
   sortingChanged(sort) {
     this.query = {
       ...this.query,
@@ -230,41 +265,46 @@ export default class EpTutkinnonosaTuonti extends Vue {
   }
 
   get tutkinnonosatFields() {
-    return [{
-      key: 'tekstiKappale.nimi',
-      label: this.$t('nimi'),
-      sortable: true,
-      thStyle: { width: '40%' },
-    }, {
-      key: 'opetussuunnitelma.voimaantulo',
-      label: this.$t('voimaantulo'),
-      sortable: false,
-      formatter: (value: any, key: string, item: any) => {
-        return value ? this.$sd(value) : '';
+    return [
+      {
+        key: 'valitse-kaikki',
+        sortable: false,
       },
-    }, {
-      key: 'laajuus',
-      label: this.$t('laajuus'),
-      sortable: false,
-      formatter: (value: any, key: string, item: any) => {
-        if (item.tosa.omatutkinnonosa && item.tosa.omatutkinnonosa.laajuus) {
-          return item.tosa.omatutkinnonosa.laajuus;
-        }
+      {
+        key: 'tekstiKappale.nimi',
+        label: this.$t('nimi'),
+        sortable: true,
+        thStyle: { width: '40%' },
+      }, {
+        key: 'opetussuunnitelma.voimaantulo',
+        label: this.$t('voimaantulo'),
+        sortable: false,
+        formatter: (value: any, key: string, item: any) => {
+          return value ? this.$sd(value) : '';
+        },
+      }, {
+        key: 'laajuus',
+        label: this.$t('laajuus'),
+        sortable: false,
+        formatter: (value: any, key: string, item: any) => {
+          if (item.tosa.omatutkinnonosa && item.tosa.omatutkinnonosa.laajuus) {
+            return item.tosa.omatutkinnonosa.laajuus;
+          }
 
-        if (item.perusteenTutkinnonosa) {
-          return item.perusteenTutkinnonosa.laajuus;
-        }
+          if (item.perusteenTutkinnonosa) {
+            return item.perusteenTutkinnonosa.laajuus;
+          }
 
-        return '';
-      },
-    }, {
-      key: 'opetussuunnitelma.nimi',
-      label: this.$t('opetussuunnitelma'),
-      sortable: false,
-      formatter: (value: any, key: string, item: any) => {
-        return this.$kaanna(value);
-      },
-    }];
+          return '';
+        },
+      }, {
+        key: 'opetussuunnitelma.nimi',
+        label: this.$t('suunnitelma-tai-osa'),
+        sortable: false,
+        formatter: (value: any, key: string, item: any) => {
+          return this.$kaanna(value);
+        },
+      }];
   }
 
   get valittuFields() {

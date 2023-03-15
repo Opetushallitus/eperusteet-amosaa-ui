@@ -1,47 +1,32 @@
 <template>
-  <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore">
-      <template v-slot:header>
-        <h2 class="m-0">{{ $t('tutkinnon-osat') }}</h2>
-      </template>
-      <template v-slot:default>
+  <div class="m-3" id="scroll-anchor">
+    <h2 class="m-0">{{ $t('tutkinnon-osat') }}</h2>
 
-        <ep-spinner v-if="!tutkinnonosat"></ep-spinner>
+    <ep-spinner v-if="!tutkinnonosat"></ep-spinner>
 
-        <div v-else>
-          <div class="d-flex justify-content-between mb-4">
+    <div v-else>
+      <div class="d-flex justify-content-between mb-4">
 
-            <EpSearch v-model="queryNimi" :placeholder="$t('etsi')"/>
+        <EpSearch v-model="queryNimi" :placeholder="$t('etsi')"/>
 
-            <div class="d-flex">
-              <router-link :to="{name: 'tutkinnonosa', params: {'sisaltoviiteId': 'uusi'}}">
-                <ep-button variant="outline-primary" icon="plussa" disabled>
-                  {{ $t('lisaa-tutkinnon-osa') }}
-                </ep-button>
-              </router-link>
-
-              <ep-tutkinnonosa-tuonti
-                :tutkinnonosatTuontiStore="tutkinnonosatTuontiStore"
-                :toteutussuunnitelmaId="toteutussuunnitelmaId"
-                :koulutustoimijaId="koulutustoimijaId"
-                :updateNavigation="updateNavigation" />
-
-            </div>
-          </div>
-
-          <b-table striped hover responsive :items="tutkinnonosat" :fields="fields">
-            <template v-slot:cell(tutkinnonosaViite.tekstiKappale.nimi)="data">
-              <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
-                {{ $kaanna(data.item.nimi) }}
-              </router-link>
-            </template>
-          </b-table>
+        <div class="d-flex">
+          <ep-tutkinnonosa-tuonti
+            :tutkinnonosatTuontiStore="tutkinnonosatTuontiStore"
+            :toteutussuunnitelmaId="toteutussuunnitelmaId"
+            :koulutustoimijaId="koulutustoimijaId"
+            :updateNavigation="updateNavigation" />
         </div>
+      </div>
 
-      </template>
-
-    </EpEditointi>
-
+      <b-table striped hover responsive :items="tutkinnonosat" :fields="fields">
+        <template v-slot:cell(tutkinnonosaViite.tekstiKappale.nimi)="data">
+          <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
+            {{ $kaanna(data.item.nimi) }}
+            <span class="paikallinen" v-if="data.item.tutkinnonosaViite.tosa.tyyppi === 'oma'">({{$t('tutkinnon-osa-paikallinen-merkki')}})</span>
+          </router-link>
+        </template>
+      </b-table>
+    </div>
   </div>
 </template>
 
@@ -49,8 +34,6 @@
 import _ from 'lodash';
 import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
 import { TutkinnonOsatStore } from '@/stores/TutkinnonOsatStore';
-import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
-import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { Kielet } from '@shared/stores/kieli';
@@ -61,7 +44,6 @@ import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 
 @Component({
   components: {
-    EpEditointi,
     EpButton,
     EpSearch,
     EpSpinner,
@@ -69,9 +51,6 @@ import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
   },
 })
 export default class RouteTutkinnonosat extends Vue {
-  @Prop({ required: true })
-  private tutkinnonOsatStore!: TutkinnonOsatStore;
-
   @Prop({ required: true })
   protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
 
@@ -84,16 +63,25 @@ export default class RouteTutkinnonosat extends Vue {
   @Prop({ required: true })
   private koulutustoimijaId!: string;
 
-  private editointiStore: EditointiStore | null = null;
+  private tutkinnonOsatStore = new TutkinnonOsatStore();
 
   private queryNimi: string = '';
 
-  async mounted() {
-    this.editointiStore = new EditointiStore(this.tutkinnonOsatStore);
+  get opetussuunnitelma() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+  }
+
+  @Watch('opetussuunnitelma', { immediate: true })
+  async opetussuunnitelmachange() {
+    if (this.opetussuunnitelma) {
+      await this.tutkinnonOsatStore.fetch(this.opetussuunnitelma.id!,
+        _.toString(this.opetussuunnitelma.koulutustoimija?.id),
+        this.opetussuunnitelma.peruste?.id!);
+    }
   }
 
   get tutkinnonosat() {
-    if (this.tutkinnonOsatStore.tutkinnonosat.value) {
+    if (this.tutkinnonOsatStore?.tutkinnonosat.value) {
       return _.chain(this.tutkinnonOsatStore.tutkinnonosat.value)
         .filter(tutkinnonosa => _.includes(
           _.toLower(_.get(tutkinnonosa, 'tutkinnonosaViite.tekstiKappale.nimi.' + Kielet.getSisaltoKieli.value)),
@@ -127,10 +115,11 @@ export default class RouteTutkinnonosat extends Vue {
       sortable: true,
       label: this.$t('laajuus') as string,
       formatter: (value: any, key: string, item: any) => {
-        return item.perusteenTutkinnonosaViite ? item.perusteenTutkinnonosaViite.laajuus + ' ' + this.$t('osaamispiste') : '';
+        const laajuus = item.perusteenTutkinnonosaViite?.laajuus || item.tutkinnonosaViite?.tosa?.omatutkinnonosa?.laajuus;
+        return laajuus ? laajuus + ' ' + this.$t('osaamispiste') : '';
       },
     }, {
-      key: 'muokattu',
+      key: 'tutkinnonosaViite.tosa.muokattu',
       sortable: true,
       label: this.$t('muokattu') as string,
       formatter: (value: any, key: string, item: any) => {
@@ -140,7 +129,7 @@ export default class RouteTutkinnonosat extends Vue {
   }
 
   async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId);
+    await this.toteutussuunnitelmaStore.initNavigation();
   }
 }
 </script>
@@ -148,4 +137,9 @@ export default class RouteTutkinnonosat extends Vue {
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
 
+ .paikallinen {
+    color: $black;
+    font-size: 0.9rem;
+    font-weight: 600;
+ }
 </style>

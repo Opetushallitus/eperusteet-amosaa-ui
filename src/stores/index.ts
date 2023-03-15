@@ -35,10 +35,8 @@ const ophPohjatStore = new OphPohjatStore();
 const ophOpsPohjatStore = new OphOpsPohjatStore();
 
 const aikatauluStore = new AikatauluStore(toteutussuunnitelmaStore.toteutussuunnitelma);
-const sisaltoViiteStore = new SisaltoViiteStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const muokkaustietoStore = new MuokkaustietoStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const toteutussuunnitelmaTiedotteetStore = new ToteutussuunnitelmaTiedotteetStore(toteutussuunnitelmaStore.toteutussuunnitelma);
-const tutkinnonOsatStore = new TutkinnonOsatStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const poistetutStore = new PoistetutStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const kayttoOikeudetStore = new KayttoOikeudetStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const koulutuksenOsatStore = new KoulutuksenOsatStore(toteutussuunnitelmaStore.toteutussuunnitelma);
@@ -57,7 +55,6 @@ export const stores = Object.freeze({
   kieliStore: Kielet,
   muokkaustietoStore,
   ohjeetStore,
-  sisaltoViiteStore,
   toteutussuunnitelmaStore,
   toteutussuunnitelmaTiedotteetStore,
   toteutussuunnitelmatStore,
@@ -65,7 +62,6 @@ export const stores = Object.freeze({
   tutoriaaliStore,
   tiedotteetStore,
   perusteetStore,
-  tutkinnonOsatStore,
   tilastotStore,
   tutkinnonosatTuontiStore,
   paivitettavatJaSiirrettavatTotsStore,

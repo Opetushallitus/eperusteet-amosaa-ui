@@ -305,7 +305,7 @@ export default class RouteOpintokokonaisuus extends Vue {
         this.versionumero,
         this,
         this.toteutussuunnitelmaStore.toteutussuunnitelma,
-        () => this.toteutussuunnitelmaStore.initNavigation(this.koulutustoimijaId, this.toteutussuunnitelmaId)));
+        () => this.toteutussuunnitelmaStore.initNavigation()));
   }
 
   updateTavoiteByIndex(val, index) {

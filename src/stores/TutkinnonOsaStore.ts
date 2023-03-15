@@ -1,10 +1,11 @@
-import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
+import Vue from 'vue';
+import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto, OmaOsaAlueDtoTyyppiEnum } from '@shared/api/amosaa';
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, Kieli } from '@shared/tyypit';
-import { koodiValidator } from '@shared/validators/required';
+import { requiredOneLang } from '@shared/validators/required';
+import { Kielet } from '@shared/stores/kieli';
 
 Vue.use(VueCompositionApi);
 
@@ -44,27 +45,28 @@ export class TutkinnonOsaStore implements IEditoitava {
       Arviointiasteikot.getAllArviointiasteikot(),
     ])), 'data');
 
+    if (tutkinnonosaViite.linkattuPeruste) {
+      this.perusteId = tutkinnonosaViite.linkattuPeruste;
+    }
+
     let perusteId = tutkinnonosaViite.peruste ? tutkinnonosaViite.peruste.id : this.perusteId;
     const peruste = (await Perusteet.getPeruste(perusteId)).data;
 
-    if (tutkinnonosaViite.tosa.tyyppi === 'perusteesta') {
-      perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
-      perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
-      this.setArvioinnit(perusteenTutkinnonosa, arviointiasteikot);
+    if (tutkinnonosaViite.tosa.tyyppi === 'perusteesta' || tutkinnonosaViite.perusteentutkinnonosa) {
+      try {
+        perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
+        perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
+        this.setArvioinnit(perusteenTutkinnonosa, arviointiasteikot);
+      }
+      catch (e) {
+        this.el.$warning('perusteen-tutkinnon-osaa-ei-loydy');
+        perusteenTutkinnonosaViite = {};
+        perusteenTutkinnonosa = {};
+      }
     }
     else {
       this.setArvioinnit(tutkinnonosaViite.tosa.omatutkinnonosa, arviointiasteikot);
     }
-
-    if (tutkinnonosaViite.perusteentutkinnonosa) {
-      perusteenTutkinnonosaViite = (await Perusteet.getTutkinnonOsaViite(this.perusteId, 'reformi', tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data;
-      perusteenTutkinnonosa = (await Perusteet.getPerusteTutkinnonOsa(this.perusteId, tutkinnonosaViite.tosa!.perusteentutkinnonosa!)).data as any;
-    }
-
-    const tutkintonimikeKoodit = _.map(await Promise.all(_.chain(peruste.tutkintonimikkeet)
-      .map('tutkintonimikeUri')
-      .map((tutkintonimikeUri: string) => Koodistot.getKoodistoKoodiByUri(tutkintonimikeUri))
-      .value()), 'data');
 
     return {
       tutkinnonosaViite: {
@@ -76,16 +78,25 @@ export class TutkinnonOsaStore implements IEditoitava {
       },
       perusteenTutkinnonosaViite,
       perusteenTutkinnonosa,
-      omaTutkinnonosa: tutkinnonosaViite.tosa.omatutkinnonosa,
-      osaamisalat: peruste.osaamisalat,
-      tutkintonimikkeet: tutkintonimikeKoodit,
+      omaTutkinnonosa: {
+        koodi: null,
+        laajuus: null,
+        geneerinenarviointi: null,
+        ammattitaitovaatimukset: {},
+        arviointi: null,
+        ammattitaidonOsoittamistavat: null,
+        ...tutkinnonosaViite.tosa.omatutkinnonosa,
+      },
       arviointiasteikot,
     };
   }
 
   setArvioinnit(tutkinnonosa, arviointiasteikot) {
-    if (tutkinnonosa && tutkinnonosa.geneerinenArviointiasteikko) {
-      const arviointiAsteikko = _.keyBy(arviointiasteikot, 'id')[tutkinnonosa.geneerinenArviointiasteikko._arviointiAsteikko];
+    const asteikko = _.get(tutkinnonosa, '.geneerinenArviointiasteikko.arviointiAsteikko');
+    const asteikkoId = _.get(tutkinnonosa, '.geneerinenArviointiasteikko._arviointiAsteikko');
+
+    if (!asteikko && asteikkoId) {
+      const arviointiAsteikko = _.keyBy(arviointiasteikot, 'id')[asteikkoId];
       const osaamistasot = _.keyBy(arviointiAsteikko.osaamistasot, 'id');
       tutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit = _.map(tutkinnonosa.geneerinenArviointiasteikko.osaamistasonKriteerit, otKriteeri => {
         return {
@@ -112,6 +123,7 @@ export class TutkinnonOsaStore implements IEditoitava {
       data.tutkinnonosaViite.tosa.omatutkinnonosa = data.omaTutkinnonosa;
     }
     await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.tutkinnonosaId, this.koulutustoimijaId, data.tutkinnonosaViite);
+    await this.el.updateNavigation();
   }
 
   async release() {
@@ -136,22 +148,68 @@ export class TutkinnonOsaStore implements IEditoitava {
 
   async remove() {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId, this.tutkinnonosaId, this.koulutustoimijaId);
+    await this.el.updateNavigation();
     this.el.$router.push({
       name: 'tutkinnonosat',
     });
   }
+
   public readonly validator = computed(() => {
-    return {};
+    return {
+      tutkinnonosaViite: {
+        tekstiKappale: {
+          nimi: {
+            ...requiredOneLang(),
+          },
+        },
+        tosa: {
+          toteutukset: {
+            $each: {
+              otsikko: {
+                ...requiredOneLang(),
+              },
+            },
+          },
+        },
+      },
+    };
   });
+
+  async copy(data) {
+    const kopioituViite = (await Sisaltoviitteet.kopioiLinkattuSisalto(this.opetussuunnitelmaId, this.koulutustoimijaId, data.tutkinnonosaViite.id)).data;
+    await this.el.updateNavigation();
+    this.el.$router.push({
+      name: 'tutkinnonosa',
+      params: {
+        sisaltoviiteId: kopioituViite.id,
+      },
+    });
+  }
 
   public features(data: any) {
     return computed(() => {
       return {
-        editable: true,
+        editable: data.tutkinnonosaViite.tyyppi !== 'linkki',
         removable: true,
         hideable: false,
-        recoverable: true,
+        recoverable: data.tutkinnonosaViite.tyyppi !== 'linkki',
+        copyable: data.tutkinnonosaViite.tyyppi === 'linkki',
       } as EditoitavaFeatures;
     });
+  }
+
+  public static async lisaaOsaAlue(opetussuunnitelmaId, tutkinnonosaId, koulutustoimijaId, el) {
+    const sisaltoviite = (await (Sisaltoviitteet.getSisaltoviiteTekstit(opetussuunnitelmaId, tutkinnonosaId, koulutustoimijaId))).data;
+    const aiemmatIdt = _.map(sisaltoviite.osaAlueet, 'id');
+    sisaltoviite.osaAlueet = [
+      ...(sisaltoviite.osaAlueet || []),
+      {
+        tyyppi: _.toLower(OmaOsaAlueDtoTyyppiEnum.PAIKALLINEN),
+        nimi: { [Kielet.getSisaltoKieli.value]: el.$t('nimeton-osa-alue') },
+      } as any,
+    ];
+
+    await Sisaltoviitteet.updateTekstiKappaleViite(opetussuunnitelmaId, tutkinnonosaId, koulutustoimijaId, sisaltoviite as any);
+    return _.get(_.find((await (Sisaltoviitteet.getSisaltoviiteTekstit(opetussuunnitelmaId, tutkinnonosaId, koulutustoimijaId))).data.osaAlueet, osaalue => !_.includes(aiemmatIdt, osaalue.id)), 'id');
   }
 }

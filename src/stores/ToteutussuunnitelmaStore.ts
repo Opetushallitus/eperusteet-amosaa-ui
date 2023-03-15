@@ -19,7 +19,7 @@ export class ToteutussuunnitelmaStore {
     julkaisemattomiaMuutoksia: null as boolean | null,
     viimeisinJulkaisuTila: null as string | null,
     tilaPolling: null as any | null,
-  })
+  });
 
   public readonly toteutussuunnitelma = computed(() => this.state.toteutussuunnitelma);
   public readonly pohja = computed(() => this.state.pohja);
@@ -42,9 +42,9 @@ export class ToteutussuunnitelmaStore {
         this.state.pohja = (await Opetussuunnitelmat.getOpetussuunnitelmaPohjaKevyt(toteutussuunnitelmaId, koulutustoimijaId)).data;
       }
       this.state.julkaisut = (await Julkaisut.getJulkaisut(toteutussuunnitelmaId, koulutustoimijaId)).data;
-      await this.initNavigation(koulutustoimijaId, toteutussuunnitelmaId);
-      await this.updateValidation();
-      await this.fetchJulkaisut();
+      this.initNavigation();
+      this.updateValidation();
+      this.fetchJulkaisut();
       this.state.vanhentunutPohjaperusteDto = (await Opetussuunnitelmat.getPaivitettavaOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
     }
     catch (e) {
@@ -60,8 +60,8 @@ export class ToteutussuunnitelmaStore {
     return (await Opetussuunnitelmat.addOpetussuunnitelma(ktId, toteutussuunnitelma)).data;
   }
 
-  public async initNavigation(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
-    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(toteutussuunnitelmaId, koulutustoimijaId)).data;
+  public async initNavigation() {
+    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
   }
 
   public async updateValidation() {
@@ -120,5 +120,21 @@ export class ToteutussuunnitelmaStore {
       this.toteutussuunnitelma.value?.koulutustoimija?.id as any,
     )).data;
     this.state.julkaisut?.unshift(uusiJulkaisu);
+  }
+
+  public naviFind(navitype: string) {
+    const stack = [] as any[];
+    stack.push(...(this.state!.navigation!.children || []));
+
+    while (!_.isEmpty(stack)) {
+      const head = stack.pop();
+      if (head.type === navitype) {
+        return head;
+      }
+
+      if (head.children) {
+        stack.push(...head.children);
+      }
+    }
   }
 }
