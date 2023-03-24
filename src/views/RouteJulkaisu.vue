@@ -224,7 +224,6 @@ export default class RouteJulkaisu extends Vue {
 
   async julkaise() {
     try {
-      console.log(this.julkaisu);
       await this.toteutussuunnitelmaStore.julkaise(this.julkaisu);
       this.julkaisu.tiedote = {};
       this.$success(this.$t('julkaisu-kaynnistetty') as string);
