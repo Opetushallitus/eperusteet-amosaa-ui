@@ -87,6 +87,7 @@
           :items="items.data"
           :fields="fields"
           no-local-sorting
+          no-sort-reset
           @sort-changed="sortingChanged"
           :sort-by.sync="sort.sortBy"
           :sort-desc.sync="sort.sortDesc">
@@ -375,7 +376,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       thStyle: { borderBottom: '0px' },
       formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
         if (item.peruste && _.size(item.peruste.koulutukset) > 0) {
-          return _.head(item!.peruste!.koulutukset)!['koulutuskoodiArvo'];
+          return _.reduce(_.map(item!.peruste!.koulutukset, 'koulutuskoodiArvo'), (tulos, koulutus) => (tulos + (tulos !== '' ? ', ' : '') + koulutus), '');
         }
       },
     }, {

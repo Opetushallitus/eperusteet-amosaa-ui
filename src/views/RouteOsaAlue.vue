@@ -4,7 +4,7 @@
       <template v-slot:header="{ data, supportData }">
         <h2 class="m-0">
           <span v-if="perusteenOsaAlue">{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
-          <span v-if="osaAlueValue.nimi">{{ $kaanna(osaAlueValue.nimi) }}</span>
+          <span v-else-if="osaAlueValue.nimi">{{ $kaanna(osaAlueValue.nimi) }}</span>
           <span v-if="osaAlueValue.piilotettu">({{ $t('piilotettu') }})</span>
         </h2>
       </template>
