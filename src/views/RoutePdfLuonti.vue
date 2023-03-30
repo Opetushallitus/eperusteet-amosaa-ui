@@ -65,6 +65,7 @@ export default class RoutePdfLuonti extends Vue {
   async opetussuunnitelmaChanged() {
     if (this.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
       this.dokumenttiStore = await DokumenttiStore.create(this.toteutussuunnitelmaStore.toteutussuunnitelma.value as any);
+      await this.dokumenttiStore.init();
     }
   }
 
