@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { Dokumentit, OpetussuunnitelmaDto, DokumenttiDto, DokumenttiDtoTilaEnum, baseURL, DokumentitParams } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import { IDokumenttiStore } from '@shared/tyypit';
+import { Debounced } from '@shared/utils/delay';
 
 Vue.use(VueCompositionApi);
 
@@ -21,8 +22,6 @@ export class DokumenttiStore implements IDokumenttiStore {
     kuvat: null as Kuvatyyppi[] | null,
   });
 
-  private pollingFrequency = 1000;
-
   public static async create(opetussuunnitelma: OpetussuunnitelmaDto) {
     const result = new DokumenttiStore(opetussuunnitelma);
     result.state.kuvat = [{
@@ -38,7 +37,6 @@ export class DokumenttiStore implements IDokumenttiStore {
       image: 'pdfkuva_alatunniste.svg',
       url: null,
     }];
-    await result.init();
     return result;
   }
 
@@ -51,24 +49,26 @@ export class DokumenttiStore implements IDokumenttiStore {
   public readonly kuvat = computed(() => this.state.kuvat);
 
   async init() {
-    this.state.dokumentti = (await Dokumentit.queryDokumenttiTila(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
+    await this.getDokumenttiTila();
 
     this.generateKuvaHref();
     this.setHref();
   }
 
+  @Debounced(2000)
   async getDokumenttiTila() {
-    if (this.state.dokumentti?.id) {
-      this.state.dokumentti = (await Dokumentit.queryDokumenttiTila(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
+    this.state.dokumentti = (await Dokumentit.queryDokumenttiTila(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
 
-      if (this.state.dokumentti) {
-        if (_.kebabCase(this.state.dokumentti.tila) === _.kebabCase(DokumenttiDtoTilaEnum.EPAONNISTUI)
+    if (this.state.dokumentti) {
+      if (_.kebabCase(this.state.dokumentti.tila) === _.kebabCase(DokumenttiDtoTilaEnum.EPAONNISTUI)
           || _.kebabCase(this.state.dokumentti.tila) === _.kebabCase(DokumenttiDtoTilaEnum.VALMIS)) {
-          clearInterval(this.state.polling);
-          this.state.polling = null;
+        this.state.polling = false;
 
-          this.setHref();
-        }
+        this.setHref();
+      }
+      else if (_.kebabCase(this.state.dokumentti.tila) !== _.kebabCase(DokumenttiDtoTilaEnum.EIOLE)) {
+        this.state.polling = true;
+        await this.getDokumenttiTila();
       }
     }
   }
@@ -99,16 +99,10 @@ export class DokumenttiStore implements IDokumenttiStore {
   }
 
   async luoPdf() {
-    clearInterval(this.state.polling);
     this.state.polling = true;
 
     this.state.dokumentti = (await Dokumentit.createDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
-
-    setTimeout(() => {
-      this.state.polling = setInterval(() => {
-        this.getDokumenttiTila();
-      }, this.pollingFrequency);
-    }, this.pollingFrequency);
+    await this.getDokumenttiTila();
   }
 
   async saveImage(file, tyyppi: string) {
