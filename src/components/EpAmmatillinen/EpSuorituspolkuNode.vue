@@ -27,11 +27,11 @@
             </div>
             <div class="w-25 text-right">
               <span v-if="isRyhma">
-                <span v-if="osienLaajuus >= info.minimi">
+                <span v-if="osienLaajuus.minimi >= info.minimi">
                   {{ info.minimi }} - {{ info.maksimi }}
                 </span>
                 <span v-else class="text-warning">
-                  {{ osienLaajuus }} &lt; {{ info.minimi }}
+                  {{ osienLaajuus.minimi }} &lt; {{ info.minimi }}
                 </span>
               </span>
               <span v-else>
@@ -271,12 +271,20 @@ export default class EpSuorituspolkuNode extends Vue {
     return this.suodataOsat(this.node);
   }
 
+  get osatFlatten() {
+    return this.recursiveFlattenRakenneOsat(this.osat);
+  }
+
+  recursiveFlattenRakenneOsat(osat) {
+    return _.flatMap(osat, osa => osa.osat ? [osa, ...this.recursiveFlattenRakenneOsat(osa.osat)] : osa);
+  }
+
   get style() {
     return 'border-color: ' + rakenneNodecolor(this.node, false, this);
   }
 
   get osienLaajuus() {
-    return this.laskettuOsienLaajuus(this.node);
+    return this.laskettuOsienLaajuus(this.osat);
   }
 
   get info() {
@@ -292,14 +300,14 @@ export default class EpSuorituspolkuNode extends Vue {
 
     if (this.isRyhma) {
       result.nimi = this.node.nimi;
-      if (this.node.muodostumisSaanto) {
-        result.minimi = _.get(this.node, 'muodostumisSaanto.laajuus.minimi');
-        result.maksimi = _.get(this.node, 'muodostumisSaanto.laajuus.maksimi');
-      }
-      else {
-        result.minimi = this.osienLaajuus;
-        result.maksimi = this.osienLaajuus;
-      }
+      // if (this.node.muodostumisSaanto) {
+      //  result.minimi = _.get(this.node, 'muodostumisSaanto.laajuus.minimi');
+      //  result.maksimi = _.get(this.node, 'muodostumisSaanto.laajuus.maksimi');
+      // }
+      // else {
+      result.minimi = this.osienLaajuus.minimi;
+      result.maksimi = this.osienLaajuus.maksimi;
+      // }
     }
     else if (this.tov && this.tosa) {
       result.nimi = this.tosa.nimi;
@@ -368,9 +376,14 @@ export default class EpSuorituspolkuNode extends Vue {
 
   suodataOsat(node) {
     if (!this.naytaPiilotetut) {
-      return _.filter(node.osat, osa => {
+      return _.map(_.filter(node.osat, osa => {
         const paikallinen = this.findPaikallinen(osa.tunniste);
         return !paikallinen || !paikallinen.piilotettu;
+      }), osa => {
+        return {
+          ...osa,
+          ...(osa.osat && { osat: this.suodataOsat(osa) }),
+        };
       });
     }
     else {
@@ -395,25 +408,32 @@ export default class EpSuorituspolkuNode extends Vue {
     }
   }
 
-  laskettuOsienLaajuus(node) {
+  laskettuOsienLaajuus(nodet) {
     const osalaajuus = _(this.paikallinen.koodit)
       .map(this.getLaajuusByKoodi)
       .filter(_.isNumber)
       .sum();
 
-    const ryhmalaajuus = _(this.suodataOsat(node))
-      .map(this.laskennallinenLaajuus)
-      .sum();
+    const ryhmalaajuus = _(nodet)
+      .map(node => !_.isEmpty(node.osat) ? this.laskettuOsienLaajuus(node.osat) : this.laskennallinenLaajuus(node))
+      .reduce((sum, n) => {
+        return {
+          minimi: sum.minimi + n.minimi,
+          maksimi: sum.maksimi + n.maksimi,
+        };
+      }, { minimi: 0, maksimi: 0 });
 
-    return osalaajuus + ryhmalaajuus;
+    return {
+      minimi: osalaajuus + ryhmalaajuus.minimi,
+      maksimi: osalaajuus + ryhmalaajuus.maksimi,
+    };
   }
 
   laskennallinenLaajuus(node) {
-    return _.get(node, 'muodostumisSaanto.laajuus.maksimi')
-      || _.get(node, 'muodostumisSaanto.laajuus.minimi')
-      || _.get(this.tutkinnonOsaViitteet[node._tutkinnonOsaViite], 'laajuus')
-      || _.get(node, 'tosa.omatutkinnonosa.laajuus')
-      || 0;
+    return {
+      minimi: _.get(node, 'muodostumisSaanto.laajuus.minimi') || _.get(this.tutkinnonOsaViitteet[node._tutkinnonOsaViite], 'laajuus') || _.get(node, 'tosa.omatutkinnonosa.laajuus') || 0,
+      maksimi: _.get(node, 'muodostumisSaanto.laajuus.maksimi') || _.get(this.tutkinnonOsaViitteet[node._tutkinnonOsaViite], 'laajuus') || _.get(node, 'tosa.omatutkinnonosa.laajuus') || 0,
+    };
   }
 
   toggleNode() {
