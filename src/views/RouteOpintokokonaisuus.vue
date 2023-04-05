@@ -2,7 +2,8 @@
   <div id="scroll-anchor" v-if="editointiStore" >
     <EpEditointi :store="editointiStore" :versionumero="versionumero" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
       <template v-slot:header="{ data }">
-        <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
+        <h2 class="m-0" v-if="data.opintokokonaisuus.koodiArvo">{{ $kaanna(data.opintokokonaisuus.kooditettuNimi) }}</h2>
+        <h2 class="m-0" v-else>{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
       </template>
       <template v-slot:default="{ data, isEditing, validation, data: { opintokokonaisuus }, data: { opintokokonaisuus: { tyyppi } } }">
         <b-row>
