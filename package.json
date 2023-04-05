@@ -65,7 +65,7 @@
     "tiptap-extensions": "^1.28.6",
     "ts-jest": "^24.3.0",
     "tslib": "^2.2.0",
-    "typescript": "3.7.5",
+    "typescript": "3.9.10",
     "uuid": "^7.0.2",
     "vue": "^2.6.10",
     "vue-apexcharts": "^1.5.2",
