@@ -11680,10 +11680,10 @@ vue-scrollto@^2.17.1:
   dependencies:
     bezier-easing "2.1.0"
 
-vue-select@^3.9.5:
-  version "3.10.3"
-  resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-3.10.3.tgz#60659dc07ec4c96ec270fb12558eab7b938f5004"
-  integrity sha512-SgLmiSwnJwT2erxjq42AA1iTzu1uqhA5MPuF4UDtGot5YSgJLKy71H0LO0hHaBpIjb7d/nJHiufYKcrSakaupw==
+vue-select@^3.20.2:
+  version "3.20.2"
+  resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-3.20.2.tgz#eaa15012b032c154d4fb51ac82ebeda2beeae54b"
+  integrity sha512-ZSzIDzyYsWZULGUxVp1h6u3yi9IZQBWX8r6kSudUI/I5J1HQKpBjRntvkrg6pr87xmm16kdChvHCDN+W84vTKw==
 
 vue-social-sharing@^2.4.7:
   version "2.4.7"
