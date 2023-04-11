@@ -30,7 +30,7 @@
     "@types/uuid": "^7.0.0",
     "@types/vue-select": "^2.5.0",
     "@types/vuelidate": "^0.7.10",
-    "@vue/cli-plugin-babel": "^4.1.0",
+    "@vue/cli-plugin-babel": "^4.5.19",
     "@vue/cli-plugin-e2e-cypress": "^4.1.0",
     "@vue/cli-plugin-eslint": "^4.1.0",
     "@vue/cli-plugin-pwa": "^4.1.0",
