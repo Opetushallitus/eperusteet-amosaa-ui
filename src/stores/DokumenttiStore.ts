@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import * as _ from 'lodash';
-import { Dokumentit, OpetussuunnitelmaDto, DokumenttiDto, DokumenttiDtoTilaEnum, baseURL, DokumentitParams } from '@shared/api/amosaa';
+import { Dokumentit, OpetussuunnitelmaDto, DokumenttiDto, DokumenttiKuvaDto, DokumenttiDtoTilaEnum, baseURL, DokumentitParams } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import { IDokumenttiStore } from '@shared/tyypit';
 import { Debounced } from '@shared/utils/delay';
@@ -17,6 +17,7 @@ export interface Kuvatyyppi {
 export class DokumenttiStore implements IDokumenttiStore {
   private state = reactive({
     dokumentti: null as DokumenttiDto | null,
+    dokumenttiKuva: null as DokumenttiKuvaDto | null,
     polling: null as any | null,
     dokumenttiHref: null as string | null,
     kuvat: null as Kuvatyyppi[] | null,
@@ -49,8 +50,8 @@ export class DokumenttiStore implements IDokumenttiStore {
   public readonly kuvat = computed(() => this.state.kuvat);
 
   async init() {
+    await this.getDokumenttiKuva();
     await this.getDokumenttiTila();
-
     this.generateKuvaHref();
     this.setHref();
   }
@@ -73,6 +74,12 @@ export class DokumenttiStore implements IDokumenttiStore {
     }
   }
 
+  async getDokumenttiKuva() {
+    this.state.dokumenttiKuva = (await Dokumentit.getDokumenttiKuva(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
+    this.generateKuvaHref();
+    this.setHref();
+  }
+
   setHref() {
     if (this.state.dokumentti) {
       if (_.kebabCase(this.state.dokumentti.tila) === _.kebabCase(DokumenttiDtoTilaEnum.VALMIS) && this.state.dokumentti.id) {
@@ -87,7 +94,7 @@ export class DokumenttiStore implements IDokumenttiStore {
   generateKuvaHref() {
     this.state.kuvat = _.map(this.kuvat.value, (kuva: Kuvatyyppi) => {
       let url;
-      if (_.get(this.state.dokumentti, kuva.tyyppi)) {
+      if (_.get(this.state.dokumenttiKuva, kuva.tyyppi)) {
         url = baseURL + DokumentitParams.getDokumenttiImage(this.opetussuunnitelma.id!, kuva.tyyppi, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!)).url;
       }
 
@@ -100,18 +107,17 @@ export class DokumenttiStore implements IDokumenttiStore {
 
   async luoPdf() {
     this.state.polling = true;
-
     this.state.dokumentti = (await Dokumentit.createDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
     await this.getDokumenttiTila();
   }
 
   async saveImage(file, tyyppi: string) {
     this.state.dokumentti = (await Dokumentit.addDokumenttiImage(this.opetussuunnitelma.id!, tyyppi, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!), file)).data;
-    this.generateKuvaHref();
+    await this.getDokumenttiKuva();
   }
 
   async removeImage(tyyppi: string) {
     await Dokumentit.deleteDokumenttiImage(this.opetussuunnitelma.id!, tyyppi, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!));
-    await this.init();
+    await this.getDokumenttiKuva();
   }
 }
