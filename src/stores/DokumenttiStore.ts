@@ -50,6 +50,7 @@ export class DokumenttiStore implements IDokumenttiStore {
   public readonly kuvat = computed(() => this.state.kuvat);
 
   async init() {
+    this.state.dokumentti = null;
     await this.getDokumenttiKuva();
     await this.getDokumenttiTila();
     this.generateKuvaHref();
@@ -58,7 +59,7 @@ export class DokumenttiStore implements IDokumenttiStore {
 
   @Debounced(2000)
   async getDokumenttiTila() {
-    this.state.dokumentti = (await Dokumentit.queryDokumenttiTila(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
+    this.state.dokumentti = (await Dokumentit.getLatestDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
 
     if (this.state.dokumentti) {
       if (_.kebabCase(this.state.dokumentti.tila) === _.kebabCase(DokumenttiDtoTilaEnum.EPAONNISTUI)
