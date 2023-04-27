@@ -620,31 +620,37 @@ export default class RouteToteutussuunnitelma extends Vue {
       },
     ];
 
-    if (!this.isArchived && (this.isDraft || this.$hasOikeus('hallinta', 'oph'))) {
-      let oikeus;
-      if (this.$hasOikeus('hallinta', 'oph')) {
-        oikeus = { oikeus: 'hallinta', kohde: 'oph' };
-      }
-      else if (this.isDraft) {
-        oikeus = { oikeus: 'hallinta', kohde: 'toteutussuunnitelma' };
-      }
-
+    if (this.poistonVaatimaOikeus) {
       rattaat = [
         ...rattaat,
         {
           separator: true,
-          oikeus,
+          oikeus: this.poistonVaatimaOikeus,
         },
         {
           icon: ['far', 'folder'],
           click: vaihdaOpetussunnitelmaTilaConfirm,
           ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
-          oikeus,
+          oikeus: this.poistonVaatimaOikeus,
         },
       ];
     }
 
     return rattaat;
+  }
+
+  get poistonVaatimaOikeus() {
+    if (this.isArchived) {
+      return;
+    }
+
+    if (this.isDraft || this.toteutus === Toteutus.AMMATILLINEN) {
+      return { oikeus: 'hallinta', kohde: 'toteutussuunnitelma' };
+    }
+
+    if (this.$hasOikeus('hallinta', 'oph')) {
+      return { oikeus: 'hallinta', kohde: 'oph' };
+    }
   }
 
   ratasClick(clickFn, meta) {
