@@ -1,8 +1,8 @@
 <template>
-  <div class="paikallinentoteutus w-100">
+  <div class="paikallinentoteutus w-100 pl-3">
     <ep-field v-if="isEditing" v-model="toteutus.otsikko" :is-editing="isEditing"></ep-field>
 
-    <div class="pl-1 mt-3">
+    <div class="mt-3">
       <h4 slot="header" class="mt-3">{{$t('tavat-ja-ymparisto')}}</h4>
       <ep-content layout="normal" v-model="toteutus.tavatjaymparisto.teksti" :is-editable="isEditing"> </ep-content>
 
@@ -95,7 +95,7 @@ export default class EpPaikallinenToteutus extends Vue {
 .paikallinentoteutus {
 
   .oletustoteutus {
-    margin-left: 17px;
+    margin-left: 15px;
   }
 
 }
