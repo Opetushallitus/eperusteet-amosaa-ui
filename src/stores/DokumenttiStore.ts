@@ -113,7 +113,7 @@ export class DokumenttiStore implements IDokumenttiStore {
   }
 
   async saveImage(file, tyyppi: string) {
-    this.state.dokumentti = (await Dokumentit.addDokumenttiImage(this.opetussuunnitelma.id!, tyyppi, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!), file)).data;
+    await Dokumentit.addDokumenttiImage(this.opetussuunnitelma.id!, tyyppi, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!), file);
     await this.getDokumenttiKuva();
   }
 
