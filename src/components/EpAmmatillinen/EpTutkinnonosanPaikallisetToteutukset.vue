@@ -129,7 +129,7 @@ export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
   }
 
   get koulutustoimijaId() {
-    return this.$route.params.toteutussuunnitelmaId;
+    return this.$route.params.koulutustoimijaId;
   }
 
   async haeOletusTutkinnonosaToteutukset() {
