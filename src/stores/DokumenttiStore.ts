@@ -74,12 +74,7 @@ export class DokumenttiStore implements IDokumenttiStore {
   async getDokumenttiTila() {
     this.state.dokumentti = (await Dokumentit.getLatestDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
 
-    if (!this.state.dokumentti.julkaisuDokumentti && !this.state.dokumenttiJulkaisu) {
-      this.state.dokumenttiJulkaisu = (await JulkinenApi.getJulkaistuDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
-      if (this.state.dokumenttiJulkaisu.id) {
-        this.state.dokumenttiJulkaisuHref = baseURL + JulkinenApiParams.getDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!), this.state.dokumenttiJulkaisu.id).url;
-      }
-    }
+    await this.getJulkaistuDokumentti();
 
     if (this.state.dokumentti) {
       if (_.kebabCase(this.state.dokumentti.tila) === _.kebabCase(DokumenttiDtoTilaEnum.EPAONNISTUI)
@@ -91,6 +86,15 @@ export class DokumenttiStore implements IDokumenttiStore {
       else if (_.kebabCase(this.state.dokumentti.tila) !== _.kebabCase(DokumenttiDtoTilaEnum.EIOLE)) {
         this.state.polling = true;
         await this.getDokumenttiTila();
+      }
+    }
+  }
+
+  async getJulkaistuDokumentti() {
+    if (this.state.dokumentti && !this.state.dokumentti.julkaisuDokumentti && !this.state.dokumenttiJulkaisu) {
+      this.state.dokumenttiJulkaisu = (await JulkinenApi.getJulkaistuDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
+      if (this.state.dokumenttiJulkaisu.id) {
+        this.state.dokumenttiJulkaisuHref = baseURL + JulkinenApiParams.getDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!), this.state.dokumenttiJulkaisu.id).url;
       }
     }
   }
