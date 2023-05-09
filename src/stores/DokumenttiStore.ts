@@ -64,6 +64,7 @@ export class DokumenttiStore implements IDokumenttiStore {
 
   async init() {
     this.state.dokumentti = null;
+    this.state.dokumenttiJulkaisu = null;
     await this.getDokumenttiKuva();
     await this.getDokumenttiTila();
     this.generateKuvaHref();
