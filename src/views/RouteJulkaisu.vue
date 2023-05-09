@@ -1,6 +1,20 @@
 <template>
   <div class="p-4">
-    <h2>{{ $t('julkaisunakyma') }}</h2>
+    <div class="d-flex justify-content-between">
+      <h2>{{ $t('julkaisunakyma') }}</h2>
+      <div class="d-flex flex-column" v-if="$isAdmin()">
+        <EpSpinner v-if="hallintaLoading" />
+        <b-dropdown v-else class="asetukset" size="lg" variant="link" dropleft toggle-class="text-decoration-none" no-caret>
+          <template v-slot:button-content>
+            {{$t('hallinta')}} <fas icon="ratas" class="hallinta" />
+          </template>
+         <EpButton variant="link" @click="poistaJulkaisut">
+            {{$t('poista-julkaisut')}}
+          </EpButton>
+        </b-dropdown>
+      </div>
+    </div>
+
     <div>{{ $t('julkaisunakyma-kuvaus') }}</div>
 
     <div class="mt-4">
@@ -140,7 +154,7 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpJulkaisuHistoria from '@shared/components/EpJulkaisuHistoria/EpJulkaisuHistoria.vue';
 import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
-import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum, Maintenance } from '@shared/api/amosaa';
 import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButton.vue';
 import { Toteutus } from '@shared/utils/perusteet';
 
@@ -174,6 +188,8 @@ export default class RouteJulkaisu extends Vue {
   private julkaisu = {
     tiedote: {},
   };
+
+  private hallintaLoading: boolean = false;
 
   async mounted() {
     await this.toteutussuunnitelmaStore.updateValidation();
@@ -253,6 +269,15 @@ export default class RouteJulkaisu extends Vue {
 
   get julkaisuKesken() {
     return this.toteutussuunnitelmaStore.viimeisinJulkaisuTila.value === 'KESKEN';
+  }
+
+  async poistaJulkaisut() {
+    this.hallintaLoading = true;
+    await Maintenance.poistaJulkaisut(this.suunnitelma!.id!);
+    await this.toteutussuunnitelmaStore.updateCurrent();
+    await this.toteutussuunnitelmaStore.fetchJulkaisut();
+    this.$success(this.$t('suunnitelman-julkaisut-poistettu') as string);
+    this.hallintaLoading = false;
   }
 }
 </script>
