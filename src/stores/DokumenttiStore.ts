@@ -1,7 +1,16 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import * as _ from 'lodash';
-import { Dokumentit, OpetussuunnitelmaDto, DokumenttiDto, DokumenttiKuvaDto, DokumenttiDtoTilaEnum, baseURL, DokumentitParams } from '@shared/api/amosaa';
+import {
+  Dokumentit,
+  OpetussuunnitelmaDto,
+  DokumenttiDto,
+  DokumenttiKuvaDto,
+  DokumenttiDtoTilaEnum,
+  baseURL,
+  DokumentitParams,
+  JulkinenApi, JulkinenApiParams,
+} from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import { IDokumenttiStore } from '@shared/tyypit';
 import { Debounced } from '@shared/utils/delay';
@@ -17,9 +26,11 @@ export interface Kuvatyyppi {
 export class DokumenttiStore implements IDokumenttiStore {
   private state = reactive({
     dokumentti: null as DokumenttiDto | null,
+    dokumenttiJulkaisu: null as DokumenttiDto | null,
     dokumenttiKuva: null as DokumenttiKuvaDto | null,
     polling: null as any | null,
     dokumenttiHref: null as string | null,
+    dokumenttiJulkaisuHref: null as string | null,
     kuvat: null as Kuvatyyppi[] | null,
   });
 
@@ -45,12 +56,15 @@ export class DokumenttiStore implements IDokumenttiStore {
   }
 
   public readonly dokumentti = computed(() => this.state.dokumentti);
+  public readonly dokumenttiJulkaisu = computed(() => this.state.dokumenttiJulkaisu);
   public readonly polling = computed(() => this.state.polling);
   public readonly dokumenttiHref = computed(() => this.state.dokumenttiHref);
+  public readonly dokumenttiJulkaisuHref = computed(() => this.state.dokumenttiJulkaisuHref);
   public readonly kuvat = computed(() => this.state.kuvat);
 
   async init() {
     this.state.dokumentti = null;
+    this.state.dokumenttiJulkaisu = null;
     await this.getDokumenttiKuva();
     await this.getDokumenttiTila();
     this.generateKuvaHref();
@@ -60,6 +74,8 @@ export class DokumenttiStore implements IDokumenttiStore {
   @Debounced(2000)
   async getDokumenttiTila() {
     this.state.dokumentti = (await Dokumentit.getLatestDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
+
+    await this.getJulkaistuDokumentti();
 
     if (this.state.dokumentti) {
       if (_.kebabCase(this.state.dokumentti.tila) === _.kebabCase(DokumenttiDtoTilaEnum.EPAONNISTUI)
@@ -71,6 +87,15 @@ export class DokumenttiStore implements IDokumenttiStore {
       else if (_.kebabCase(this.state.dokumentti.tila) !== _.kebabCase(DokumenttiDtoTilaEnum.EIOLE)) {
         this.state.polling = true;
         await this.getDokumenttiTila();
+      }
+    }
+  }
+
+  async getJulkaistuDokumentti() {
+    if (this.state.dokumentti && !this.state.dokumentti.julkaisuDokumentti && !this.state.dokumenttiJulkaisu) {
+      this.state.dokumenttiJulkaisu = (await JulkinenApi.getJulkaistuDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
+      if (this.state.dokumenttiJulkaisu.id) {
+        this.state.dokumenttiJulkaisuHref = baseURL + JulkinenApiParams.getDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!), this.state.dokumenttiJulkaisu.id).url;
       }
     }
   }
