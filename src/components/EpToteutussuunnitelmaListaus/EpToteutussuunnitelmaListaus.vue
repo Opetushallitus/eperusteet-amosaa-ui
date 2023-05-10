@@ -397,7 +397,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
     }, {
       key: 'paatospaivamaara',
       sortable: true,
-      label: this.$t('voimassaolo-loppuu') as string,
+      label: this.$t('paatospaivamaara') as string,
       formatter: dateFormatter,
     }];
   }

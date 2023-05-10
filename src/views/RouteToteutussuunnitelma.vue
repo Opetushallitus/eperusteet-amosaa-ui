@@ -269,7 +269,7 @@
                   </EpTekstikappaleLisays>
 
                   <EpTekstikappaleLisays
-                  v-if="isAmmatillinen"
+                  v-if="isAmmatillinen  && !isYhteinen"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :hide-taso="true"
                   :tallenna="lisaaUusiSuorituspolku"
@@ -297,7 +297,7 @@
                 </EpTekstikappaleLisays>
 
                 <EpTekstikappaleLisays
-                    v-if="isAmmatillinen"
+                    v-if="isAmmatillinen && !isYhteinen"
                     v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                     :tallenna="lisaaUusiTutkinnonOsa"
                     :hide-taso="true"
@@ -671,6 +671,10 @@ export default class RouteToteutussuunnitelma extends Vue {
 
   get isKoto(): boolean {
     return this.toteutus === Toteutus.KOTOUTUMISKOULUTUS;
+  }
+
+  get isYhteinen() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
   }
 
   get tekstikappaleet() {
