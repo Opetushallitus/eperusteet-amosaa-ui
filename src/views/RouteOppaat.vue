@@ -3,7 +3,6 @@
 </template>
 
 <script lang="ts">
-import _ from 'lodash';
 import { Prop, Vue, Component } from 'vue-property-decorator';
 import EpOppaat from '@shared/components/EpOppaat/EpOppaat.vue';
 import { ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
@@ -19,6 +18,9 @@ export default class RouteOppaat extends Vue {
   private toteutus!: Toteutus;
 
   get koulutustyypit() {
+    if (this.toteutus === Toteutus.VAPAASIVISTYSTYO) {
+      return [...ToteutuksenKoulutustyypit[this.toteutus], 'koulutustyyppi_muu'];
+    }
     return ToteutuksenKoulutustyypit[this.toteutus];
   }
 }
