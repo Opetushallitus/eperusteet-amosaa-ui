@@ -9,8 +9,10 @@
             :validoinnit="validoinnit"
             :julkaisemattomiaMuutoksia="onkoJulkaisemattomiaMuutoksia"
             :julkaistava="!isOpsPohja"
+            :is-validating="isValidating"
             @asetaValmiiksi="asetaValmiiksi"
             @palauta="palauta"
+            @validoi="validoi"
             :tyyppi="toteutus ==='ammatillinen' ? 'toteutussuunnitelma' : 'opetussuunnitelma'"
           />
         </div>
@@ -416,6 +418,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   private isInitializing = false;
   private naviStore: EpTreeNavibarStore | null = null;
   private query: string = '';
+  private isValidating: boolean = false;
 
   get opetussuunnitelmaTyyppi() {
     return this.isOpsPohja ? OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA : this.toteutus;
@@ -759,6 +762,12 @@ export default class RouteToteutussuunnitelma extends Vue {
         callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
       },
     );
+  }
+
+  async validoi() {
+    this.isValidating = true;
+    await this.toteutussuunnitelmaStore.updateCurrent();
+    this.isValidating = false;
   }
 
   get onkoJulkaisemattomiaMuutoksia() {
