@@ -81,7 +81,7 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
     };
 
     await Opetussuunnitelmat.updateOpetussuunnitelma(this.opetussuunnitelmaId, this.koulutustoimijaId, data.opetussuunnitelma);
-    this.toteutussuunnitelmaStore?.getOpetussuunnitelma(this.koulutustoimijaId, this.opetussuunnitelmaId);
+    this.toteutussuunnitelmaStore?.fetchOpetussuunnitelma(this.koulutustoimijaId, this.opetussuunnitelmaId);
   }
 
   async release() {
