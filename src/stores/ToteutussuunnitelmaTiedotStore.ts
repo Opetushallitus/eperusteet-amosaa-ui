@@ -1,13 +1,12 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
+import VueCompositionApi, { computed } from '@vue/composition-api';
 import { OpetussuunnitelmaDto, Perusteet, Opetussuunnitelmat, PerusteDto } from '@shared/api/amosaa';
-import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
-import { Revision, Kieli } from '@shared/tyypit';
+import { Revision } from '@shared/tyypit';
 import { requiredLokalisoituTeksti } from '@shared/validators/required';
-import { required, minValue, maxValue, requiredIf } from 'vuelidate/lib/validators';
+import { minValue, maxValue, requiredIf } from 'vuelidate/lib/validators';
 import { Toteutus } from '@shared/utils/perusteet';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { KuvaStore } from './KuvaStore';
@@ -82,7 +81,7 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
     };
 
     await Opetussuunnitelmat.updateOpetussuunnitelma(this.opetussuunnitelmaId, this.koulutustoimijaId, data.opetussuunnitelma);
-    await this.toteutussuunnitelmaStore?.init(this.koulutustoimijaId, this.opetussuunnitelmaId);
+    this.toteutussuunnitelmaStore?.fetchOpetussuunnitelma(this.koulutustoimijaId, this.opetussuunnitelmaId);
   }
 
   async release() {

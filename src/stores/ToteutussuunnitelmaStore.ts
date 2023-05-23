@@ -37,10 +37,7 @@ export class ToteutussuunnitelmaStore {
     this.state.navigation = null;
     this.state.julkaisemattomiaMuutoksia = null;
     try {
-      this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
-      if (_.get(this.state.toteutussuunnitelma, '_pohja')) {
-        this.state.pohja = (await Opetussuunnitelmat.getOpetussuunnitelmaPohjaKevyt(toteutussuunnitelmaId, koulutustoimijaId)).data;
-      }
+      await this.fetchOpetussuunnitelma(koulutustoimijaId, toteutussuunnitelmaId);
       this.state.julkaisut = (await Julkaisut.getJulkaisut(toteutussuunnitelmaId, koulutustoimijaId)).data;
       this.initNavigation();
       this.updateValidation();
@@ -49,6 +46,13 @@ export class ToteutussuunnitelmaStore {
     }
     catch (e) {
       logger.error(e);
+    }
+  }
+
+  public async fetchOpetussuunnitelma(koulutustoimijaId: string, toteutussuunnitelmaId: number) {
+    this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(toteutussuunnitelmaId, koulutustoimijaId)).data;
+    if (_.get(this.state.toteutussuunnitelma, '_pohja')) {
+      this.state.pohja = (await Opetussuunnitelmat.getOpetussuunnitelmaPohjaKevyt(toteutussuunnitelmaId, koulutustoimijaId)).data;
     }
   }
 
