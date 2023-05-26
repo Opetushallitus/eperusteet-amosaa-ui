@@ -95,7 +95,7 @@ export class DokumenttiStore implements IDokumenttiStore {
     if (this.state.dokumentti && !this.state.dokumentti.julkaisuDokumentti && !this.state.dokumenttiJulkaisu) {
       this.state.dokumenttiJulkaisu = (await JulkinenApi.getJulkaistuDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
       if (this.state.dokumenttiJulkaisu.id) {
-        this.state.dokumenttiJulkaisuHref = baseURL + JulkinenApiParams.getDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!), this.state.dokumenttiJulkaisu.id).url;
+        this.state.dokumenttiJulkaisuHref = baseURL + JulkinenApiParams.getDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, this.state.dokumenttiJulkaisu.id, _.toString(this.opetussuunnitelma.koulutustoimija!.id!)).url;
       }
     }
   }
@@ -109,7 +109,7 @@ export class DokumenttiStore implements IDokumenttiStore {
   setHref() {
     if (this.state.dokumentti) {
       if (_.kebabCase(this.state.dokumentti.tila) === _.kebabCase(DokumenttiDtoTilaEnum.VALMIS) && this.state.dokumentti.id) {
-        this.state.dokumenttiHref = baseURL + DokumentitParams.getPdfDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!)).url;
+        this.state.dokumenttiHref = baseURL + DokumentitParams.getLatestValmisDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!)).url;
       }
       else {
         this.state.dokumenttiHref = null;
