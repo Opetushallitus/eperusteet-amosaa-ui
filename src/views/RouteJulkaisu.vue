@@ -25,6 +25,12 @@
         <li>{{ $t('julkaisusta-vanhat-versiot-sailyvat') }}</li>
       </ul>
     </div>
+
+    <div v-if="isValidating" class="validointi">
+      <EpSpinner />
+      <div>{{ $t('validointi-kaynnissa') }}</div>
+    </div>
+
     <div>
       <h3 class="mt-4 mb-1">{{ $t('tarkistukset') }}</h3>
       <EpValidointilistaus
@@ -136,14 +142,10 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Component, Mixins, Prop, Vue, Watch } from 'vue-property-decorator';
-
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-
 import { JulkaisuKielistykset, OpetussuunnitelmaTyyppi } from '@/utils/toteutustypes';
-
 import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue';
-
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
@@ -190,9 +192,12 @@ export default class RouteJulkaisu extends Vue {
   };
 
   private hallintaLoading: boolean = false;
+  private isValidating: boolean = false;
 
   async mounted() {
+    this.isValidating = true;
     await this.toteutussuunnitelmaStore.updateValidation();
+    this.isValidating = false;
   }
 
   get suunnitelma() {
@@ -284,6 +289,10 @@ export default class RouteJulkaisu extends Vue {
 
 <style scoped lang="scss">
 @import '@shared/styles/_variables';
+
+  .validointi {
+    text-align: center;
+  }
 
   .content {
     padding: 15px 50px 50px 50px;
