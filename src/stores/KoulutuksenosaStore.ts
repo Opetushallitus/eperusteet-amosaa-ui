@@ -27,7 +27,7 @@ export class KoulutuksenosaStore extends AbstractSisaltoviiteStore implements IE
     public updateNavigation: Function,
     public opetussuunnitelma: Computed<OpetussuunnitelmaDto>,
   ) {
-    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero);
+    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation);
   }
 
   async editAfterLoad() {
