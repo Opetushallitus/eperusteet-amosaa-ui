@@ -12,7 +12,9 @@ export class AbstractSisaltoviiteStore {
     public opetussuunnitelmaId?: number,
     public koulutustoimijaId?: string,
     public sisaltoviiteId?: number,
-    public versionumero?: number) {
+    public versionumero?: number,
+    public el?: any,
+    public updateNavigation?: Function) {
   }
 
   async fetchSisaltoviite() {
@@ -44,6 +46,14 @@ export class AbstractSisaltoviiteStore {
     catch (err) {
       return null;
     }
+  }
+
+  async remove() {
+    await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId!, this.sisaltoviiteId!, this.koulutustoimijaId!);
+    await this.updateNavigation?.();
+    this.el?.$router.replace({
+      name: 'toteutussuunnitelma',
+    });
   }
 
   public async acquire() {
