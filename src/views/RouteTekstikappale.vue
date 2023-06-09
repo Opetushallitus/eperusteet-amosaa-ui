@@ -11,7 +11,7 @@
 
           <div v-if="perusteteksti || data.pohjanTekstikappale">
 
-            <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && perusteteksti)" :borderBottom="naytaPaikallinenTeksti">
+            <EpCollapse v-if="perusteteksti && (isEditing || data.naytaPerusteenTeksti)" :borderBottom="naytaPaikallinenTeksti">
               <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
               <ep-content layout="normal" v-model="perusteteksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
               <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
