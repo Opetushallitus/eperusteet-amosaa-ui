@@ -338,8 +338,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       const luotu = await this.toteutussuunnitelmaStore.create(_.toString(this.koulutustoimijaId), {
         perusteId: this.peruste ? this.peruste.id : undefined,
         perusteDiaarinumero: this.peruste ? this.peruste.diaarinumero : undefined,
-        opsId: this.pohjanTyyppi !== 'ophPohja' ? this.toteutussuunnitelma?.id : undefined,
-        _pohja: this.pohjanTyyppi === 'ophPohja' ? this.toteutussuunnitelma?.id as any : undefined,
+        opsId: this.toteutussuunnitelma?.id,
         tyyppi: this.tyyppi as any,
         suoritustapa: this.tallennettavaSuoritustapa,
         nimi: this.nimi,
