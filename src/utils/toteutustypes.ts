@@ -14,7 +14,6 @@ import { EperusteetPalautekanava, Koulutustyyppi } from '@shared/tyypit';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { TuvaTekstikappaleStore } from '@/stores/TuvaTekstikappaleStore';
-import _ from 'lodash';
 
 export const ToteutuksenKoulutustyypit = {
   [Toteutus.VAPAASIVISTYSTYO]: EperusteetKoulutustyyppiRyhmat.vapaasivistystyo,
@@ -844,7 +843,7 @@ export const ToteutussuunnitelmaPerustePaivitysKielistykset = {
     teksti: 'paivita-tutkinnon-perusteet-toteutussuunnitelmiisi-huomioteksti',
   },
   [Toteutus.TUTKINTOONVALMENTAVA]: {
-    otsikko: 'paivita-tutkinnon-perusteet-toteutussuunnitelmiisi',
+    otsikko: 'paivita-koulutuksen-perusteet-toteutussuunnitelmaasi',
     teksti: 'paivita-tutkinnon-perusteet-toteutussuunnitelmiisi-huomioteksti',
   },
   [Toteutus.KOTOUTUMISKOULUTUS]: {
