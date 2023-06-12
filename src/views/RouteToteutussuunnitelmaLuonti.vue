@@ -4,8 +4,7 @@
       <EpSteps ref="epsteps" :steps="steps" :initial-step="0" :on-save="onSave" @cancel="onCancel">
 
         <template v-slot:toteutussuunnitelma>
-
-           <div class="row">
+          <div class="row">
             <div class="col-sm-10 mb-4">
               <b-form-group class="mt-4 pt-2 " v-if="pohjanValinta">
                 <div slot="label" class="d-flex">
@@ -100,9 +99,8 @@
               </b-form-group>
 
               <EpJotpaSelect v-if="pohjanTyyppi && pohjanTyyppi === 'pohjaton'" :toteutus="toteutus" :isEditing="true" v-model="jotpa" asRows/>
-
             </div>
-           </div>
+          </div>
         </template>
 
         <template v-slot:luo>
@@ -122,17 +120,17 @@ import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import EpSteps, { Step } from '@shared/components/EpSteps/EpSteps.vue';
+import EpSteps from '@shared/components/EpSteps/EpSteps.vue';
 import * as _ from 'lodash';
 import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto, Perusteet } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, PerusteDto, Perusteet } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
-import { OpetussuunnitelmaLuontiKielistykset, TotetusOpetussuunnitelmaRoute } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaLuontiKielistykset } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
 import { EperusteetKoulutustyyppiRyhmat, isAmmatillinenKoulutustyyppi, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
@@ -375,7 +373,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   onCancel() {
     this.$router.push({
-      name: TotetusOpetussuunnitelmaRoute[this.toteutus],
+      name: 'yhteinen',
     });
   }
 
