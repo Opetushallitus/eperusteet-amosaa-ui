@@ -122,11 +122,11 @@ import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import EpSteps, { Step } from '@shared/components/EpSteps/EpSteps.vue';
+import EpSteps from '@shared/components/EpSteps/EpSteps.vue';
 import * as _ from 'lodash';
 import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { OpetussuunnitelmaDto, Ulkopuoliset, PerusteDto, Perusteet } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, PerusteDto, Perusteet } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
@@ -451,10 +451,12 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     }
 
     if (this.pohjanTyyppi === 'opsPohja') {
-      return _.sortBy([
-        ...(this.opsPohjat ? this.opsPohjat : []),
-        ...(this.ophOpsPohjat ? this.ophOpsPohjat : []),
-      ], ops => this.$kaanna(ops.nimi!));
+      return _.sortBy(
+        _.uniqBy([
+          ...(this.opsPohjat ? this.opsPohjat : []),
+          ...(this.ophOpsPohjat ? this.ophOpsPohjat : []),
+        ], ops => ops.id),
+        ops => this.$kaanna(ops.nimi!));
     }
   }
 
