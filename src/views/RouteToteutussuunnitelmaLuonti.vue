@@ -336,8 +336,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
       const luotu = await this.toteutussuunnitelmaStore.create(_.toString(this.koulutustoimijaId), {
         perusteId: this.peruste ? this.peruste.id : undefined,
         perusteDiaarinumero: this.peruste ? this.peruste.diaarinumero : undefined,
-        opsId: this.pohjanTyyppi !== 'ophPohja' ? this.toteutussuunnitelma?.id : undefined,
-        _pohja: this.pohjanTyyppi === 'ophPohja' ? this.toteutussuunnitelma?.id as any : undefined,
+        opsId: this.toteutussuunnitelma?.id,
         tyyppi: this.tyyppi as any,
         suoritustapa: this.tallennettavaSuoritustapa,
         nimi: this.nimi,
@@ -450,10 +449,12 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     }
 
     if (this.pohjanTyyppi === 'opsPohja') {
-      return _.sortBy([
-        ...(this.opsPohjat ? this.opsPohjat : []),
-        ...(this.ophOpsPohjat ? this.ophOpsPohjat : []),
-      ], ops => this.$kaanna(ops.nimi!));
+      return _.sortBy(
+        _.uniqBy([
+          ...(this.opsPohjat ? this.opsPohjat : []),
+          ...(this.ophOpsPohjat ? this.ophOpsPohjat : []),
+        ], ops => ops.id),
+        ops => this.$kaanna(ops.nimi!));
     }
   }
 
