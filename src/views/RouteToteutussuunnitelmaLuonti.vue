@@ -4,8 +4,7 @@
       <EpSteps ref="epsteps" :steps="steps" :initial-step="0" :on-save="onSave" @cancel="onCancel">
 
         <template v-slot:toteutussuunnitelma>
-
-           <div class="row">
+          <div class="row">
             <div class="col-sm-10 mb-4">
               <b-form-group class="mt-4 pt-2 " v-if="pohjanValinta">
                 <div slot="label" class="d-flex">
@@ -100,9 +99,8 @@
               </b-form-group>
 
               <EpJotpaSelect v-if="pohjanTyyppi && pohjanTyyppi === 'pohjaton'" :toteutus="toteutus" :isEditing="true" v-model="jotpa" asRows/>
-
             </div>
-           </div>
+          </div>
         </template>
 
         <template v-slot:luo>
@@ -132,7 +130,7 @@ import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
-import { OpetussuunnitelmaLuontiKielistykset, TotetusOpetussuunnitelmaRoute } from '@/utils/toteutustypes';
+import { OpetussuunnitelmaLuontiKielistykset } from '@/utils/toteutustypes';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { createLogger } from '@shared/utils/logger';
 import { EperusteetKoulutustyyppiRyhmat, isAmmatillinenKoulutustyyppi, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
@@ -202,7 +200,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   async mounted() {
     this.toteutussuunnitelmaPohjatStore = new OpetussuunnitelmaPohjatStore();
-    this.toteutussuunnitelmaPohjatStore.fetch(_.toNumber(this.koulutustoimijaId), this.toteutus, ['poistettu', 'luonnos', 'valmis', 'julkaistu'], this.tyyppi);
+    this.toteutussuunnitelmaPohjatStore.fetch(_.toNumber(this.koulutustoimijaId), this.toteutus, ['luonnos', 'valmis', 'julkaistu'], this.tyyppi);
 
     if (this.opetussuunnitelmaPohjatStore) {
       this.opetussuunnitelmaPohjatStore.fetch(_.toNumber(this.koulutustoimijaId), this.toteutus, ['luonnos', 'valmis', 'julkaistu'], 'opsPohja');
@@ -374,7 +372,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   onCancel() {
     this.$router.push({
-      name: TotetusOpetussuunnitelmaRoute[this.toteutus],
+      name: 'yhteinen',
     });
   }
 

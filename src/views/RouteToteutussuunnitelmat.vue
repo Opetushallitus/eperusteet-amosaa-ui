@@ -88,7 +88,7 @@ export default class RouteToteutussuunnitelmat extends Vue {
       return ['ops'];
     }
 
-    return ['pohja', 'ops', 'yleinen'];
+    return ['ops', 'yleinen'];
   }
 
   get tableFields() {
