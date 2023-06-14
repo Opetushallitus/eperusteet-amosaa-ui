@@ -1,7 +1,8 @@
 <template>
-  <EpCollapse :borderTop="borderTop">
+  <EpCollapse :borderTop="borderTop"
+              :border-bottom="false">
     <template v-slot:header>
-      <h4 class="pb-3" v-if="title">
+      <h4 v-if="title">
         {{ $t(title) }}
       </h4>
     </template>
@@ -48,5 +49,10 @@ export default class EpValidointilistaus extends Vue {
 </script>
 
 <style scoped lang="scss">
+
+::v-deep .ep-collapse {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
 
 </style>
