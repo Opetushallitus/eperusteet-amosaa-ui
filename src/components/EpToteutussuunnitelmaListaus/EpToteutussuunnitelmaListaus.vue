@@ -124,10 +124,8 @@
 
 <script lang="ts">
 import { Watch, Prop, Component, Vue } from 'vue-property-decorator';
-
 import * as _ from 'lodash';
 import { BvTableFieldArray } from 'bootstrap-vue';
-
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpIcon from '@shared/components/EpIcon/EpIcon.vue';
 import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
@@ -136,8 +134,6 @@ import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
-import { Page } from '@shared/tyypit';
-
 import { IToteutussuunnitelmaProvider } from './types';
 import { Toteutus } from '@shared/utils/perusteet';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
@@ -179,7 +175,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   @Prop({ required: true })
   private kayttajaStore!: KayttajaStore;
 
-  private tyyppi: string | null = null;
+  private tyyppi: string | null = 'ops';
   private voimassaolo: string | null = null;
   private tila: string[] | null = ['luonnos', 'julkaistu'];
   private isLoading = false;
@@ -193,7 +189,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
     tuleva: true,
     poistunut: true,
     tila: this.tila,
-    tyyppi: ['pohja', 'ops', 'yleinen', 'yhteinen'],
+    tyyppi: ['ops'],
     nimi: '',
     jarjestysOrder: false,
     jarjestysTapa: 'nimi',
@@ -276,7 +272,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
   onTyyppiChange(tyyppi: string) {
     this.query = {
       ...this.query,
-      tyyppi: [tyyppi],
+      tyyppi: tyyppi ? [tyyppi] : ['ops', 'yleinen'],
     };
   }
 
