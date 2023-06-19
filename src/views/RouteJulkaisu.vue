@@ -26,29 +26,38 @@
       </ul>
     </div>
 
-    <div v-if="isValidating" class="validointi">
-      <EpSpinner />
-      <div>{{ $t('validointi-kaynnissa') }}</div>
-    </div>
-
     <div>
-      <h3 class="mt-4 mb-1">{{ $t('tarkistukset') }}</h3>
-      <EpValidointilistaus
-        v-if="parsedErrors && parsedErrors.length > 0"
-        :borderTop="true"
-        :items="parsedErrors"
-        :title="'validointi-virheet'"
-        :type="'danger'" />
-      <EpValidointilistaus
-        v-if="warnings && warnings.length > 0"
-        :items="warnings"
-        :title="'validointi-varoitukset'"
-        :type="'warning'" />
-      <EpSpinner v-if="!toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value" />
-      <div v-if="hasNoErrors && toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value" class="d-flex align-items-center mb-4">
-        <fas class="text-success mr-2" icon="check-circle"/>
-        {{ $t('suunnitelmassa-ei-virheita') }}
+      <h3>{{ $t('tarkistukset') }}</h3>
+      <div class="validation">
+        <div v-if="isValidating" class="validointi-spinner">
+          <EpSpinner />
+          <div>{{ $t('validointi-kaynnissa') }}</div>
+        </div>
+        <div v-else>
+          <div v-if="parsedErrors && parsedErrors.length > 0" class="d-flex">
+            <div class="material-icons errors">info</div>
+            <div class="ml-2">{{$t('loytyi-julkaisun-estavia-virheita')}}</div>
+          </div>
+          <div v-else class="d-flex">
+            <div class="material-icons no-errors">check_circle</div>
+            <div class="ml-2">{{$t('ei-julkaisua-estavia-virheita')}}</div>
+          </div>
+          <EpValidointilistaus
+            v-if="parsedErrors && parsedErrors.length > 0"
+            :items="parsedErrors"
+            :title="'validointi-virheet'"
+            :type="'danger'" />
+          <EpValidointilistaus
+            v-if="warnings && warnings.length > 0"
+            :items="warnings"
+            :title="'validointi-varoitukset'"
+            :type="'warning'" />
+        </div>
       </div>
+
+      <EpSpinner v-if="!toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value" />
+      <hr class="mt-4 mb-4">
+
       <template v-if="suunnitelma">
         <h3>{{ $t('suunnitelman-tiedot') }}</h3>
         <b-container fluid>
@@ -290,19 +299,35 @@ export default class RouteJulkaisu extends Vue {
 <style scoped lang="scss">
 @import '@shared/styles/_variables';
 
-  .validointi {
-    text-align: center;
-  }
+.validation {
+  border: 1px solid #ccc;
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 20px;
+}
 
-  .content {
-    padding: 15px 50px 50px 50px;
-  }
+.validointi-spinner {
+  text-align: center;
+}
 
-  .julkaisu:nth-of-type(even) {
-    background-color: $table-even-row-bg-color;
-  }
+.no-errors {
+  color: $green;
+}
 
-  .julkaisu:nth-of-type(odd) {
-    background-color: $table-odd-row-bg-color;
-  }
+.errors {
+  color: $invalid;
+}
+
+.content {
+  padding: 15px 50px 50px 50px;
+}
+
+.julkaisu:nth-of-type(even) {
+  background-color: $table-even-row-bg-color;
+}
+
+.julkaisu:nth-of-type(odd) {
+  background-color: $table-odd-row-bg-color;
+}
 </style>
