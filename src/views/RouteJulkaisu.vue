@@ -153,7 +153,7 @@
 import _ from 'lodash';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { JulkaisuKielistykset, OpetussuunnitelmaTyyppi } from '@/utils/toteutustypes';
+import { JulkaisuKielistykset } from '@/utils/toteutustypes';
 import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
@@ -259,7 +259,7 @@ export default class RouteJulkaisu extends Vue {
       this.$success(this.$t('julkaisu-kaynnistetty') as string);
     }
     catch (err) {
-      this.$warning(this.$t('julkaisu-epaonnistui-' + OpetussuunnitelmaTyyppi[this.toteutus] + '-' + err.response?.data?.syy) as string);
+      this.$fail(this.$t('julkaisu-epaonnistui') as string);
     }
   }
 
