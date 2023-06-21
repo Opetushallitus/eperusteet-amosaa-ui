@@ -25,7 +25,16 @@
           </b-form-group>
         </div>
 
-        <b-form-group class="" :label="$t('tutkinnon-osa')" v-if="supportData.tutkinnonOsa">
+        <div v-if="tyyppi === 'paikallinen'" class="d-flex flex-lg-wrap justify-content-between">
+          <b-form-group class="flex-grow-1 mr-6" :label="$t('koodi')">
+            <ep-field v-model="data.osaAlueet[osaAlueIdx].koodi"
+                      type="string"
+                      :is-editing="isEditing">
+            </ep-field>
+          </b-form-group>
+        </div>
+
+        <b-form-group :label="$t('tutkinnon-osa')" v-if="supportData.tutkinnonOsa">
           <router-link :to="{ name: 'tutkinnonosa' }">{{ $kaanna(supportData.tutkinnonOsa.nimi) }}</router-link>
         </b-form-group>
 
@@ -87,7 +96,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Watch, Prop, Mixins, Component, Vue, InjectReactive } from 'vue-property-decorator';
+import { Watch, Prop, Component, Vue } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
@@ -151,6 +160,7 @@ export default class RouteOsaAlue extends Vue {
       return 'paikalliset-osaamistavoitteet';
     }
   }
+
   get toteutussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value || null;
   }
