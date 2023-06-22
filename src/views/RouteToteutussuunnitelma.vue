@@ -607,19 +607,19 @@ export default class RouteToteutussuunnitelma extends Vue {
         text: 'ystava-organisaatioiden-kayttooikeudet',
         route: 'ystava-organisaatioiden-kayttooikeudet',
         icon: 'kaytto-oikeus',
-        oikeus: { oikeus: 'luonti' },
+        oikeus: { oikeus: 'luku' },
       },
       {
         text: 'luo-pdf',
         route: 'pdfLuonti',
         icon: 'luo-pdf',
-        oikeus: { oikeus: 'muokkaus' },
+        oikeus: { oikeus: 'luku' },
       },
       {
         text: 'poistetut-sisallot',
         route: 'poistetutsisallot',
         icon: 'roskalaatikko',
-        oikeus: { oikeus: 'luonti' },
+        oikeus: { oikeus: 'luku' },
       },
     ];
 
