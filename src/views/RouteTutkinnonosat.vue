@@ -26,7 +26,7 @@
           </router-link>
         </template>
         <template v-slot:cell(actions)="data">
-          <button class="btn btn-link ikoni">
+          <button class="btn btn-link p-0">
             <fas icon="trash" @click="remove(data.item.tutkinnonosaViite.id)"/>
           </button>
         </template>
@@ -186,9 +186,5 @@ export default class RouteTutkinnonosat extends Vue {
   color: $black;
   font-size: 0.9rem;
   font-weight: 600;
-}
-
-.ikoni {
-  padding: 0 !important;
 }
 </style>
