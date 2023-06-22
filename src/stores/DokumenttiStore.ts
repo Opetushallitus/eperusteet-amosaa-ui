@@ -132,9 +132,14 @@ export class DokumenttiStore implements IDokumenttiStore {
   }
 
   async luoPdf() {
-    this.state.polling = true;
-    this.state.dokumentti = (await Dokumentit.createDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
-    await this.getDokumenttiTila();
+    try {
+      this.state.polling = true;
+      this.state.dokumentti = (await Dokumentit.createDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
+      await this.getDokumenttiTila();
+    }
+    catch (e) {
+      this.state.polling = false;
+    }
   }
 
   async saveImage(file, tyyppi: string) {
