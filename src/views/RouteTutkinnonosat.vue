@@ -109,7 +109,7 @@ export default class RouteTutkinnonosat extends Vue {
     return this.$bvModal.msgBoxConfirm((vahvistusSisalto as any), {
       title: this.$t('varmista-poisto'),
       okVariant: 'primary',
-      okTitle: this.$t('varmista-poisto'),
+      okTitle: this.$t('poista'),
       cancelVariant: 'link',
       cancelTitle: this.$t('peruuta'),
       centered: true,
