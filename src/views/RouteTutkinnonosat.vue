@@ -25,14 +25,20 @@
             <span class="paikallinen" v-if="data.item.tutkinnonosaViite.tosa.tyyppi === 'oma'">({{$t('tutkinnon-osa-paikallinen-merkki')}})</span>
           </router-link>
         </template>
+        <template v-slot:cell(actions)="data">
+          <button class="btn btn-link ikoni">
+            <fas icon="trash" @click="remove(data.item.tutkinnonosaViite.id)"/>
+          </button>
+        </template>
       </b-table>
+
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import { TutkinnonOsatStore } from '@/stores/TutkinnonOsatStore';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
@@ -41,6 +47,7 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpTutkinnonosaTuonti from '@/components/EpSisaltoLisays/EpTutkinnonosaTuonti.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
+import { Sisaltoviitteet } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -67,17 +74,55 @@ export default class RouteTutkinnonosat extends Vue {
 
   private queryNimi: string = '';
 
-  get opetussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
   @Watch('opetussuunnitelma', { immediate: true })
   async opetussuunnitelmachange() {
+    await this.fetch();
+  }
+
+  async fetch() {
     if (this.opetussuunnitelma) {
       await this.tutkinnonOsatStore.fetch(this.opetussuunnitelma.id!,
         _.toString(this.opetussuunnitelma.koulutustoimija?.id),
         this.opetussuunnitelma.peruste?.id!);
     }
+  }
+
+  async remove(tutkinnonosaId) {
+    try {
+      if (await this.confirm()) {
+        await Sisaltoviitteet.removeSisaltoViite(this.toteutussuunnitelmaId, tutkinnonosaId, this.koulutustoimijaId);
+        await this.fetch();
+        await this.updateNavigation();
+      }
+    }
+    catch (err) {
+      this.$fail(this.$t('poisto-epaonnistui') as string);
+    }
+  }
+
+  async confirm() {
+    let modalContent = [
+      this.$createElement('strong', this.$t('tata-toimintoa-ei-voida-perua') as string),
+    ];
+    const vahvistusSisalto = this.$createElement('div', {}, modalContent).children;
+
+    return this.$bvModal.msgBoxConfirm((vahvistusSisalto as any), {
+      title: this.$t('varmista-poisto'),
+      okVariant: 'primary',
+      okTitle: this.$t('varmista-poisto'),
+      cancelVariant: 'link',
+      cancelTitle: this.$t('peruuta'),
+      centered: true,
+      ...{} as any,
+    });
+  }
+
+  async updateNavigation() {
+    await this.toteutussuunnitelmaStore.initNavigation();
+  }
+
+  get opetussuunnitelma() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
   }
 
   get tutkinnonosat() {
@@ -125,11 +170,11 @@ export default class RouteTutkinnonosat extends Vue {
       formatter: (value: any, key: string, item: any) => {
         return this.$sdt(item.tutkinnonosaViite.tosa.muokattu);
       },
+    }, {
+      key: 'actions',
+      label: '',
+      thStyle: { borderBottom: '0px' },
     }];
-  }
-
-  async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation();
   }
 }
 </script>
@@ -137,9 +182,13 @@ export default class RouteTutkinnonosat extends Vue {
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
 
- .paikallinen {
-    color: $black;
-    font-size: 0.9rem;
-    font-weight: 600;
- }
+.paikallinen {
+  color: $black;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ikoni {
+  padding: 0 !important;
+}
 </style>
