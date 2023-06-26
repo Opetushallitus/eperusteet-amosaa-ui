@@ -26,9 +26,10 @@
           </router-link>
         </template>
         <template v-slot:cell(actions)="data">
-          <button class="btn btn-link p-0">
-            <fas icon="trash" @click="remove(data.item.tutkinnonosaViite.id)"/>
-          </button>
+          <EpSpinner v-if="data.item.poistossa" small/>
+          <EpButton variant="link" v-else class="btn btn-link p-0" @click="remove(data.item.tutkinnonosaViite.id)">
+            <fas icon="trash"/>
+          </EpButton>
         </template>
       </b-table>
 
@@ -73,6 +74,7 @@ export default class RouteTutkinnonosat extends Vue {
   private tutkinnonOsatStore = new TutkinnonOsatStore();
 
   private queryNimi: string = '';
+  private poistossa: number[] = [];
 
   @Watch('opetussuunnitelma', { immediate: true })
   async opetussuunnitelmachange() {
@@ -90,9 +92,11 @@ export default class RouteTutkinnonosat extends Vue {
   async remove(tutkinnonosaId) {
     try {
       if (await this.confirm()) {
+        this.poistossa.push(tutkinnonosaId);
         await Sisaltoviitteet.removeSisaltoViite(this.toteutussuunnitelmaId, tutkinnonosaId, this.koulutustoimijaId);
-        await this.fetch();
         await this.updateNavigation();
+        await this.fetch();
+        _.pull(this.poistossa, tutkinnonosaId);
       }
     }
     catch (err) {
@@ -136,6 +140,7 @@ export default class RouteTutkinnonosat extends Vue {
           return {
             ...tutkinnonosa,
             nimi: _.has(tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi, Kielet.getSisaltoKieli.value) ? tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi : this.$t('uusi-tutkinnonosa'),
+            poistossa: _.includes(this.poistossa, tutkinnonosa.tutkinnonosaViite.id),
           };
         })
         .value();
@@ -174,6 +179,8 @@ export default class RouteTutkinnonosat extends Vue {
       key: 'actions',
       label: '',
       thStyle: { borderBottom: '0px' },
+      tdStyle: { width: '50px' },
+      tdClass: 'text-center',
     }];
   }
 }
