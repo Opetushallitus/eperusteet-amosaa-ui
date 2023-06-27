@@ -2,7 +2,7 @@
 <div class="yleisnakyma">
 
   <EpSpinner v-if="vanhentunutPeruste === null" />
-  <div class="info-box sync-box" v-else-if="vanhentunutPeruste && !perustePaivitetty" v-oikeustarkastelu="{ oikeus: 'hallinta', kohde: 'toteutussuunnitelma' }">
+  <div class="info-box sync-box" v-else-if="vanhentunutPeruste && !perustePaivitetty" v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
     <h2>{{$t(perustePaivitysKielistys['otsikko'])}}</h2>
     <div v-html="$t(perustePaivitysKielistys['teksti'])" />
 
