@@ -94,8 +94,7 @@ export default class RouteTutkinnonosat extends Vue {
       if (await this.confirm()) {
         this.poistossa.push(tutkinnonosaId);
         await Sisaltoviitteet.removeSisaltoViite(this.toteutussuunnitelmaId, tutkinnonosaId, this.koulutustoimijaId);
-        await this.updateNavigation();
-        await this.fetch();
+        await Promise.all([this.updateNavigation(), this.fetch()]);
         _.pull(this.poistossa, tutkinnonosaId);
       }
     }

@@ -1,9 +1,7 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
-import { Perusteet, OpetussuunnitelmaDto, SisaltoViiteKevytDto, Opetussuunnitelmat, Sisaltoviitteet } from '@shared/api/amosaa';
+import { Perusteet, Sisaltoviitteet } from '@shared/api/amosaa';
 import _ from 'lodash';
-import { Computed } from '@shared/utils/interfaces';
-import { IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
 
 Vue.use(VueCompositionApi);
 
@@ -16,7 +14,7 @@ export class TutkinnonOsatStore {
 
   public async fetch(toteutussuunnitelmaId: number, koulutustoimijaId: string, perusteId: number) {
     this.state.tutkinnonosat = null;
-    const tutkinnonosaViitteet = (await Sisaltoviitteet.getTutkinnonosat(toteutussuunnitelmaId, koulutustoimijaId)).data;
+    const tutkinnonosaViitteet = (await Sisaltoviitteet.getTutkinnonosatKevyt(toteutussuunnitelmaId, koulutustoimijaId)).data;
     const perusteIds = [perusteId, ..._.uniq(_.map(_.filter(tutkinnonosaViitteet, 'linkattuPeruste'), 'linkattuPeruste'))];
 
     let perusteenTutkinnonosaViitteet = {};
