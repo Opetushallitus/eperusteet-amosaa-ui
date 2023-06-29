@@ -1,5 +1,7 @@
 <template>
   <div class="home-container minfull">
+    <EpTestiymparisto />
+
     <div class="header" ref="header" :style="headerStyle" :class="toteutus" id="scroll-anchor">
       <EpNavbar
         :class="toteutus"
@@ -29,11 +31,13 @@ import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
 import { Koulutustoimijat, KoulutustoimijaDto } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
+import EpTestiymparisto from '@shared/components/EpTestiymparisto/EpTestiymparisto.vue';
 
 @Component({
   components: {
     EpNavbar,
     EpFooter,
+    EpTestiymparisto,
   },
   directives: {
     Sticky,
