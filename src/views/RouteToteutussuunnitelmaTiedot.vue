@@ -189,8 +189,9 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
   private editointiStore: EditointiStore | null = null;
 
   private readonly oppilaitostyyppiKoodisto = new KoodistoSelectStore({
-    async query(query: string, sivu = 0) {
-      return (await Koodisto.kaikkiSivutettuna('vapaasivistystyooppilaitostyyppi', query, {
+    koodisto: 'vapaasivistystyooppilaitostyyppi',
+    async query(query: string, sivu = 0, koodisto) {
+      return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
         params: {
           sivu,
           sivukoko: 50,

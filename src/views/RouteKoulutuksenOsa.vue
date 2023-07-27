@@ -224,8 +224,9 @@ export default class RouteKoulutuksenOsa extends AbstractRouteSisalto {
   }
 
   private readonly laajaAlaisetKoodistoStore = new KoodistoSelectStore({
-    async query(query: string, sivu = 0) {
-      return (await Koodisto.kaikkiSivutettuna('tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen', query, {
+    koodisto: 'tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen',
+    async query(query: string, sivu = 0, koodisto) {
+      return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
         params: {
           sivu,
           sivukoko: 25,

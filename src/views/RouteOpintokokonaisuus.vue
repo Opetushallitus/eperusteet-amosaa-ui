@@ -232,7 +232,6 @@ import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/Koodist
 import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { Koodisto } from '@shared/api/eperusteet';
-
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { KuvaStore } from '@/stores/KuvaStore';
@@ -275,8 +274,9 @@ export default class RouteOpintokokonaisuus extends Vue {
   private editointiStore: EditointiStore | null = null;
 
   private readonly koodisto = new KoodistoSelectStore({
-    async query(query: string, sivu = 0) {
-      return (await Koodisto.kaikkiSivutettuna('opintokokonaisuustavoitteet', query, {
+    koodisto: 'opintokokonaisuustavoitteet',
+    async query(query: string, sivu = 0, koodisto) {
+      return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
         params: {
           sivu,
           sivukoko: 10,
