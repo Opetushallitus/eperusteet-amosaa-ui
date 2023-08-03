@@ -7,7 +7,7 @@
        <b-row>
          <b-col>
            <b-form-group :label="$t('laajuus')">
-            {{koulutuksenosa.laajuusMinimi}} - {{koulutuksenosa.laajuusMaksimi}} {{$t('viikkoa')}}
+            {{perusteenOsa.laajuusMinimi}} - {{perusteenOsa.laajuusMaksimi}} {{$t('viikkoa')}}
           </b-form-group>
          </b-col>
       </b-row>
@@ -15,7 +15,7 @@
         <b-col md="10">
           <b-form-group :label="$t('kuvaus')">
             <EpContent
-              v-model="koulutuksenosa.kuvaus"
+              v-model="perusteenOsa.kuvaus"
               layout="normal"
               :is-editable="false"
               :kuvaHandler="kuvaHandler"/>
@@ -27,9 +27,9 @@
         <b-col md="10">
           <h3 class="mb-4">{{$t('tavoitteet')}}</h3>
           <b-form-group :label="$t('opiskelija')">
-            <template v-if="koulutuksenosa.tavoitteet.length > 0">
+            <template v-if="perusteenOsa.tavoitteet.length > 0">
               <ul class="mb-0">
-                <li v-for="tavoite in koulutuksenosa.tavoitteet" :key="tavoite.id">
+                <li v-for="tavoite in perusteenOsa.tavoitteet" :key="tavoite.id">
                   {{$kaanna(tavoite)}}
                 </li>
               </ul>
@@ -61,8 +61,8 @@
           <b-form-group>
             <h3 slot="label">{{ $t('laaja-alainen-osaaminen') }}</h3>
               <EpContent
-                v-if="koulutuksenosa.laajaAlaisenOsaamisenKuvaus"
-                v-model="koulutuksenosa.laajaAlaisenOsaamisenKuvaus"
+                v-if="perusteenOsa.laajaAlaisenOsaamisenKuvaus"
+                v-model="perusteenOsa.laajaAlaisenOsaamisenKuvaus"
                 layout="normal"
                 :is-editable="false"
                 :kuvaHandler="kuvaHandler"/>
@@ -98,8 +98,8 @@
           <b-form-group>
             <h3 slot="label">{{ $t('keskeinen-sisalto') }}</h3>
               <EpContent
-                v-if="koulutuksenosa.keskeinenSisalto"
-                v-model="koulutuksenosa.keskeinenSisalto"
+                v-if="perusteenOsa.keskeinenSisalto"
+                v-model="perusteenOsa.keskeinenSisalto"
                 layout="normal"
                 :is-editable="false"
                 :kuvaHandler="kuvaHandler"/>
@@ -126,8 +126,8 @@
           <b-form-group>
             <h3 slot="label">{{ $t('arviointi-teksti') }}</h3>
               <EpContent
-                v-if="koulutuksenosa.arvioinninKuvaus"
-                v-model="koulutuksenosa.arvioinninKuvaus"
+                v-if="perusteenOsa.arvioinninKuvaus"
+                v-model="perusteenOsa.arvioinninKuvaus"
                 layout="normal"
                 :is-editable="false"
                 :kuvaHandler="kuvaHandler"/>
@@ -193,7 +193,8 @@ import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/Koodist
 import { Koodisto } from '@shared/api/eperusteet';
 import EpSortableTextList from '@shared/components/EpSortableTextList/EpSortableTextList.vue';
 import EpKoulutuksenJarjestajaSelect from '@shared/components/EpKoulutuksenJarjestajaSelect/EpKoulutuksenJarjestajaSelect.vue';
-import { Sisaltoviitteet } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, Sisaltoviitteet } from '@shared/api/amosaa';
+import { AbstractRouteSisalto } from './AbstractRouteSisalto';
 
 @Component({
   components: {
@@ -210,19 +211,7 @@ import { Sisaltoviitteet } from '@shared/api/amosaa';
     EpKoulutuksenJarjestajaSelect,
   },
 })
-export default class RouteKoulutuksenOsa extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
-
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
-
-  @Prop({ required: true })
-  private sisaltoviiteId!: number;
-
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
-
+export default class RouteKoulutuksenOsa extends AbstractRouteSisalto {
   private editointiStore: EditointiStore | null = null;
   private laajaAlaisetOsaamiset: any[] = [];
 
@@ -249,17 +238,11 @@ export default class RouteKoulutuksenOsa extends Vue {
     return this.laajaAlaisetKoodistoStore.data.value?.data;
   }
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
+  get perusteenOsa() {
+    return this.editointiStore?.data.value.perusteenOsa || this.editointiStore?.data.value.koulutuksenosa;
   }
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
-  }
-
-  fetch() {
+  async fetch() {
     this.editointiStore = new EditointiStore(
       new KoulutuksenosaStore(
         this.toteutussuunnitelmaId,
@@ -268,11 +251,7 @@ export default class RouteKoulutuksenOsa extends Vue {
         this.versionumero,
         this,
         () => this.toteutussuunnitelmaStore.initNavigation(),
-        this.toteutussuunnitelmaStore.toteutussuunnitelma));
-  }
-
-  get versionumero() {
-    return _.toNumber(this.$route.query.versionumero);
+        this.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
   }
 
   get kuvaHandler() {

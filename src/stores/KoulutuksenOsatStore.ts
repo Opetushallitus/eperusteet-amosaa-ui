@@ -20,11 +20,25 @@ export class KoulutuksenOsatStore implements IEditoitava {
   public readonly fetch = watch([this.opetussuunnitelma], async () => {
     this.state.koulutuksenosat = null;
     if (this.opetussuunnitelma.value) {
-      this.state.koulutuksenosat = (await Sisaltoviitteet.getSisaltoviitteeTyypilla(
+      this.state.koulutuksenosat = await Promise.all(_.map((await Sisaltoviitteet.getSisaltoviitteeTyypilla(
         this.opetussuunnitelma.value.id,
         'koulutuksenosa',
         this.opetussuunnitelma.value.koulutustoimija.id,
-      )).data;
+      )).data, async (koulutuksenosaviite) => {
+        if (koulutuksenosaviite.perusteenOsaId && this.opetussuunnitelma.value.peruste) {
+          const perusteenOsa = (await Perusteet.getPerusteenOsa(this.opetussuunnitelma.value.peruste!.id!, koulutuksenosaviite.perusteenOsaId)).data as any;
+          return {
+            ...koulutuksenosaviite,
+            koulutuksenosa: {
+              ...koulutuksenosaviite.koulutuksenosa,
+              laajuusMinimi: perusteenOsa.laajuusMinimi,
+              laajuusMaksimi: perusteenOsa.laajuusMaksimi,
+            },
+          };
+        }
+
+        return koulutuksenosaviite;
+      }));
     }
   });
 
