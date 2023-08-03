@@ -1,15 +1,9 @@
 import Vue from 'vue';
 import VueCompositionApi, { computed } from '@vue/composition-api';
-
 import _ from 'lodash';
-import { minLength, required, minValue } from 'vuelidate/lib/validators';
 
-import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum, Perusteet } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-import { Revision, ILukko } from '@shared/tyypit';
-import { Kielet } from '@shared/stores/kieli';
-import { translated } from '@shared/validators/required';
-import { Validations } from 'vuelidate-property-decorators';
 import { Computed } from '@shared/utils/interfaces';
 import { AbstractSisaltoviiteStore } from './AbstractSisaltoviiteStore';
 
@@ -25,7 +19,7 @@ export class KoulutuksenosaStore extends AbstractSisaltoviiteStore implements IE
     public versionumero: number,
     public el: any,
     public updateNavigation: Function,
-    public opetussuunnitelma: Computed<OpetussuunnitelmaDto>,
+    public opetussuunnitelma: OpetussuunnitelmaDto,
   ) {
     super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation);
   }
@@ -35,7 +29,16 @@ export class KoulutuksenosaStore extends AbstractSisaltoviiteStore implements IE
   }
 
   async load() {
-    return this.fetchSisaltoviite();
+    let data = await this.fetchSisaltoviite();
+    if (data.perusteenOsaId && this.opetussuunnitelma.peruste) {
+      const perusteenOsa = (await Perusteet.getPerusteenOsa(this.opetussuunnitelma.peruste!.id!, data.perusteenOsaId)).data;
+      data = {
+        ...data,
+        perusteenOsa,
+      } as any;
+    }
+
+    return data;
   }
 
   async save(data: any) {
@@ -49,7 +52,7 @@ export class KoulutuksenosaStore extends AbstractSisaltoviiteStore implements IE
   public features(data: any) {
     return computed(() => {
       return {
-        editable: this.opetussuunnitelma.value?.tyyppi !== 'opspohja',
+        editable: this.opetussuunnitelma.tyyppi !== _.toLower(OpetussuunnitelmaDtoTyyppiEnum.POHJA),
         removable: true,
         hideable: false,
         recoverable: true,
