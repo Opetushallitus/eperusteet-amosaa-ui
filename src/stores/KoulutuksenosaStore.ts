@@ -53,7 +53,7 @@ export class KoulutuksenosaStore extends AbstractSisaltoviiteStore implements IE
     return computed(() => {
       return {
         editable: this.opetussuunnitelma.tyyppi !== _.toLower(OpetussuunnitelmaDtoTyyppiEnum.POHJA),
-        removable: true,
+        removable: !data.perusteenOsaId,
         hideable: false,
         recoverable: true,
         lockable: true,
