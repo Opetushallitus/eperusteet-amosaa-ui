@@ -239,7 +239,7 @@ export default class RouteJulkaisu extends Vue {
       .map(error => {
         return {
           ...error,
-          nimi: this.validationNimi(error) + this.$t(error.syy!),
+          nimi: this.validationNimi(error) + this.$t(error.kuvaus!),
           route: nodeToRoute(error.navigationNode),
         };
       })
