@@ -95,6 +95,11 @@ export function nodeToRoute(node: NavigationNodeDto): Location | null {
   }
 
   switch (node.type) {
+  case 'tiedot': {
+    return {
+      name: 'toteutussuunnitelmantiedot',
+    };
+  }
   case 'tutkinnonosat':
     return {
       name: 'tutkinnonosat',

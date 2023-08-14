@@ -14,7 +14,12 @@
               <span :class="'text-' + type" class="mr-2 align-self-start">
                 <fas icon="info" />
               </span>
-              <span>{{ item.nimi ? $kaanna(item.nimi) + ': ' : '' }} {{ $t(item.syy) }}</span>
+              <router-link v-if="item.route" :to="item.route">
+                {{ item.nimi}}
+              </router-link>
+              <span v-else>
+                {{ item.nimi }}
+              </span>
             </div>
           </td>
         </tr>
@@ -25,20 +30,20 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-
+import _ from 'lodash';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 
-  @Component({
-    components: {
-      EpCollapse,
-    },
-  })
+@Component({
+  components: {
+    EpCollapse,
+  },
+})
 export default class EpValidointilistaus extends Vue {
     @Prop({ required: true })
     title!: string;
 
     @Prop({ required: true })
-    items!: { nimi: string, syy: string}[];
+    items!: { nimi: string, syy: string, route: any}[];
 
     @Prop({ required: false, default: false })
     borderTop!: boolean;

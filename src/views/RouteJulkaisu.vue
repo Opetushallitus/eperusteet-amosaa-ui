@@ -48,8 +48,8 @@
             :title="'validointi-virheet'"
             :type="'danger'" />
           <EpValidointilistaus
-            v-if="warnings && warnings.length > 0"
-            :items="warnings"
+            v-if="parsedWarnings && parsedWarnings.length > 0"
+            :items="parsedWarnings"
             :title="'validointi-varoitukset'"
             :type="'warning'" />
         </div>
@@ -168,6 +168,7 @@ import { Kielet } from '@shared/stores/kieli';
 import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum, Maintenance } from '@shared/api/amosaa';
 import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButton.vue';
 import { Toteutus } from '@shared/utils/perusteet';
+import { nodeToRoute } from '@/utils/routing';
 
 @Component({
   components: {
@@ -223,13 +224,39 @@ export default class RouteJulkaisu extends Vue {
 
   get parsedErrors() {
     if (this.errors) {
-      return [
-        ...this.errors!.filter(error => error.nimi && error),
-        ..._.chain(this.errors!.filter(error => !error.nimi && error))
-          .uniqBy('syy')
-          .value(),
-      ];
+      return this.validationsParsed(this.errors);
     }
+  }
+
+  get parsedWarnings() {
+    if (this.warnings) {
+      return this.validationsParsed(this.warnings);
+    }
+  }
+
+  validationsParsed(validations) {
+    return _.chain(validations)
+      .map(error => {
+        return {
+          ...error,
+          nimi: this.validationNimi(error) + this.$t(error.syy!),
+          route: nodeToRoute(error.navigationNode),
+        };
+      })
+      .uniqBy('nimi')
+      .value();
+  }
+
+  validationNimi(item) {
+    if (item.navigationNode?.label) {
+      return this.$kaanna(item.navigationNode.label) + ': ';
+    }
+
+    if (item.nimi) {
+      return this.$kaanna(item.nimi) + ': ';
+    }
+
+    return '';
   }
 
   get errors() {
