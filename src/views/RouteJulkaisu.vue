@@ -202,12 +202,9 @@ export default class RouteJulkaisu extends Vue {
   };
 
   private hallintaLoading: boolean = false;
-  private isValidating: boolean = false;
 
   async mounted() {
-    this.isValidating = true;
     await this.toteutussuunnitelmaStore.updateValidation();
-    this.isValidating = false;
   }
 
   get suunnitelma() {
@@ -222,8 +219,14 @@ export default class RouteJulkaisu extends Vue {
     return this.isValid && this.suunnitelma?.tila !== _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
   }
 
+  get isValidating() {
+    return !this.validoinnit;
+  }
+
   get isValid() {
-    return _.every(this.validoinnit, validointi => _.isEmpty(validointi.virheet));
+    if (this.validoinnit) {
+      return _.every(this.validoinnit, validointi => _.isEmpty(validointi.virheet));
+    }
   }
 
   get validoinnit() {
