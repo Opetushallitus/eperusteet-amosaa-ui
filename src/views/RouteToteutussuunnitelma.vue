@@ -708,11 +708,16 @@ export default class RouteToteutussuunnitelma extends Vue {
   get validoinnit() {
     if (this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
       return {
-        virheet: _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value.virheet)
-          .keyBy('syy')
-          .keys()
+        virheet: _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value)
+          .map('virheet')
+          .flatMap()
+          .map('kuvaus')
           .value(),
-        huomautukset: [],
+        huomautukset: _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value)
+          .map('huomautukset')
+          .flatMap()
+          .map('kuvaus')
+          .value(),
       };
     }
   }

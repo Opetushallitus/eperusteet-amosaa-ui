@@ -13,7 +13,7 @@ export class ToteutussuunnitelmaStore {
     toteutussuunnitelma: null as OpetussuunnitelmaDto | null,
     pohja: null as OpetussuunnitelmaBaseDto | null,
     navigation: null as NavigationNodeDto | null,
-    toteutussuunnitelmaStatus: null as Validointi | null,
+    toteutussuunnitelmaStatus: null as Array<Validointi> | null,
     julkaisut: null as JulkaisuBaseDto[] | null,
     vanhentunutPohjaperusteDto: null as VanhentunutPohjaperusteDto | null,
     julkaisemattomiaMuutoksia: null as boolean | null,

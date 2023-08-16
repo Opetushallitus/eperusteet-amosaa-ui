@@ -34,24 +34,22 @@
           <div>{{ $t('validointi-kaynnissa') }}</div>
         </div>
         <div v-else>
-          <div v-if="parsedErrors && parsedErrors.length > 0" class="d-flex">
-            <div class="material-icons errors">info</div>
-            <div class="ml-2">{{$t('loytyi-julkaisun-estavia-virheita')}}</div>
-          </div>
-          <div v-else class="d-flex">
+          <div v-if="isValid" class="d-flex">
             <div class="material-icons no-errors">check_circle</div>
             <div class="ml-2">{{$t('ei-julkaisua-estavia-virheita')}}</div>
           </div>
-          <EpValidointilistaus
-            v-if="parsedErrors && parsedErrors.length > 0"
-            :items="parsedErrors"
-            :title="'validointi-virheet'"
-            :type="'danger'" />
-          <EpValidointilistaus
-            v-if="parsedWarnings && parsedWarnings.length > 0"
-            :items="parsedWarnings"
-            :title="'validointi-varoitukset'"
-            :type="'warning'" />
+          <div v-else class="d-flex">
+            <div class="material-icons errors">info</div>
+            <div class="ml-2">{{$t('loytyi-julkaisun-estavia-virheita')}}</div>
+          </div>
+
+          <div v-for="(validointi, idx) in validoinnit" :key="'validointi'+idx">
+            <ep-collapse v-if="validointi.virheet.length > 0 || validointi.huomautukset.length > 0"
+                        :borderBottom="false">
+              <h3 slot="header">{{ $t(validointi.kategoria) }}</h3>
+              <EpJulkaisuValidointi :validointi="validointi" />
+            </ep-collapse>
+          </div>
         </div>
       </div>
 
@@ -169,6 +167,7 @@ import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum, Maintenan
 import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButton.vue';
 import { Toteutus } from '@shared/utils/perusteet';
 import { nodeToRoute } from '@/utils/routing';
+import EpJulkaisuValidointi from '@shared/components/EpJulkaisuValidointi/EpJulkaisuValidointi.vue';
 
 @Component({
   components: {
@@ -182,6 +181,7 @@ import { nodeToRoute } from '@/utils/routing';
     EpValidointilistaus,
     EpJulkaisuHistoria,
     EpJulkaisuButton,
+    EpJulkaisuValidointi,
   },
 })
 export default class RouteJulkaisu extends Vue {
@@ -218,57 +218,29 @@ export default class RouteJulkaisu extends Vue {
     return buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${this.suunnitelma!.id}`, `/${this.toteutus}`);
   }
 
-  get hasNoErrors(): boolean {
-    return this.errors?.length === 0 && this.warnings?.length === 0;
-  }
-
-  get parsedErrors() {
-    if (this.errors) {
-      return this.validationsParsed(this.errors);
-    }
-  }
-
-  get parsedWarnings() {
-    if (this.warnings) {
-      return this.validationsParsed(this.warnings);
-    }
-  }
-
-  validationsParsed(validations) {
-    return _.chain(validations)
-      .map(error => {
-        return {
-          ...error,
-          nimi: this.validationNimi(error) + this.$t(error.kuvaus!),
-          route: nodeToRoute(error.navigationNode),
-        };
-      })
-      .uniqBy('nimi')
-      .value();
-  }
-
-  validationNimi(item) {
-    if (item.navigationNode?.label) {
-      return this.$kaanna(item.navigationNode.label) + ': ';
-    }
-
-    if (item.nimi) {
-      return this.$kaanna(item.nimi) + ': ';
-    }
-
-    return '';
-  }
-
-  get errors() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value?.virheet;
-  }
-
-  get warnings() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value?.varoitukset;
-  }
-
   get julkaisuMahdollinen() {
-    return _.size(this.errors) === 0 && this.suunnitelma?.tila !== _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
+    return this.isValid && this.suunnitelma?.tila !== _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
+  }
+
+  get isValid() {
+    return _.every(this.validoinnit, validointi => _.isEmpty(validointi.virheet));
+  }
+
+  get validoinnit() {
+    if (this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
+      return _.map(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value, validointi => {
+        return {
+          ...validointi,
+          virheet: this.listNodeToRoute(validointi.virheet),
+          huomautukset: this.listNodeToRoute(validointi.huomautukset),
+          huomiot: this.listNodeToRoute(validointi.huomiot),
+        };
+      });
+    }
+  }
+
+  listNodeToRoute(list) {
+    return _.map(list, item => ({ ...item, route: nodeToRoute(item.navigationNode) }));
   }
 
   get julkaisut() {
