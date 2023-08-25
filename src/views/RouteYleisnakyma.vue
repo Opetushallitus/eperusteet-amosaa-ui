@@ -23,7 +23,7 @@
     <div class="col-lg-12 col-xl-6 p-0">
       <ep-toteutussuunnitelman-tiedotteet class="info-box" v-if="peruste" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
       <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma" :toteutus="toteutus"/>
-      <ep-toteutussuunnitelman-sisaltoviitteet class="info-box" :opetussuunnitelma="toteutussuunnitelma" :toteutus="toteutus"/>
+      <ep-toteutussuunnitelman-sisaltoviitteet class="info-box" v-if="!isYhteinen" :opetussuunnitelma="toteutussuunnitelma" :toteutus="toteutus"/>
     </div>
     <div class="col-lg-12 col-xl-6 p-0 pl-2">
       <ep-viimeaikainen-toiminta class="info-box" :muokkaustietoStore="muokkaustietoStore"/>
@@ -43,13 +43,13 @@ import EpToteutussuunnitelmanTiedotteet from '@/components/EpYleisnakyma/EpToteu
 import EpViimeaikainenToiminta from '@shared/components/EpViimeaikainenToiminta/EpViimeaikainenToiminta.vue';
 import { MuokkaustietoStore } from '@/stores/MuokkaustietoStore';
 import { AikatauluStore } from '@/stores/AikatauluStore';
-import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { Toteutus } from '@shared/utils/perusteet';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 
 @Component({
   components: {
@@ -118,6 +118,10 @@ export default class RouteYleisnakyma extends Vue {
 
   get perustePaivitysKielistys() {
     return ToteutussuunnitelmaPerustePaivitysKielistykset[this.toteutus];
+  }
+
+  get isYhteinen() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
   }
 }
 </script>
