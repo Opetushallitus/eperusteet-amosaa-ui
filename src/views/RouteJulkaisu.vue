@@ -35,11 +35,11 @@
         </div>
         <div v-else>
           <div v-if="isValid" class="d-flex">
-            <EpMaterialIcon :color="'#4c7f00'">check_circle</EpMaterialIcon>
+            <EpMaterialIcon class="no-errors">check_circle</EpMaterialIcon>
             <div class="ml-2">{{$t('ei-julkaisua-estavia-virheita')}}</div>
           </div>
           <div v-else class="d-flex">
-            <EpMaterialIcon :color="'#dc3545'">info</EpMaterialIcon>
+            <EpMaterialIcon class="errors">info</EpMaterialIcon>
             <div class="ml-2">{{$t('loytyi-julkaisun-estavia-virheita')}}</div>
           </div>
 
@@ -313,6 +313,14 @@ export default class RouteJulkaisu extends Vue {
 
 .validointi-spinner {
   text-align: center;
+}
+
+.no-errors {
+  color: $green;
+}
+
+.errors {
+  color: $invalid;
 }
 
 .content {
