@@ -36,7 +36,9 @@
             <b-form-group>
               <div slot="label" class="d-flex align-items-center">
                 <div>{{$t('opintokokonaisuuden-koodi')}}</div>
-                <div class="ml-4 material-icons-outlined default-icon clickable" v-b-popover.hover.right="$t('opintokokonaisuus-koodi-selite')">info</div>
+                <div class="ml-4 default-icon clickable" v-b-popover.hover.right="$t('opintokokonaisuus-koodi-selite')">
+                  <EpMaterialIcon icon-shape="outlined">info</EpMaterialIcon>
+                </div>
               </div>
               <div v-if="opintokokonaisuus.koodiArvo">{{opintokokonaisuus.koodiArvo}}</div>
               <div v-else class="font-italic">{{$t('koodi-generoidaan-julkaisussa')}}</div>
@@ -219,7 +221,6 @@
 import _ from 'lodash';
 import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import draggable from 'vuedraggable';
-
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
@@ -230,6 +231,7 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { Koodisto } from '@shared/api/eperusteet';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
@@ -256,6 +258,7 @@ enum TyyppiSource {
     EpKoodistoSelect,
     draggable,
     EpOpintokokonaisuusArviointiImport,
+    EpMaterialIcon,
   },
 })
 export default class RouteOpintokokonaisuus extends Vue {
@@ -441,11 +444,11 @@ export default class RouteOpintokokonaisuus extends Vue {
 @import "@shared/styles/_variables.scss";
 
   ::v-deep fieldset {
-    padding-right: 0px;
+    padding-right: 0;
   }
 
   ::v-deep .input-wrapper {
-    flex: 1 1 0%;
+    flex: 1 1 0;
 
     input {
       border-top-right-radius: 0;

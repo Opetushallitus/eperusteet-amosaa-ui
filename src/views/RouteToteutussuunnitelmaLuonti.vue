@@ -9,7 +9,9 @@
               <b-form-group class="mt-4 pt-2 " v-if="pohjanValinta">
                 <div slot="label" class="d-flex">
                   <span>{{$t('kayta-pohjana')+' *'}}</span>
-                  <span class="material-icons-outlined ml-2 default-icon clickable" id="infopopup">info</span>
+                  <div class="ml-2 default-icon clickable" id="infopopup">
+                    <EpMaterialIcon icon-shape="outlined">info</EpMaterialIcon>
+                  </div>
                   <b-popover
                     target="infopopup"
                     triggers="hover click blur" v-if="tyypinRadioButtons">
@@ -121,6 +123,7 @@ import EpField from '@shared/components/forms/EpField.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSteps from '@shared/components/EpSteps/EpSteps.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import * as _ from 'lodash';
 import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
@@ -147,6 +150,7 @@ import EpJotpaSelect, { OpsJotpa } from '@/components/EpJotpa/EpJotpaSelect.vue'
     EpSteps,
     EpToggle,
     EpJotpaSelect,
+    EpMaterialIcon,
   },
   validations() {
     return {
@@ -547,7 +551,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 @import "@shared/styles/_variables.scss";
 
 .tieto {
-  padding: 20px 20px 20px 0px;
+  padding: 20px 20px 20px 0;
 
   .nimi {
     font-weight: 600;
