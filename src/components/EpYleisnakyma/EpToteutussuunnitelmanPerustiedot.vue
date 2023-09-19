@@ -1,15 +1,13 @@
 <template>
-
   <div class="perustiedot-content">
     <h3>{{$t(kielistykset['title'])}}</h3>
 
     <div class="d-flex flex-wrap" v-if="toteutussuunnitelma">
-
-     <ep-perustieto-data icon="kielet" :topic="$t('julkaisukielet')">
+     <ep-perustieto-data icon="translate" :topic="$t('julkaisukielet')">
         {{julkaisukielet}}
       </ep-perustieto-data>
 
-      <ep-perustieto-data icon="kalenteri" :topic="$t('luotu')">
+      <ep-perustieto-data icon="calendar_today" :topic="$t('luotu')">
         {{$sdt(toteutussuunnitelma.luotu)}}
       </ep-perustieto-data>
     </div>
