@@ -1,5 +1,5 @@
 <template>
-  <EpHomeTile icon="ryhma"
+  <EpHomeTile icon="groups"
               :route="{ name: 'organisaatio' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">

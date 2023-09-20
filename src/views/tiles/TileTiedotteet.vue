@@ -1,5 +1,5 @@
 <template>
-  <EpHomeTile icon="muistikirja"
+  <EpHomeTile icon="description"
               :route="{ name: 'tiedotteet' }"
               :count="uudetTiedotteetCount">
     <template slot="header">

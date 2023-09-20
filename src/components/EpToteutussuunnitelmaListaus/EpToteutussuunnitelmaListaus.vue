@@ -127,7 +127,6 @@ import { Watch, Prop, Component, Vue } from 'vue-property-decorator';
 import * as _ from 'lodash';
 import { BvTableFieldArray } from 'bootstrap-vue';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
-import EpIcon from '@shared/components/EpIcon/EpIcon.vue';
 import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
@@ -144,7 +143,6 @@ export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
 @Component({
   components: {
-    EpIcon,
     EpMainView,
     EpMultiSelect,
     EpPagination,

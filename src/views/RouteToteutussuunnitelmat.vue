@@ -34,7 +34,6 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpToteutussuunnitelmaListaus from '@/components/EpToteutussuunnitelmaListaus/EpToteutussuunnitelmaListaus.vue';
-import EpIcon from '@shared/components/EpIcon/EpIcon.vue';
 import { ToteutussuunnitelmatStore } from '@/stores/ToteutussuunnitelmatStore';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { KayttajaStore } from '@/stores/kayttaja';
@@ -42,7 +41,6 @@ import { Murupolku } from '@shared/stores/murupolku';
 
 @Component({
   components: {
-    EpIcon,
     EpMainView,
     EpToteutussuunnitelmaListaus,
     EpButton,

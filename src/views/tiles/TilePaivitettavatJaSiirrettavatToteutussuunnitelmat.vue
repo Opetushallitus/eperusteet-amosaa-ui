@@ -1,5 +1,5 @@
 <template>
-  <EpHomeTile icon="opetussuunnitelma"
+  <EpHomeTile icon="article"
               :route="{ name: 'paivitettavat' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }"
               :count="vanhatJaHistoriaToteutussuunnitelmatCount">

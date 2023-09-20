@@ -57,7 +57,6 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
@@ -66,7 +65,6 @@ import * as _ from 'lodash';
 
 @Component({
   components: {
-    EpHomeTile,
     EpSpinner,
     EpMainView,
     EpButton,

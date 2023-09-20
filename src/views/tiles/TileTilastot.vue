@@ -1,5 +1,5 @@
 <template>
-  <EpHomeTile icon="tilasto"
+  <EpHomeTile icon="show_chart"
               :route="{ name: 'tilastot' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
