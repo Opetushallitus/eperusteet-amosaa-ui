@@ -15,8 +15,9 @@
           <b-table :items="valilehti.poistetut" :fields="fields" :current-page="pages[valilehti.otsikko]" :per-page="perPage">
             <template v-slot:cell(palauta)="{ item }">
               <ep-button variant="link"
-                        icon="peruuta"
-                        @click="palauta(item)">
+                         micon="keyboard_return"
+                         @click="palauta(item)"
+                         inherit-style>
                 {{ $t('palauta') }}
               </ep-button>
             </template>
@@ -25,8 +26,7 @@
           <b-pagination
             v-model="pages[valilehti.otsikko]"
             :per-page="perPage"
-            :total-rows="valilehti.poistetut.length"
-          />
+            :total-rows="valilehti.poistetut.length"/>
         </div>
 
         <div v-else class="mt-4 disabled-text">{{$t('ei-palautettavaa-sisaltoa-annetuilla-hakuehdoilla')}}</div>
@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { PoistetutStore } from '@/stores/PoistetutStore';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ep-button  @click="openModal" variant="outline-primary" icon="plussa" >
+    <ep-button @click="openModal" variant="outline-primary" micon="add" >
       {{ $t('tuo-tutkinnon-osa') }}
     </ep-button>
     <b-modal ref="tuotutkinnonosaModal"
@@ -99,16 +99,14 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Mixins, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import EpField from '@shared/components/forms/EpField.vue';
 import { SisaltoviiteLaajaDto } from '@shared/api/amosaa';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
-import { Page } from '@shared/tyypit';
 
 @Component({
   components: {

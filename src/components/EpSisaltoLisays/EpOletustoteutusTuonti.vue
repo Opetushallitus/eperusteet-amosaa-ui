@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ep-button  @click="openModal" variant="outline-primary" icon="plussa" >
+    <ep-button  @click="openModal" variant="outline-primary" micon="add" >
       {{ $t('tuo-oletustoteutus') }}
     </ep-button>
     <b-modal id="tuoOletusotteutus"
@@ -11,7 +11,6 @@
         <slot name="title">
           {{ $t('tuo-oletustoteutus-tutkinnon-osaan') }}
         </slot>
-
       </template>
 
       <ep-spinner v-if="!oletustoteutukset" />
@@ -47,7 +46,7 @@
 import * as _ from 'lodash';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import { OletusToteutusDto, TutkinnonosaApi, TutkinnonosaDto } from '@shared/api/amosaa';
+import { OletusToteutusDto } from '@shared/api/amosaa';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 
 @Component({

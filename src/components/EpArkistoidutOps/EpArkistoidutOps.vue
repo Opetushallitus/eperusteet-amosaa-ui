@@ -28,11 +28,11 @@
           {{ $sdt(data.value) }}
         </template>
         <template #cell(siirtyminen)="data">
-          <EpButton
-            variant="link"
-            icon="peruuta"
-            @click="$emit('restore', data.item)"
-            v-if="$hasOikeus('luonti') || $isAdmin()">
+          <EpButton variant="link"
+                    micon="keyboard_return"
+                    @click="$emit('restore', data.item)"
+                    v-if="$hasOikeus('luonti') || $isAdmin()"
+                    inherit-style>
             {{ $t('palauta') }}
           </EpButton>
         </template>

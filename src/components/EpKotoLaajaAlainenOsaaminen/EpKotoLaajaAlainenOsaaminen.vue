@@ -11,7 +11,7 @@
 
       <div class="d-flex align-items-center justify-content-between">
         <h3>{{$kaanna(perusteenLaotByUri[lao.koodiUri].koodi.nimi)}}</h3>
-        <ep-button variant="link" icon="roskalaatikko" @click="poistaLaajaAlainenOsaaminen(lao)" v-if="isEditing">
+        <ep-button v-if="isEditing" variant="link" micon="delete" @click="poistaLaajaAlainenOsaaminen(lao)" inherit-style>
           {{ $t('poista') }}
         </ep-button>
       </div>

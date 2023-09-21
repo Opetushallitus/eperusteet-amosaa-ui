@@ -54,25 +54,25 @@
           <ep-content layout="normal" v-model="vapaaTk.teksti" :is-editable="isEditing"> </ep-content>
 
           <div class="d-flex justify-content-between pt-3" v-if="isEditing">
-            <ep-button variant="outline-primary" icon="plussa" v-if="index+1 === data.tutkinnonosaViite.tosa.vapaat.length" @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)">
+            <ep-button variant="outline-primary" micon="add" v-if="index+1 === data.tutkinnonosaViite.tosa.vapaat.length" @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)">
               {{ $t('lisaa-tekstikappale') }}
             </ep-button>
             <div v-else/>
 
-            <ep-button variant="link" icon="roskalaatikko" @click="poistaTekstikappale(data.tutkinnonosaViite.tosa, vapaaTk)">
+            <ep-button variant="link" micon="delete" @click="poistaTekstikappale(data.tutkinnonosaViite.tosa, vapaaTk)" inherit-style>
               {{ $t('poista-tekstikappale') }}
             </ep-button>
           </div>
         </ep-collapse>
 
-        <ep-button class="pb-4 pt-3" variant="outline-primary" icon="plussa" v-if="isEditing && data.tutkinnonosaViite.tosa.vapaat.length === 0" @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)">
+        <ep-button class="pb-4 pt-3" variant="outline-primary" micon="add" v-if="isEditing && data.tutkinnonosaViite.tosa.vapaat.length === 0" @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)">
           {{ $t('lisaa-tekstikappale') }}
         </ep-button>
 
         <div v-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'reformi_tutke2'">
           <EpYhteiset v-model="data.tutkinnonosaViite" :perusteen="data.perusteenTutkinnonosa" :is-editing="isEditing">
             <div slot="uusiosaalue" v-if="!isEditing && data.tutkinnonosaViite.tyyppi !== 'linkki'">
-              <ep-button @click="lisaaOsaAlue()" variant="outline" icon="plus" :show-spinner="lisataanOsaAlue">
+              <ep-button @click="lisaaOsaAlue()" variant="outline" micon="add" :show-spinner="lisataanOsaAlue">
                 {{ $t('lisaa-osa-alue') }}
               </ep-button>
             </div>
@@ -124,7 +124,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Vue, Watch, Mixins, InjectReactive } from 'vue-property-decorator';
+import { Prop, Component, Watch, Mixins } from 'vue-property-decorator';
 import { TutkinnonOsaStore } from '@/stores/TutkinnonOsaStore';
 import EpPerusteenTutkinnonOsa from '@/components/EpAmmatillinen/EpPerusteenTutkinnonOsa.vue';
 import EpTutkinnonosanPaikallisetToteutukset from '@/components/EpAmmatillinen/EpTutkinnonosanPaikallisetToteutukset.vue';
@@ -138,7 +138,7 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
-import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto, OmaOsaAlueDtoTyyppiEnum } from '@shared/api/amosaa';
+import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto } from '@shared/api/amosaa';
 import draggable from 'vuedraggable';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
@@ -146,7 +146,6 @@ import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillin
 import { Validations } from 'vuelidate-property-decorators';
 import { requiredOneLang } from '@shared/validators/required';
 import { validationMixin } from 'vuelidate';
-import { Kielet } from '@shared/stores/kieli';
 
 @Component({
   components: {

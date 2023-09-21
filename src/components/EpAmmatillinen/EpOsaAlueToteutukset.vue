@@ -33,7 +33,7 @@
     </draggable>
 
     <div class="d-flex">
-      <ep-button @click="lisaaToteutus()" variant="outline" icon="plus" v-if="isEditing">
+      <ep-button v-if="isEditing" @click="lisaaToteutus()" variant="outline" micon="add">
         {{ $t('lisaa-toteutus') }}
       </ep-button>
 
