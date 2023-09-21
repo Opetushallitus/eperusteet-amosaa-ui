@@ -15,7 +15,7 @@
           <b-table :items="valilehti.poistetut" :fields="fields" :current-page="pages[valilehti.otsikko]" :per-page="perPage">
             <template v-slot:cell(palauta)="{ item }">
               <ep-button variant="link"
-                         micon="keyboard_return"
+                         icon="keyboard_return"
                          @click="palauta(item)"
                          inherit-style>
                 {{ $t('palauta') }}

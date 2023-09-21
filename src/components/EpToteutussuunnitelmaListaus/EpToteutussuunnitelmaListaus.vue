@@ -101,7 +101,7 @@
               {{ $t(data.item.tila) }}
               <ep-button v-if="data.item.tila === 'poistettu'"
                          variant="link py-0"
-                         micon="keyboard_return"
+                         icon="keyboard_return"
                          @click="restore(data.item)"
                          v-oikeustarkastelu="{ oikeus: 'tilanvaihto' }"
                          inherit-style>

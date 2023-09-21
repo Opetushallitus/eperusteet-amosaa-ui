@@ -9,12 +9,12 @@
       <ep-content layout="normal" v-model="vapaateksti.teksti" :is-editable="isEditing"> </ep-content>
 
       <div class="d-flex justify-content-between mt-1" v-if="isEditing">
-        <ep-button variant="outline-primary" micon="add" v-if="index+1 === value.length" @click="lisaaTekstikappale()">
+        <ep-button variant="outline-primary" icon="add" v-if="index+1 === value.length" @click="lisaaTekstikappale()">
           {{ $t('lisaa-tekstikappale') }}
         </ep-button>
         <div v-else/>
 
-        <ep-button variant="link" micon="delete" @click="poistaTekstikappale(vapaateksti)" inherit-style>
+        <ep-button variant="link" icon="delete" @click="poistaTekstikappale(vapaateksti)" inherit-style>
           {{ $t('poista-tekstikappale') }}
         </ep-button>
       </div>
@@ -22,7 +22,7 @@
       <hr v-if="value.length > index+1" />
     </div>
 
-    <ep-button variant="outline-primary" micon="add" v-if="isEditing &&value.length === 0" @click="lisaaTekstikappale()">
+    <ep-button variant="outline-primary" icon="add" v-if="isEditing &&value.length === 0" @click="lisaaTekstikappale()">
       {{ $t('lisaa-tekstikappale') }}
     </ep-button>
   </div>

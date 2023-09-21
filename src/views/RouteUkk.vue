@@ -12,7 +12,7 @@
           <div class="d-flex justify-content-between align-items-end pb-3">
             <ep-search v-model="rajain"></ep-search>
 
-            <ep-button variant="outline-primary" micon="add" @click="startKysymysModal(null)">
+            <ep-button variant="outline-primary" icon="add" @click="startKysymysModal(null)">
               {{ $t('lisaa-uusi-kysymys') }}
             </ep-button>
           </div>

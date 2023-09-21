@@ -29,7 +29,7 @@
         </template>
         <template #cell(siirtyminen)="data">
           <EpButton variant="link"
-                    micon="keyboard_return"
+                    icon="keyboard_return"
                     @click="$emit('restore', data.item)"
                     v-if="$hasOikeus('luonti') || $isAdmin()"
                     inherit-style>

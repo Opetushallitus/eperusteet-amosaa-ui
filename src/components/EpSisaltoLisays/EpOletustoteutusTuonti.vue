@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ep-button  @click="openModal" variant="outline-primary" micon="add" >
+    <ep-button  @click="openModal" variant="outline-primary" icon="add" >
       {{ $t('tuo-oletustoteutus') }}
     </ep-button>
     <b-modal id="tuoOletusotteutus"

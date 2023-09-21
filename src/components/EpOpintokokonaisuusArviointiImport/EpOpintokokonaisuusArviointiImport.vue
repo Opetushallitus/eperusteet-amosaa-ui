@@ -1,6 +1,6 @@
 <template>
   <div>
-    <EpButton variant="outline" micon="add" @click="open()" >
+    <EpButton variant="outline" icon="add" @click="open()" >
       {{ $t('tuo-arvioinnin-kohteet-pohjan-opintokokonaisuudesta') }}
     </EpButton>
 

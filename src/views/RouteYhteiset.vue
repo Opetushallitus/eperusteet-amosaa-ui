@@ -12,7 +12,7 @@
 
         <div>
           <router-link :to="{name: 'yhteinenLuonti'}">
-            <ep-button variant="outline-primary" micon="add" >
+            <ep-button variant="outline-primary" icon="add" >
               {{ $t('lisaa-uusi') }}
             </ep-button>
           </router-link>

@@ -54,25 +54,25 @@
           <ep-content layout="normal" v-model="vapaaTk.teksti" :is-editable="isEditing"> </ep-content>
 
           <div class="d-flex justify-content-between pt-3" v-if="isEditing">
-            <ep-button variant="outline-primary" micon="add" v-if="index+1 === data.tutkinnonosaViite.tosa.vapaat.length" @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)">
+            <ep-button variant="outline-primary" icon="add" v-if="index+1 === data.tutkinnonosaViite.tosa.vapaat.length" @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)">
               {{ $t('lisaa-tekstikappale') }}
             </ep-button>
             <div v-else/>
 
-            <ep-button variant="link" micon="delete" @click="poistaTekstikappale(data.tutkinnonosaViite.tosa, vapaaTk)" inherit-style>
+            <ep-button variant="link" icon="delete" @click="poistaTekstikappale(data.tutkinnonosaViite.tosa, vapaaTk)" inherit-style>
               {{ $t('poista-tekstikappale') }}
             </ep-button>
           </div>
         </ep-collapse>
 
-        <ep-button class="pb-4 pt-3" variant="outline-primary" micon="add" v-if="isEditing && data.tutkinnonosaViite.tosa.vapaat.length === 0" @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)">
+        <ep-button class="pb-4 pt-3" variant="outline-primary" icon="add" v-if="isEditing && data.tutkinnonosaViite.tosa.vapaat.length === 0" @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)">
           {{ $t('lisaa-tekstikappale') }}
         </ep-button>
 
         <div v-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'reformi_tutke2'">
           <EpYhteiset v-model="data.tutkinnonosaViite" :perusteen="data.perusteenTutkinnonosa" :is-editing="isEditing">
             <div slot="uusiosaalue" v-if="!isEditing && data.tutkinnonosaViite.tyyppi !== 'linkki'">
-              <ep-button @click="lisaaOsaAlue()" variant="outline" micon="add" :show-spinner="lisataanOsaAlue">
+              <ep-button @click="lisaaOsaAlue()" variant="outline" icon="add" :show-spinner="lisataanOsaAlue">
                 {{ $t('lisaa-osa-alue') }}
               </ep-button>
             </div>

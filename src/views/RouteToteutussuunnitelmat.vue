@@ -14,13 +14,13 @@
 
         <div>
           <router-link :to="luontiRoute" v-oikeustarkastelu="{ oikeus: 'luonti'}">
-            <ep-button variant="outline-primary" micon="add">
+            <ep-button variant="outline-primary" icon="add">
               {{ $t(lisaaBtnText) }}
             </ep-button>
           </router-link>
 
           <router-link :to="{name: 'jaettuosaLuonti'}" v-oikeustarkastelu="{ oikeus: 'luonti'}" v-if="!isOrganisaatioRyhma">
-            <ep-button variant="outline-primary" micon="add" >
+            <ep-button variant="outline-primary" icon="add" >
               {{ $t('lisaa-jaettu-osa') }}
             </ep-button>
           </router-link>

@@ -28,7 +28,7 @@
     </div>
 
     <div class="d-flex">
-      <ep-button v-if="isEditing" variant="outline-primary" micon="add" @click="lisaaToteutus()">
+      <ep-button v-if="isEditing" variant="outline-primary" icon="add" @click="lisaaToteutus()">
         {{ $t('lisaa-toteutus') }}
       </ep-button>
 

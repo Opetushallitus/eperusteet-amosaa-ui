@@ -121,7 +121,7 @@
                 </b-col>
               </b-row>
             </draggable>
-            <EpButton variant="outline" micon="add" @click="onAddListItem('tavoitteet')" v-if="isEditing">
+            <EpButton variant="outline" icon="add" @click="onAddListItem('tavoitteet')" v-if="isEditing">
               {{ $t('lisaa-tavoite') }}
             </EpButton>
           </div>
@@ -194,7 +194,7 @@
             </draggable>
 
             <div class="d-flex">
-              <EpButton variant="outline" micon="add" @click="onAddListItem('arvioinnit')" v-if="isEditing">
+              <EpButton variant="outline" icon="add" @click="onAddListItem('arvioinnit')" v-if="isEditing">
                 {{ $t('lisaa-arvioinnin-kohde') }}
               </EpButton>
               <EpOpintokokonaisuusArviointiImport
