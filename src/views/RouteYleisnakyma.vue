@@ -5,11 +5,16 @@
   <div class="info-box sync-box" v-else-if="vanhentunutPeruste && !perustePaivitetty" v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
     <h2>{{$t(perustePaivitysKielistys['otsikko'])}}</h2>
     <div v-html="$t(perustePaivitysKielistys['teksti'])" />
-
-    <div class="d-flex justify-content-end">
-      <ep-button @click="paivitaPeruste" :showSpinner="syncing">
-        {{$t('paivita')}}
-      </ep-button>
+    <div class="d-flex justify-content-between">
+      <EpExternalLink :url="perusteLinkki" class="mt-2">{{$kaanna(peruste.nimi)}}</EpExternalLink>
+      <div class="d-flex align-items-center">
+        <div class="mr-3 disabled-text font-size-08" v-if="toteutussuunnitelma.perustePaivitettyPvm">
+          {{$t('viimeisin-synkronisointi-pvm')}} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
+        </div>
+        <ep-button @click="paivitaPeruste" :showSpinner="syncing">
+          {{$t('paivita')}}
+        </ep-button>
+      </div>
     </div>
   </div>
 
@@ -47,9 +52,12 @@ import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/Toteutussuunnitelma
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import { Toteutus } from '@shared/utils/perusteet';
+import { koulutustyyppiTheme, Toteutus } from '@shared/utils/perusteet';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { buildEsikatseluUrl, buildKatseluUrl } from '@shared/utils/esikatselu';
+import { Kielet } from '@shared/stores/kieli';
+import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 
 @Component({
   components: {
@@ -60,6 +68,7 @@ import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
     EpToteutussuunnitelmanTiedotteet,
     EpButton,
     EpSpinner,
+    EpExternalLink,
   },
 })
 export default class RouteYleisnakyma extends Vue {
@@ -122,6 +131,10 @@ export default class RouteYleisnakyma extends Vue {
 
   get isYhteinen() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
+  }
+
+  get perusteLinkki() {
+    return buildKatseluUrl(Kielet.getSisaltoKieli.value, `/${koulutustyyppiTheme(this.peruste?.koulutustyyppi!)}/${this.peruste?.id}`);
   }
 }
 </script>
