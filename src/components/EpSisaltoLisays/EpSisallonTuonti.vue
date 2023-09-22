@@ -15,11 +15,8 @@
     </template>
 
     <div v-if="!toteutussuunnitelma">
-
       <p>{{$t(kaannokset['topicNoOps'])}}</p>
-
       <ep-search v-model="query.nimi" :placeholder="$t(kaannokset['searchPlaceholder'])"/>
-
       <ep-spinner v-if="!opetussuunnitelmatpage" />
 
       <div v-else>
@@ -38,16 +35,13 @@
           align="center"
           aria-controls="tuo-sisaltoa-modaali"></b-pagination>
       </div>
-
     </div>
 
     <div v-else>
       <p>{{$t(kaannokset['topicOps'])}} {{$kaanna(toteutussuunnitelma.nimi)}}</p>
-
       <ep-spinner v-if="!sisaltoviitteet" />
 
       <div v-else>
-
         <div v-for="(sisaltoTaulu, index) in sisaltoTaulut" :key="'sisaltotaulu'+index">
           <b-table
             responsive
@@ -59,8 +53,8 @@
             >
             <template v-slot:cell(tekstiKappale.nimi)="{ item }">
               <div class="selectable" @click="selectRow(item.id)">
-                <fas v-if="item.selected" icon="check-square" class="checked mr-2"/>
-                <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+                <EpMaterialIcon v-if="item.selected" class="checked mr-2">check_box</EpMaterialIcon>
+                <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
                 <span>{{$kaanna(item.tekstiKappale.nimi)}}</span>
               </div>
             </template>
@@ -72,7 +66,6 @@
               align="center"
               aria-controls="tuo-sisaltoa-tekstikappaleet"></b-pagination>
         </div>
-
       </div>
 
     </div>
@@ -88,14 +81,14 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Mixins, Vue, Watch, InjectReactive } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch, InjectReactive } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import EpField from '@shared/components/forms/EpField.vue';
-import { OpetussuunnitelmaDto, SisaltoViiteKevytDto } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { SisaltotuontiStore } from '@/stores/SisaltotuontiStore';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 const kaannokset = {
   default: {
@@ -118,6 +111,7 @@ const kaannokset = {
     EpButton,
     EpSpinner,
     EpSearch,
+    EpMaterialIcon,
   },
 })
 export default class EpSisallonTuonti extends Vue {

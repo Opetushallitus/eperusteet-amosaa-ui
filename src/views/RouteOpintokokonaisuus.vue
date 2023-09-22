@@ -104,7 +104,7 @@
                           :validation="validation.opintokokonaisuus.tavoitteet.$each.$iter[index].tavoite"
                           class="input-wrapper">
                           <div class="order-handle m-2" slot="left">
-                            <fas icon="grip-vertical"></fas>
+                            <EpMaterialIcon>drag_indicator</EpMaterialIcon>
                           </div>
                         </EpInput>
                         <b-input-group-append>
@@ -117,7 +117,9 @@
                   </EpKoodistoSelect>
                 </b-col>
                 <b-col cols="1" v-if="isEditing && !tavoiteItem.perusteesta">
-                  <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"/>
+                  <div class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')">
+                    <EpMaterialIcon icon-shape="outlined">delete</EpMaterialIcon>
+                  </div>
                 </b-col>
               </b-row>
             </draggable>
@@ -183,12 +185,14 @@
                     :disabled="arviointiItem.perusteesta"
                     :validation="validation.opintokokonaisuus.arvioinnit.$each.$iter[index].arviointi">
                     <div class="order-handle m-2" slot="left">
-                      <fas icon="grip-vertical"></fas>
+                      <EpMaterialIcon>drag_indicator</EpMaterialIcon>
                     </div>
                   </EpInput>
                 </b-col>
                 <b-col cols="1" v-if="isEditing && !arviointiItem.perusteesta">
-                  <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(arviointiItem, 'arvioinnit')"/>
+                  <div class="default-icon clickable mt-2" @click="onRemoveListItem(arviointiItem, 'arvioinnit')">
+                    <EpMaterialIcon icon-shape="outlined">delete</EpMaterialIcon>
+                  </div>
                 </b-col>
               </b-row>
             </draggable>

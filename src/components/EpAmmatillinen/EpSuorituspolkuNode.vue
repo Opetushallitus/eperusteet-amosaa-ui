@@ -5,8 +5,8 @@
         <div class="rakenne" :style="style">
           <div class="d-flex w-100 justify-content-between" :class="{'kuvaukseton': !node.kuvaus}">
             <div v-if="node.osat && node.osat.length > 0" @click="toggleOsat()">
-              <fas icon="chevron-down" v-if="!showOsat"></fas>
-              <fas icon="chevron-up" v-else></fas>
+              <EpMaterialIcon v-if="!showOsat">expand_more</EpMaterialIcon>
+              <EpMaterialIcon  v-else>expand_less</EpMaterialIcon>
             </div>
             <div class="w-75" :class="{'ml-3' : node.osat && node.osat.length > 0}">
               <slot name="nimi">
@@ -38,18 +38,18 @@
                 {{ info.minimi }}
               </span>
               <div class="btn-group" v-if="isEditing">
-                <button class="btn btn-link" v-if="!paikallinen.piilotettu">
-                  <fas icon="pen" @click="muokkaa()" />
+                <button class="btn btn-link" v-if="!paikallinen.piilotettu" @click="muokkaa()">
+                  <EpMaterialIcon>edit</EpMaterialIcon>
                 </button>
-                <button class="btn btn-link">
-                  <fas icon="trash" @click="toggleNode()" />
+                <button class="btn btn-link" @click="toggleNode()">
+                  <EpMaterialIcon>delete</EpMaterialIcon>
                 </button>
               </div>
             </div>
           </div>
 
-          <div class="text-center" v-if="(node.kuvaus || paikallinen.kuvaus) && !naytaKuvaukset">
-            <fas icon="ellipsis-h" @click="toggleKuvaus()" />
+          <div class="text-center" v-if="(node.kuvaus || paikallinen.kuvaus) && !naytaKuvaukset" @click="toggleKuvaus()">
+            <EpMaterialIcon>more_horiz</EpMaterialIcon>
           </div>
           <div class="kuvaus" v-if="(node.kuvaus || paikallinen.kuvaus) && (showKuvaus || naytaKuvaukset)">
             <div v-html="$kaanna(node.kuvaus)"></div>
@@ -104,8 +104,8 @@
             :fields="tutkinnonOsaFields">
             <template v-slot:cell(nimi)="{ item }">
               <div class="selectable" @click="selectKoodi(item)">
-                <fas v-if="item.selected" icon="check-square" class="checked mr-2"/>
-                <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+                <EpMaterialIcon v-if="item.selected" class="checked mr-2">check_box</EpMaterialIcon>
+                <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
                 <span>{{item.nimi}} ({{ item.koodiArvo }})</span>
               </div>
             </template>
@@ -126,12 +126,14 @@ import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import EpColorIndicator from '@shared/components/EpColorIndicator/EpColorIndicator.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import { rakenneNodecolor } from '@shared/utils/perusterakenne';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   name: 'EpSuorituspolkuNode',
   components: {
     EpColorIndicator,
     EpContent,
+    EpMaterialIcon,
   },
 })
 export default class EpSuorituspolkuNode extends Vue {

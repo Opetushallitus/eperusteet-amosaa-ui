@@ -9,7 +9,7 @@
 
         <div class="col col-auto ikoni-col center-block">
           <div class="ikoni d-inline-block">
-            <fas :icon="muokkaustieto.icon" :class="muokkaustieto.iconClass"/>
+            <EpMaterialIcon :class="muokkaustieto.iconClass">{{ muokkaustieto.icon }}</EpMaterialIcon>
           </div>
           <div class="aikajana" v-if="index != muokkaustiedotRouted.length - 1">&nbsp;</div>
         </div>
@@ -58,13 +58,15 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { MuokkaustietoStore } from '@/stores/MuokkaustietoStore';
 import { muokkaustietoRoute, muokkaustietoIcon } from '@shared/utils/tapahtuma';
-import { OpetussuunnitelmaMuokkaustietoDto, OpetussuunnitelmaMuokkaustietoDtoTapahtumaEnum, OpetussuunnitelmaMuokkaustietoDtoKohdeEnum } from '@shared/api/amosaa';
+import { OpetussuunnitelmaMuokkaustietoDto, OpetussuunnitelmaMuokkaustietoDtoTapahtumaEnum } from '@shared/api/amosaa';
 import { parsiEsitysnimi } from '@shared/utils/kayttaja';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
     EpSpinner,
     EpButton,
+    EpMaterialIcon,
   },
 })
 export default class EpPerusteViimeaikainenToiminta extends Vue {
@@ -129,10 +131,6 @@ export default class EpPerusteViimeaikainenToiminta extends Vue {
   }
 
   muokkaustietoIconClass(muokkaustieto: OpetussuunnitelmaMuokkaustietoDto) {
-    // if (muokkaustieto.kohde === _.lowerCase(OpetussuunnitelmaMuokkaustietoDtoKohdeEnum.Kommentti)) {
-    //   return 'kommentointi';
-    // }
-
     return muokkaustieto.tapahtuma;
   }
 }

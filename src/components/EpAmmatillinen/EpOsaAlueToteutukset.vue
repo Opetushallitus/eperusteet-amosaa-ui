@@ -19,7 +19,7 @@
 
           <div class="d-flex">
             <div class="order-handle mr-3">
-              <fas icon="grip-vertical" v-if="isEditing"></fas>
+              <EpMaterialIcon v-if="isEditing">drag_indicator</EpMaterialIcon>
             </div>
 
             <EpPaikallinenToteutus v-model="model[toteutusIndex]" :isEditing="isEditing" @poista="poistaToteutus(model[toteutusIndex])">
@@ -64,6 +64,7 @@ import { DEFAULT_DRAGGABLE_PROPERTIES } from '@shared/utils/defaults';
 import EpPaikallinenToteutus from '@/components/EpAmmatillinen/EpPaikallinenToteutus.vue';
 import { OsaAlueApi, OmaOsaAlueToteutusDto } from '@shared/api/amosaa';
 import EpOletustoteutusTuonti from '@/components/EpSisaltoLisays/EpOletustoteutusTuonti.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -75,6 +76,7 @@ import EpOletustoteutusTuonti from '@/components/EpSisaltoLisays/EpOletustoteutu
     EpButton,
     EpPaikallinenToteutus,
     EpOletustoteutusTuonti,
+    EpMaterialIcon,
   },
 })
 export default class EpOsaAlueToteutukset extends Vue {

@@ -6,7 +6,8 @@
         <EpSpinner v-if="hallintaLoading" />
         <b-dropdown v-else class="asetukset" size="lg" variant="link" dropleft toggle-class="text-decoration-none" no-caret>
           <template v-slot:button-content>
-            {{$t('hallinta')}} <fas icon="ratas" class="hallinta" />
+            {{$t('hallinta')}}
+            <EpMaterialIcon icon-shape="outlined" class="hallinta">settings</EpMaterialIcon>
           </template>
          <EpButton variant="link" @click="poistaJulkaisut">
             {{$t('poista-julkaisut')}}
@@ -152,7 +153,6 @@ import _ from 'lodash';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { JulkaisuKielistykset } from '@/utils/toteutustypes';
-import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
@@ -179,7 +179,6 @@ import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue
     EpButton,
     EpCollapse,
     EpSpinner,
-    EpValidointilistaus,
     EpJulkaisuHistoria,
     EpJulkaisuButton,
     EpJulkaisuValidointi,

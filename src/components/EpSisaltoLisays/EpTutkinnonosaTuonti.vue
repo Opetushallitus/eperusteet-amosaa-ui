@@ -57,14 +57,14 @@
           @row-clicked="selectRow">
           <template v-slot:head(valitse-kaikki)="{ item }">
             <div class="selectable" @click="selectAllRows()">
-              <fas v-if="valitseKaikki" icon="check-square" class="checked mr-2"/>
-              <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+              <EpMaterialIcon v-if="valitseKaikki" class="checked mr-2">check_box</EpMaterialIcon>
+              <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
             </div>
           </template>
           <template v-slot:cell(valitse-kaikki)="{ item }">
             <div class="selectable">
-              <fas v-if="item.selected" icon="check-square" class="checked mr-2"/>
-              <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+              <EpMaterialIcon v-if="item.selected" class="checked mr-2">check_box</EpMaterialIcon>
+              <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
             </div>
           </template>
           <template v-slot:cell(tekstiKappale.nimi)="{ item }">
@@ -107,6 +107,7 @@ import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -114,6 +115,7 @@ import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
     EpSpinner,
     EpSearch,
     EpMultiSelect,
+    EpMaterialIcon,
   },
 })
 export default class EpTutkinnonosaTuonti extends Vue {

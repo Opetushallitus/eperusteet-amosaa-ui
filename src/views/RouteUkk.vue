@@ -43,12 +43,10 @@
           <div class="col text-left">
             <div class="float-right">
               <button class="btn btn-link" @click="startKysymysModal(ohje)">
-                <fas icon="pen">
-                </fas>
+                <EpMaterialIcon>edit</EpMaterialIcon>
               </button>
               <button class="btn btn-link" @click="startRemoveKysymys(ohje)">
-                <fas icon="roskalaatikko">
-                </fas>
+                <EpMaterialIcon>delete</EpMaterialIcon>
               </button>
             </div>
             <div>
@@ -125,6 +123,7 @@ import { requiredOneLang } from '@shared/validators/required';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { KoulutustoimijaBaseDto } from '../../eperusteet-frontend-utils/vue/src/generated/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -137,6 +136,7 @@ import { Toteutus } from '@shared/utils/perusteet';
     EpSearch,
     EpSpinner,
     EpMultiSelect,
+    EpMaterialIcon,
   },
   validations() {
     return {

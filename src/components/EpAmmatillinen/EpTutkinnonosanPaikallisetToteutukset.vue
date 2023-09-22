@@ -14,7 +14,7 @@
         <ep-collapse class="toteutus pr-3 mb-4" v-for="(toteutus, index) in toteutukset" :key="'toteutus'+index" :borderBottom="false" >
           <div slot="header" slot-scope="{ toggled }" class="px-3">
             <div v-if="isEditing" class="d-flex align-items-end">
-              <fas icon="raahaus" class="order-handle"/>
+              <EpMaterialIcon class="order-handle">drag_indicator</EpMaterialIcon>
               <h4 class="mb-0">
                 <span v-if="toggled || !toteutus.otsikko || !toteutus.otsikko[kieli]">{{$t('toteutuksen-otsikko')}}<span v-if="isEditing"> *</span></span>
                 <span v-else-if="!toggled">{{$kaanna(toteutus.otsikko)}}</span>
@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, InjectReactive } from 'vue-property-decorator';
+import { Prop, Component, Vue } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
@@ -51,6 +51,7 @@ import EpOletustoteutusTuonti from '@/components/EpSisaltoLisays/EpOletustoteutu
 import draggable from 'vuedraggable';
 import { Kielet } from '@shared/stores/kieli';
 import { TutkinnonosaApi } from '@shared/api/amosaa';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -62,6 +63,7 @@ import { TutkinnonosaApi } from '@shared/api/amosaa';
     EpPaikallinenToteutus,
     draggable,
     EpOletustoteutusTuonti,
+    EpMaterialIcon,
   },
 })
 export default class EpTutkinnonosanPaikallisetToteutukset extends Vue {
