@@ -134,7 +134,7 @@ export default class RouteYleisnakyma extends Vue {
   }
 
   get perusteLinkki() {
-    return buildKatseluUrl(Kielet.getSisaltoKieli.value, `/${koulutustyyppiTheme(this.peruste?.koulutustyyppi!)}/${this.peruste?.id}`);
+    return buildKatseluUrl(Kielet.getSisaltoKieli.value, `/${koulutustyyppiTheme(this.peruste?.koulutustyyppi!)}/${this.peruste?.perusteId}`);
   }
 }
 </script>
