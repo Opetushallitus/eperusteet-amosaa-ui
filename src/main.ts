@@ -5,7 +5,6 @@ import VueApexCharts from 'vue-apexcharts';
 import App from './App.vue';
 import '@shared/config/bootstrap';
 import '@shared/config/styles';
-import '@shared/config/fontawesome';
 import 'animate.css/animate.min.css';
 import 'material-icons/iconfont/material-icons.css';
 
