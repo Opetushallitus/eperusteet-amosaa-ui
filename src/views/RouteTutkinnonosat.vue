@@ -31,8 +31,7 @@
                     variant="link"
                     icon="delete"
                     class="btn btn-link p-0"
-                    @click="remove(data.item.tutkinnonosaViite.id)"
-                    inherit-style>
+                    @click="remove(data.item.tutkinnonosaViite.id)">
           </EpButton>
         </template>
       </b-table>

@@ -31,8 +31,7 @@
           <EpButton variant="link"
                     icon="keyboard_return"
                     @click="$emit('restore', data.item)"
-                    v-if="$hasOikeus('luonti') || $isAdmin()"
-                    inherit-style>
+                    v-if="$hasOikeus('luonti') || $isAdmin()">
             {{ $t('palauta') }}
           </EpButton>
         </template>

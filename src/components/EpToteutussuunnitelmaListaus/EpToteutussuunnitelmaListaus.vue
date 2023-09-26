@@ -103,8 +103,7 @@
                          variant="link py-0"
                          icon="keyboard_return"
                          @click="restore(data.item)"
-                         v-oikeustarkastelu="{ oikeus: 'tilanvaihto' }"
-                         inherit-style>
+                         v-oikeustarkastelu="{ oikeus: 'tilanvaihto' }">
                 {{ $t('palauta') }}
               </ep-button>
             </div>

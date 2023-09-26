@@ -59,7 +59,7 @@
             </ep-button>
             <div v-else/>
 
-            <ep-button variant="link" icon="delete" @click="poistaTekstikappale(data.tutkinnonosaViite.tosa, vapaaTk)" inherit-style>
+            <ep-button variant="link" icon="delete" @click="poistaTekstikappale(data.tutkinnonosaViite.tosa, vapaaTk)">
               {{ $t('poista-tekstikappale') }}
             </ep-button>
           </div>
