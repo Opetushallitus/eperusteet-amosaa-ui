@@ -22,21 +22,20 @@
               <span>{{ $kaanna(toteutussuunnitelma.nimi) }}</span>
               <b-dropdown class="asetukset" size="lg" variant="link" toggle-class="text-decoration-none" no-caret>
                 <template v-slot:button-content>
-                  <fas icon="ratas" class="hallinta" />
+                  <EpMaterialIcon icon-shape="outlined" class="hallinta">settings</EpMaterialIcon>
                 </template>
 
                 <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index"
-                  v-oikeustarkastelu="ratasvalinta.oikeus">
-
+                     v-oikeustarkastelu="ratasvalinta.oikeus">
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
 
                   <b-dropdown-item v-if="ratasvalinta.route" :to="{ name: ratasvalinta.route }">
-                    <fas :icon="ratasvalinta.icon" />
+                    <EpMaterialIcon icon-shape="outlined">{{ ratasvalinta.icon }}</EpMaterialIcon>
                     {{ $t(ratasvalinta.text) }}
                   </b-dropdown-item>
 
                   <b-dropdown-item v-if="ratasvalinta.click" @click="ratasClick(ratasvalinta.click, ratasvalinta.meta)">
-                    <fas :icon="ratasvalinta.icon" />
+                    <EpMaterialIcon icon-shape="outlined">{{ ratasvalinta.icon }}</EpMaterialIcon>
                     {{ $t(ratasvalinta.text) }}
                   </b-dropdown-item>
                 </div>
@@ -341,7 +340,7 @@
         <div class="menu-item bottom-menu-item">
           <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
             <span class="text-nowrap">
-              <fas icon="jarjesta" fixed-width />
+              <EpMaterialIcon icon-shape="outlined" class="icon">reorder</EpMaterialIcon>
                <a class="btn btn-link btn-link-nav">{{$t('muokkaa-jarjestysta')}}</a>
             </span>
           </router-link>
@@ -379,6 +378,7 @@ import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 import { Toteutus } from '@shared/utils/perusteet';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -391,6 +391,7 @@ import { KuvaStore } from '@/stores/KuvaStore';
     EpProgressPopover,
     EpSpinner,
     EpValidPopover,
+    EpMaterialIcon,
   },
   inject: [],
 })
@@ -606,19 +607,19 @@ export default class RouteToteutussuunnitelma extends Vue {
       {
         text: 'ystava-organisaatioiden-kayttooikeudet',
         route: 'ystava-organisaatioiden-kayttooikeudet',
-        icon: 'kaytto-oikeus',
+        icon: 'verified_user',
         oikeus: { oikeus: 'luku' },
       },
       {
         text: 'luo-pdf',
         route: 'pdfLuonti',
-        icon: 'luo-pdf',
+        icon: 'picture_as_pdf',
         oikeus: { oikeus: 'luku' },
       },
       {
         text: 'poistetut-sisallot',
         route: 'poistetutsisallot',
-        icon: 'roskalaatikko',
+        icon: 'delete',
         oikeus: { oikeus: 'luku' },
       },
     ];
@@ -631,7 +632,7 @@ export default class RouteToteutussuunnitelma extends Vue {
           oikeus: this.poistonVaatimaOikeus,
         },
         {
-          icon: ['far', 'folder'],
+          icon: 'archive',
           click: vaihdaOpetussunnitelmaTilaConfirm,
           ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
           oikeus: this.poistonVaatimaOikeus,
@@ -863,6 +864,10 @@ export default class RouteToteutussuunnitelma extends Vue {
 
 .faded {
   color: $gray-lighten-1;
+}
+
+.icon {
+  vertical-align: middle;
 }
 
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <EpButton v-b-modal.arkistoidutopetussuunnitelmatmodal variant="link">
-      <fas class="mr-2" :icon="['far', 'folder']"></fas>
+      <EpMaterialIcon class="mr-2">folder</EpMaterialIcon>
       <span>{{ $t(title) }}</span>
     </EpButton>
     <b-modal
@@ -28,11 +28,10 @@
           {{ $sdt(data.value) }}
         </template>
         <template #cell(siirtyminen)="data">
-          <EpButton
-            variant="link"
-            icon="peruuta"
-            @click="$emit('restore', data.item)"
-            v-if="$hasOikeus('luonti') || $isAdmin()">
+          <EpButton variant="link"
+                    icon="keyboard_return"
+                    @click="$emit('restore', data.item)"
+                    v-if="$hasOikeus('luonti') || $isAdmin()">
             {{ $t('palauta') }}
           </EpButton>
         </template>
@@ -51,7 +50,7 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Prop, Component, Vue } from 'vue-property-decorator';
-
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
@@ -61,6 +60,7 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
   components: {
     EpButton,
     EpSearch,
+    EpMaterialIcon,
   },
 })
 export default class EpArkistoidutOps extends Vue {

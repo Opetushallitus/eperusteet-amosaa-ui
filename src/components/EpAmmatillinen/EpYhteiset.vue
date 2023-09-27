@@ -9,7 +9,7 @@
         v-model="pakollisetOsaAlueet">
         <div class="osaalue d-flex" v-for="(osaalue, idx) in pakollisetOsaAlueet" :key="'pakollinen-' + idx">
           <div class="order-handle mr-2" v-if="isEditing">
-            <fas icon="grip-vertical"></fas>
+            <EpMaterialIcon>drag_indicator</EpMaterialIcon>
           </div>
           <div class="nimi">
             <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }" :is="isEditing ? 'span' : 'router-link'">
@@ -30,7 +30,7 @@
         v-model="valinnaisetOsaAlueet">
         <div class="osaalue d-flex" :class="{ 'piilotettu': osaalue.piilotettu }" v-for="(osaalue, idx) in valinnaisetOsaAlueet" :key="'valinnainen-' + idx">
           <div class="order-handle mr-2" v-if="isEditing">
-            <fas icon="grip-vertical"></fas>
+            <EpMaterialIcon>drag_indicator</EpMaterialIcon>
           </div>
           <div class="nimi">
             <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }" :is="isEditing ? 'span' : 'router-link'">
@@ -54,7 +54,7 @@
         v-model="paikallisetOsaAlueet">
         <div class="osaalue d-flex" v-for="(osaalue, idx) in paikallisetOsaAlueet" :key="'paikallinen-' + idx">
           <div class="order-handle mr-2" v-if="isEditing">
-            <fas icon="grip-vertical"></fas>
+            <EpMaterialIcon>drag_indicator</EpMaterialIcon>
           </div>
           <div class="nimi">
             <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }" :is="isEditing ? 'span' : 'router-link'">
@@ -73,7 +73,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, InjectReactive } from 'vue-property-decorator';
+import { Prop, Component, Vue } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
@@ -81,6 +81,7 @@ import EpField from '@shared/components/forms/EpField.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import draggable from 'vuedraggable';
 import { DEFAULT_DRAGGABLE_PROPERTIES } from '@shared/utils/defaults';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -89,6 +90,7 @@ import { DEFAULT_DRAGGABLE_PROPERTIES } from '@shared/utils/defaults';
     EpContent,
     EpField,
     EpInput,
+    EpMaterialIcon,
     draggable,
   },
 })

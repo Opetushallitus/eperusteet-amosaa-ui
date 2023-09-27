@@ -56,7 +56,7 @@
                 <RouterLink tag="a" :to="{ name: kaannokset['uusiRoute'] }">
                   <div class="opsbox__new">
                     <div class="opsbox__plus-icon">
-                      <fas icon="plussa"></fas>
+                      <EpMaterialIcon size="60px">add</EpMaterialIcon>
                     </div>
                     <div class="opsbox__text">
                       {{ $t('luo-uusi') }}
@@ -142,6 +142,7 @@ import { OpetussuunnitelmatStore } from '@/stores/OpetussuunnitelmatStore';
 import { Debounced } from '@shared/utils/delay';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import { Kielet } from '@shared/stores/kieli';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -156,6 +157,7 @@ import { Kielet } from '@shared/stores/kieli';
     OpsJulkaistutTile,
     EpToggle,
     EpMultiSelect,
+    EpMaterialIcon,
   },
 })
 export default class RouteOpetussuunnitelmaListaus extends Vue {

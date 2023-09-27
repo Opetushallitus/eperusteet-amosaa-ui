@@ -1,5 +1,5 @@
 <template>
-  <EpHomeTile icon="ohjeet"
+  <EpHomeTile icon="menu_book"
               :route="{ name: 'oppaat' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">

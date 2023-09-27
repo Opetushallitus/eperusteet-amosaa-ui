@@ -6,7 +6,8 @@
         <EpSpinner v-if="hallintaLoading" />
         <b-dropdown v-else class="asetukset" size="lg" variant="link" dropleft toggle-class="text-decoration-none" no-caret>
           <template v-slot:button-content>
-            {{$t('hallinta')}} <fas icon="ratas" class="hallinta" />
+            {{$t('hallinta')}}
+            <EpMaterialIcon icon-shape="outlined" class="hallinta">settings</EpMaterialIcon>
           </template>
          <EpButton variant="link" @click="poistaJulkaisut">
             {{$t('poista-julkaisut')}}
@@ -35,11 +36,11 @@
         </div>
         <div v-else>
           <div v-if="isValid" class="d-flex">
-            <div class="material-icons no-errors">check_circle</div>
+            <EpMaterialIcon class="no-errors">check_circle</EpMaterialIcon>
             <div class="ml-2">{{$t('ei-julkaisua-estavia-virheita')}}</div>
           </div>
           <div v-else class="d-flex">
-            <div class="material-icons errors">info</div>
+            <EpMaterialIcon class="errors">info</EpMaterialIcon>
             <div class="ml-2">{{$t('loytyi-julkaisun-estavia-virheita')}}</div>
           </div>
 
@@ -152,7 +153,6 @@ import _ from 'lodash';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { JulkaisuKielistykset } from '@/utils/toteutustypes';
-import EpValidointilistaus from '@/components/EpValidointilistaus/EpValidointilistaus.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
@@ -168,6 +168,7 @@ import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButt
 import { Toteutus } from '@shared/utils/perusteet';
 import { nodeToRoute } from '@/utils/routing';
 import EpJulkaisuValidointi from '@shared/components/EpJulkaisuValidointi/EpJulkaisuValidointi.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -178,10 +179,10 @@ import EpJulkaisuValidointi from '@shared/components/EpJulkaisuValidointi/EpJulk
     EpButton,
     EpCollapse,
     EpSpinner,
-    EpValidointilistaus,
     EpJulkaisuHistoria,
     EpJulkaisuButton,
     EpJulkaisuValidointi,
+    EpMaterialIcon,
   },
 })
 export default class RouteJulkaisu extends Vue {

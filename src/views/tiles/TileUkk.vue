@@ -1,5 +1,5 @@
 <template>
-  <EpHomeTile icon="faq"
+  <EpHomeTile icon="quiz"
               :route="{ name: 'ukk' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">

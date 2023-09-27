@@ -170,24 +170,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-
+import { Component } from 'vue-property-decorator';
 import * as _ from 'lodash';
 import draggable from 'vuedraggable';
-
 import { KuvaStore } from '@/stores/KuvaStore';
-
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
-import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KoulutuksenosaStore } from '@/stores/KoulutuksenosaStore';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import EpKoodistoTekstillaSelect from '@shared/components/EpKoodistoSelect/EpKoodistoTekstillaSelect.vue';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { Koodisto } from '@shared/api/eperusteet';
@@ -200,7 +195,6 @@ import { AbstractRouteSisalto } from './AbstractRouteSisalto';
   components: {
     EpSpinner,
     EpEditointi,
-    EpKoodistoSelect,
     EpInput,
     EpContent,
     EpButton,

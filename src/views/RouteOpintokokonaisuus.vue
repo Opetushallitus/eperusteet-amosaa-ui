@@ -36,7 +36,9 @@
             <b-form-group>
               <div slot="label" class="d-flex align-items-center">
                 <div>{{$t('opintokokonaisuuden-koodi')}}</div>
-                <div class="ml-4 material-icons-outlined default-icon clickable" v-b-popover.hover.right="$t('opintokokonaisuus-koodi-selite')">info</div>
+                <div class="ml-4 default-icon clickable" v-b-popover.hover.right="$t('opintokokonaisuus-koodi-selite')">
+                  <EpMaterialIcon icon-shape="outlined">info</EpMaterialIcon>
+                </div>
               </div>
               <div v-if="opintokokonaisuus.koodiArvo">{{opintokokonaisuus.koodiArvo}}</div>
               <div v-else class="font-italic">{{$t('koodi-generoidaan-julkaisussa')}}</div>
@@ -102,11 +104,11 @@
                           :validation="validation.opintokokonaisuus.tavoitteet.$each.$iter[index].tavoite"
                           class="input-wrapper">
                           <div class="order-handle m-2" slot="left">
-                            <fas icon="grip-vertical"></fas>
+                            <EpMaterialIcon>drag_indicator</EpMaterialIcon>
                           </div>
                         </EpInput>
                         <b-input-group-append>
-                          <b-button @click="open" icon="plus" variant="primary">
+                          <b-button @click="open" variant="primary">
                             {{ $t('hae-koodistosta') }}
                           </b-button>
                         </b-input-group-append>
@@ -115,11 +117,13 @@
                   </EpKoodistoSelect>
                 </b-col>
                 <b-col cols="1" v-if="isEditing && !tavoiteItem.perusteesta">
-                  <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"/>
+                  <div class="default-icon clickable mt-2" @click="onRemoveListItem(tavoiteItem, 'tavoitteet')">
+                    <EpMaterialIcon icon-shape="outlined">delete</EpMaterialIcon>
+                  </div>
                 </b-col>
               </b-row>
             </draggable>
-            <EpButton variant="outline" icon="plus" @click="onAddListItem('tavoitteet')" v-if="isEditing">
+            <EpButton variant="outline" icon="add" @click="onAddListItem('tavoitteet')" v-if="isEditing">
               {{ $t('lisaa-tavoite') }}
             </EpButton>
           </div>
@@ -181,18 +185,20 @@
                     :disabled="arviointiItem.perusteesta"
                     :validation="validation.opintokokonaisuus.arvioinnit.$each.$iter[index].arviointi">
                     <div class="order-handle m-2" slot="left">
-                      <fas icon="grip-vertical"></fas>
+                      <EpMaterialIcon>drag_indicator</EpMaterialIcon>
                     </div>
                   </EpInput>
                 </b-col>
                 <b-col cols="1" v-if="isEditing && !arviointiItem.perusteesta">
-                  <fas icon="roskalaatikko" class="default-icon clickable mt-2" @click="onRemoveListItem(arviointiItem, 'arvioinnit')"/>
+                  <div class="default-icon clickable mt-2" @click="onRemoveListItem(arviointiItem, 'arvioinnit')">
+                    <EpMaterialIcon icon-shape="outlined">delete</EpMaterialIcon>
+                  </div>
                 </b-col>
               </b-row>
             </draggable>
 
             <div class="d-flex">
-              <EpButton variant="outline" icon="plus" @click="onAddListItem('arvioinnit')" v-if="isEditing">
+              <EpButton variant="outline" icon="add" @click="onAddListItem('arvioinnit')" v-if="isEditing">
                 {{ $t('lisaa-arvioinnin-kohde') }}
               </EpButton>
               <EpOpintokokonaisuusArviointiImport
@@ -219,7 +225,6 @@
 import _ from 'lodash';
 import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import draggable from 'vuedraggable';
-
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
@@ -230,6 +235,7 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { Koodisto } from '@shared/api/eperusteet';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
@@ -256,6 +262,7 @@ enum TyyppiSource {
     EpKoodistoSelect,
     draggable,
     EpOpintokokonaisuusArviointiImport,
+    EpMaterialIcon,
   },
 })
 export default class RouteOpintokokonaisuus extends Vue {
@@ -441,11 +448,11 @@ export default class RouteOpintokokonaisuus extends Vue {
 @import "@shared/styles/_variables.scss";
 
   ::v-deep fieldset {
-    padding-right: 0px;
+    padding-right: 0;
   }
 
   ::v-deep .input-wrapper {
-    flex: 1 1 0%;
+    flex: 1 1 0;
 
     input {
       border-top-right-radius: 0;

@@ -2,14 +2,16 @@
   <div>
     <div class="d-flex mb-4">
       <h2>{{$t('laaja-alainen-osaaminen')}}</h2>
-      <div class="ml-4 material-icons-outlined default-icon clickable" v-b-popover.hover.right="$t('koto-laaja-alainen-osaaminen-paikallinen-tarkennus-selite')">info</div>
+      <div class="ml-4 default-icon clickable" v-b-popover.hover.right="$t('koto-laaja-alainen-osaaminen-paikallinen-tarkennus-selite')">
+        <EpMaterialIcon icon-shape="outlined">info</EpMaterialIcon>
+      </div>
     </div>
 
     <div v-for="(lao, index) in laajaAlaisetOsaamiset" :key="'lao' + index">
 
       <div class="d-flex align-items-center justify-content-between">
         <h3>{{$kaanna(perusteenLaotByUri[lao.koodiUri].koodi.nimi)}}</h3>
-        <ep-button variant="link" icon="roskalaatikko" @click="poistaLaajaAlainenOsaaminen(lao)" v-if="isEditing">
+        <ep-button v-if="isEditing" variant="link" icon="delete" @click="poistaLaajaAlainenOsaaminen(lao)">
           {{ $t('poista') }}
         </ep-button>
       </div>
@@ -51,16 +53,18 @@
 import { PerusteenOsaDto, KotoTaitotasoLaajaAlainenOsaaminenDto } from '@shared/api/amosaa';
 import { IKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import * as _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue } from 'vue-property-decorator';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
     EpContent,
     EpAlert,
     EpButton,
+    EpMaterialIcon,
   },
 })
 export default class EpKotoLaajaAlainenOsaaminen extends Vue {

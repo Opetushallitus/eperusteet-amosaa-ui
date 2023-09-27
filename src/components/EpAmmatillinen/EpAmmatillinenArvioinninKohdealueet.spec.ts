@@ -24,7 +24,6 @@ describe('EpAmmatillinenArvioinninKohdealueet', () => {
         $kaanna: x => x && x.fi,
       },
       stubs: {
-        fas: '<div />',
         PortalTarget: '<div />',
         'router-link': RouterLinkStub,
       },

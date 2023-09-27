@@ -27,8 +27,11 @@
         </template>
         <template v-slot:cell(actions)="data">
           <EpSpinner v-if="data.item.poistossa" small/>
-          <EpButton variant="link" v-else class="btn btn-link p-0" @click="remove(data.item.tutkinnonosaViite.id)">
-            <fas icon="trash"/>
+          <EpButton v-else
+                    variant="link"
+                    icon="delete"
+                    class="btn btn-link p-0"
+                    @click="remove(data.item.tutkinnonosaViite.id)">
           </EpButton>
         </template>
       </b-table>
@@ -49,6 +52,7 @@ import EpTutkinnonosaTuonti from '@/components/EpSisaltoLisays/EpTutkinnonosaTuo
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import { Sisaltoviitteet } from '@shared/api/amosaa';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -56,6 +60,7 @@ import { Sisaltoviitteet } from '@shared/api/amosaa';
     EpSearch,
     EpSpinner,
     EpTutkinnonosaTuonti,
+    EpMaterialIcon,
   },
 })
 export default class RouteTutkinnonosat extends Vue {

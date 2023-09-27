@@ -25,7 +25,7 @@
           {{$t('tallenna-oletustoteutuksena-tutkinnon-osaan')}}
         </slot>
       </EpToggle>
-      <ep-button v-if="isEditing" variant="link" icon="roskalaatikko" @click="poistaToteutus">
+      <ep-button v-if="isEditing" variant="link" icon="delete" @click="poistaToteutus">
         {{ $t('poista-toteutus') }}
       </ep-button>
     </div>

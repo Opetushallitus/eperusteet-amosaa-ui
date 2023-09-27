@@ -10,10 +10,10 @@
         <ep-content layout="normal" v-model="data.suorituspolkuViiteRoot.tekstiKappale.teksti" :is-editable="isEditing" />
 
         <div class="d-flex justify-content-end" v-if="!isEditing">
-          <ep-button variant="outline-primary" icon="plussa" @click="lisaaUusiSuorituspolku">
+          <ep-button variant="outline-primary" icon="add" @click="lisaaUusiSuorituspolku">
             {{ $t('lisaa-suorituspolku') }}
           </ep-button>
-          <ep-button variant="outline-primary" icon="plussa" @click="lisaaUusiOsaSuorituspolku">
+          <ep-button variant="outline-primary" icon="add" @click="lisaaUusiOsaSuorituspolku">
             {{ $t('lisaa-osasuorituspolku') }}
           </ep-button>
         </div>

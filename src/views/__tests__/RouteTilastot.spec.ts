@@ -1,13 +1,9 @@
 import { mock, mocks } from '@shared/utils/jestutils';
-import { ref, computed, reactive } from '@vue/composition-api';
-import { mount, Wrapper, WrapperArray, createLocalVue, RouterLinkStub } from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
 import { toteutussuunnitelmaTilastotMocks } from './data';
-
 import RouteTilastot from '../RouteTilastot.vue';
 import { TilastotStore } from '@/stores/TilastotStore';
-import * as _ from 'lodash';
 import '@shared/config/bootstrap';
-import '@shared/config/fontawesome';
 
 describe('RouteTilastot', () => {
   const localVue = createLocalVue();

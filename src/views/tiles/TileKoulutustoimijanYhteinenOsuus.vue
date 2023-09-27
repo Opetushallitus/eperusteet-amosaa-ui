@@ -1,5 +1,5 @@
 <template>
-  <EpHomeTile icon="osaamisen-arviointi"
+  <EpHomeTile icon="article"
               :route="{ name: 'yhteinen' }"
               :header-bg-color="{ top: '#009700', bottom: '#007500' }">
     <template slot="header">
@@ -29,7 +29,6 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { EtusivuDto } from '../../../eperusteet-frontend-utils/vue/src/generated/amosaa';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { KayttajaStore } from '@/stores/kayttaja';
 

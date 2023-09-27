@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ep-button  @click="openModal" variant="outline-primary" icon="plussa" >
+    <ep-button @click="openModal" variant="outline-primary" icon="add" >
       {{ $t('tuo-tutkinnon-osa') }}
     </ep-button>
     <b-modal ref="tuotutkinnonosaModal"
@@ -57,14 +57,14 @@
           @row-clicked="selectRow">
           <template v-slot:head(valitse-kaikki)="{ item }">
             <div class="selectable" @click="selectAllRows()">
-              <fas v-if="valitseKaikki" icon="check-square" class="checked mr-2"/>
-              <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+              <EpMaterialIcon v-if="valitseKaikki" class="checked mr-2">check_box</EpMaterialIcon>
+              <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
             </div>
           </template>
           <template v-slot:cell(valitse-kaikki)="{ item }">
             <div class="selectable">
-              <fas v-if="item.selected" icon="check-square" class="checked mr-2"/>
-              <fas v-else :icon="['far', 'square']" class="checked mr-2"/>
+              <EpMaterialIcon v-if="item.selected" class="checked mr-2">check_box</EpMaterialIcon>
+              <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
             </div>
           </template>
           <template v-slot:cell(tekstiKappale.nimi)="{ item }">
@@ -99,16 +99,15 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Mixins, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import EpField from '@shared/components/forms/EpField.vue';
 import { SisaltoviiteLaajaDto } from '@shared/api/amosaa';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
-import { Page } from '@shared/tyypit';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -116,6 +115,7 @@ import { Page } from '@shared/tyypit';
     EpSpinner,
     EpSearch,
     EpMultiSelect,
+    EpMaterialIcon,
   },
 })
 export default class EpTutkinnonosaTuonti extends Vue {

@@ -12,7 +12,7 @@
           <div class="d-flex justify-content-between align-items-end pb-3">
             <ep-search v-model="rajain"></ep-search>
 
-            <ep-button variant="outline-primary" icon="plussa" @click="startKysymysModal(null)">
+            <ep-button variant="outline-primary" icon="add" @click="startKysymysModal(null)">
               {{ $t('lisaa-uusi-kysymys') }}
             </ep-button>
           </div>
@@ -43,12 +43,10 @@
           <div class="col text-left">
             <div class="float-right">
               <button class="btn btn-link" @click="startKysymysModal(ohje)">
-                <fas icon="pen">
-                </fas>
+                <EpMaterialIcon>edit</EpMaterialIcon>
               </button>
               <button class="btn btn-link" @click="startRemoveKysymys(ohje)">
-                <fas icon="roskalaatikko">
-                </fas>
+                <EpMaterialIcon>delete</EpMaterialIcon>
               </button>
             </div>
             <div>
@@ -105,7 +103,7 @@
 </template>
 
 <script lang="ts">
-import { Prop, Vue, Component, Mixins, Watch } from 'vue-property-decorator';
+import { Prop, Component, Mixins } from 'vue-property-decorator';
 import _ from 'lodash';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
@@ -116,18 +114,16 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 import EpListSelect from '@shared/components/forms/EpListSelect.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
-
 import { TutoriaaliStore } from '@shared/stores/tutoriaali';
 import { OhjeetStore } from '@/stores/OhjeetStore';
 import { OhjeDto } from '@shared/api/amosaa';
-import { required } from 'vuelidate/lib/validators';
 import { validationMixin } from 'vuelidate';
-import { Kielet, UiKielet } from '@shared/stores/kieli';
-import { requiredOneLang, translated } from '@shared/validators/required';
-import { Kieli } from '@shared/tyypit';
+import { Kielet } from '@shared/stores/kieli';
+import { requiredOneLang } from '@shared/validators/required';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { KoulutustoimijaBaseDto } from '../../eperusteet-frontend-utils/vue/src/generated/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
   components: {
@@ -140,6 +136,7 @@ import { Toteutus } from '@shared/utils/perusteet';
     EpSearch,
     EpSpinner,
     EpMultiSelect,
+    EpMaterialIcon,
   },
   validations() {
     return {

@@ -1,11 +1,6 @@
-import { ref, computed, reactive } from '@vue/composition-api';
-import { mount, Wrapper, WrapperArray, createLocalVue, RouterLinkStub } from '@vue/test-utils';
-
+import { mount, createLocalVue, RouterLinkStub } from '@vue/test-utils';
 import RouteRoot from '../RouteRoot.vue';
-import * as _ from 'lodash';
-import { Page } from '@shared/tyypit';
 import '@shared/config/bootstrap';
-import '@shared/config/fontawesome';
 
 describe.skip('RouteRoot', () => {
   const localVue = createLocalVue();
