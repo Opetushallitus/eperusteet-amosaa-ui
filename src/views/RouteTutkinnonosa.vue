@@ -99,7 +99,16 @@
           <b-tab v-else :title="$t('sisalto')">
             <b-form-group>
               <h3 slot="label" class="pt-3">{{$t('ammattitaitovaatimukset')}}</h3>
-              <EpAmmattitaitovaatimukset v-model="data.omaTutkinnonosa.ammattitaitovaatimukset" :is-editing="isEditing" />
+
+              <EpAmmattitaitovaatimuksetLista
+                v-if="isAmmattitaitovaatimuksetLista"
+                v-model="data.omaTutkinnonosa.ammattitaitovaatimuksetLista[0].vaatimuksenKohteet"
+                :is-editing="isEditing"/>
+
+              <EpAmmattitaitovaatimukset
+                v-else
+                v-model="data.omaTutkinnonosa.ammattitaitovaatimukset"
+                :is-editing="isEditing" />
             </b-form-group>
 
             <b-form-group>
@@ -128,6 +137,7 @@ import { Prop, Component, Watch, Mixins } from 'vue-property-decorator';
 import { TutkinnonOsaStore } from '@/stores/TutkinnonOsaStore';
 import EpPerusteenTutkinnonOsa from '@/components/EpAmmatillinen/EpPerusteenTutkinnonOsa.vue';
 import EpTutkinnonosanPaikallisetToteutukset from '@/components/EpAmmatillinen/EpTutkinnonosanPaikallisetToteutukset.vue';
+import EpAmmattitaitovaatimuksetLista from '@/components/EpAmmatillinen/EpAmmattitaitovaatimuksetLista.vue';
 import EpYhteiset from '@/components/EpAmmatillinen/EpYhteiset.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
@@ -163,6 +173,7 @@ import { validationMixin } from 'vuelidate';
     EpYhteiset,
     GeneerinenArviointi,
     draggable,
+    EpAmmattitaitovaatimuksetLista,
   },
 })
 export default class RouteTutkinnonosa extends Mixins(validationMixin) {
@@ -291,6 +302,10 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
         },
       });
     }
+  }
+
+  get isAmmattitaitovaatimuksetLista() {
+    return _.size(_.get(this.editointiStore?.data?.value, 'omaTutkinnonosa.ammattitaitovaatimuksetLista[0].vaatimuksenKohteet')) > 0;
   }
 }
 </script>
