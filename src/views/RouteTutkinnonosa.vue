@@ -112,8 +112,17 @@
             </b-form-group>
 
             <b-form-group>
-              <h3 slot="label" class="pt-3">{{$t('geneerinen-arviointi')}}</h3>
-              <GeneerinenArviointi :is-editing="isEditing" v-model="data.omaTutkinnonosa.geneerinenarviointi"></GeneerinenArviointi>
+              <h3 slot="label" class="pt-3">{{$t('arviointi')}}</h3>
+
+             <EpArvioinninKohdeAlueet
+                v-if="!data.omaTutkinnonosa.geneerinenarviointi && isVanhaArviointi"
+                v-model="data.omaTutkinnonosa.arviointi.arvioinninKohdealueet"
+                :arviointiasteikot="data.arviointiasteikot"
+                :is-editing="isEditing"/>
+
+              <GeneerinenArviointi v-else :is-editing="isEditing" v-model="data.omaTutkinnonosa.geneerinenarviointi">
+                <div slot="header"></div>
+              </GeneerinenArviointi>
             </b-form-group>
 
             <b-form-group>
@@ -152,14 +161,14 @@ import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto } from '@share
 import draggable from 'vuedraggable';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
-import EpAmmatillinenArvioinninKohdealueet from '@shared/components/EpAmmatillinenArvioinninKohdealueet/EpAmmatillinenArvioinninKohdealueet.vue';
 import { Validations } from 'vuelidate-property-decorators';
 import { requiredOneLang } from '@shared/validators/required';
 import { validationMixin } from 'vuelidate';
+import EpArvioinninKohdeAlueet from '@shared/components/EpArviointi/EpArvioinninKohdeAlueet.vue';
 
 @Component({
   components: {
-    EpAmmatillinenArvioinninKohdealueet,
+    EpArvioinninKohdeAlueet,
     EpAmmattitaitovaatimukset,
     EpButton,
     EpCollapse,
@@ -306,6 +315,10 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
 
   get isAmmattitaitovaatimuksetLista() {
     return _.size(_.get(this.editointiStore?.data?.value, 'omaTutkinnonosa.ammattitaitovaatimuksetLista[0].vaatimuksenKohteet')) > 0;
+  }
+
+  get isVanhaArviointi() {
+    return _.size(_.get(this.editointiStore?.data?.value, 'omaTutkinnonosa.arviointi.arvioinninKohdealueet')) > 0;
   }
 }
 </script>
