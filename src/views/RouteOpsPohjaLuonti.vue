@@ -144,9 +144,7 @@ export default class RouteOpsPohjaLuonti extends Vue {
   }
 
   onCancel() {
-    this.$router.push({
-      name: 'opetussuunnitelmaPohjatListaus',
-    });
+    history.back();
   }
 
   @Validations()
