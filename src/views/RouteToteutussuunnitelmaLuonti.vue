@@ -375,9 +375,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   }
 
   onCancel() {
-    this.$router.push({
-      name: 'yhteinen',
-    });
+    history.back();
   }
 
   get validator() {
