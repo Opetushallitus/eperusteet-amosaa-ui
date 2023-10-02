@@ -3,7 +3,7 @@
     <h3>{{$t(kielistykset['title'])}}</h3>
 
     <div class="d-flex flex-wrap" v-if="toteutussuunnitelma">
-     <ep-perustieto-data icon="translate" :topic="$t('julkaisukielet')">
+     <ep-perustieto-data icon="language" :topic="$t('julkaisukielet')">
         {{julkaisukielet}}
       </ep-perustieto-data>
 
