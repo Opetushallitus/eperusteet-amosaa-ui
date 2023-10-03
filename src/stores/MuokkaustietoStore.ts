@@ -4,6 +4,7 @@ import { OpetussuunnitelmaMuokkaustietoDto, Muokkaustiedot, OpetussuunnitelmaDto
 import { IMuokkaustietoProvider } from '@shared/components/EpViimeaikainenToiminta/types';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
+import { nodeToRoute } from '@/utils/routing';
 
 Vue.use(VueCompositionApi);
 
@@ -29,7 +30,7 @@ export class MuokkaustietoStore implements IMuokkaustietoProvider {
   public readonly muokkaustiedot = computed(() => _.map(this.state.muokkaustiedot, tieto => {
     return {
       ...tieto,
-      route: { name: tieto.kohde, params: { sisaltoviiteId: tieto.kohdeId } },
+      route: nodeToRoute({ type: tieto.kohde as any, id: tieto.kohdeId }),
     };
   }));
 
