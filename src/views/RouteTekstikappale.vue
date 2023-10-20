@@ -1,6 +1,9 @@
 <template>
   <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore" :versionumero="versionumero" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
+    <EpEditointi :store="editointiStore"
+                 :versionumero="versionumero"
+                 :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+                 label-remove-confirm="vahvista-tekstikappaleen-poisto">
       <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
       </template>
@@ -59,7 +62,7 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ITekstikappale } from '@/stores/TekstikappaleStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
@@ -171,7 +174,7 @@ export default class RouteTekstikappale extends Vue {
 @import "@shared/styles/_variables.scss";
 
   ::v-deep fieldset {
-    padding-right: 0px;
+    padding-right: 0;
   }
 
   .container {
