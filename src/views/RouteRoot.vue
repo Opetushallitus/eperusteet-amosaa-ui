@@ -9,7 +9,8 @@
         :koulutustoimija="koulutustoimija"
         :koulutustoimijat="koulutustoimijatOikeuksilla"
         :rootNavigation="rootNavigation"
-        :sovellusOikeudet="sovellusOikeudet"/>
+        :sovellusOikeudet="sovellusOikeudet"
+        :logoutHref="logoutHref"/>
       <PortalTarget ref="innerPortal" name="headerExtension" />
     </div>
     <RouterView />
@@ -29,7 +30,7 @@ import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
-import { Koulutustoimijat, KoulutustoimijaDto } from '@shared/api/amosaa';
+import { Koulutustoimijat, KoulutustoimijaDto, baseURL, LogoutParams } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
 import EpTestiymparisto from '@shared/components/EpTestiymparisto/EpTestiymparisto.vue';
 
@@ -143,6 +144,10 @@ export default class RouteRoot extends Vue {
 
   get sovellusOikeudet() {
     return this.kayttajaStore?.sovellusOikeudet.value;
+  }
+
+  get logoutHref() {
+    return baseURL + LogoutParams.logoutGet().url;
   }
 }
 </script>
