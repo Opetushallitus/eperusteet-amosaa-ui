@@ -63,22 +63,16 @@
 
 <script lang="ts">
 import _ from 'lodash';
-import { Vue, Component, Watch, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import { Kielet } from '@shared/stores/kieli';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSelect from '@shared/components/forms/EpSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { DokumenttiStore, Kuvatyyppi } from '@/stores/DokumenttiStore';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import EpPdfLuonti from '@shared/components/EpPdfLuonti/EpPdfLuonti.vue';
-import EpFileupload from '@shared/components/EpFileupload/EpFileupload.vue';
-import EpPublicImage from '@shared/components/EpPublicImage/EpPublicImage.vue';
 import { KayttoOikeudetStore } from '@/stores/KayttoOikeudetStore';
 import { parsiEsitysnimi } from '@shared/utils/kayttaja';
 import { KayttajaStore } from '@/stores/kayttaja';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { createLogger } from '@shared/utils/logger';
-import { KoulutustoimijaYstavaDto } from '@shared/generated/amosaa';
 
 interface KayttoOikeusText {
   value: string;
