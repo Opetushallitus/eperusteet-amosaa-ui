@@ -21,27 +21,27 @@ kanssa, joten ylläpidetään ohjeita vain yhdessä paikassa.
 
 ### amosaa
 
-- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/ammatillinen/fi/)
-- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/ammatillinen/fi/)
-- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/uusi/#/ammatillinen/fi/)
+- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/#/ammatillinen/fi/)
+- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/#/ammatillinen/fi/)
+- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/#/ammatillinen/fi/)
 
 ### vst
 
-- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/vapaasivistystyo/fi)
-- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/vapaasivistystyo/fi)
-- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/uusi/#/vapaasivistystyo/fi)
+- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/#/vapaasivistystyo/fi)
+- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/#/vapaasivistystyo/fi)
+- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/#/vapaasivistystyo/fi)
 
 ### tuva
 
-- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/tutkintoonvalmentava/fi)
-- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/tutkintoonvalmentava/fi)
-- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/uusi/#/tutkintoonvalmentava/fi)
+- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/#/tutkintoonvalmentava/fi)
+- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/#/tutkintoonvalmentava/fi)
+- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/#/tutkintoonvalmentava/fi)
 
 ### koto
 
-- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/kotoutumiskoulutus/fi)
-- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/uusi/#/kotoutumiskoulutus/fi)
-- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/uusi/#/kotoutumiskoulutus/fi)
+- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-app/#/kotoutumiskoulutus/fi)
+- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-app/#/kotoutumiskoulutus/fi)
+- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-app/#/kotoutumiskoulutus/fi)
 
 
 
