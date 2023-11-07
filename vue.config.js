@@ -21,7 +21,7 @@ const proxy = {
 
 module.exports = {
   lintOnSave: false,
-  publicPath: process.env.NODE_ENV === 'production' ? '/eperusteet-amosaa-app/uusi/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/eperusteet-amosaa-app/' : '/',
   configureWebpack: {
     resolve: {
       alias: {
