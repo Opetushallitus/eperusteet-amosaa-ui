@@ -207,7 +207,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
     this.toteutussuunnitelmaPohjatStore.fetch(_.toNumber(this.koulutustoimijaId), this.toteutus, ['luonnos', 'valmis', 'julkaistu'], this.tyyppi);
 
     if (this.opetussuunnitelmaPohjatStore) {
-      this.opetussuunnitelmaPohjatStore.fetch(_.toNumber(this.koulutustoimijaId), this.toteutus, ['luonnos', 'valmis', 'julkaistu'], 'opsPohja');
+      this.opetussuunnitelmaPohjatStore.fetch(_.toNumber(this.koulutustoimijaId), this.toteutus, ['valmis', 'julkaistu'], 'opsPohja');
     }
 
     if (this.perusteetStore) {
