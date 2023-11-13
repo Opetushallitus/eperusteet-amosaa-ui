@@ -13,9 +13,9 @@
           :collapsable="!isEditing"
           :usePadding="false">
 
-          <div slot="header" v-if="!isEditing">
-            <h4 class="ml-3">{{$kaanna(toteutus.otsikko)}}</h4>
-          </div>
+          <template v-slot:header>
+            <h4 class="ml-3" v-if="!isEditing">{{$kaanna(toteutus.otsikko)}}</h4>
+          </template>
 
           <div class="d-flex">
             <div class="order-handle mr-3">
