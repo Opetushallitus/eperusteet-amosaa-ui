@@ -71,6 +71,7 @@ export class ToteutussuunnitelmaStore {
 
   public async updateValidation() {
     if (this.toteutussuunnitelma.value) {
+      this.state.toteutussuunnitelmaStatus = null;
       this.state.toteutussuunnitelmaStatus = (await Opetussuunnitelmat.validoiOpetussuunnitelma(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
       await this.fetchJulkaisemattomiaMuutoksia();
     }

@@ -54,7 +54,6 @@
         </div>
       </div>
 
-      <EpSpinner v-if="!toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value" />
       <hr class="mt-4 mb-4">
 
       <template v-if="suunnitelma">
