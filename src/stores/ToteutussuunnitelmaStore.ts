@@ -58,7 +58,7 @@ export class ToteutussuunnitelmaStore {
   }
 
   public async fetchJulkaisemattomiaMuutoksia() {
-    this.state.julkaisemattomiaMuutoksia = (await Julkaisut.onkoMuutoksia(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+    this.state.julkaisemattomiaMuutoksia = (await Julkaisut.julkaisemattomiaMuutoksia(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
   }
 
   public async create(ktId: string, toteutussuunnitelma: OpetussuunnitelmaLuontiDto) {
