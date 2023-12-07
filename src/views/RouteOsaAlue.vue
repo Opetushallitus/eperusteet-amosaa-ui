@@ -38,6 +38,12 @@
           <router-link :to="{ name: 'tutkinnonosa' }">{{ $kaanna(supportData.tutkinnonOsa.nimi) }}</router-link>
         </b-form-group>
 
+        <h3 v-if="isEditing">{{$t('paikallinen-tarkennus')}}</h3>
+        <ep-content layout="normal" v-model="data.osaAlueet[osaAlueIdx].paikallinenTarkennus" :is-editable="isEditing"> </ep-content>
+
+        <h3 v-if="isEditing && data.osaAlueet[osaAlueIdx].vapaat.length > 0" class="pt-5 pb-2">{{$t('tekstikappaleet')}}</h3>
+        <EpVapaatTekstit v-model="data.osaAlueet[osaAlueIdx].vapaat" :isEditing="isEditing"/>
+
         <b-tabs class="ml-0 pl-0 mt-4">
           <b-tab :title="$t('paikallinen-toteutus')" class="mt-4">
             <div v-if="tyyppi === 'valinnainen'">
@@ -111,9 +117,11 @@ import EpOsaAlueToteutukset from '@/components/EpAmmatillinen/EpOsaAlueToteutuks
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
+import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
 
 @Component({
   components: {
+    EpVapaatTekstit,
     EpButton,
     EpCollapse,
     EpContent,
