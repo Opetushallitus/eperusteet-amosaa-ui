@@ -10,7 +10,7 @@ export class SisaltotuontiStore {
   public state = reactive({
     opetussuunnitelmat: null as PageOpetussuunnitelmaBaseDto | null,
     sisaltoviitteet: null as SisaltoViiteKevytDto[] | null,
-  })
+  });
 
   constructor(private opetusuunnitelmaId: number, private koulutustoimijaId: string) {
   }

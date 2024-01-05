@@ -11,7 +11,7 @@ export class OphPohjatStore implements IToteutussuunnitelmaProvider {
   private state = reactive({
     pohjat: null as OpetussuunnitelmaBaseDto[] | null,
     opetussuunnitelmat: null as PageOpetussuunnitelmaDto | null,
-  })
+  });
 
   public readonly pohjat = computed(() => this.state.pohjat);
   public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
@@ -28,7 +28,7 @@ export class OphPohjatStore implements IToteutussuunnitelmaProvider {
           ...query,
           tyyppi: ['pohja'],
         },
-      }
+      },
     )).data;
   }
 }

@@ -10,7 +10,7 @@ Vue.use(VueCompositionApi);
 export class YhteisetOsuudetStore implements IToteutussuunnitelmaProvider {
   private state = reactive({
     opetussuunnitelmat: null as PageOpetussuunnitelmaDto | null,
-  })
+  });
 
   public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
 
@@ -22,7 +22,7 @@ export class YhteisetOsuudetStore implements IToteutussuunnitelmaProvider {
           ...query,
           tyyppi: ['yhteinen'],
         },
-      }
+      },
     )).data;
   }
 }

@@ -12,7 +12,7 @@ export class TutkinnonosatTuontiStore {
   public state = reactive({
     toteutussuunnitelmat: null as OpetussuunnitelmaDto[] | null,
     tutkinnonosatPage: null as Page<SisaltoviiteLaajaDto> | null,
-  })
+  });
 
   public readonly tutkinnonosatPage = computed(() => this.state.tutkinnonosatPage);
   public readonly toteutussuunnitelmat = computed(() => this.state.toteutussuunnitelmat);
@@ -43,7 +43,7 @@ export class TutkinnonosatTuontiStore {
           peruste: await Perusteet.getPeruste(perusteId!),
         }
       ))
-      .value()
+      .value(),
     ), perusteData => ({ ...perusteData, peruste: _.get(perusteData.peruste, 'data') })), 'perusteId');
 
     const perusteidentutkinnonosatByTutkinnonosa = _.keyBy(await Promise.all(_.map(_.get(sisaltoviitteet, 'data'), async (tutkinnonosa) => {

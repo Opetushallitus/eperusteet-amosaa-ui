@@ -9,7 +9,7 @@ Vue.use(VueCompositionApi);
 
 export class OrganisaatioStore implements IEditoitava {
   constructor(
-    private koulutustoimijaId: string
+    private koulutustoimijaId: string,
   ) {}
 
   async load() {

@@ -9,7 +9,7 @@ Vue.use(VueCompositionApi);
 export class OpetussuunnitelmaPohjatStore {
   private state = reactive({
     opetussuunnitelmat: null as OpetussuunnitelmaBaseDto[] | null,
-  })
+  });
 
   public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
 

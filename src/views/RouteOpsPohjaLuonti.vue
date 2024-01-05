@@ -153,7 +153,7 @@ export default class RouteOpsPohjaLuonti extends Vue {
         ...requiredLokalisoituTeksti(),
       },
       ...(this.perusteValinta && { peruste: notNull() }),
-    }
+    };
 
   get kielistykset() {
     return OpetussuunnitelmaPohjaLuontiStepSetups[this.toteutus];

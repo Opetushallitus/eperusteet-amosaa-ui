@@ -9,7 +9,7 @@ Vue.use(VueCompositionApi);
 export class ToteutussuunnitelmaTiedotteetStore {
   private state = reactive({
     tiedotteet: null as TiedoteDto[] | null,
-  })
+  });
 
   constructor(private opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
   }
@@ -28,7 +28,7 @@ export class ToteutussuunnitelmaTiedotteetStore {
           undefined,
           undefined,
           undefined,
-          this.opetussuunnitelma.value.peruste.perusteId
+          this.opetussuunnitelma.value.peruste.perusteId,
         )).data as any;
         this.state.tiedotteet = res.data;
       }

@@ -8,7 +8,7 @@ Vue.use(VueCompositionApi);
 export class OhjeetStore {
   private state = reactive({
     ohjeet: null as OhjeDto[] | null,
-  })
+  });
 
   public readonly ohjeet = computed(() => this.state.ohjeet);
 

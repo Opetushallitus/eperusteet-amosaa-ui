@@ -293,7 +293,7 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
   @Validations()
   validations = {
     nimi: requiredOneLang(),
-  }
+  };
 
   async updateNavigation() {
     await this.toteutussuunnitelmaStore.initNavigation();

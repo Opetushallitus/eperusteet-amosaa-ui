@@ -9,7 +9,7 @@ Vue.use(VueCompositionApi);
 export class SisaltoViiteStore {
   private state = reactive({
     sisaltoviitteet: null as SisaltoViiteKevytDto[] | null,
-  })
+  });
 
   public readonly sisaltoviitteet = computed(() => this.state.sisaltoviitteet);
 

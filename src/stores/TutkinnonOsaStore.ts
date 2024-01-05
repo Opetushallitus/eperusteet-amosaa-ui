@@ -49,7 +49,7 @@ export class TutkinnonOsaStore implements IEditoitava {
       this.perusteId = tutkinnonosaViite.linkattuPeruste;
     }
 
-    let perusteId = tutkinnonosaViite.peruste ? tutkinnonosaViite.peruste.id : this.perusteId;
+    const perusteId = tutkinnonosaViite.peruste ? tutkinnonosaViite.peruste.id : this.perusteId;
     const peruste = (await Perusteet.getPeruste(perusteId)).data;
 
     if (tutkinnonosaViite.tosa.tyyppi === 'perusteesta' || tutkinnonosaViite.perusteentutkinnonosa) {

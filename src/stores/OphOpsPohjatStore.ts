@@ -10,7 +10,7 @@ Vue.use(VueCompositionApi);
 export class OphOpsPohjatStore {
   private state = reactive({
     opsPohjat: null as OpetussuunnitelmaBaseDto[] | null,
-  })
+  });
 
   public readonly opsPohjat = computed(() => this.state.opsPohjat);
 

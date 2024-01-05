@@ -224,7 +224,7 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
           this.versionumero,
           this.toteutus,
           this.toteutussuunnitelmaStore!,
-        )
+        ),
       );
     }
   }

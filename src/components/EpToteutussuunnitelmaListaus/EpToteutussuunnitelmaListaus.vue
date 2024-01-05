@@ -301,7 +301,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
         confirm: 'palauta-toteutussuunnitelma-vahvistus',
         tila: 'LUONNOS',
         toteutussuunnitelmaId: item.id,
-      }
+      },
     );
     await this.onQueryChange(this.query);
   }
