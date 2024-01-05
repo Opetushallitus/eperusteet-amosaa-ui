@@ -5,7 +5,7 @@
         <h2 class="m-0">{{ $kaanna(data.suorituspolkuViiteRoot.tekstiKappale.nimi) }}</h2>
       </template>
 
-      <template v-slot:default="{ data, isEditing, validation }">
+      <template v-slot:default="{ data, isEditing }">
 
         <ep-content layout="normal" v-model="data.suorituspolkuViiteRoot.tekstiKappale.teksti" :is-editable="isEditing" />
 
@@ -19,7 +19,7 @@
         </div>
 
         <b-table striped hover responsive :items="data.suorituspolkuViitteet" :fields="fields">
-          <template v-slot:cell(tekstiKappale.nimi)="data">
+          <template v-slot:cell(nimi)="data">
             <router-link :to="{ name: 'suorituspolku', params: { sisaltoviiteId: data.item.id } }">
               {{ $kaanna(data.item.tekstiKappale.nimi) || $t('nimeton') }}
             </router-link>
@@ -105,7 +105,7 @@ export default class RouteSuorituspolut extends Vue {
 
   get fields() {
     return [{
-      key: 'tekstiKappale.nimi',
+      key: 'nimi',
       sortable: true,
       sortByFormatted: true,
       label: this.$t('nimi') as string,

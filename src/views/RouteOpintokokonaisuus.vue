@@ -24,7 +24,7 @@
           <b-col md="3">
             <b-form-group :label="$t('laajuus')">
               <EpLaajuusYksikkoInput
-                v-model="opintokokonaisuus"
+                v-model="data.opintokokonaisuus"
                 :is-editing="isEditing"
                 :validation="validation.opintokokonaisuus">
               </EpLaajuusYksikkoInput>

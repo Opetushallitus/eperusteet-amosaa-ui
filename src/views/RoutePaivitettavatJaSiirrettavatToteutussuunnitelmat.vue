@@ -12,7 +12,7 @@
       :items="vanhentuneetToteutussuunnitelmat"
       :fields="vanhentuneetFields">
 
-      <template v-slot:cell(opetussuunnitelma.nimi)="{ item }">
+      <template v-slot:cell(nimi)="{ item }">
         <router-link :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: item.opetussuunnitelma.id } }">
           {{ $kaanna(item.opetussuunnitelma.nimi) }}
         </router-link>
@@ -38,7 +38,7 @@
       :items="historialiitoksienToteutussuunnitelmat"
       :fields="historiaFields">
 
-      <template v-slot:cell(opetussuunnitelma.nimi)="{ item }">
+      <template v-slot:cell(nimi)="{ item }">
         <router-link :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: item.opetussuunnitelma.id } }">
           {{ $kaanna(item.opetussuunnitelma.nimi) }}
         </router-link>
@@ -117,7 +117,7 @@ export default class RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat extend
 
   get vanhentuneetFields() {
     return [{
-      key: 'opetussuunnitelma.nimi',
+      key: 'nimi',
       label: this.$t('nimi'),
       sortable: true,
       sortByFormatted: true,
@@ -156,7 +156,7 @@ export default class RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat extend
 
   get historiaFields() {
     return [{
-      key: 'opetussuunnitelma.nimi',
+      key: 'nimi',
       label: this.$t('nimi'),
       sortable: true,
       sortByFormatted: true,

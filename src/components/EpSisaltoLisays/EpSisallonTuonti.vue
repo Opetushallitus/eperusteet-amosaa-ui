@@ -51,7 +51,7 @@
             :per-page="sisaltoSivuKoko"
             :current-page="sisaltoPages[sisaltoTaulu.page]"
             >
-            <template v-slot:cell(tekstiKappale.nimi)="{ item }">
+            <template v-slot:cell(nimi)="{ item }">
               <div class="selectable" @click="selectRow(item.id)">
                 <EpMaterialIcon v-if="item.selected" class="checked mr-2">check_box</EpMaterialIcon>
                 <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
@@ -316,7 +316,7 @@ export default class EpSisallonTuonti extends Vue {
 
   sisaltoviiteFields(tyyppi: string) {
     return [{
-      key: 'tekstiKappale.nimi',
+      key: 'nimi',
       label: this.$t(tyyppi) as string,
       sortable: false,
     }];

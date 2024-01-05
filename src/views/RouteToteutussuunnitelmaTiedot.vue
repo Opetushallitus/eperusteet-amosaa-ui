@@ -4,7 +4,7 @@
       :store="editointiStore"
       :versionumero="versionumero"
       :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
-      <template v-slot:header="{ data }">
+      <template v-slot:header>
         <h2 class="m-0">{{ $t(kielistykset['title']) }}</h2>
       </template>
       <template v-slot:default="{ data, isEditing, validation }">

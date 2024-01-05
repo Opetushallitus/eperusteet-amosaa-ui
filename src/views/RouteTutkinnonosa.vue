@@ -4,7 +4,7 @@
       <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $kaanna(data.tutkinnonosaViite.tekstiKappale.nimi) }}<span v-if="laajuus">, {{laajuus}} {{$t('osaamispiste')}}</span></h2>
       </template>
-      <template v-slot:default="{ data, isEditing, validation }">
+      <template v-slot:default="{ data, isEditing }">
         <div class="alert alert-info" v-if="data.tutkinnonosaViite.tyyppi === 'linkki'">
           <router-link :to="{ name: 'tutkinnonosa', params: { toteutussuunnitelmaId: data.tutkinnonosaViite.linkattuOps, sisaltoviiteId: data.tutkinnonosaViite.linkattuSisaltoViiteId } }">
             {{ $t('siirry-alkuperaiseen-toteutukseen') }}

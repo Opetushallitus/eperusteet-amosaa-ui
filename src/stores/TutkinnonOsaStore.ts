@@ -35,8 +35,8 @@ export class TutkinnonOsaStore implements IEditoitava {
   }
 
   async load() {
-    let tutkinnonosaViite: any;
-    let arviointiasteikot: any;
+    let tutkinnonosaViite: any = {};
+    let arviointiasteikot: any = {};
     let perusteenTutkinnonosaViite;
     let perusteenTutkinnonosa;
 

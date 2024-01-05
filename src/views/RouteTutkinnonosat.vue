@@ -19,7 +19,7 @@
       </div>
 
       <b-table striped hover responsive :items="tutkinnonosat" :fields="fields">
-        <template v-slot:cell(tutkinnonosaViite.tekstiKappale.nimi)="data">
+        <template v-slot:cell(nimi)="data">
           <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
             {{ $kaanna(data.item.nimi) }}
             <span class="paikallinen" v-if="data.item.tutkinnonosaViite.tosa.tyyppi === 'oma'">({{$t('tutkinnon-osa-paikallinen-merkki')}})</span>
@@ -158,7 +158,7 @@ export default class RouteTutkinnonosat extends Vue {
       label: this.$t('nro') as string,
       sortable: true,
     }, {
-      key: 'tutkinnonosaViite.tekstiKappale.nimi',
+      key: 'nimi',
       sortable: true,
       sortByFormatted: true,
       label: this.$t('nimi') as string,
