@@ -22,7 +22,7 @@ export class PohjanTutkinnonosatStore {
       .flatMap()
       .keyBy('_tutkinnonOsa')
       .value();
-    this.state.tutkinnonosat = _.map(_.get((await Perusteet.getPerusteByPerusteId(perusteId)).data, 'tutkinnonOsat'), tutkinnonosa => {
+    this.state.tutkinnonosat = _.map(_.get((await Perusteet.getPerusteByPerusteId(perusteId)).data, 'tutkinnonOsat'), (tutkinnonosa: any) => {
       return {
         ...tutkinnonosa,
         laajuus: this.getPerusteenTutkinnonosaViitteenLaajuus(perusteenTutkinnonosaViitteet[tutkinnonosa.id]),

@@ -424,7 +424,7 @@ router.beforeEach(async (to, from, next) => {
       next();
     }
     catch (err) {
-      throw new Error(err);
+      throw new Error(err as any);
     }
   }
 });

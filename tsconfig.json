@@ -12,9 +12,9 @@
     "noImplicitThis": false,
     "sourceMap": true,
     "strict": true,
+    "skipLibCheck": false,
     "strictPropertyInitialization": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "target": "es6",
+    "target": "es2020",
     "types": [
       "webpack-env",
       "jest"
@@ -44,5 +44,8 @@
   "exclude": [
     "node_modules",
     "eperusteet-frontend-utils"
-  ]
+  ],
+  "vueCompilerOptions": {
+    "target": 2.7
+  }
 }

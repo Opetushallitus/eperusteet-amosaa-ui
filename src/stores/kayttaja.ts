@@ -85,7 +85,7 @@ export class KayttajaStore implements IOikeusProvider {
       logger.info('Käyttäjän tiedot', this.tiedot.value);
       this.state.ophKoulutustoimija = (await JulkinenApi.getKoulutustoimijaByOid(OphOrgOid)).data;
     }
-    catch (err) {
+    catch (err: any) {
       logger.error('Käyttäjän tietojen lataus epäonnistui', err.message);
     }
   }
@@ -93,7 +93,7 @@ export class KayttajaStore implements IOikeusProvider {
   private async fetchOikeudet() {
     const tyoryhmaOikeudet = (await Kayttajaoikeudet.getTyoryhmat()).data;
     _.forEach(tyoryhmaOikeudet, tyoryhmaOikeus => {
-      this.state.toteutussuunnitelmaOikeudet[_.get(tyoryhmaOikeus, '_opetussuunnitelma')] = (tyoryhmaOikeus.oikeus as any);
+      this.state.toteutussuunnitelmaOikeudet[_.get(tyoryhmaOikeus as any, '_opetussuunnitelma')] = (tyoryhmaOikeus.oikeus as any);
     });
 
     this.state.koulutustoimijaOikeudet = (await Kayttajaoikeudet.getKoulutustoimijaOikeudet(ToteutusSovellusRole(this.state.toteutus))).data;
@@ -117,7 +117,7 @@ export class KayttajaStore implements IOikeusProvider {
       this.state.koulutustoimijaId = null;
       this.state.toteutussuunnitelmaId = null;
     }
-    catch (err) {
+    catch (err: any) {
       logger.error('Ei oikeuksia', err.message);
     }
   }

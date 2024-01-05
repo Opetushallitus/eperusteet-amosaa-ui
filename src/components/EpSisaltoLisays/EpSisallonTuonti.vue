@@ -211,7 +211,7 @@ export default class EpSisallonTuonti extends Vue {
   }
 
   get page() {
-    return _.get(this.opetussuunnitelmatpage, 'sivu') + 1;
+    return _.get(this.opetussuunnitelmatpage as any, 'sivu') + 1;
   }
 
   set page(value: number) {
