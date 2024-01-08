@@ -75,6 +75,8 @@
 
               <div v-if="korvaavaPeruste" class="korvaavaPeruste" v-html="$t('tutkinnolla-korvaava-peruste-selite', {korvaavaPerusteNimi})"/>
 
+              <EpToggle v-if="naytaKopioiPohjanTiedot" v-model="kopioiPohjanTiedot" checkbox>{{$t('kopioi-yhteisen-osuuden-tiedot')}}</EpToggle>
+
               <b-form-group :label="$t(kaannokset.tutkinnonosatLabel) +' *'" v-if="tutkinnonosatValinta">
                 <ep-spinner v-if="!tutkinnonosat" />
 
@@ -127,7 +129,7 @@ import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue
 import * as _ from 'lodash';
 import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { OpetussuunnitelmaDto, PerusteDto, Perusteet } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum, PerusteDto, Perusteet } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
@@ -201,6 +203,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
   private toteutussuunnitelmaPohjatStore: OpetussuunnitelmaPohjatStore | null = null;
   private jotpa: OpsJotpa = { jotpa: false, jotpatyyppi: null };
   private korvaavaPeruste: PerusteDto | null = null;
+  private kopioiPohjanTiedot: boolean = false;
 
   async mounted() {
     this.toteutussuunnitelmaPohjatStore = new OpetussuunnitelmaPohjatStore();
@@ -310,8 +313,8 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
           pohjaLabel: 'suunnitelman-pohja',
           pohjaValintaPlaceHolder: 'valitse-pohja',
         },
-        nimiLabel: 'toteutussuunnitelman-nimi',
-        luoLabel: 'luo-suunnitelma',
+        nimiLabel: 'yhteisen-osan-nimi',
+        luoLabel: 'luo-yhteinen-osa',
       },
       'pohja': {
         stepName: 'uusi-yhteisten-osien-pohja',
@@ -347,6 +350,7 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
         tutkinnonOsaKoodiIncludes: this.tutkinnonosaKoodit,
         koulutustyyppi: this.peruste ? undefined : this.koulutustyyppi,
         jotpatyyppi: this.jotpa ? this.jotpa.jotpatyyppi as any : null,
+        kopioiPohjanTiedot: this.kopioiPohjanTiedot,
       } as any);
 
       this.$router.push({
@@ -541,6 +545,17 @@ export default class RouteToteutussuunnitelmaLuonti extends Vue {
 
   get korvaavaPerusteNimi() {
     return `${this.$kaanna(this.korvaavaPeruste?.nimi!)} (${this.korvaavaPeruste?.diaarinumero}, ${this.$sd(this.korvaavaPeruste?.voimassaoloAlkaa!)} - ${(this.korvaavaPeruste?.voimassaoloLoppuu ? this.$sd(this.korvaavaPeruste?.voimassaoloLoppuu) : '')})`;
+  }
+
+  get naytaKopioiPohjanTiedot() {
+    return this.opetussuunnitelmanTyyppi === 'yhteinen'
+      && !!this.toteutussuunnitelma
+      && _.includes(this.ophPohjienIdt, _.toNumber(_.get(this.toteutussuunnitelma, '_pohja')))
+      && this.toteutussuunnitelma.tyyppi !== _.toLower(OpetussuunnitelmaDtoTyyppiEnum.POHJA);
+  }
+
+  get ophPohjienIdt() {
+    return _.map(this.ophPohjatStore?.pohjat.value, 'id');
   }
 }
 </script>
