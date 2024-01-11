@@ -137,6 +137,7 @@ import { Toteutus } from '@shared/utils/perusteet';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { Debounced } from '@shared/utils/delay';
+import { Kielet } from '@shared/stores/kieli';
 
 export type ProjektiFilter = 'koulutustyyppi' | 'tila' | 'voimassaolo';
 
@@ -191,6 +192,7 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
     jarjestysOrder: false,
     jarjestysTapa: 'nimi',
     koulutustoimijat: [],
+    kieli: Kielet.getSisaltoKieli.value,
   } as any;
 
   async mounted() {
@@ -222,6 +224,14 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
         this.isLoading = false;
       }
     }
+  }
+
+  @Watch('kieli')
+  async kieliChanged() {
+    this.query = {
+      ...this.query,
+      kieli: this.kieli,
+    };
   }
 
   @Watch('voimassaolo')
@@ -294,6 +304,10 @@ export default class EpToteutussuunnitelmaListaus extends Vue {
       }
     );
     await this.onQueryChange(this.query);
+  }
+
+  get kieli() {
+    return Kielet.getSisaltoKieli.value;
   }
 
   get vaihtoehdotVoimassaolo() {
