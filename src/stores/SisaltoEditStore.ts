@@ -4,6 +4,7 @@ import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteM
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, Kieli } from '@shared/tyypit';
+import { Kielet } from '@shared/stores/kieli';
 
 Vue.use(VueCompositionApi);
 
@@ -55,7 +56,7 @@ export class SisaltoEditStore implements IEditoitava {
         const tutkinnonOsaViitteetByTutkinnonOsaId = _.keyBy((rakenne as any).tutkinnonOsaViitteet, '_tutkinnonOsa');
 
         addPerusteData({
-          rakenne: (rakenne as any).rakenne,
+          rakenne: this.asetaPakollisuus((rakenne as any).rakenne, false),
           tutkinnonOsaViitteet,
           tutkinnonOsaViitteetByTutkinnonOsaId,
           tutkinnonOsat: _.keyBy(tutkinnonOsat, 'id'),
@@ -89,6 +90,15 @@ export class SisaltoEditStore implements IEditoitava {
 
     return {
       ...result,
+    };
+  }
+
+  asetaPakollisuus(node, parentMandatory) {
+    const pakollinen = parentMandatory || node.pakollinen || (!!node.nimi && node.nimi[Kielet.getUiKieli.value] === this.el.$t('rakenne-moduuli-pakollinen'));
+    return {
+      ...node,
+      pakollinen,
+      ...(node.osat && { osat: _.map(node.osat, osa => this.asetaPakollisuus(osa, pakollinen)) }),
     };
   }
 
