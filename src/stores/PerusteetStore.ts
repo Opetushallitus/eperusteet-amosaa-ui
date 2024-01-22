@@ -11,7 +11,7 @@ export class PerusteetStore {
   private state = reactive({
     perusteetKevyt: null as PerusteKevytDto[] | null,
     toteutus: null as Toteutus | null,
-  })
+  });
 
   private static Arviointiasteikot = null as any | null;
   private static Geneeriset = null as any | null;

@@ -543,7 +543,7 @@ ul.colors-menu {
   }
 }
 
-/deep/ .toiminto-cell {
+::v-deep .toiminto-cell {
   width: 30%;
 }
 

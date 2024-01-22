@@ -11,7 +11,7 @@ Vue.use(VueCompositionApi);
 export class ToteutussuunnitelmatStore implements IToteutussuunnitelmaProvider {
   private state = reactive({
     opetussuunnitelmat: null as PageOpetussuunnitelmaDto | null,
-  })
+  });
 
   public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
 

@@ -10,7 +10,7 @@ export class PaivitettavatJaSiirrettavatTotsStore {
   private state = reactive({
     vanhentuneetToteutussuunnitelmat: null as VanhentunutPohjaperusteDto[] | null,
     historialiitoksienToteutussuunnitelmat: null as any[] | null,
-  })
+  });
 
   public readonly vanhentuneetToteutussuunnitelmat = computed(() => this.state.vanhentuneetToteutussuunnitelmat);
   public readonly historialiitoksienToteutussuunnitelmat = computed(() => this.state.historialiitoksienToteutussuunnitelmat);

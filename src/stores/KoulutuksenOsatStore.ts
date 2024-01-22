@@ -10,7 +10,7 @@ Vue.use(VueCompositionApi);
 export class KoulutuksenOsatStore implements IEditoitava {
   private state = reactive({
     koulutuksenosat: null as any | null,
-  })
+  });
 
   constructor(private opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
   }

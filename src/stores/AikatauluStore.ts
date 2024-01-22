@@ -10,7 +10,7 @@ Vue.use(VueCompositionApi);
 export class AikatauluStore {
   private state = reactive({
     aikataulutapahtumat: null as OpetussuunnitelmaAikatauluDto[] | null,
-  })
+  });
 
   constructor(private opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
   }

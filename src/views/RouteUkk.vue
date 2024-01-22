@@ -177,11 +177,11 @@ export default class RouteUkk extends Mixins(validationMixin) {
     return _.chain(this.ohjeet)
       .filter(ohje => _.includes(
         _.toLower(_.get(ohje, 'lokalisoituKysymys.' + Kielet.getSisaltoKieli.value)),
-        _.toLower(this.rajain)
+        _.toLower(this.rajain),
       ) || _.includes(
         _.toLower(_.get(ohje, 'lokalisoituVastaus.' + Kielet.getSisaltoKieli.value)),
-        _.toLower(this.rajain)
-      )
+        _.toLower(this.rajain),
+      ),
       )
       .filter(ohje => _.isEmpty(this.koulutustoimijaRajaus) || _.some(_.map(this.koulutustoimijaRajaus, 'id'), ktId => _.includes(_.map(ohje.koulutustoimijat, 'id'), ktId)))
       .sortBy((k: any) => -k.muokattu)

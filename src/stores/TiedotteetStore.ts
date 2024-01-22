@@ -14,7 +14,7 @@ export class TiedotteetStore implements ITiedotteetProvider {
     tiedotteet: null as TiedoteDto[] | null,
     kokonaismaara: null as number | null,
     isLoading: true,
-  })
+  });
 
   public readonly tiedotteet = computed(() => this.state.tiedotteet);
   public readonly kokonaismaara = computed(() => this.state.kokonaismaara);

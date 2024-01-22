@@ -1,7 +1,7 @@
 <template>
   <div id="scroll-anchor" v-if="editointiStore">
     <EpEditointi :store="editointiStore">
-      <template v-slot:header="{ data, supportData }">
+      <template v-slot:header>
         <h2 class="m-0">
           <span v-if="perusteenOsaAlue">{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
           <span v-else-if="osaAlueValue.nimi">{{ $kaanna(osaAlueValue.nimi) }}</span>

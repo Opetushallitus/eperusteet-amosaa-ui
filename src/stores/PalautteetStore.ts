@@ -10,7 +10,7 @@ Vue.use(VueCompositionApi);
 export class PalautteetStore implements ITPalauteProvider {
   public state = reactive({
     toteutus: Toteutus.AMMATILLINEN as Toteutus,
-  })
+  });
 
   public readonly tutkintorakennepalaute = computed(() => Tutkintorakennepalaute[this.state.toteutus]);
 

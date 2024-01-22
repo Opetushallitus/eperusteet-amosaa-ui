@@ -1,7 +1,7 @@
 <template>
   <div id="scroll-anchor" v-if="editointiStore">
     <EpEditointi :store="editointiStore" :versionumero="versionumero">
-      <template v-slot:header="{ data, supportData, isEditing }">
+      <template v-slot:header="{ data }">
         <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
       </template>
       <template v-slot:default="{ data, supportData, isEditing }">

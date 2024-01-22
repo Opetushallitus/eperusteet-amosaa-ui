@@ -9,7 +9,7 @@ export class PohjanTutkinnonosatStore {
   private state = reactive({
     tutkinnonosat: null as any[] | null,
     peruste: null as any | null,
-  })
+  });
 
   public readonly tutkinnonosat = computed(() => this.state.tutkinnonosat);
   public readonly peruste = computed(() => this.state.peruste);
@@ -22,7 +22,7 @@ export class PohjanTutkinnonosatStore {
       .flatMap()
       .keyBy('_tutkinnonOsa')
       .value();
-    this.state.tutkinnonosat = _.map(_.get((await Perusteet.getPerusteByPerusteId(perusteId)).data, 'tutkinnonOsat'), tutkinnonosa => {
+    this.state.tutkinnonosat = _.map(_.get((await Perusteet.getPerusteByPerusteId(perusteId)).data, 'tutkinnonOsat'), (tutkinnonosa: any) => {
       return {
         ...tutkinnonosa,
         laajuus: this.getPerusteenTutkinnonosaViitteenLaajuus(perusteenTutkinnonosaViitteet[tutkinnonosa.id]),

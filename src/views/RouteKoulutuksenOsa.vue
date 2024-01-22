@@ -3,7 +3,7 @@
     <template #header="{ data }">
       <h2 class="m-0">{{ $kaanna(data.koulutuksenosa.nimi) }}</h2>
     </template>
-     <template #default="{ data, isEditing, validation, data: { koulutuksenosa } }">
+     <template #default="{ isEditing, data: { koulutuksenosa } }">
        <b-row>
          <b-col>
            <b-form-group :label="$t('laajuus')">

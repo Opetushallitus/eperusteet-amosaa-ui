@@ -55,7 +55,7 @@
           :fields="tutkinnonosatFields"
           no-sort-reset
           @row-clicked="selectRow">
-          <template v-slot:head(valitse-kaikki)="{ item }">
+          <template v-slot:head(valitse-kaikki)>
             <div class="selectable" @click="selectAllRows()">
               <EpMaterialIcon v-if="valitseKaikki" class="checked mr-2">check_box</EpMaterialIcon>
               <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
@@ -67,7 +67,7 @@
               <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
             </div>
           </template>
-          <template v-slot:cell(tekstiKappale.nimi)="{ item }">
+          <template v-slot:cell(nimi)="{ item }">
             <span>{{$kaanna(item.tekstiKappale.nimi)}}</span>
           </template>
         </b-table>
@@ -309,7 +309,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
 
   get valittuFields() {
     return [{
-      key: 'tekstiKappale.nimi',
+      key: 'nimi',
       label: this.$t('nimi'),
       sortable: true,
       sortByFormatted: true,

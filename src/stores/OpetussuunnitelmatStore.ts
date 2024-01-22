@@ -11,7 +11,7 @@ export class OpetussuunnitelmatStore {
     julkaistutOpetussuunnitelmat: null as Page<OpetussuunnitelmaDto> | null,
     ystavienOpetussuunnitelmat: null as OpetussuunnitelmaDto[] | null,
     arkistoidutOpetussuunnitelmat: null as OpetussuunnitelmaDto[] | null,
-  })
+  });
 
   public readonly opetussuunnitelmat = computed(() => this.state.opetussuunnitelmat);
   public readonly julkaistutOpetussuunnitelmat = computed(() => this.state.julkaistutOpetussuunnitelmat);

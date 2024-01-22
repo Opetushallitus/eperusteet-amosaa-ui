@@ -10,7 +10,7 @@ Vue.use(VueCompositionApi);
 export class TutkinnonOsatStore {
   private state = reactive({
     tutkinnonosat: null as any | null,
-  })
+  });
 
   public readonly tutkinnonosat = computed(() => this.state.tutkinnonosat);
 

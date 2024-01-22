@@ -8,7 +8,7 @@
         <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
       </template>
 
-      <template v-slot:default="{ data, isEditing, validation }">
+      <template v-slot:default="{ data, isEditing }">
 
         <div class="container">
 
