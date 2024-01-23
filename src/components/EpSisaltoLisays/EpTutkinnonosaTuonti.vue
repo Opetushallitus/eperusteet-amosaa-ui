@@ -271,7 +271,7 @@ export default class EpTutkinnonosaTuonti extends Vue {
         sortable: false,
       },
       {
-        key: 'tekstiKappale.nimi',
+        key: 'nimi',
         label: this.$t('nimi'),
         sortable: true,
         thStyle: { width: '40%' },

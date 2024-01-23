@@ -10,6 +10,13 @@
         <EpSearch v-model="queryNimi" :placeholder="$t('etsi')"/>
 
         <div class="d-flex">
+          <EpButton variant="link"
+                    icon="delete"
+                    class="btn btn-link p-0"
+                    @click="removeSelected()"
+                    :disabled="selectedTutkinnonosat.length === 0">
+            {{$t('poista-valitut')}}
+          </EpButton>
           <ep-tutkinnonosa-tuonti
             :tutkinnonosatTuontiStore="tutkinnonosatTuontiStore"
             :toteutussuunnitelmaId="toteutussuunnitelmaId"
@@ -18,7 +25,23 @@
         </div>
       </div>
 
-      <b-table striped hover responsive :items="tutkinnonosat" :fields="fields">
+      <b-table responsive striped hover no-local-sorting no-sort-reset
+               :items="tutkinnonosatWithSelected"
+               :fields="fields"
+               @row-clicked="selectRow"
+      class="vertical-middle">
+        <template v-slot:head(valitse-kaikki)>
+          <div class="selectable" @click="selectAllRows()">
+            <EpMaterialIcon v-if="valitseKaikki" class="checked mr-2">check_box</EpMaterialIcon>
+            <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
+          </div>
+        </template>
+        <template v-slot:cell(valitse-kaikki)="{ item }">
+          <div class="selectable">
+            <EpMaterialIcon v-if="item.selected" class="checked mr-2">check_box</EpMaterialIcon>
+            <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
+          </div>
+        </template>
         <template v-slot:cell(nimi)="data">
           <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
             {{ $kaanna(data.item.nimi) }}
@@ -51,7 +74,7 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpTutkinnonosaTuonti from '@/components/EpSisaltoLisays/EpTutkinnonosaTuonti.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
-import { Sisaltoviitteet } from '@shared/api/amosaa';
+import { SisaltoviiteLaajaDto, Sisaltoviitteet } from '@shared/api/amosaa';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
 @Component({
@@ -80,6 +103,8 @@ export default class RouteTutkinnonosat extends Vue {
 
   private queryNimi: string = '';
   private poistossa: number[] = [];
+  private valitseKaikki = false;
+  private selectedTutkinnonosat: SisaltoviiteLaajaDto[] = [];
 
   @Watch('opetussuunnitelma', { immediate: true })
   async opetussuunnitelmachange() {
@@ -87,11 +112,13 @@ export default class RouteTutkinnonosat extends Vue {
   }
 
   async fetch() {
+    this.valitseKaikki = false;
     if (this.opetussuunnitelma) {
       await this.tutkinnonOsatStore.fetch(this.opetussuunnitelma.id!,
         _.toString(this.opetussuunnitelma.koulutustoimija?.id),
         this.opetussuunnitelma.peruste?.id!);
     }
+    this.selectedTutkinnonosat = [];
   }
 
   async remove(tutkinnonosaId) {
@@ -102,6 +129,22 @@ export default class RouteTutkinnonosat extends Vue {
         await this.updateNavigation();
         await this.fetch();
         _.pull(this.poistossa, tutkinnonosaId);
+      }
+    }
+    catch (err) {
+      this.$fail(this.$t('poisto-epaonnistui') as string);
+    }
+  }
+
+  async removeSelected() {
+    let ids = _.chain(this.selectedTutkinnonosat)
+      .map(osa => _.toNumber(_.get(osa, 'tutkinnonosaViite.id')))
+      .value();
+    try {
+      if (await this.confirm()) {
+        await Sisaltoviitteet.removeSisaltoViitteet(this.toteutussuunnitelmaId, this.koulutustoimijaId, ids);
+        await this.updateNavigation();
+        await this.fetch();
       }
     }
     catch (err) {
@@ -130,6 +173,42 @@ export default class RouteTutkinnonosat extends Vue {
     await this.toteutussuunnitelmaStore.initNavigation();
   }
 
+  selectAllRows() {
+    this.valitseKaikki = !this.valitseKaikki;
+    if (this.valitseKaikki) {
+      this.selectedTutkinnonosat = [
+        ...this.selectedTutkinnonosat,
+        ...(this.tutkinnonosat || []) as SisaltoviiteLaajaDto[],
+      ];
+    }
+    else {
+      this.selectedTutkinnonosat = _.filter(this.selectedTutkinnonosat, sel => !_.includes(_.map(this.tutkinnonosat, 'tutkinnonosaViite.id'), _.get(sel, 'tutkinnonosaViite.id')));
+    }
+  }
+
+  selectRow(item) {
+    if (_.includes(_.map(this.selectedTutkinnonosat, 'tutkinnonosaViite.id'), item.tutkinnonosaViite.id)) {
+      this.selectedTutkinnonosat = _.filter(this.selectedTutkinnonosat, tutkinnonosa => {
+        return _.get(tutkinnonosa, 'tutkinnonosaViite.id') !== item.tutkinnonosaViite.id;
+      });
+    }
+    else {
+      this.selectedTutkinnonosat = [
+        ...this.selectedTutkinnonosat,
+        item,
+      ];
+    }
+  }
+
+  get tutkinnonosatWithSelected() {
+    return _.map(this.tutkinnonosat, tutkinnonosa => {
+      return {
+        ...tutkinnonosa,
+        selected: _.includes(_.map(this.selectedTutkinnonosat, 'tutkinnonosaViite.id'), _.get(tutkinnonosa, 'tutkinnonosaViite.id')),
+      };
+    });
+  }
+
   get opetussuunnitelma() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
   }
@@ -154,14 +233,20 @@ export default class RouteTutkinnonosat extends Vue {
 
   get fields() {
     return [{
+      key: 'valitse-kaikki',
+      sortable: false,
+      tdClass: 'align-middle',
+    }, {
       key: 'jarjestysnro',
       label: this.$t('nro') as string,
       sortable: true,
+      tdClass: 'align-middle',
     }, {
       key: 'nimi',
       sortable: true,
       sortByFormatted: true,
       label: this.$t('nimi') as string,
+      tdClass: 'align-middle',
       formatter: (value: any, key: string, item: any) => {
         return this.$kaanna(value);
       },
@@ -169,6 +254,7 @@ export default class RouteTutkinnonosat extends Vue {
       key: 'perusteenTutkinnonosaViite.laajuus',
       sortable: true,
       label: this.$t('laajuus') as string,
+      tdClass: 'align-middle',
       formatter: (value: any, key: string, item: any) => {
         const laajuus = item.perusteenTutkinnonosaViite?.laajuus || item.tutkinnonosaViite?.tosa?.omatutkinnonosa?.laajuus;
         return laajuus ? laajuus + ' ' + this.$t('osaamispiste') : '';
@@ -177,6 +263,7 @@ export default class RouteTutkinnonosat extends Vue {
       key: 'tutkinnonosaViite.tosa.muokattu',
       sortable: true,
       label: this.$t('muokattu') as string,
+      tdClass: 'align-middle',
       formatter: (value: any, key: string, item: any) => {
         return this.$sdt(item.tutkinnonosaViite.tosa.muokattu);
       },
@@ -198,5 +285,13 @@ export default class RouteTutkinnonosat extends Vue {
   color: $black;
   font-size: 0.9rem;
   font-weight: 600;
+}
+
+.selectable {
+  cursor: pointer;
+
+  .checked {
+    color: $paletti-blue;
+  }
 }
 </style>
