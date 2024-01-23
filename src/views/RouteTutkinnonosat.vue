@@ -2,7 +2,7 @@
   <div class="m-3" id="scroll-anchor">
     <h2 class="m-0">{{ $t('tutkinnon-osat') }}</h2>
 
-    <ep-spinner v-if="!tutkinnonosat"></ep-spinner>
+    <ep-spinner v-if="!tutkinnonosat || isDeleting"></ep-spinner>
 
     <div v-else>
       <div class="d-flex justify-content-between mb-4">
@@ -103,6 +103,7 @@ export default class RouteTutkinnonosat extends Vue {
 
   private queryNimi: string = '';
   private poistossa: number[] = [];
+  private isDeleting: boolean = false;
   private valitseKaikki = false;
   private selectedTutkinnonosat: SisaltoviiteLaajaDto[] = [];
 
@@ -142,9 +143,11 @@ export default class RouteTutkinnonosat extends Vue {
       .value();
     try {
       if (await this.confirm()) {
+        this.isDeleting = true;
         await Sisaltoviitteet.removeSisaltoViitteet(this.toteutussuunnitelmaId, this.koulutustoimijaId, ids);
         await this.updateNavigation();
         await this.fetch();
+        this.isDeleting = false;
       }
     }
     catch (err) {
