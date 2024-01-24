@@ -123,17 +123,12 @@ export default class RouteTutkinnonosat extends Vue {
   }
 
   async remove(tutkinnonosaId) {
-    try {
-      if (await this.confirm()) {
-        this.poistossa.push(tutkinnonosaId);
-        await Sisaltoviitteet.removeSisaltoViite(this.toteutussuunnitelmaId, tutkinnonosaId, this.koulutustoimijaId);
-        await this.updateNavigation();
-        await this.fetch();
-        _.pull(this.poistossa, tutkinnonosaId);
-      }
-    }
-    catch (err) {
-      this.$fail(this.$t('poisto-epaonnistui') as string);
+    if (await this.confirm()) {
+      this.poistossa.push(tutkinnonosaId);
+      await Sisaltoviitteet.removeSisaltoViite(this.toteutussuunnitelmaId, tutkinnonosaId, this.koulutustoimijaId);
+      await this.updateNavigation();
+      await this.fetch();
+      _.pull(this.poistossa, tutkinnonosaId);
     }
   }
 
@@ -141,17 +136,12 @@ export default class RouteTutkinnonosat extends Vue {
     let ids = _.chain(this.selectedTutkinnonosat)
       .map(osa => _.toNumber(_.get(osa, 'tutkinnonosaViite.id')))
       .value();
-    try {
-      if (await this.confirm()) {
-        this.isDeleting = true;
-        await Sisaltoviitteet.removeSisaltoViitteet(this.toteutussuunnitelmaId, this.koulutustoimijaId, ids);
-        await this.updateNavigation();
-        await this.fetch();
-        this.isDeleting = false;
-      }
-    }
-    catch (err) {
-      this.$fail(this.$t('poisto-epaonnistui') as string);
+    if (await this.confirm()) {
+      this.isDeleting = true;
+      await Sisaltoviitteet.removeSisaltoViitteet(this.toteutussuunnitelmaId, this.koulutustoimijaId, ids);
+      await this.updateNavigation();
+      await this.fetch();
+      this.isDeleting = false;
     }
   }
 
@@ -180,12 +170,11 @@ export default class RouteTutkinnonosat extends Vue {
     this.valitseKaikki = !this.valitseKaikki;
     if (this.valitseKaikki) {
       this.selectedTutkinnonosat = [
-        ...this.selectedTutkinnonosat,
         ...(this.tutkinnonosat || []) as SisaltoviiteLaajaDto[],
       ];
     }
     else {
-      this.selectedTutkinnonosat = _.filter(this.selectedTutkinnonosat, sel => !_.includes(_.map(this.tutkinnonosat, 'tutkinnonosaViite.id'), _.get(sel, 'tutkinnonosaViite.id')));
+      this.selectedTutkinnonosat = [];
     }
   }
 
