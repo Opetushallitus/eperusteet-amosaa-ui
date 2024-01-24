@@ -86,6 +86,9 @@
           striped
           :items="selectedTutkinnonosat"
           :fields="valittuFields">
+          <template v-slot:cell(nimi)="{ item }">
+            <span>{{$kaanna(item.tekstiKappale.nimi)}}</span>
+          </template>
         </b-table>
       </div>
 
@@ -244,13 +247,17 @@ export default class EpTutkinnonosaTuonti extends Vue {
     this.valitseKaikki = !this.valitseKaikki;
     if (this.valitseKaikki) {
       this.selectedTutkinnonosat = [
-        ...this.selectedTutkinnonosat,
+        ...this.uniqueSelectedOsat,
         ...(this.tutkinnonosat || []) as SisaltoviiteLaajaDto[],
       ];
     }
     else {
-      this.selectedTutkinnonosat = _.filter(this.selectedTutkinnonosat, sel => !_.includes(_.map(this.tutkinnonosat, 'id'), sel.id));
+      this.selectedTutkinnonosat = this.uniqueSelectedOsat;
     }
+  }
+
+  get uniqueSelectedOsat() {
+    return _.filter(this.selectedTutkinnonosat, sel => !_.includes(_.map(this.tutkinnonosat, 'id'), sel.id));
   }
 
   sortingChanged(sort) {
