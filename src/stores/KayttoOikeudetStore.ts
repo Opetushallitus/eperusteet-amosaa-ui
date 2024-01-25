@@ -3,6 +3,8 @@ import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-a
 import { KoulutustoimijaYstavaDto, OpetussuunnitelmaDto, Koulutustoimijat, KayttajaDto, Opetussuunnitelmat, KayttajaoikeusDto, KayttajaoikeusDtoOikeusEnum } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
+import { Toteutus } from '@shared/utils/perusteet';
+import { ToteutusSovellusRole } from '@/utils/toteutustypes';
 
 Vue.use(VueCompositionApi);
 
@@ -11,6 +13,7 @@ export class KayttoOikeudetStore {
     kayttajat: null as KayttajaDto[] | null,
     kayttajaOikeudet: null as KayttajaoikeusDto[] | null,
     ktYstavat: null as KoulutustoimijaYstavaDto[] | null,
+    toteutus: null as Toteutus | null,
   });
 
   constructor(private opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
@@ -29,7 +32,7 @@ export class KayttoOikeudetStore {
 
   public async paivitaKayttajat() {
     try {
-      this.state.kayttajat = (await Koulutustoimijat.getYstavaOrganisaatioKayttajat(this.opetussuunnitelma.value.koulutustoimija.id)).data;
+      this.state.kayttajat = (await Koulutustoimijat.getYstavaOrganisaatioKayttajat(ToteutusSovellusRole(this.state.toteutus), this.opetussuunnitelma.value.koulutustoimija.id)).data;
     }
     catch (err) {
       this.state.kayttajat = [];
@@ -69,5 +72,9 @@ export class KayttoOikeudetStore {
     if (kayttajaOikeus.oikeus !== _.toLower(KayttajaoikeusDtoOikeusEnum.ESTETTY)) {
       this.state.kayttajaOikeudet = [...this.state.kayttajaOikeudet as any, tallennettu];
     }
+  }
+
+  public setToteutus(toteutus) {
+    this.state.toteutus = toteutus;
   }
 }
