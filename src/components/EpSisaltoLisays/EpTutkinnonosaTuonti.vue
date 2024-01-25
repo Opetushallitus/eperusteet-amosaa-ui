@@ -246,18 +246,14 @@ export default class EpTutkinnonosaTuonti extends Vue {
   selectAllRows() {
     this.valitseKaikki = !this.valitseKaikki;
     if (this.valitseKaikki) {
-      this.selectedTutkinnonosat = [
-        ...this.uniqueSelectedOsat,
+      this.selectedTutkinnonosat = _.uniqBy([
+        ...this.selectedTutkinnonosat,
         ...(this.tutkinnonosat || []) as SisaltoviiteLaajaDto[],
-      ];
+      ], 'id');
     }
     else {
-      this.selectedTutkinnonosat = this.uniqueSelectedOsat;
+      this.selectedTutkinnonosat = _.filter(this.selectedTutkinnonosat, sel => !_.includes(_.map(this.tutkinnonosat, 'id'), sel.id));
     }
-  }
-
-  get uniqueSelectedOsat() {
-    return _.filter(this.selectedTutkinnonosat, sel => !_.includes(_.map(this.tutkinnonosat, 'id'), sel.id));
   }
 
   sortingChanged(sort) {
