@@ -20,7 +20,7 @@ module.exports = {
     '^.+\\.tsx?$': 'ts-jest',
   },
   'transformIgnorePatterns': [
-    '/node_modules/(?!(@ckeditor|katex|vue-masonry|lodash-es|bootstrap-vue|vuelidate-property-decorators|deepdash-es)/)',
+    '/node_modules/(?!(@ckeditor|katex|vue-masonry|lodash-es|bootstrap-vue|vuelidate-property-decorators|deepdash-es|axios)/)',
   ],
   moduleNameMapper: {
     '^@shared/(.*)$': '<rootDir>/eperusteet-frontend-utils/vue/src/$1',
