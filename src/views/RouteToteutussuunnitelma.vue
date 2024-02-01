@@ -225,6 +225,7 @@
               <div class="menu-item">
                 <router-link  :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }">
                   {{ $kaanna(item.label) }} <span class="faded" v-if="item.koodi">({{item.koodi.toUpperCase()}})</span>
+                  <EpMaterialIcon v-if="item.meta.piilotettu" class="ml-2" size="16px">visibility_off</EpMaterialIcon>
                 </router-link>
               </div>
             </template>

@@ -2,13 +2,20 @@
   <div id="scroll-anchor" v-if="editointiStore">
     <EpEditointi :store="editointiStore">
       <template v-slot:header>
-        <h2 class="m-0">
-          <span v-if="perusteenOsaAlue">{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
-          <span v-else-if="osaAlueValue.nimi">{{ $kaanna(osaAlueValue.nimi) }}</span>
-          <span v-if="osaAlueValue.piilotettu">({{ $t('piilotettu') }})</span>
-        </h2>
+        <div class="d-flex">
+          <h2 class="m-0">
+            <span v-if="perusteenOsaAlue">{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
+            <span v-else-if="osaAlueValue.nimi">{{ $kaanna(osaAlueValue.nimi) }}</span>
+          </h2>
+          <span v-if="osaAlueValue.piilotettu" class="ml-2">({{ $t('piilotettu') }})</span>
+        </div>
       </template>
       <template v-slot:default="{ data, supportData, isEditing }">
+
+        <div v-if="isEditing" class="mb-4">
+          <ep-toggle v-model="osaAlueValue.piilotettu">{{ $t('piilota-osa-alue-julkisesta-suunnitelmasta') }}</ep-toggle>
+        </div>
+        <div v-else-if="osaAlueValue.piilotettu" class="disabled-text mb-4">{{$t('osa-alue-piilotettu-julkisesta-suunnitelmasta')}}</div>
 
         <div class="d-flex flex-lg-wrap justify-content-between">
           <b-form-group class="flex-grow-1 mr-6" :label="$t('osa-alueen-nimi')" v-if="isEditing">
