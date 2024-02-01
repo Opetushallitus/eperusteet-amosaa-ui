@@ -114,15 +114,33 @@
             <b-form-group>
               <h3 slot="label" class="pt-3">{{$t('arviointi')}}</h3>
 
-             <EpArvioinninKohdeAlueet
-                v-if="!data.omaTutkinnonosa.geneerinenarviointi && isVanhaArviointi"
+              <EpArvioinninKohdeAlueet
+                v-if="valittuArviointiTyyppi !== 'geneerinen'"
                 v-model="data.omaTutkinnonosa.arviointi.arvioinninKohdealueet"
                 :arviointiasteikot="data.arviointiasteikot"
                 :is-editing="isEditing"/>
 
-              <GeneerinenArviointi v-else :is-editing="isEditing" v-model="data.omaTutkinnonosa.geneerinenarviointi">
+              <EpButton v-if="isEditing && !valittuArviointiTyyppi"
+                      variant="outline"
+                      icon="add"
+                      @click="arvioinninTyyppi = 'geneerinen'">
+                {{$t('lisaa-geneerinen-arviointi')}}
+              </EpButton>
+
+              <GeneerinenArviointi
+                v-if="valittuArviointiTyyppi === 'geneerinen'"
+                :is-editing="isEditing"
+                v-model="data.omaTutkinnonosa.geneerinenarviointi">
                 <div slot="header"></div>
               </GeneerinenArviointi>
+
+              <EpButton v-if="isEditing && data.omaTutkinnonosa.geneerinenarviointi"
+                class="no-padding"
+                variant="link"
+                icon="delete"
+                @click="poistaGeneerinenaArviointi">
+                {{$t('poista-geneerinen-arviointi')}}
+              </EpButton>
             </b-form-group>
 
             <b-form-group>
@@ -200,6 +218,7 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
 
   private editointiStore: EditointiStore | null = null;
   private lisataanOsaAlue = false;
+  private arvioinninTyyppi: 'geneerinen' | 'tutkinnonosa-kohtainen' | null = null;
 
   mounted() {
     this.$v.$touch();
@@ -319,6 +338,30 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
 
   get isVanhaArviointi() {
     return _.size(_.get(this.editointiStore?.data?.value, 'omaTutkinnonosa.arviointi.arvioinninKohdealueet')) > 0;
+  }
+
+  get valittuArviointiTyyppi() {
+    if (this.editointiStore?.data?.value.omaTutkinnonosa.geneerinenarviointi) {
+      return 'geneerinen';
+    }
+
+    if (_.size(_.get(this.editointiStore?.data?.value, 'omaTutkinnonosa.arviointi.arvioinninKohdealueet')) > 0) {
+      return 'tutkinnonosakohtainen';
+    }
+
+    return this.arvioinninTyyppi;
+  }
+
+  poistaGeneerinenaArviointi() {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      omaTutkinnonosa: {
+        ...this.editointiStore?.data.value.omaTutkinnonosa,
+        geneerinenarviointi: null,
+      },
+    });
+
+    this.arvioinninTyyppi = null;
   }
 }
 </script>
