@@ -25,8 +25,7 @@
                   <EpMaterialIcon icon-shape="outlined" class="hallinta">settings</EpMaterialIcon>
                 </template>
 
-                <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index"
-                     v-oikeustarkastelu="ratasvalinta.oikeus">
+                <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index">
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
 
                   <b-dropdown-item v-if="ratasvalinta.route" :to="{ name: ratasvalinta.route }">
@@ -603,25 +602,21 @@ export default class RouteToteutussuunnitelma extends Vue {
         text: ToteutussuunnitelmaTiedotKielistykset[this.opetussuunnitelmaTyyppi]['title'],
         route: 'toteutussuunnitelmantiedot',
         icon: 'info',
-        oikeus: { oikeus: 'luku' },
       },
       {
         text: 'ystava-organisaatioiden-kayttooikeudet',
         route: 'ystava-organisaatioiden-kayttooikeudet',
         icon: 'verified_user',
-        oikeus: { oikeus: 'luku' },
       },
       {
         text: 'luo-pdf',
         route: 'pdfLuonti',
         icon: 'picture_as_pdf',
-        oikeus: { oikeus: 'luku' },
       },
       {
         text: 'poistetut-sisallot',
         route: 'poistetutsisallot',
         icon: 'delete',
-        oikeus: { oikeus: 'luku' },
       },
     ];
 
@@ -796,6 +791,7 @@ export default class RouteToteutussuunnitelma extends Vue {
     .asetukset {
       .hallinta {
         color: white;
+        vertical-align: text-top;
       }
 
       ::v-deep .dropdown-item {
