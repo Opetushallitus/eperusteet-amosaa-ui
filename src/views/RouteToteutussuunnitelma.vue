@@ -156,7 +156,7 @@
 
             <template v-slot:tekstikappale="{ item }">
               <div class="menu-item">
-                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
+                <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
                 <router-link :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) || $t('nimetön-tekstikappale') }}
                 </router-link>
@@ -165,7 +165,7 @@
 
             <template v-slot:opintokokonaisuus="{ item }">
               <div class="menu-item">
-                <span  v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
+                <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
                 <router-link :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }">
                   {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
                 </router-link>
@@ -222,7 +222,7 @@
 
             <template v-slot:osaalue="{ item }">
               <div class="menu-item">
-                <router-link  :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }">
+                <router-link :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }">
                   {{ $kaanna(item.label) }} <span class="faded" v-if="item.koodi">({{item.koodi.toUpperCase()}})</span>
                   <EpMaterialIcon v-if="item.meta.piilotettu" class="ml-2" size="16px">visibility_off</EpMaterialIcon>
                 </router-link>
@@ -251,34 +251,34 @@
                     :paatasovalinta="true"
                     :otsikkoRequired="true"
                     modalId="opintokokonaisuusLisays">
-                    <template v-slot:lisays-btn-text>
-                      {{$t('uusi-opintokokonaisuus')}}
-                    </template>
-                    <template v-slot:modal-title>
-                      {{$t('uusi-opintokokonaisuus')}}
-                    </template>
-                    <template v-slot:footer-lisays-btn-text>
-                      {{$t('lisaa-opintokokonaisuus')}}
-                    </template>
-                    <template v-slot:header>
-                      {{$t('opintokokonaisuuden-sijainti')}}
-                    </template>
-                    <template v-slot:default="{tekstikappale}">
-                      <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                      {{ $kaanna(tekstikappale.label) }}
-                    </template>
-                  </EpTekstikappaleLisays>
+                  <template v-slot:lisays-btn-text>
+                    {{$t('uusi-opintokokonaisuus')}}
+                  </template>
+                  <template v-slot:modal-title>
+                    {{$t('uusi-opintokokonaisuus')}}
+                  </template>
+                  <template v-slot:footer-lisays-btn-text>
+                    {{$t('lisaa-opintokokonaisuus')}}
+                  </template>
+                  <template v-slot:header>
+                    {{$t('opintokokonaisuuden-sijainti')}}
+                  </template>
+                  <template v-slot:default="{tekstikappale}">
+                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                    {{ $kaanna(tekstikappale.label) }}
+                  </template>
+                </EpTekstikappaleLisays>
 
-                  <EpTekstikappaleLisays
-                  v-if="isAmmatillinen  && !isYhteinen"
-                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                  :hide-taso="true"
-                  :tallenna="lisaaUusiSuorituspolku"
-                  :tekstikappaleet="perusteenOsat"
-                  :paatasovalinta="true"
-                  :otsikkoNimi="'suorituspolku-nimi'"
-                  :otsikkoRequired="true"
-                  modalId="suorituspolkuLisays">
+                <EpTekstikappaleLisays
+                    v-if="isAmmatillinen && !isYhteinen && !isJaettuOsa"
+                    v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
+                    :hide-taso="true"
+                    :tallenna="lisaaUusiSuorituspolku"
+                    :tekstikappaleet="perusteenOsat"
+                    :paatasovalinta="true"
+                    :otsikkoNimi="'suorituspolku-nimi'"
+                    :otsikkoRequired="true"
+                    modalId="suorituspolkuLisays">
                   <template v-slot:lisays-btn-text>
                     {{$t('uusi-suorituspolku')}}
                   </template>
@@ -307,25 +307,25 @@
                     :paatasovalinta="true"
                     :otsikkoRequired="true"
                     modalId="tutkinnonOsanLisays">
-                    <template v-slot:lisays-btn-text>
-                      {{$t('luonti-tutkinnon-osa')}}
-                    </template>
-                    <template v-slot:modal-title>
-                      {{$t('luonti-tutkinnon-osa')}}
-                    </template>
-                    <template v-slot:footer-lisays-btn-text>
-                      {{$t('luonti-tutkinnon-osa')}}
-                    </template>
-                    <template v-slot:header>
-                      {{$t('tutkinnonosan-sijainti')}}
-                    </template>
-                    <template v-slot:default="{tekstikappale}">
-                      <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                      {{ $kaanna(tekstikappale.label) }}
-                    </template>
-                  </EpTekstikappaleLisays>
+                  <template v-slot:lisays-btn-text>
+                    {{$t('luonti-tutkinnon-osa')}}
+                  </template>
+                  <template v-slot:modal-title>
+                    {{$t('luonti-tutkinnon-osa')}}
+                  </template>
+                  <template v-slot:footer-lisays-btn-text>
+                    {{$t('luonti-tutkinnon-osa')}}
+                  </template>
+                  <template v-slot:header>
+                    {{$t('tutkinnonosan-sijainti')}}
+                  </template>
+                  <template v-slot:default="{tekstikappale}">
+                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                    {{ $kaanna(tekstikappale.label) }}
+                  </template>
+                </EpTekstikappaleLisays>
 
-                </div>
+              </div>
             </template>
 
           </EpTreeNavibar>
@@ -341,7 +341,7 @@
           <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
             <span class="text-nowrap">
               <EpMaterialIcon icon-shape="outlined" class="icon">reorder</EpMaterialIcon>
-               <a class="btn btn-link btn-link-nav">{{$t('muokkaa-jarjestysta')}}</a>
+              <a class="btn btn-link btn-link-nav">{{$t('muokkaa-jarjestysta')}}</a>
             </span>
           </router-link>
         </div>
@@ -675,6 +675,10 @@ export default class RouteToteutussuunnitelma extends Vue {
 
   get isYhteinen() {
     return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
+  }
+
+  get isJaettuOsa() {
+    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YLEINEN);
   }
 
   get tekstikappaleet() {
