@@ -85,7 +85,7 @@ export class TutkinnonOsaStore implements IEditoitava {
         ammattitaitovaatimukset: {},
         ammattitaidonOsoittamistavat: null,
         ...tutkinnonosaViite.tosa.omatutkinnonosa,
-        arviointi: tutkinnonosaViite.tosa.omatutkinnonosa.arviointi ? tutkinnonosaViite.tosa.omatutkinnonosa.arviointi : {
+        arviointi: tutkinnonosaViite.tosa.omatutkinnonosa?.arviointi ? tutkinnonosaViite.tosa.omatutkinnonosa.arviointi : {
           arvioinninKohdealueet: [],
         },
       },

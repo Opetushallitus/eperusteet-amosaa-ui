@@ -221,7 +221,7 @@ export default class RouteTilastot extends Vue {
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutPerusteet) || _.includes(_.map(this.valitutPerusteet, 'value'), toteutussuunnitelma.perusteId))
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutKoulutustoimijat) || _.includes(_.map(this.valitutKoulutustoimijat, 'value'), toteutussuunnitelma.koulutustoimija!.id))
       .filter(toteutussuunnitelma => _.isEmpty(this.valitutJulkaisuvuodet) || _.includes(this.valitutJulkaisuvuodet, toteutussuunnitelma.julkaisuVuosi))
-      .sortBy(toteutussuunnitelma => Kielet.kaanna(toteutussuunnitelma.nimi))
+      .sortBy(toteutussuunnitelma => Kielet.kaanna(toteutussuunnitelma.nimi as any))
       .value();
   }
 
