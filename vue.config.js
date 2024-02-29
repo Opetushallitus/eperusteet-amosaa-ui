@@ -3,7 +3,7 @@ const path = require('path');
 
 const proxy = {
   '/eperusteet-amosaa-service': {
-    target: `http://localhost:${process.env.AMOSAA_SERVICE_PORT || 8090}`,
+    target: `http://localhost:${process.env.AMOSAA_SERVICE_PORT || 8082}`,
     secure: false,
     onProxyReq: function(proxyReq, req, res) {
       proxyReq.setHeader('Caller-Id', '1.2.246.562.10.00000000001.eperusteet');
@@ -20,7 +20,7 @@ const proxy = {
 
 module.exports = {
   lintOnSave: false,
-  publicPath: process.env.NODE_ENV === 'production' ? '/eperusteet-amosaa-app/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/eperusteet-amosaa-service/ui' : '/',
   configureWebpack: {
     resolve: {
       alias: {
