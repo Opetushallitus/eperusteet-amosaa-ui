@@ -644,7 +644,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       return;
     }
 
-    if (this.isDraft || this.toteutus === Toteutus.AMMATILLINEN) {
+    if (this.isDraft || this.toteutus !== Toteutus.VAPAASIVISTYSTYO) {
       return { oikeus: 'hallinta', kohde: 'toteutussuunnitelma' };
     }
 
