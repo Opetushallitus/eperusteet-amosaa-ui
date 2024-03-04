@@ -99,6 +99,35 @@
           </b-row>
           <EpJotpaSelect v-model="data.opetussuunnitelma" :toteutus="toteutus" :isEditing="isEditing"/>
 
+          <b-row v-if="data.opetussuunnitelma.tyyppi === 'ops' && ( isEditing || data.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat.length > 0)">
+            <b-col>
+              <b-form-group :label="$t('osaamisen-arvioinnin-toteutussuunnitelma')">
+                  <div v-for="(oat, index) in data.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat" :key="'oat' + index" class="mb-2">
+                    <div class="d-flex">
+                      <router-link
+                        v-if="oat.oatOpetussuunnitelma"
+                        :to="{ name: 'toteutussuunnitelma', params: { koulutustoimijaId: koulutustoimijaId, toteutussuunnitelmaId: oat.oatOpetussuunnitelma.id } }">
+                        {{ $kaanna(oat.oatOpetussuunnitelma.nimi) }}
+                      </router-link>
+                      <ep-external-link v-else :url="$kaanna(oat.url)">
+                        {{ $kaanna(oat.nimi) }}
+                      </ep-external-link>
+                      <EpButton
+                        icon="edit"
+                        size="sm"
+                        class="no-padding ml-4"
+                        variant="link"
+                        v-if="isEditing"
+                        @click="muokkaaOat(oat, index)">
+                        {{$t('muokkaa')}}
+                      </EpButton>
+                    </div>
+                  </div>
+                <EpOatValintaModal ref="oatModal" v-if="isEditing" @tallennaOat="tallennaOat" @poistaOat="poistaOat"/>
+              </b-form-group>
+            </b-col>
+          </b-row>
+
         </b-container>
 
         <div v-if="data.peruste">
@@ -165,6 +194,7 @@ import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
 import { Toteutus } from '@shared/utils/perusteet';
 import EpJotpaSelect from '@/components/EpJotpa/EpJotpaSelect.vue';
+import EpOatValintaModal from '@/components/EpAmmatillinen/EpOatValintaModal.vue';
 
 @Component({
   components: {
@@ -177,6 +207,7 @@ import EpJotpaSelect from '@/components/EpJotpa/EpJotpaSelect.vue';
     EpToggle,
     EpSelect,
     EpJotpaSelect,
+    EpOatValintaModal,
   },
 })
 export default class RouteToteutussuunnitelmaTiedot extends Vue {
@@ -302,6 +333,50 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   get kuvaHandler() {
     return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
+  }
+
+  tallennaOat(oat, index) {
+    if (index) {
+      this.editointiStore?.setData({
+        ...this.editointiStore?.data.value,
+        opetussuunnitelma: {
+          ...this.editointiStore?.data.value.opetussuunnitelma,
+          osaamisenArvioinninToteutussuunnitelmat: _.map(
+            this.editointiStore?.data.value.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat,
+            (o, i) => (i === index ? oat : o),
+          ),
+        },
+      });
+    }
+    else {
+      this.editointiStore?.setData({
+        ...this.editointiStore?.data.value,
+        opetussuunnitelma: {
+          ...this.editointiStore?.data.value.opetussuunnitelma,
+          osaamisenArvioinninToteutussuunnitelmat: [
+            ...this.editointiStore?.data.value.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat,
+            oat,
+          ],
+        },
+      });
+    }
+  }
+
+  muokkaaOat(oat, index) {
+    (this.$refs['oatModal'] as any)!.muokkaa(oat, index);
+  }
+
+  poistaOat(index) {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opetussuunnitelma: {
+        ...this.editointiStore?.data.value.opetussuunnitelma,
+        osaamisenArvioinninToteutussuunnitelmat: _.reject(
+          this.editointiStore?.data.value.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat,
+          (o, i) => i === index,
+        ),
+      },
+    });
   }
 }
 </script>

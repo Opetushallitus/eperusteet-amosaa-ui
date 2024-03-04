@@ -7,6 +7,7 @@ import '@shared/config/bootstrap';
 import '@shared/config/styles';
 import 'animate.css/animate.min.css';
 import 'material-icons/iconfont/material-icons.css';
+import '@shared/config/defaultcomponents';
 
 import VueI18n from 'vue-i18n';
 import VueCompositionApi from '@vue/composition-api';
