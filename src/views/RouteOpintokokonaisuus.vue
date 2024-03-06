@@ -58,7 +58,7 @@
           </b-col>
         </b-row>
         <hr/>
-        <h3 class="pt-3">{{ tyyppi === TyyppiSource.PERUSTEESTA ? $t('opetuksen-tavoitteet') : $t('osaamistavoitteet') }}</h3>
+        <h3 class="pt-3">{{ $t(tyyppikielistys['tavoiteotsikko']) }}</h3>
         <b-row>
           <b-col md="10">
             <b-form-group :label="$t('tavoitteiden-otsikko') + (isEditing && !isOpsPohja ? ' *' : '')" required>
@@ -416,10 +416,12 @@ export default class RouteOpintokokonaisuus extends Vue {
     return {
       [TyyppiSource.OMA]: {
         nimiotsikko: 'opintokokonaisuuden-nimi',
+        tavoiteotsikko: 'osaamistavoitteet',
         murupolku: 'opintokokonaisuus',
       },
       [TyyppiSource.PERUSTEESTA]: {
         nimiotsikko: 'osaamiskokonaisuuden-nimi',
+        tavoiteotsikko: 'opetuksen-tavoitteet',
         murupolku: 'osaamiskokonaisuus',
       },
     };
