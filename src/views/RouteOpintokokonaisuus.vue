@@ -47,7 +47,7 @@
         </b-row>
         <b-row>
           <b-col md="10">
-            <b-form-group :label="$t('kuvaus')  + (isEditing  && tyyppi === TyyppiSource.OMA ? ' *' : '')" required>
+            <b-form-group :label="$t('kuvaus') + (isEditing && tyyppi === TyyppiSource.OMA ? ' *' : '')" required>
               <EpContent
                 v-model="opintokokonaisuus.kuvaus"
                 layout="normal"
@@ -58,10 +58,10 @@
           </b-col>
         </b-row>
         <hr/>
-        <h3 class="pt-3">{{ $t('opetuksen-tavoitteet') }}</h3>
+        <h3 class="pt-3">{{ $t(tyyppikielistys['tavoiteotsikko']) }}</h3>
         <b-row>
           <b-col md="10">
-            <b-form-group :label="$t('tavoitteiden-otsikko')  + (isEditing && !isOpsPohja ? ' *' : '')" required>
+            <b-form-group :label="$t('tavoitteiden-otsikko') + (isEditing && !isOpsPohja ? ' *' : '')" required>
               <ep-input
                 v-model="opintokokonaisuus.opetuksenTavoiteOtsikko"
                 :is-editing="isEditing"
@@ -81,7 +81,7 @@
               class="pb-3"/>
           </b-col>
         </b-row>
-        <b-form-group :label="$t('tavoitteet')  + (isEditing && !isOpsPohja ? ' *' : '')" required>
+        <b-form-group :label="$t('tavoitteet') + (isEditing && !isOpsPohja ? ' *' : '')" required>
           <div v-if="isEditing">
             <draggable
               v-bind="tavoitteetOptions"
@@ -170,7 +170,7 @@
               class="pb-3"/>
           </b-col>
         </b-row>
-        <b-form-group :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet')  + (isEditing && !isOpsPohja ? ' *' : '')" required>
+        <b-form-group :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet') + (isEditing && !isOpsPohja ? ' *' : '')" required>
           <div v-if="isEditing">
             <draggable
               v-bind="arvioinnitOptions"
@@ -416,10 +416,12 @@ export default class RouteOpintokokonaisuus extends Vue {
     return {
       [TyyppiSource.OMA]: {
         nimiotsikko: 'opintokokonaisuuden-nimi',
+        tavoiteotsikko: 'osaamistavoitteet',
         murupolku: 'opintokokonaisuus',
       },
       [TyyppiSource.PERUSTEESTA]: {
         nimiotsikko: 'osaamiskokonaisuuden-nimi',
+        tavoiteotsikko: 'opetuksen-tavoitteet',
         murupolku: 'osaamiskokonaisuus',
       },
     };
