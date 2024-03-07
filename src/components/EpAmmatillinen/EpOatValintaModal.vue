@@ -5,7 +5,7 @@
       variant="outline"
       v-b-modal.oatModal
       @click="lisaaOat"
-      v-oikeustarkastelu="{oikeus:'hallinta'}">
+      v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
       {{ $t('lisaa-osaamisen-arvioinnin-toteutussuunnitelma') }}
     </EpButton>
 
