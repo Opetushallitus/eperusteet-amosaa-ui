@@ -66,7 +66,7 @@
         <div class="footer w-100 footer pt-2">
           <div class="d-flex justify-content-end">
             <EpButton @click="sulje" variant="link">{{ $t('peruuta') }}</EpButton>
-            <EpButton variant="link" icon="delete" @click="poista" v-oikeustarkastelu="{oikeus:'hallinta'}">
+            <EpButton variant="link" icon="delete" @click="poista">
               {{ $t('poista') }}
             </EpButton>
             <EpButton @click="tallenna" class="ml-3" :disabled="!valid">{{ $t('tallenna') }}</EpButton>
