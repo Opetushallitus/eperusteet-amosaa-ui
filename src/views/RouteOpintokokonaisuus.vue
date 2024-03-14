@@ -216,6 +216,22 @@
             </ul>
           </div>
         </b-form-group>
+        <hr/>
+        <h3 class="pt-3 py-3">{{ $t('kansalliset-perustaitojen-osaamismerkit') }}</h3>
+        <EpButton v-if="isEditing && !osaamismerkkiKappale" variant="outline" icon="add" @click="addOsaamismerkkiKappale()" >
+          {{ $t('lisaa-osaamismerkki-kappale') }}
+        </EpButton>
+
+        <EpOsaamismerkkiKappale v-if="osaamismerkkiKappale"
+                                v-model="osaamismerkkiKappale"
+                                :toteutussuunnitelma-id="toteutussuunnitelmaId"
+                                :koulutustoimija-id="koulutustoimijaId"
+                                :is-editing="isEditing"
+                                @addListItem="onAddOsaamismerkkiItem"
+                                @removeListItem="onRemoveOsaamismerkkiItem"></EpOsaamismerkkiKappale>
+        <EpAlert v-if="!osaamismerkkiKappale && !isEditing"
+                 :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+                 class="pb-3"/>
       </template>
     </EpEditointi>
   </div>
@@ -244,6 +260,7 @@ import { KuvaStore } from '@/stores/KuvaStore';
 import { Murupolku } from '@shared/stores/murupolku';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import EpOpintokokonaisuusArviointiImport from '@/components/EpOpintokokonaisuusArviointiImport/EpOpintokokonaisuusArviointiImport.vue';
+import EpOsaamismerkkiKappale from '@/components/EpOsaamismerkkiKappale/EpOsaamismerkkiKappale.vue';
 
 enum TyyppiSource {
   PERUSTEESTA = 'perusteesta',
@@ -252,6 +269,7 @@ enum TyyppiSource {
 
 @Component({
   components: {
+    EpOsaamismerkkiKappale,
     EpEditointi,
     EpField,
     EpContent,
@@ -359,6 +377,61 @@ export default class RouteOpintokokonaisuus extends Vue {
         [array]: _.filter(_.get(this.editointiStore?.data.value.opintokokonaisuus, array), rivi => rivi !== poistettavaRivi),
       },
     });
+  }
+
+  addOsaamismerkkiKappale() {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opintokokonaisuus: {
+        ...this.editointiStore?.data.value.opintokokonaisuus,
+        osaamismerkkiKappale: {
+          kuvaus: null,
+          osaamismerkkiKoodit: [],
+        },
+      },
+    });
+  }
+
+  onAddOsaamismerkkiItem(merkit) {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opintokokonaisuus: {
+        ...this.editointiStore?.data.value.opintokokonaisuus,
+        osaamismerkkiKappale: {
+          ...this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale,
+          osaamismerkkiKoodit: [
+            ...this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale.osaamismerkkiKoodit,
+            ...this.addMerkit(merkit),
+          ],
+        },
+      },
+    });
+  }
+
+  addMerkit(merkit) {
+    return _.map(merkit, merkki => {
+      return {
+        nimi: merkki.nimi,
+        koodi: merkki.arvo,
+      };
+    });
+  }
+
+  onRemoveOsaamismerkkiItem(poistettavaRivi: any) {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opintokokonaisuus: {
+        ...this.editointiStore?.data.value.opintokokonaisuus,
+        osaamismerkkiKappale: {
+          ...this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale,
+          osaamismerkkiKoodit: _.filter(this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale.osaamismerkkiKoodit, rivi => rivi.koodi !== poistettavaRivi.koodi),
+        },
+      },
+    });
+  }
+
+  get osaamismerkkiKappale() {
+    return this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale;
   }
 
   get versionumero() {
