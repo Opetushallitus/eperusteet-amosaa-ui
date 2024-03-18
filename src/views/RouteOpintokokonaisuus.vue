@@ -218,12 +218,12 @@
         </b-form-group>
         <hr/>
         <h3 class="pt-3 py-3">{{ $t('kansalliset-perustaitojen-osaamismerkit') }}</h3>
-        <EpButton v-if="isEditing && !osaamismerkkiKappale" variant="outline" icon="add" @click="addOsaamismerkkiKappale()" >
+        <EpButton v-if="isEditing && !data.opintokokonaisuus.osaamismerkkiKappale" variant="outline" icon="add" @click="addOsaamismerkkiKappale()" >
           {{ $t('lisaa-osaamismerkki-kappale') }}
         </EpButton>
 
-        <EpOsaamismerkkiKappale v-if="data.osaamismerkkiKappale"
-                                v-model="data.osaamismerkkiKappale"
+        <EpOsaamismerkkiKappale v-if="data.opintokokonaisuus.osaamismerkkiKappale"
+                                v-model="data.opintokokonaisuus.osaamismerkkiKappale"
                                 :toteutussuunnitelma-id="toteutussuunnitelmaId"
                                 :koulutustoimija-id="koulutustoimijaId"
                                 :is-editing="isEditing"></EpOsaamismerkkiKappale>
