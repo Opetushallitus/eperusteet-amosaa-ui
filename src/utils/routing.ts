@@ -55,6 +55,11 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
       type: 'opintokokonaisuus',
       id: Number(route.params?.sisaltoviiteId!),
     };
+  case 'osaamismerkkikappale':
+    return {
+      type: 'osaamismerkkikappale',
+      id: Number(route.params?.sisaltoviiteId!),
+    };
   case 'koulutuksenosa':
     return {
       type: 'koulutuksenosa',
@@ -155,6 +160,13 @@ export function nodeToRoute(node: NavigationNodeDto): Location | null {
   case 'opintokokonaisuus':
     return {
       name: 'opintokokonaisuus',
+      params: {
+        sisaltoviiteId: _.toString(node.id),
+      },
+    };
+  case 'osaamismerkkikappale':
+    return {
+      name: 'osaamismerkkikappale',
       params: {
         sisaltoviiteId: _.toString(node.id),
       },

@@ -172,6 +172,15 @@
               </div>
             </template>
 
+            <template v-slot:osaamismerkki="{ item }">
+              <div class="menu-item">
+                <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
+                <router-link :to="{ name: 'osaamismerkkikappale', params: {sisaltoviiteId: item.id} }">
+                  {{ $t('kansalliset-perustaitojen-osaamismerkit') }}
+                </router-link>
+              </div>
+            </template>
+
             <template v-slot:koulutuksenosat>
               <div class="menu-item">
                 <router-link :to="{ name: 'koulutuksenosat' }">
@@ -262,6 +271,32 @@
                   </template>
                   <template v-slot:header>
                     {{$t('opintokokonaisuuden-sijainti')}}
+                  </template>
+                  <template v-slot:default="{tekstikappale}">
+                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
+                    {{ $kaanna(tekstikappale.label) }}
+                  </template>
+                </EpTekstikappaleLisays>
+
+                <EpTekstikappaleLisays
+                  v-if="isVapaaSivistystyo"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
+                  :tallenna="tallennaUusiOsaamismerkkiKappale"
+                  :tekstikappaleet="perusteenOsat"
+                  :paatasovalinta="true"
+                  :otsikkoRequired="false"
+                  modalId="osaamismerkkiKappaleLisays">
+                  <template v-slot:lisays-btn-text>
+                    {{$t('uusi-osaamismerkki-kappale')}}
+                  </template>
+                  <template v-slot:modal-title>
+                    {{$t('uusi-osaamismerkki-kappale')}}
+                  </template>
+                  <template v-slot:footer-lisays-btn-text>
+                    {{$t('lisaa-osaamismerkki-kappale')}}
+                  </template>
+                  <template v-slot:header>
+                    {{$t('osaamismerkki-kappaleen-sijainti')}}
                   </template>
                   <template v-slot:default="{tekstikappale}">
                     <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
@@ -379,6 +414,7 @@ import { Toteutus } from '@shared/utils/perusteet';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import { OsaamismerkkiKappaleStore } from '@/stores/OsaamismerkkiKappaleStore';
 
 @Component({
   components: {
@@ -558,6 +594,21 @@ export default class RouteToteutussuunnitelma extends Vue {
         tekstiKappale: {
           nimi: otsikko,
         },
+      } as SisaltoviiteMatalaDto,
+      this,
+      this.updateNavigation);
+  }
+
+  async tallennaUusiOsaamismerkkiKappale(valittuParent) {
+    const parentId = valittuParent?.id ? valittuParent.id : this.navigation.value!.id!;
+
+    OsaamismerkkiKappaleStore.add(
+      this.toteutussuunnitelmaId,
+      parentId,
+      this.koulutustoimijaId,
+      {
+        tyyppi: _.toLower(MatalaTyyppiEnum.OSAAMISMERKKI),
+        osaamismerkkiKappale: {},
       } as SisaltoviiteMatalaDto,
       this,
       this.updateNavigation);

@@ -216,6 +216,20 @@
             </ul>
           </div>
         </b-form-group>
+        <hr/>
+        <h3 class="pt-3 py-3">{{ $t('kansalliset-perustaitojen-osaamismerkit') }}</h3>
+        <EpButton v-if="isEditing && !osaamismerkkiKappale" variant="outline" icon="add" @click="addOsaamismerkkiKappale()" >
+          {{ $t('lisaa-osaamismerkki-kappale') }}
+        </EpButton>
+
+        <EpOsaamismerkkiKappale v-if="data.osaamismerkkiKappale"
+                                v-model="data.osaamismerkkiKappale"
+                                :toteutussuunnitelma-id="toteutussuunnitelmaId"
+                                :koulutustoimija-id="koulutustoimijaId"
+                                :is-editing="isEditing"></EpOsaamismerkkiKappale>
+        <EpAlert v-if="!data.osaamismerkkiKappale && !isEditing"
+                 :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+                 class="pb-3"/>
       </template>
     </EpEditointi>
   </div>
@@ -244,6 +258,7 @@ import { KuvaStore } from '@/stores/KuvaStore';
 import { Murupolku } from '@shared/stores/murupolku';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import EpOpintokokonaisuusArviointiImport from '@/components/EpOpintokokonaisuusArviointiImport/EpOpintokokonaisuusArviointiImport.vue';
+import EpOsaamismerkkiKappale from '@/components/EpOsaamismerkkiKappale/EpOsaamismerkkiKappale.vue';
 
 enum TyyppiSource {
   PERUSTEESTA = 'perusteesta',
@@ -252,6 +267,7 @@ enum TyyppiSource {
 
 @Component({
   components: {
+    EpOsaamismerkkiKappale,
     EpEditointi,
     EpField,
     EpContent,
@@ -357,6 +373,19 @@ export default class RouteOpintokokonaisuus extends Vue {
       opintokokonaisuus: {
         ...this.editointiStore?.data.value.opintokokonaisuus,
         [array]: _.filter(_.get(this.editointiStore?.data.value.opintokokonaisuus, array), rivi => rivi !== poistettavaRivi),
+      },
+    });
+  }
+
+  addOsaamismerkkiKappale() {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opintokokonaisuus: {
+        ...this.editointiStore?.data.value.opintokokonaisuus,
+        osaamismerkkiKappale: {
+          kuvaus: null,
+          osaamismerkkiKoodit: [],
+        },
       },
     });
   }

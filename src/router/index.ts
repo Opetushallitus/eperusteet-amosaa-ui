@@ -45,6 +45,7 @@ import { changeLang } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
 import { Maintenance } from '@shared/api/amosaa';
 import _ from 'lodash';
+import RouteOsaamismerkkiKappale from '@/views/RouteOsaamismerkkiKappale.vue';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -304,6 +305,11 @@ const router = new VueRouter({
         path: 'opintokokonaisuus/:sisaltoviiteId',
         name: 'opintokokonaisuus',
         component: RouteOpintokokonaisuus,
+        props,
+      }, {
+        path: 'osaamismerkkikappale/:sisaltoviiteId',
+        name: 'osaamismerkkikappale',
+        component: RouteOsaamismerkkiKappale,
         props,
       }, {
         path: 'koulutuksenosa/:sisaltoviiteId',
