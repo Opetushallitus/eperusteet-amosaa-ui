@@ -222,12 +222,12 @@
           {{ $t('lisaa-osaamismerkki-kappale') }}
         </EpButton>
 
-        <EpOsaamismerkkiKappale v-if="osaamismerkkiKappale"
-                                v-model="osaamismerkkiKappale"
+        <EpOsaamismerkkiKappale v-if="data.osaamismerkkiKappale"
+                                v-model="data.osaamismerkkiKappale"
                                 :toteutussuunnitelma-id="toteutussuunnitelmaId"
                                 :koulutustoimija-id="koulutustoimijaId"
                                 :is-editing="isEditing"></EpOsaamismerkkiKappale>
-        <EpAlert v-if="!osaamismerkkiKappale && !isEditing"
+        <EpAlert v-if="!data.osaamismerkkiKappale && !isEditing"
                  :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
                  class="pb-3"/>
       </template>
@@ -386,20 +386,6 @@ export default class RouteOpintokokonaisuus extends Vue {
           kuvaus: null,
           osaamismerkkiKoodit: [],
         },
-      },
-    });
-  }
-
-  get osaamismerkkiKappale() {
-    return this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale;
-  }
-
-  set osaamismerkkiKappale(value) {
-    this.editointiStore?.setData({
-      ...this.editointiStore?.data.value,
-      opintokokonaisuus: {
-        ...this.editointiStore?.data.value.opintokokonaisuus,
-        osaamismerkkiKappale: value,
       },
     });
   }

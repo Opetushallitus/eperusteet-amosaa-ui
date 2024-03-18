@@ -4,8 +4,8 @@
       <template v-slot:header>
         <h2 class="m-0">{{ $t('kansalliset-perustaitojen-osaamismerkit') }}</h2>
       </template>
-      <template v-slot:default="{ isEditing }">
-        <EpOsaamismerkkiKappale v-model="osaamismerkkiKappale"
+      <template v-slot:default="{ isEditing, data }">
+        <EpOsaamismerkkiKappale v-model="data.osaamismerkkiKappale"
                                 :toteutussuunnitelma-id="toteutussuunnitelmaId"
                                 :koulutustoimija-id="koulutustoimijaId"
                                 :is-editing="isEditing"></EpOsaamismerkkiKappale>
@@ -64,17 +64,6 @@ export default class RouteOsaamismerkkiKappale extends Vue {
         this,
         this.toteutussuunnitelmaStore.toteutussuunnitelma,
         () => this.toteutussuunnitelmaStore.initNavigation()));
-  }
-
-  get osaamismerkkiKappale() {
-    return this.editointiStore?.data.value.osaamismerkkiKappale;
-  }
-
-  set osaamismerkkiKappale(value) {
-    this.editointiStore?.setData({
-      ...this.editointiStore?.data.value,
-      osaamismerkkiKappale: value,
-    });
   }
 
   get versionumero() {
