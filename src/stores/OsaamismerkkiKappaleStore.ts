@@ -1,28 +1,29 @@
 import Vue from 'vue';
-import _ from 'lodash';
 import VueCompositionApi, { computed } from '@vue/composition-api';
-import { OpetussuunnitelmaDto, SisaltoviiteLukko, SisaltoviiteMatalaDto, Sisaltoviitteet } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDto, SisaltoviiteMatalaDto, Sisaltoviitteet } from '@shared/api/amosaa';
 import { EditoitavaFeatures, IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
-import { ILukko, Revision } from '@shared/tyypit';
+import { Revision } from '@shared/tyypit';
 import { Kielet } from '@shared/stores/kieli';
 import { Computed } from '@shared/utils/interfaces';
 import { translated } from '@shared/validators/required';
 import { minLength, required } from 'vuelidate/lib/validators';
+import { AbstractSisaltoviiteStore } from '@/stores/AbstractSisaltoviiteStore';
 
 Vue.use(VueCompositionApi);
 
-export class OsaamismerkkiKappaleStore implements IEditoitava {
+export class OsaamismerkkiKappaleStore extends AbstractSisaltoviiteStore implements IEditoitava {
   private osaamismerkkiKappale: SisaltoviiteMatalaDto | undefined = undefined;
 
   constructor(
-    private opetussuunnitelmaId: number,
-    private koulutustoimijaId: string,
-    private sisaltoviiteId: number,
-    private versionumero: number,
-    private el: any,
-    private opetussuunnitelma: Computed<OpetussuunnitelmaDto>,
-    private updateNavigation: Function,
+    public opetussuunnitelmaId: number,
+    public koulutustoimijaId: string,
+    public sisaltoviiteId: number,
+    public versionumero: number,
+    public el: any,
+    public opetussuunnitelma: Computed<OpetussuunnitelmaDto>,
+    public updateNavigation: Function,
   ) {
+    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation);
   }
 
   async load() {
@@ -47,24 +48,6 @@ export class OsaamismerkkiKappaleStore implements IEditoitava {
     await this.updateNavigation();
   }
 
-  async restore(rev: number) {
-    const restoring = (await Sisaltoviitteet.getSisaltoviiteRevision(this.opetussuunnitelmaId, this.sisaltoviiteId, rev, this.koulutustoimijaId)).data;
-    await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, restoring);
-  }
-
-  async revisions() {
-    const data = (await Sisaltoviitteet.getSisaltoviiteRevisions(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId)).data;
-    return data as Revision[];
-  }
-
-  async remove() {
-    await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId);
-    await this.updateNavigation();
-    this.el.$router.replace({
-      name: 'toteutussuunnitelma',
-    });
-  }
-
   public readonly validator = computed(() => {
     return {
       osaamismerkkiKappale: {
@@ -76,25 +59,6 @@ export class OsaamismerkkiKappaleStore implements IEditoitava {
       },
     } as any;
   });
-
-  public async lock() {
-    try {
-      const res = await SisaltoviiteLukko.getLock(_.toNumber(this.koulutustoimijaId), this.opetussuunnitelmaId, this.sisaltoviiteId);
-      return res.data as ILukko;
-    }
-    catch (err) {
-      return null;
-    }
-  }
-
-  public async acquire() {
-    const res = await SisaltoviiteLukko.lock(_.toNumber(this.koulutustoimijaId), this.opetussuunnitelmaId, this.sisaltoviiteId);
-    return res.data as ILukko;
-  }
-
-  public async release() {
-    await SisaltoviiteLukko.unlock(_.toNumber(this.koulutustoimijaId), this.opetussuunnitelmaId, this.sisaltoviiteId);
-  }
 
   public features(_data: any) {
     return computed(() => {

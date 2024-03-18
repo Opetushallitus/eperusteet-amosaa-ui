@@ -226,9 +226,7 @@
                                 v-model="osaamismerkkiKappale"
                                 :toteutussuunnitelma-id="toteutussuunnitelmaId"
                                 :koulutustoimija-id="koulutustoimijaId"
-                                :is-editing="isEditing"
-                                @addListItem="onAddOsaamismerkkiItem"
-                                @removeListItem="onRemoveOsaamismerkkiItem"></EpOsaamismerkkiKappale>
+                                :is-editing="isEditing"></EpOsaamismerkkiKappale>
         <EpAlert v-if="!osaamismerkkiKappale && !isEditing"
                  :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
                  class="pb-3"/>
@@ -392,46 +390,18 @@ export default class RouteOpintokokonaisuus extends Vue {
     });
   }
 
-  onAddOsaamismerkkiItem(merkit) {
-    this.editointiStore?.setData({
-      ...this.editointiStore?.data.value,
-      opintokokonaisuus: {
-        ...this.editointiStore?.data.value.opintokokonaisuus,
-        osaamismerkkiKappale: {
-          ...this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale,
-          osaamismerkkiKoodit: [
-            ...this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale.osaamismerkkiKoodit,
-            ...this.addMerkit(merkit),
-          ],
-        },
-      },
-    });
-  }
-
-  addMerkit(merkit) {
-    return _.map(merkit, merkki => {
-      return {
-        nimi: merkki.nimi,
-        koodi: merkki.arvo,
-      };
-    });
-  }
-
-  onRemoveOsaamismerkkiItem(poistettavaRivi: any) {
-    this.editointiStore?.setData({
-      ...this.editointiStore?.data.value,
-      opintokokonaisuus: {
-        ...this.editointiStore?.data.value.opintokokonaisuus,
-        osaamismerkkiKappale: {
-          ...this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale,
-          osaamismerkkiKoodit: _.filter(this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale.osaamismerkkiKoodit, rivi => rivi.koodi !== poistettavaRivi.koodi),
-        },
-      },
-    });
-  }
-
   get osaamismerkkiKappale() {
     return this.editointiStore?.data.value.opintokokonaisuus.osaamismerkkiKappale;
+  }
+
+  set osaamismerkkiKappale(value) {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      opintokokonaisuus: {
+        ...this.editointiStore?.data.value.opintokokonaisuus,
+        osaamismerkkiKappale: value,
+      },
+    });
   }
 
   get versionumero() {

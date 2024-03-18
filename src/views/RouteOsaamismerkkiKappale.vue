@@ -8,9 +8,7 @@
         <EpOsaamismerkkiKappale v-model="osaamismerkkiKappale"
                                 :toteutussuunnitelma-id="toteutussuunnitelmaId"
                                 :koulutustoimija-id="koulutustoimijaId"
-                                :is-editing="isEditing"
-                                @addListItem="onAddListItem"
-                                @removeListItem="onRemoveListItem"></EpOsaamismerkkiKappale>
+                                :is-editing="isEditing"></EpOsaamismerkkiKappale>
       </template>
     </EpEditointi>
   </div>
@@ -68,39 +66,15 @@ export default class RouteOsaamismerkkiKappale extends Vue {
         () => this.toteutussuunnitelmaStore.initNavigation()));
   }
 
-  onAddListItem(merkit) {
-    this.editointiStore?.setData({
-      ...this.editointiStore?.data.value,
-      osaamismerkkiKappale: {
-        ...this.editointiStore?.data.value.osaamismerkkiKappale,
-        osaamismerkkiKoodit: [
-          ...this.editointiStore?.data.value.osaamismerkkiKappale.osaamismerkkiKoodit,
-          ...this.addMerkit(merkit)],
-      },
-    });
-  }
-
-  addMerkit(merkit) {
-    return _.map(merkit, merkki => {
-      return {
-        nimi: merkki.nimi,
-        koodi: merkki.arvo,
-      };
-    });
-  }
-
-  onRemoveListItem(poistettavaRivi: { [key: string]: any }) {
-    this.editointiStore?.setData({
-      ...this.editointiStore?.data.value,
-      osaamismerkkiKappale: {
-        ...this.editointiStore?.data.value.osaamismerkkiKappale,
-        osaamismerkkiKoodit: _.filter(this.editointiStore?.data.value.osaamismerkkiKappale.osaamismerkkiKoodit, rivi => rivi.koodi !== poistettavaRivi.koodi),
-      },
-    });
-  }
-
   get osaamismerkkiKappale() {
     return this.editointiStore?.data.value.osaamismerkkiKappale;
+  }
+
+  set osaamismerkkiKappale(value) {
+    this.editointiStore?.setData({
+      ...this.editointiStore?.data.value,
+      osaamismerkkiKappale: value,
+    });
   }
 
   get versionumero() {

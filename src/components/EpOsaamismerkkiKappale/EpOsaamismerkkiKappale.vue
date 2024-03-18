@@ -3,7 +3,7 @@
     <b-row>
       <b-col md="10">
         <b-form-group :label="$t('osaamismerkkien-suorittaminen')" required>
-          <EpContent v-model="value.kuvaus"
+          <EpContent v-model="innerModel.kuvaus"
                      layout="normal"
                      :is-editable="isEditing"
                      :kuvaHandler="kuvaHandler"/>
@@ -13,7 +13,7 @@
     <b-row>
       <b-col md="10">
         <b-form-group :label="$t('osaamismerkit')">
-          <div v-for="(merkki, idx) in osaamismerkkiKoodit" :key="idx" class="p-3 rivi">
+          <div v-for="(merkki, idx) in osaamismerkkiKoodit" :key="'koodi-'+idx" class="p-3 rivi">
             <div v-if="isEditing" class="d-flex">
               <div>{{ $kaanna(merkki.nimi) }} ({{merkki.koodi}})</div>
               <div class="default-icon clickable ml-auto" @click="onRemoveListItem(merkki)">
@@ -41,7 +41,7 @@
               </b-input-group>
             </template>
             <template v-slot:empty>
-              <div v-if="value.osaamismerkkiKoodit && value.osaamismerkkiKoodit.length > 0"></div>
+              <div v-if="innerModel.osaamismerkkiKoodit && innerModel.osaamismerkkiKoodit.length > 0"></div>
               <div v-else>
                 {{ $t('ei-lisattyja-osaamismerkkeja') }}
               </div>
@@ -75,7 +75,7 @@ import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
 })
 export default class EpOsaamismerkkiKappale extends Vue {
   @Prop({ required: true })
-  value!: any;
+  private value!: any;
 
   @Prop({ required: false, default: false, type: Boolean })
   private isEditing!: Boolean;
@@ -98,21 +98,47 @@ export default class EpOsaamismerkkiKappale extends Vue {
     },
   });
 
+  onAddListItem(merkit) {
+    this.innerModel = {
+      ...this.innerModel,
+      osaamismerkkiKoodit: [
+        ...this.innerModel.osaamismerkkiKoodit,
+        ...this.addMerkit(merkit),
+      ],
+    };
+  }
+
+  addMerkit(merkit) {
+    return _.map(merkit, merkki => {
+      return {
+        nimi: merkki.nimi,
+        koodi: merkki.arvo,
+      };
+    });
+  }
+
+  onRemoveListItem(poistettavaRivi: any) {
+    this.innerModel = {
+      ...this.innerModel,
+      osaamismerkkiKoodit: _.filter(this.osaamismerkkiKoodit, rivi => rivi.koodi !== poistettavaRivi.koodi),
+    };
+  }
+
+  get innerModel() {
+    return this.value;
+  }
+
+  set innerModel(val) {
+    this.$emit('input', val);
+  }
+
   get osaamismerkkiKoodit() {
-    return _.map(this.value.osaamismerkkiKoodit, koodi => {
+    return _.map(this.innerModel.osaamismerkkiKoodit, koodi => {
       return {
         ...koodi,
         url: osaamismerkkiUrl(Kielet.getSisaltoKieli.value, koodi.koodi),
       };
     });
-  }
-
-  onAddListItem(merkit) {
-    this.$emit('addListItem', merkit);
-  }
-
-  onRemoveListItem(poistettavaRivi: any) {
-    this.$emit('removeListItem', poistettavaRivi);
   }
 
   get kuvaHandler() {
