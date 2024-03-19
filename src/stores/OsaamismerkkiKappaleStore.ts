@@ -3,9 +3,7 @@ import VueCompositionApi, { computed } from '@vue/composition-api';
 import { OpetussuunnitelmaDto, SisaltoviiteMatalaDto, Sisaltoviitteet } from '@shared/api/amosaa';
 import { EditoitavaFeatures, IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision } from '@shared/tyypit';
-import { Kielet } from '@shared/stores/kieli';
 import { Computed } from '@shared/utils/interfaces';
-import { translated } from '@shared/validators/required';
 import { minLength, required } from 'vuelidate/lib/validators';
 import { AbstractSisaltoviiteStore } from '@/stores/AbstractSisaltoviiteStore';
 
@@ -51,7 +49,6 @@ export class OsaamismerkkiKappaleStore extends AbstractSisaltoviiteStore impleme
   public readonly validator = computed(() => {
     return {
       osaamismerkkiKappale: {
-        kuvaus: translated([Kielet.getSisaltoKieli.value]),
         osaamismerkkiKoodit: {
           'min-length': minLength(1),
           required,
