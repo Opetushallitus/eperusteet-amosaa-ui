@@ -5,7 +5,6 @@ import TilePaivitettavatJaSiirrettavatToteutussuunnitelmat from '@/views/tiles/T
 import TileOrganisaationHallinta from '@/views/tiles/TileOrganisaationHallinta.vue';
 import TileTiedotteet from '@/views/tiles/TileTiedotteet.vue';
 import TileUkk from '@/views/tiles/TileUkk.vue';
-import TileTilastot from '@/views/tiles/TileTilastot.vue';
 import TileOppaat from '@/views/tiles/TileOppaat.vue';
 
 import { tileColors } from '@shared/utils/bannerIcons';
@@ -175,16 +174,6 @@ export const ammatillinenTiles = (stores, { koulutustoimijaId, toteutus }) => {
         oikeus: 'luku',
       },
     },
-    {
-      component: TileTilastot,
-      props: {
-        text: 'amosaa-tilastot-kuvaus',
-      },
-      oikeustarkastelu: {
-        oikeus: 'hallinta',
-        kohde: 'oph',
-      },
-    },
   ];
 };
 
@@ -263,17 +252,6 @@ const vapaasivistystyoTiles = (stores, { koulutustoimijaId, toteutus }) => {
       },
       props: {
         headerStyle: TileBackground[toteutus],
-      },
-    },
-    {
-      component: TileTilastot,
-      props: {
-        headerStyle: TileBackground[toteutus],
-        text: 'amosaa-vst-tilastot-kuvaus',
-      },
-      oikeustarkastelu: {
-        oikeus: 'hallinta',
-        kohde: 'oph',
       },
     },
   ];
@@ -409,17 +387,6 @@ const kotoutumiskoulutusTiles = (stores, { koulutustoimijaId, toteutus }) => {
       },
       oikeustarkastelu: {
         oikeus: 'hallinta',
-      },
-    },
-    {
-      component: TileTilastot,
-      props: {
-        headerStyle: TileBackground[toteutus],
-        text: 'amosaa-koto-tilastot-kuvaus',
-      },
-      oikeustarkastelu: {
-        oikeus: 'hallinta',
-        kohde: 'oph',
       },
     },
   ];

@@ -20,7 +20,6 @@ import RouteSuorituspolku from '@/views/RouteSuorituspolku.vue';
 import RouteJarjestys from '@/views/RouteJarjestys.vue';
 import RouteToteutussuunnitelmaTiedot from '@/views/RouteToteutussuunnitelmaTiedot.vue';
 import RouteToteutussuunnitelmaLuonti from '@/views/RouteToteutussuunnitelmaLuonti.vue';
-import RouteTilastot from '@/views/RouteTilastot.vue';
 import RoutePdfLuonti from '@/views/RoutePdfLuonti.vue';
 import RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat from '@/views/RoutePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
 import RoutePoistetutSisallot from '@/views/RoutePoistetutSisallot.vue';
@@ -113,11 +112,6 @@ const router = new VueRouter({
       path: 'ukk',
       name: 'ukk',
       component: RouteUkk,
-      props,
-    }, {
-      path: 'tilastot',
-      name: 'tilastot',
-      component: RouteTilastot,
       props,
     }, {
       path: 'tiedotteet',

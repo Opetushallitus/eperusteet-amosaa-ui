@@ -40,7 +40,6 @@ import TilePaivitettavatJaSiirrettavatToteutussuunnitelmat from './tiles/TilePai
 import TileOrganisaationHallinta from './tiles/TileOrganisaationHallinta.vue';
 import TileTiedotteet from './tiles/TileTiedotteet.vue';
 import TileUkk from './tiles/TileUkk.vue';
-import TileTilastot from './tiles/TileTilastot.vue';
 import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
@@ -56,7 +55,6 @@ import { PalautteetStore } from '@/stores/PalautteetStore';
     TileOrganisaationHallinta,
     TileTiedotteet,
     TileUkk,
-    TileTilastot,
     EpFeedbackModal,
   },
 })
