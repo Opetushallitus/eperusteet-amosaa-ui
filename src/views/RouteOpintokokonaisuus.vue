@@ -227,7 +227,7 @@
                                 :toteutussuunnitelma-id="toteutussuunnitelmaId"
                                 :koulutustoimija-id="koulutustoimijaId"
                                 :is-editing="isEditing"></EpOsaamismerkkiKappale>
-        <EpAlert v-if="!data.osaamismerkkiKappale && !isEditing"
+        <EpAlert v-if="!data.opintokokonaisuus.osaamismerkkiKappale && !isEditing"
                  :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
                  class="pb-3"/>
       </template>
