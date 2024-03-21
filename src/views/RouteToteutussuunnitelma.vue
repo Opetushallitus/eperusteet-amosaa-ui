@@ -599,7 +599,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       this.updateNavigation);
   }
 
-  async tallennaUusiOsaamismerkkiKappale(valittuParent) {
+  async tallennaUusiOsaamismerkkiKappale(otsikko, valittuParent) {
     const parentId = valittuParent?.id ? valittuParent.id : this.navigation.value!.id!;
 
     OsaamismerkkiKappaleStore.add(
