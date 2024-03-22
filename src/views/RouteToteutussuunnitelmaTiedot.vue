@@ -99,7 +99,7 @@
           </b-row>
           <EpJotpaSelect v-model="data.opetussuunnitelma" :toteutus="toteutus" :isEditing="isEditing"/>
 
-          <b-row v-if="data.opetussuunnitelma.tyyppi === 'ops' && ( isEditing || data.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat.length > 0)">
+          <b-row v-if="showOatValinta">
             <b-col>
               <b-form-group :label="$t('osaamisen-arvioinnin-toteutussuunnitelma')">
                   <div v-for="(oat, index) in data.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat" :key="'oat' + index" class="mb-2">
@@ -148,7 +148,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row v-if="showKoulutukset">
+            <b-row v-if="ammatillinenToteutus">
               <b-col>
                 <b-form-group :label="$t('koulutukset')">
                   <div v-for="(koulutus, index) in data.peruste.koulutukset" :key="'koulutus'+index">
@@ -327,7 +327,7 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
     return koodiUri;
   }
 
-  get showKoulutukset() {
+  get ammatillinenToteutus() {
     return this.toteutus === Toteutus.AMMATILLINEN;
   }
 
@@ -377,6 +377,12 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
         ),
       },
     });
+  }
+
+  get showOatValinta() {
+    return this.ammatillinenToteutus
+      && this.editointiStore?.data?.value?.opetussuunnitelma.tyyppi === 'ops'
+      && (this.editointiStore?.isEditing?.value || this.editointiStore?.data?.value?.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat.length > 0);
   }
 }
 </script>
