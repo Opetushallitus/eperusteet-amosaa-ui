@@ -15,14 +15,20 @@
         <b-form-group :label="$t('osaamismerkit')">
           <div v-for="(merkki, idx) in osaamismerkkiKoodit" :key="'koodi-'+idx" class="p-3 rivi">
             <div v-if="isEditing" class="d-flex">
-              <div>{{ $kaanna(merkki.nimi) }} ({{merkki.koodi}})</div>
+              <div class="d-flex">
+                <span>{{ $kaanna(merkki.nimi) }} ({{merkki.koodi}})</span>
+                <span v-if="merkki.vanhentunut" class="ml-2 vanhentunut">{{$t('vanhentunut')}}</span>
+              </div>
               <div class="default-icon clickable ml-auto" @click="onRemoveListItem(merkki)">
                 <EpMaterialIcon icon-shape="outlined">delete</EpMaterialIcon>
               </div>
             </div>
             <div v-else>
               <EpLinkki :url="merkki.url">
-                <div>{{ $kaanna(merkki.nimi) }} ({{merkki.koodi}})</div>
+                <div class="d-flex">
+                  <span>{{ $kaanna(merkki.nimi) }} ({{merkki.koodi}})</span>
+                  <span v-if="merkki.vanhentunut" class="ml-2 vanhentunut">{{$t('vanhentunut')}}</span>
+                </div>
               </EpLinkki>
             </div>
           </div>
@@ -88,11 +94,12 @@ export default class EpOsaamismerkkiKappale extends Vue {
 
   private readonly koodisto = new KoodistoSelectStore({
     koodisto: 'osaamismerkit',
-    async query(query: string, sivu = 0, koodisto) {
+    async query(query: string, sivu = 0, koodisto, onlyValidKoodis) {
       return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
         params: {
           sivu,
           sivukoko: 10,
+          onlyValidKoodis: onlyValidKoodis,
         },
       })).data as any;
     },
@@ -137,6 +144,7 @@ export default class EpOsaamismerkkiKappale extends Vue {
       return {
         ...koodi,
         url: osaamismerkkiUrl(Kielet.getSisaltoKieli.value, koodi.koodi),
+        vanhentunut: this.isVanhentunut(koodi.voimassaLoppuPvm),
       };
     });
   }
@@ -144,11 +152,21 @@ export default class EpOsaamismerkkiKappale extends Vue {
   get kuvaHandler() {
     return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
   }
+
+  private isVanhentunut(voimassaLoppuPvm) {
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    return voimassaLoppuPvm && _.toNumber(voimassaLoppuPvm) < currentDate.getTime();
+  }
 }
 </script>
 
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
+
+.vanhentunut {
+  color: $invalid;
+}
 
 .rivi:nth-of-type(even) {
   background-color: $table-even-row-bg-color;
