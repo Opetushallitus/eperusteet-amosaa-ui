@@ -154,8 +154,7 @@ export default class EpOsaamismerkkiKappale extends Vue {
   }
 
   private isVanhentunut(voimassaLoppuPvm) {
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
+    let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
     return voimassaLoppuPvm && _.toNumber(voimassaLoppuPvm) < currentDate.getTime();
   }
 }
