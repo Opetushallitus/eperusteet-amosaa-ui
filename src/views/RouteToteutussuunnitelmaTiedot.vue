@@ -78,25 +78,6 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row>
-            <b-col v-if="showOpetussuunnitelmaOppilaitostyyppi">
-              <b-form-group :label="$t('oppilaitoksen-tyyppi')">
-                <ep-select v-if="isEditing" :items="oppilaitostyypit" v-model="data.opetussuunnitelma.oppilaitosTyyppiKoodiUri" :isEditing="isEditing" :enableEmptyOption="true">
-                  <template slot-scope="{ item }">
-                    {{kaannaOppilaitosNimi(item)}}
-                  </template>
-                </ep-select>
-                <div v-else>
-                  {{kaannaOppilaitosNimi(data.opetussuunnitelma.oppilaitosTyyppiKoodiUri)}}
-                </div>
-              </b-form-group>
-            </b-col>
-            <b-col>
-              <b-form-group :label="$t('tila')">
-                {{$t(data.opetussuunnitelma.tila)}}
-              </b-form-group>
-            </b-col>
-          </b-row>
           <EpJotpaSelect v-model="data.opetussuunnitelma" :toteutus="toteutus" :isEditing="isEditing"/>
 
           <b-row v-if="showOatValinta">
@@ -235,10 +216,6 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
     Murupolku.aseta('toteutussuunnitelmantiedot', '...');
     await this.fetch();
     Murupolku.aseta('toteutussuunnitelmantiedot', this.$t(OpetussuunnitelmaTyyppi[this.opetussuunnitelmaTyyppi]));
-
-    if (this.showOpetussuunnitelmaOppilaitostyyppi) {
-      await this.oppilaitostyyppiKoodisto.query();
-    }
   }
 
   @Watch('versionumero', { immediate: true })
@@ -293,38 +270,8 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
     return this.editointiStore?.data.value?.opetussuunnitelma.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
   }
 
-  get showOpetussuunnitelmaOppilaitostyyppi() {
-    return OpetussuunnitelmaOppilaitostyyppi[this.toteutus];
-  }
-
   get opetussuunnitelmaVoimassaoloLoppu() {
     return OpetussuunnitelmaVoimassaoloLoppu[this.toteutus];
-  }
-
-  get oppilaitostyypit() {
-    return _.chain(_.get(this.oppilaitostyyppiKoodisto.data.value, 'data'))
-      .map(koodi => koodi.koodiUri)
-      .value();
-  }
-
-  get oppilaitostyypitNimi() {
-    return _.chain(_.get(this.oppilaitostyyppiKoodisto.data.value, 'data'))
-      .map(koodi => {
-        return {
-          koodiUri: koodi.koodiUri,
-          nimi: _.mapValues(_.keyBy(koodi.metadata, v => _.toLower(v.kieli)), v => v.nimi),
-        };
-      })
-      .keyBy('koodiUri')
-      .value();
-  }
-
-  kaannaOppilaitosNimi(koodiUri) {
-    if (this.oppilaitostyypitNimi[koodiUri]) {
-      return this.$kaanna(this.oppilaitostyypitNimi[koodiUri].nimi);
-    }
-
-    return koodiUri;
   }
 
   get ammatillinenToteutus() {
