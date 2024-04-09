@@ -6,7 +6,7 @@ export class KuvaStore implements IKuvaStore {
   }
 
   getEndpoint() {
-    return `/koulutustoimijat/${this.ktId}/opetussuunnitelmat/${this.opsId}/kuvat`;
+    return `/api/koulutustoimijat/${this.ktId}/opetussuunnitelmat/${this.opsId}/kuvat`;
   }
   getAllKuvat() {
     return Liitetiedostot.getAllImages(this.opsId, this.ktId);

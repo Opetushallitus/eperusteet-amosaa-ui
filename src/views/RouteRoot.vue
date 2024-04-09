@@ -30,7 +30,7 @@ import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
-import { Koulutustoimijat, KoulutustoimijaDto, baseURL, LogoutParams } from '@shared/api/amosaa';
+import { Koulutustoimijat, KoulutustoimijaDto, baseURL } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
 import EpTestiymparisto from '@shared/components/EpTestiymparisto/EpTestiymparisto.vue';
 
@@ -147,7 +147,7 @@ export default class RouteRoot extends Vue {
   }
 
   get logoutHref() {
-    return baseURL + LogoutParams.logoutGet().url;
+    return baseURL + '/api/logout';
   }
 }
 </script>
