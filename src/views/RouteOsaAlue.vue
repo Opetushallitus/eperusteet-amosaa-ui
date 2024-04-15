@@ -53,9 +53,6 @@
 
         <b-tabs class="ml-0 pl-0 mt-4">
           <b-tab :title="$t('paikallinen-toteutus')" class="mt-4">
-            <div v-if="tyyppi === 'valinnainen'">
-              <EpToggle v-if="isEditing" :is-editing="true" v-model="data.osaAlueet[osaAlueIdx].piilotettu">{{ $t('piilota-osa-alue') }}</EpToggle>
-            </div>
 
             <h3 class="mt-4 mb-4">{{$t('toteutukset')}}</h3>
             <EpOsaAlueToteutukset v-model="data.osaAlueet[osaAlueIdx].toteutukset" :isEditing="isEditing"/>
