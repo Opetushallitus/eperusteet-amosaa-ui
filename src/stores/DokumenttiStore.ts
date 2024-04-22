@@ -83,6 +83,7 @@ export class DokumenttiStore implements IDokumenttiStore {
         this.state.polling = false;
 
         this.setHref();
+        await this.getJulkaistuDokumentti();
       }
       else if (_.kebabCase(this.state.dokumentti.tila) !== _.kebabCase(DokumenttiDtoTilaEnum.EIOLE)) {
         this.state.polling = true;
@@ -92,7 +93,7 @@ export class DokumenttiStore implements IDokumenttiStore {
   }
 
   async getJulkaistuDokumentti() {
-    if (this.state.dokumentti && !this.state.dokumentti.julkaisuDokumentti && !this.state.dokumenttiJulkaisu) {
+    if (!this.state.dokumenttiJulkaisu || _.kebabCase(this.state.dokumenttiJulkaisu?.tila) === _.kebabCase(DokumenttiDtoTilaEnum.EPAONNISTUI)) {
       this.state.dokumenttiJulkaisu = (await JulkinenApi.getJulkaistuDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
       if (this.state.dokumenttiJulkaisu.id) {
         this.state.dokumenttiJulkaisuHref = baseURL + JulkinenApiParams.getDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, this.state.dokumenttiJulkaisu.id, _.toString(this.opetussuunnitelma.koulutustoimija!.id!)).url;
