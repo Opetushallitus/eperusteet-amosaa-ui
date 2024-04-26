@@ -78,6 +78,15 @@
               </b-form-group>
             </b-col>
           </b-row>
+
+          <b-row>
+            <b-col v-if="showOpetussuunnitelmaOppilaitostyyppi">
+              <b-form-group :label="$t('oppilaitoksen-tyyppi')">
+                  {{$kaanna(data.opetussuunnitelma.koulutustoimija.oppilaitostyyppi)}}
+              </b-form-group>
+            </b-col>
+          </b-row>
+
           <EpJotpaSelect v-model="data.opetussuunnitelma" :toteutus="toteutus" :isEditing="isEditing"/>
 
           <b-row v-if="showOatValinta">
@@ -280,6 +289,10 @@ export default class RouteToteutussuunnitelmaTiedot extends Vue {
 
   get kuvaHandler() {
     return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
+  }
+
+  get showOpetussuunnitelmaOppilaitostyyppi() {
+    return OpetussuunnitelmaOppilaitostyyppi[this.toteutus] && this.editointiStore?.data.value?.opetussuunnitelma.koulutustoimija.oppilaitostyyppi;
   }
 
   tallennaOat(oat, index) {
