@@ -20,7 +20,7 @@
     "@types/axios": "^0.14.0",
     "@types/jest": "^24.0.19",
     "@types/lodash": "^4.14.202",
-    "@types/qs": "^6.9.1",
+    "@types/qs": "^6.9.15",
     "@types/uuid": "^7.0.0",
     "@types/vue-select": "^2.5.0",
     "@types/vuelidate": "^0.7.10",
