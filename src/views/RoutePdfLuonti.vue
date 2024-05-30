@@ -137,7 +137,6 @@ export default class RoutePdfLuonti extends Vue {
       .sijaintikuva {
         display:none;
       }
-
     }
 
     .kuvalataus {
@@ -145,12 +144,10 @@ export default class RoutePdfLuonti extends Vue {
     }
 
     .sijainti-topic {
-      margin-bottom: 40px;
+      margin-bottom: 10px;
       font-weight: 600;
     }
-
   }
-
 }
 
 </style>
