@@ -9,10 +9,8 @@
     "serve": "vue-cli-service serve",
     "serve-dev": "set USE_SOURCEMAP=true && vue-cli-service serve",
     "test:e2e": "vue-cli-service test:e2e --headless",
-    "test:unit": "TZ=Europe/Helsinki vue-cli-service test:unit --ci --coverage --no-cache",
-    "test:unit:notz": "vue-cli-service test:unit --ci --coverage --no-cache",
-    "test:unit:dev": "TZ=Europe/Helsinki vue-cli-service test:unit --watch --no-cache",
-    "test:unit:dev:notz": "vue-cli-service test:unit --watch --no-cache",
+    "test:unit": "vue-cli-service test:unit --ci --coverage --no-cache",
+    "test:unit:dev": "vue-cli-service test:unit --watch --no-cache",
     "test:unit:inspect": "node --inspect-brk ./node_modules/@vue/cli-service/bin/vue-cli-service.js test:unit",
     "test:unit:report": "$BROWSER coverage/lcov-report/index.html"
   },
@@ -48,6 +46,7 @@
     "file-loader": "^5.0.2",
     "file-saver": "^2.0.5",
     "husky": "^4.2.3",
+    "jest": "^24.9.0",
     "lint-staged": "^10.5.4",
     "lodash": "^4.17.21",
     "material-icons": "^1.13.11",
@@ -86,15 +85,18 @@
     "vuelidate": "^0.7.5",
     "vuelidate-property-decorators": "^1.0.28",
     "vuex": "^3.1.2",
+    "webpack": "^4.47.0",
     "xlsx": "^0.17.0"
   },
   "engines": {
-    "node": "^16"
+    "node": "^21"
   },
   "resolutions": {
     "prosemirror-model": "1.8.2",
     "prosemirror-state": "1.3.2",
     "prosemirror-transform": "1.2.2",
-    "prosemirror-view": "1.13.4"
-  }
+    "prosemirror-view": "1.13.4",
+    "terser-webpack-plugin": "1.4.6"
+  },
+  "packageManager": "yarn@4.3.1"
 }
