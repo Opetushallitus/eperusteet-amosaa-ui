@@ -2,14 +2,13 @@ import Vue from 'vue';
 import VueCompositionApi, { computed } from '@vue/composition-api';
 import { OpetussuunnitelmaDto, Perusteet, Opetussuunnitelmat, PerusteDto } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
-import { Kielet } from '@shared/stores/kieli';
 import { Revision } from '@shared/tyypit';
 import { requiredLokalisoituTeksti } from '@shared/validators/required';
 import { minValue, maxValue, requiredIf } from 'vuelidate/lib/validators';
 import { Toteutus } from '@shared/utils/perusteet';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { KuvaStore } from './KuvaStore';
+import { buildOpetussuunnitelmaEsikatseluUrl } from '@/utils/esikatselu';
 
 Vue.use(VueCompositionApi);
 
@@ -48,18 +47,10 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
     return {
       opetussuunnitelma: {
         ...opetussuunnitelma,
-        toteutussuunnitelmaUrl: buildEsikatseluUrl(Kielet.getSisaltoKieli.value, `/toteutussuunnitelma/${opetussuunnitelma.id}`, `/${this.opetussuunnitelmaEsikatseluToteutus(opetussuunnitelma)}`),
+        toteutussuunnitelmaUrl: buildOpetussuunnitelmaEsikatseluUrl(opetussuunnitelma, this.toteutus),
       },
       peruste: this.peruste,
     };
-  }
-
-  opetussuunnitelmaEsikatseluToteutus(opetussuunnitelma) {
-    if (opetussuunnitelma.jotpatyyppi === 'MUU') {
-      return 'muukoulutus';
-    }
-
-    return this.toteutus;
   }
 
   async getOpetussuunnitelmaVersion() {
