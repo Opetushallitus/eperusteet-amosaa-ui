@@ -1,20 +1,50 @@
 <template>
   <div class="perustiedot-content">
-    <h3>{{$t(kielistykset['title'])}}</h3>
+    <router-link :to="{ name: 'toteutussuunnitelmantiedot'}">
+      <h3>{{$t(kielistykset['title'])}}</h3>
+    </router-link>
 
-    <div class="d-flex flex-wrap" v-if="toteutussuunnitelma">
-     <ep-perustieto-data icon="language" :topic="$t('julkaisukielet')">
-        {{julkaisukielet}}
-      </ep-perustieto-data>
+    <EpSpinner v-if="!toteutussuunnitelma" />
 
-      <ep-perustieto-data icon="calendar_today" :topic="$t('luotu')">
-        {{$sdt(toteutussuunnitelma.luotu)}}
-      </ep-perustieto-data>
-    </div>
+    <template v-else>
+      <div class="row" >
+        <div class="col-5">
+          <ep-perustieto-data icon="language" :topic="$t('julkaisukielet')">
+            {{julkaisukielet}}
+          </ep-perustieto-data>
+        </div>
+        <div class="col-7">
+        </div>
+      </div>
 
-    <ep-siirto-modal :toteutus="toteutus" :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="toteutussuunnitelma" v-if="!isOpsPohja"
-      v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
-      />
+      <div class="row">
+        <div class="col-5">
+          <ep-perustieto-data icon="calendar_today" :topic="$t('luotu')">
+            {{$sdt(toteutussuunnitelma.luotu)}}
+          </ep-perustieto-data>
+        </div>
+        <div class="col-7">
+          <ep-perustieto-data icon="calendar_today" :topic="$t('julkaistu')">
+            {{$sdt(toteutussuunnitelma.viimeisinJulkaisuAika)}}
+          </ep-perustieto-data>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <EpPerustietoData icon="visibility">
+            <template #header>{{ $t('esikatsele-opetussuunnitelmaa')}}</template>
+            <template v-if="!toteutussuunnitelma.esikatseltavissa">{{ $t('esikatselua-ei-ole-sallittu') }}</template>
+            <template v-else>
+              <ep-external-link :url="esikatseluUrl"></ep-external-link>
+            </template>
+          </EpPerustietoData>
+        </div>
+      </div>
+
+      <ep-siirto-modal :toteutus="toteutus" :koulutustoimija-id="koulutustoimijaId" :toteutussuunnitelma="toteutussuunnitelma" v-if="!isOpsPohja"
+        v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"/>
+    </template>
   </div>
 </template>
 
@@ -29,6 +59,7 @@ import EpPerustietoData from '@shared/components/EpPerustietoData/EpPerustietoDa
 import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
 import { ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
+import { buildOpetussuunnitelmaEsikatseluUrl } from '@/utils/esikatselu';
 
 @Component({
   components: {
@@ -65,6 +96,10 @@ export default class EpToteutussuunnitelmanPerustiedot extends Vue {
 
   get isOpsPohja() {
     return this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
+  }
+
+  get esikatseluUrl() {
+    return buildOpetussuunnitelmaEsikatseluUrl(this.toteutussuunnitelma, this.toteutus);
   }
 }
 </script>
