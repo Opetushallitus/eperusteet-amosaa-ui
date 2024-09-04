@@ -33,8 +33,8 @@
       <div class="row">
         <div class="col-12">
           <EpPerustietoData icon="visibility">
-            <template #header>{{ $t('esikatsele-opetussuunnitelmaa')}}</template>
-            <template v-if="!toteutussuunnitelma.esikatseltavissa">{{ $t('esikatselua-ei-ole-sallittu') }}</template>
+            <template #header>{{ $t(kielistykset['esikatselu']) }}</template>
+            <template v-if="!toteutussuunnitelma.esikatseltavissa">{{ $t('et-ole-sallinut-esikatselua') }}</template>
             <template v-else>
               <ep-external-link :url="esikatseluUrl"></ep-external-link>
             </template>
@@ -59,7 +59,7 @@ import EpPerustietoData from '@shared/components/EpPerustietoData/EpPerustietoDa
 import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
 import { ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
-import { buildOpetussuunnitelmaEsikatseluUrl } from '@/utils/esikatselu';
+import { buildToteutussuunnitelmaEsikatseluUrl } from '@shared/utils/esikatselu';
 
 @Component({
   components: {
@@ -99,7 +99,7 @@ export default class EpToteutussuunnitelmanPerustiedot extends Vue {
   }
 
   get esikatseluUrl() {
-    return buildOpetussuunnitelmaEsikatseluUrl(this.toteutussuunnitelma, this.toteutus);
+    return buildToteutussuunnitelmaEsikatseluUrl(this.toteutussuunnitelma, this.toteutus);
   }
 }
 </script>

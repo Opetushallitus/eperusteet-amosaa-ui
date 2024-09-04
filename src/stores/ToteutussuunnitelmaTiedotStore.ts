@@ -8,7 +8,6 @@ import { minValue, maxValue, requiredIf } from 'vuelidate/lib/validators';
 import { Toteutus } from '@shared/utils/perusteet';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { KuvaStore } from './KuvaStore';
-import { buildOpetussuunnitelmaEsikatseluUrl } from '@/utils/esikatselu';
 
 Vue.use(VueCompositionApi);
 
@@ -47,7 +46,6 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
     return {
       opetussuunnitelma: {
         ...opetussuunnitelma,
-        toteutussuunnitelmaUrl: buildOpetussuunnitelmaEsikatseluUrl(opetussuunnitelma, this.toteutus),
       },
       peruste: this.peruste,
     };

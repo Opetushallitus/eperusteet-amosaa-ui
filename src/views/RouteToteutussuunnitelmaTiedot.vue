@@ -68,14 +68,10 @@
               </b-form-group>
             </b-col>
             <b-col v-if="!isOpsPohja">
-              <b-form-group :label="$t('esikatselu')">
-                <ep-toggle v-model="data.opetussuunnitelma.esikatseltavissa" :is-editing="isEditing" v-if="isEditing || !data.opetussuunnitelma.esikatseltavissa">
-                  {{$t(kielistykset['salliEsikatselu'])}}
-                </ep-toggle>
-                <ep-external-link :url="data.opetussuunnitelma.toteutussuunnitelmaUrl" v-if="!isEditing && data.opetussuunnitelma.esikatseltavissa" :class="{'disabled-events': data.opetussuunnitelma.tila === 'poistettu'}">
-                  {{$t(kielistykset['esikatselu'])}}
-                </ep-external-link>
-              </b-form-group>
+              <EpEsikatselu toteutussuunnitelma v-model="data.opetussuunnitelma" :is-editing="isEditing">
+                <template #header>{{ $t(kielistykset['esikatselu']) }}</template>
+                <template #toggle-text>{{ $t(kielistykset['salliEsikatselu']) }}</template>
+              </EpEsikatselu>
             </b-col>
           </b-row>
 
@@ -185,6 +181,7 @@ import { KuvaStore } from '@/stores/KuvaStore';
 import { Toteutus } from '@shared/utils/perusteet';
 import EpJotpaSelect from '@/components/EpJotpa/EpJotpaSelect.vue';
 import EpOatValintaModal from '@/components/EpAmmatillinen/EpOatValintaModal.vue';
+import EpEsikatselu from '@shared/components/EpEsikatselu/EpEsikatselu.vue';
 
 @Component({
   components: {
@@ -198,6 +195,7 @@ import EpOatValintaModal from '@/components/EpAmmatillinen/EpOatValintaModal.vue
     EpSelect,
     EpJotpaSelect,
     EpOatValintaModal,
+    EpEsikatselu,
   },
 })
 export default class RouteToteutussuunnitelmaTiedot extends Vue {
