@@ -2,19 +2,25 @@
   <div class="home-container minfull">
     <EpTestiymparisto />
 
-    <div class="header" ref="header" :style="headerStyle" :class="toteutus" id="scroll-anchor">
-      <EpNavbar
-        :class="toteutus"
-        :kayttaja="kayttaja"
-        :koulutustoimija="koulutustoimija"
-        :koulutustoimijat="koulutustoimijatOikeuksilla"
-        :rootNavigation="rootNavigation"
-        :sovellusOikeudet="sovellusOikeudet"
-        :logoutHref="logoutHref"/>
-      <PortalTarget ref="innerPortal" name="headerExtension" />
+    <div class="view-container">
+      <div class="header" ref="header" :style="headerStyle" :class="toteutus" id="scroll-anchor">
+        <EpNavbar
+          :class="toteutus"
+          :kayttaja="kayttaja"
+          :koulutustoimija="koulutustoimija"
+          :koulutustoimijat="koulutustoimijatOikeuksilla"
+          :rootNavigation="rootNavigation"
+          :sovellusOikeudet="sovellusOikeudet"
+          :logoutHref="logoutHref"/>
+        <PortalTarget ref="innerPortal" name="headerExtension" />
+      </div>
+      <RouterView />
     </div>
-    <RouterView />
-    <ep-footer />
+    <ep-footer>
+      <template #palaute>
+        <EpPalauteLinkki yllapito-avain="amosaa-tyokalu-palaute-url" />
+      </template>
+    </ep-footer>
   </div>
 </template>
 
@@ -22,10 +28,8 @@
 import _ from 'lodash';
 import { Prop, Watch, Component, Vue } from 'vue-property-decorator';
 import Sticky from 'vue-sticky-directive';
-
 import { KayttajaStore } from '@/stores/kayttaja';
 import { Meta } from '@shared/utils/decorators';
-
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
@@ -33,12 +37,14 @@ import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
 import { Koulutustoimijat, KoulutustoimijaDto, baseURL } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
 import EpTestiymparisto from '@shared/components/EpTestiymparisto/EpTestiymparisto.vue';
+import EpPalauteLinkki from '@shared/components/EpPalauteLinkki/EpPalauteLinkki.vue';
 
 @Component({
   components: {
     EpNavbar,
     EpFooter,
     EpTestiymparisto,
+    EpPalauteLinkki,
   },
   directives: {
     Sticky,
@@ -156,6 +162,10 @@ export default class RouteRoot extends Vue {
 @import '~@shared/styles/variables';
 
 .home-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
   .header {
     color: white;
     background-position: 100% 0;
@@ -181,6 +191,10 @@ export default class RouteRoot extends Vue {
       color: #000000;
     }
   }
+}
+
+.view-container {
+  flex:1;
 }
 
 </style>
