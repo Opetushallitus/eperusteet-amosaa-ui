@@ -21,8 +21,6 @@
       </div>
     </div>
 
-  <EpFeedbackModal :palauteProvider="palautteetStore"/>
-
   </div>
 </template>
 
@@ -31,7 +29,6 @@ import _ from 'lodash';
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 
 import EpRoute from '@shared/mixins/EpRoute';
-import { EtusivuDto } from '@shared/api/amosaa';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { Meta } from '@shared/utils/decorators';
 import TileToteutussuunnitelmat from './tiles/TileToteutussuunnitelmat.vue';
@@ -44,7 +41,6 @@ import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { SovellusTitle } from '@/utils/toteutustypes';
-import EpFeedbackModal from '@shared/components/EpFeedback/EpFeedbackModal.vue';
 import { PalautteetStore } from '@/stores/PalautteetStore';
 
 @Component({
@@ -55,7 +51,6 @@ import { PalautteetStore } from '@/stores/PalautteetStore';
     TileOrganisaationHallinta,
     TileTiedotteet,
     TileUkk,
-    EpFeedbackModal,
   },
 })
 export default class RouteEtusivu extends Mixins(EpRoute) {
