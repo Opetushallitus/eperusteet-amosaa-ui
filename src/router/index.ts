@@ -45,6 +45,7 @@ import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, T
 import { Maintenance } from '@shared/api/amosaa';
 import _ from 'lodash';
 import RouteOsaamismerkkiKappale from '@/views/RouteOsaamismerkkiKappale.vue';
+import { BrowserStore } from '@shared/stores/BrowserStore';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -440,4 +441,8 @@ router.beforeEach((to, from, next) => {
   stores.perusteetStore.init(to.params.toteutus);
   stores.palautteetStore.init(to.params.toteutus);
   next();
+});
+
+router.afterEach(() => {
+  BrowserStore.changeLocation(location.href);
 });
