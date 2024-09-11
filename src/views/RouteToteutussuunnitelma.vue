@@ -16,18 +16,28 @@
             :tyyppi="toteutus ==='ammatillinen' ? 'toteutussuunnitelma' : 'opetussuunnitelma'"
           />
         </div>
+
         <div class="flex-grow-1 align-self-center">
           <div class="mb-5 p-2" v-if="toteutussuunnitelma">
             <h1>
               <span>{{ $kaanna(toteutussuunnitelma.nimi) }}</span>
-              <b-dropdown class="asetukset" size="lg" variant="link" toggle-class="text-decoration-none" no-caret>
+            </h1>
+            <div class="diaarinumero mt-2">
+              <tempalte  v-if="toteutussuunnitelma.peruste">
+                <span>{{ $kaanna(toteutussuunnitelma.peruste.nimi) }}</span>
+                <span class="ml-2 mr-2">|</span>
+                <span>{{ toteutussuunnitelma.peruste.diaarinumero }}</span>
+                <span class="ml-2 mr-2">|</span>
+              </tempalte>
+
+              <b-dropdown class="asetukset" size="sm" no-caret variant="transparent">
                 <template v-slot:button-content>
-                  <EpMaterialIcon icon-shape="outlined" class="hallinta">settings</EpMaterialIcon>
+                  <span>{{$t('lisatoiminnot')}}</span>
+                  <EpMaterialIcon icon-shape="outlined" class="hallinta" size="22px">expand_more</EpMaterialIcon>
                 </template>
 
                 <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index">
                   <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
-
                   <b-dropdown-item v-if="ratasvalinta.route" :to="{ name: ratasvalinta.route }">
                     <EpMaterialIcon icon-shape="outlined">{{ ratasvalinta.icon }}</EpMaterialIcon>
                     {{ $t(ratasvalinta.text) }}
@@ -39,9 +49,6 @@
                   </b-dropdown-item>
                 </div>
               </b-dropdown>
-            </h1>
-            <div class="diaarinumero" v-if="toteutussuunnitelma.peruste">
-              {{ $kaanna(toteutussuunnitelma.peruste.nimi) }} | {{ toteutussuunnitelma.peruste.diaarinumero }}
             </div>
           </div>
         </div>
@@ -836,27 +843,37 @@ export default class RouteToteutussuunnitelma extends Vue {
 <style lang="scss" scoped>
 @import '@shared/styles/_variables';
 
+::v-deep .btn-sm {
+  padding: 0 0 3px 0 !important;
+  font-size: 1rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+::v-deep .btn:focus {
+  box-shadow: unset;
+}
+
 .portal-menu {
   height: 140px;
 
   h1 {
     margin: 0;
     padding: 0;
+  }
 
-    .asetukset {
-      .hallinta {
-        color: white;
-        vertical-align: text-top;
-      }
+  .asetukset {
+    .hallinta {
+      vertical-align: text-top;
+    }
 
-      ::v-deep .dropdown-item {
-        padding-left: 1rem;
-        padding-right: 2rem;
-      }
+    ::v-deep .dropdown-item {
+      padding-left: 1rem;
+      padding-right: 2rem;
+    }
 
-      svg:not(.hallinta) {
-        width: 25px;
-      }
+    svg:not(.hallinta) {
+      width: 25px;
     }
   }
 
