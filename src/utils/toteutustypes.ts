@@ -9,7 +9,7 @@ import TileOppaat from '@/views/tiles/TileOppaat.vue';
 
 import { tileColors } from '@shared/utils/bannerIcons';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
-import { EperusteetPalautekanava, Koulutustyyppi } from '@shared/tyypit';
+import { Koulutustyyppi } from '@shared/tyypit';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { TuvaTekstikappaleStore } from '@/stores/TuvaTekstikappaleStore';
@@ -78,13 +78,6 @@ export const Tutkintorakennepalaute = {
   [Toteutus.AMMATILLINEN]: true,
   [Toteutus.TUTKINTOONVALMENTAVA]: false,
   [Toteutus.KOTOUTUMISKOULUTUS]: false,
-};
-
-export const PalauteKey = {
-  [Toteutus.VAPAASIVISTYSTYO]: EperusteetPalautekanava.vst,
-  [Toteutus.AMMATILLINEN]: EperusteetPalautekanava.amosaa,
-  [Toteutus.TUTKINTOONVALMENTAVA]: EperusteetPalautekanava.tuva,
-  [Toteutus.KOTOUTUMISKOULUTUS]: EperusteetPalautekanava.koto,
 };
 
 export const FrontpageHeaderStyles = {
