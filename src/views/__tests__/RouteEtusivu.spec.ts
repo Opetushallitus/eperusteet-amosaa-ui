@@ -4,7 +4,6 @@ import RouteEtusivu from '../RouteEtusivu.vue';
 import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { Toteutus } from '@shared/utils/perusteet';
-import { PalautteetStore } from '@/stores/PalautteetStore';
 import { KayttajaStore } from '@/stores/kayttaja';
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
@@ -22,7 +21,6 @@ describe('RouteEtusivu tiles', () => {
     const koulutustoimijaId = '1';
     const kieliStore = mock(KieliStore);
     const paivitettavatJaSiirrettavatTotsStore = mock(PaivitettavatJaSiirrettavatTotsStore);
-    const palautteetStore = mock(PalautteetStore);
     const tervetuloaTeksti = 'tervetuloaTeksti';
     const tervetuloaTekstiKuvaus = 'tervetuloaTekstiKuvaus';
     const toteutus = Toteutus.AMMATILLINEN;
@@ -63,7 +61,6 @@ describe('RouteEtusivu tiles', () => {
         tervetuloaTeksti,
         tervetuloaTekstiKuvaus,
         tiles,
-        palautteetStore,
       },
       stubs: {
         Portal: '<div />',

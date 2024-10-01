@@ -41,7 +41,6 @@ import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { SovellusTitle } from '@/utils/toteutustypes';
-import { PalautteetStore } from '@/stores/PalautteetStore';
 
 @Component({
   components: {
@@ -77,9 +76,6 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
 
   @Prop({ required: true })
   private tiles!: any;
-
-  @Prop({ required: true })
-  private palautteetStore!: PalautteetStore;
 
   get tilesFiltered() {
     return _.filter(this.tiles, tile => (!tile.oikeustarkastelu || this.kayttajaStore.hasOikeus(tile.oikeustarkastelu?.oikeus, tile.oikeustarkastelu?.kohde)));
