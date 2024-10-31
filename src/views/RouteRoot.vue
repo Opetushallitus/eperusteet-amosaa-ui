@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container minfull">
+  <div class="home-container minfull" sticky-container>
     <EpTestiymparisto />
 
     <div class="view-container">
@@ -11,7 +11,8 @@
           :koulutustoimijat="koulutustoimijatOikeuksilla"
           :rootNavigation="rootNavigation"
           :sovellusOikeudet="sovellusOikeudet"
-          :logoutHref="logoutHref"/>
+          :logoutHref="logoutHref"
+          :sticky="routeStickyNavi"/>
         <PortalTarget ref="innerPortal" name="headerExtension" />
       </div>
       <RouterView />
@@ -68,6 +69,10 @@ export default class RouteRoot extends Vue {
     if (newValue && newValue !== oldValue) {
       this.koulutustoimija = (await Koulutustoimijat.getKoulutustoimija(this.koulutustoimijaId)).data;
     }
+  }
+
+  get routeStickyNavi() {
+    return this.$route.name !== 'home';
   }
 
   @Meta
@@ -170,7 +175,7 @@ export default class RouteRoot extends Vue {
     color: white;
     background-position: 100% 0;
     background-repeat: none;
-    background-repeat: no-repeat;
+    background-size: cover;
     @media only screen and (min-width: 2503px)  {
       background-size: 100%;
     }
