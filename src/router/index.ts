@@ -342,7 +342,7 @@ const router = new VueRouter({
         component: RouteJulkaisu,
         props,
       }, {
-        path: 'koulutuksenosat',
+        path: 'koulutuksenosat/:sisaltoviiteId',
         name: 'koulutuksenosat',
         component: RouteKoulutuksenOsat,
         props,

@@ -3,14 +3,12 @@ import { Kayttajat } from '@/stores/kayttaja';
 import { Kielet } from '@shared/stores/kieli';
 import { MuokkaustietoStore } from './MuokkaustietoStore';
 import { OhjeetStore } from './OhjeetStore';
-import { SisaltoViiteStore } from './SisaltoViiteStore';
 import { ToteutussuunnitelmaStore } from './ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaTiedotteetStore } from './ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmatStore } from './ToteutussuunnitelmatStore';
 import { PerusteetStore } from './PerusteetStore';
 import { TiedotteetStore } from './TiedotteetStore';
 import { tutoriaaliStore } from '@shared/stores/tutoriaali';
-import { TutkinnonOsatStore } from '@/stores/TutkinnonOsatStore';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { PoistetutStore } from '@/stores/PoistetutStore';
@@ -20,7 +18,6 @@ import { KayttoOikeudetStore } from '@/stores/KayttoOikeudetStore';
 import { PohjanTutkinnonosatStore } from '@/stores/PohjanTutkinnonosatStore';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
 import { OphOpsPohjatStore } from './OphOpsPohjatStore';
-import { KoulutuksenOsatStore } from './KoulutuksenOsatStore';
 import { OpetussuunnitelmatStore } from './OpetussuunnitelmatStore';
 
 const toteutussuunnitelmaStore = new ToteutussuunnitelmaStore();
@@ -37,7 +34,6 @@ const muokkaustietoStore = new MuokkaustietoStore(toteutussuunnitelmaStore.toteu
 const toteutussuunnitelmaTiedotteetStore = new ToteutussuunnitelmaTiedotteetStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const poistetutStore = new PoistetutStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const kayttoOikeudetStore = new KayttoOikeudetStore(toteutussuunnitelmaStore.toteutussuunnitelma);
-const koulutuksenOsatStore = new KoulutuksenOsatStore(toteutussuunnitelmaStore.toteutussuunnitelma);
 const ohjeetStore = new OhjeetStore();
 const tutkinnonosatTuontiStore = new TutkinnonosatTuontiStore();
 const paivitettavatJaSiirrettavatTotsStore = new PaivitettavatJaSiirrettavatTotsStore();
@@ -67,6 +63,5 @@ export const stores = Object.freeze({
   kayttoOikeudetStore,
   pohjanTutkinnonosatStore,
   opetussuunnitelmaPohjatStore,
-  koulutuksenOsatStore,
   opetussuunnitelmatStore,
 });

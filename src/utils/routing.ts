@@ -72,6 +72,7 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
   case 'koulutuksenosat':
     return {
       type: 'koulutuksenosat',
+      id: Number(route.params?.sisaltoviiteId!),
     };
   case 'koto_kielitaitotaso':
     return {
@@ -173,7 +174,10 @@ export function nodeToRoute(node: NavigationNodeDto): Location | null {
     };
   case 'koulutuksenosat':
     return {
-      name: 'opintokokonaisuus',
+      name: 'koulutuksenosat',
+      params: {
+        sisaltoviiteId: _.toString(node.id),
+      },
     };
   case 'koulutuksenosa':
     return {
