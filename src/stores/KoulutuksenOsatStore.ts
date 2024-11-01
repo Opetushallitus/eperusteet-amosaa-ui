@@ -3,50 +3,76 @@ import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-a
 import { Perusteet, OpetussuunnitelmaDto, SisaltoViiteKevytDto, Opetussuunnitelmat, Sisaltoviitteet } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
-import { IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
+import { EditoitavaFeatures, IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
+import { AbstractSisaltoviiteStore } from './AbstractSisaltoviiteStore';
 
 Vue.use(VueCompositionApi);
 
-export class KoulutuksenOsatStore implements IEditoitava {
+export class KoulutuksenOsatStore extends AbstractSisaltoviiteStore implements IEditoitava {
   private state = reactive({
     koulutuksenosat: null as any | null,
   });
 
-  constructor(private opetussuunnitelma: Computed<OpetussuunnitelmaDto>) {
+  constructor(
+    public toteutussuunnitelmaId: number,
+    public koulutustoimijaId: string,
+    public sisaltoviiteId: number,
+    public opetussuunnitelma: OpetussuunnitelmaDto,
+    public updateNavigation: Function,
+  ) {
+    super(toteutussuunnitelmaId, koulutustoimijaId, sisaltoviiteId);
   }
 
-  public readonly koulutuksenosat = computed(() => this.state.koulutuksenosat);
-
-  public readonly fetch = watch([this.opetussuunnitelma], async () => {
-    this.state.koulutuksenosat = null;
-    if (this.opetussuunnitelma.value) {
-      this.state.koulutuksenosat = await Promise.all(_.map((await Sisaltoviitteet.getSisaltoviitteeTyypilla(
-        this.opetussuunnitelma.value.id,
-        'koulutuksenosa',
-        this.opetussuunnitelma.value.koulutustoimija.id,
-      )).data, async (koulutuksenosaviite) => {
-        if (koulutuksenosaviite.perusteenOsaId && this.opetussuunnitelma.value.peruste) {
-          const perusteenOsa = (await Perusteet.getPerusteenOsa(this.opetussuunnitelma.value.peruste!.id!, koulutuksenosaviite.perusteenOsaId)).data as any;
-          return {
-            ...koulutuksenosaviite,
-            koulutuksenosa: {
-              ...koulutuksenosaviite.koulutuksenosa,
-              laajuusMinimi: perusteenOsa.laajuusMinimi,
-              laajuusMaksimi: perusteenOsa.laajuusMaksimi,
-            },
-          };
-        }
-
-        return koulutuksenosaviite;
-      }));
-    }
-  });
-
   async load() {
-    return this.koulutuksenosat;
+    const koulutuksenosat = await Promise.all(_.map((await Sisaltoviitteet.getSisaltoviitteeTyypilla(
+      this.toteutussuunnitelmaId,
+      'koulutuksenosa',
+      this.koulutustoimijaId,
+    )).data, async (koulutuksenosaviite) => {
+      if (koulutuksenosaviite.perusteenOsaId && this.opetussuunnitelma.peruste) {
+        const perusteenOsa = (await Perusteet.getPerusteenOsa(this.opetussuunnitelma.peruste!.id!, koulutuksenosaviite.perusteenOsaId)).data as any;
+        return {
+          ...koulutuksenosaviite,
+          koulutuksenosa: {
+            ...koulutuksenosaviite.koulutuksenosa,
+            laajuusMinimi: perusteenOsa.laajuusMinimi,
+            laajuusMaksimi: perusteenOsa.laajuusMaksimi,
+          },
+        };
+      }
+
+      return koulutuksenosaviite;
+    }));
+
+    return {
+      sisaltoviite: await this.fetchSisaltoviite(),
+      koulutuksenosat,
+    };
   }
 
   async editAfterLoad() {
     return false;
+  }
+
+  async hide(data) {
+    await Sisaltoviitteet.updateTekstiKappaleViite(this.toteutussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, { ...data.sisaltoviite, piilotettu: true });
+    await this.updateNavigation();
+  }
+
+  async unHide(data) {
+    await Sisaltoviitteet.updateTekstiKappaleViite(this.toteutussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, { ...data.sisaltoviite, piilotettu: false });
+    await this.updateNavigation();
+  }
+
+  public features(data: any) {
+    return computed(() => {
+      return {
+        editable: false,
+        removable: false,
+        recoverable: false,
+        hideable: true,
+        isHidden: data.sisaltoviite?.piilotettu,
+      } as EditoitavaFeatures;
+    });
   }
 }

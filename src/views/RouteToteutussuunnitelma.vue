@@ -188,9 +188,9 @@
               </div>
             </template>
 
-            <template v-slot:koulutuksenosat>
+            <template v-slot:koulutuksenosat="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'koulutuksenosat' }">
+                <router-link :to="{ name: 'koulutuksenosat', params: {sisaltoviiteId: item.id} }">
                   {{ $t('koulutuksenosat') }}
                 </router-link>
               </div>
@@ -240,7 +240,6 @@
               <div class="menu-item">
                 <router-link :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }">
                   {{ $kaanna(item.label) }} <span class="faded" v-if="item.koodi">({{item.koodi.toUpperCase()}})</span>
-                  <EpMaterialIcon v-if="item.meta.piilotettu" class="ml-2" size="16px">visibility_off</EpMaterialIcon>
                 </router-link>
               </div>
             </template>
@@ -844,7 +843,6 @@ export default class RouteToteutussuunnitelma extends Vue {
 @import '@shared/styles/_variables';
 
 ::v-deep .btn-sm {
-  padding: 0 0 3px 0 !important;
   font-size: 1rem;
   font-weight: 600;
   color: inherit;

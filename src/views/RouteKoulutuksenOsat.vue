@@ -39,8 +39,10 @@ import _ from 'lodash';
 import { Prop, Vue, Component, Mixins, Watch } from 'vue-property-decorator';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { KoulutuksenOsaDtoKoulutusOsanTyyppiEnum } from '@shared/api/amosaa';
+import { KoulutuksenOsaDtoKoulutusOsanTyyppiEnum, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import EpKoulutuksenOsaKortti from '@shared/components/EpKoulutuksenosa/EpKoulutuksenOsaKortti.vue';
+import { AbstractRouteSisalto } from './AbstractRouteSisalto';
+import { KoulutuksenosaStore } from '../stores/KoulutuksenosaStore';
 
 @Component({
   components: {
@@ -48,18 +50,23 @@ import EpKoulutuksenOsaKortti from '@shared/components/EpKoulutuksenosa/EpKoulut
     EpKoulutuksenOsaKortti,
   },
 })
-export default class RouteKoulutuksenOsat extends Vue {
-  @Prop({ required: true })
-  private koulutuksenOsatStore!: KoulutuksenOsatStore;
-
+export default class RouteKoulutuksenOsat extends AbstractRouteSisalto {
   private editointiStore: EditointiStore | null = null;
 
-  async mounted() {
-    this.editointiStore = new EditointiStore(this.koulutuksenOsatStore);
+  async fetch() {
+    this.editointiStore = new EditointiStore(
+      new KoulutuksenOsatStore(
+        this.toteutussuunnitelmaId,
+        this.koulutustoimijaId,
+        this.sisaltoviiteId,
+        this.toteutussuunnitelma as OpetussuunnitelmaDto,
+        async () => this.toteutussuunnitelmaStore.initNavigation(),
+      ),
+    );
   }
 
   get koulutuksenosat() {
-    return this.koulutuksenOsatStore.koulutuksenosat.value;
+    return this.editointiStore?.data.value.koulutuksenosat;
   }
 
   get yhteisetKoulutuksenosat() {
