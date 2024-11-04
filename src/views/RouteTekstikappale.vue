@@ -153,7 +153,7 @@ export default class RouteTekstikappale extends Vue {
   get naytaPaikallinenTeksti() {
     return this.toteutussuunnitelma?.koulutustyyppi as any !== Koulutustyyppi.tutkintoonvalmentava
       || this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS)
-      || !this.editointiStore?.data.value.perusteteksti;
+      || this.perusteteksti;
   }
 
   get pohja() {
@@ -161,11 +161,7 @@ export default class RouteTekstikappale extends Vue {
   }
 
   get perusteteksti() {
-    if (this.editointiStore?.data?.value?.perusteenOsa) {
-      return this.editointiStore?.data?.value?.perusteenOsa.teksti;
-    }
-
-    return this.editointiStore?.data?.value?.perusteteksti;
+    return this.editointiStore?.data?.value?.perusteenOsa?.teksti;
   }
 }
 </script>
