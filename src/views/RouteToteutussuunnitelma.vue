@@ -23,12 +23,12 @@
               <span>{{ $kaanna(toteutussuunnitelma.nimi) }}</span>
             </h1>
             <div class="diaarinumero mt-2">
-              <tempalte  v-if="toteutussuunnitelma.peruste">
+              <template  v-if="toteutussuunnitelma.peruste">
                 <span>{{ $kaanna(toteutussuunnitelma.peruste.nimi) }}</span>
                 <span class="ml-2 mr-2">|</span>
                 <span>{{ toteutussuunnitelma.peruste.diaarinumero }}</span>
                 <span class="ml-2 mr-2">|</span>
-              </tempalte>
+              </template>
 
               <b-dropdown class="asetukset" size="sm" no-caret variant="transparent">
                 <template v-slot:button-content>
@@ -79,9 +79,9 @@
 
             <template v-slot:tutkinnonosat>
               <div class="menu-item">
-                <router-link :to="{ name: 'tutkinnonosat' }">
+                <EpNavigationLabel :to="{ name: 'tutkinnonosat' }" :node="item">
                   {{ $t('tutkinnonosat') }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
@@ -123,124 +123,124 @@
 
             <template v-slot:suorituspolut="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $t('suorituspolut') }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:linkki="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:tutkinnonosa="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) || $t('nimeton-tutkinnonosa') }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:suorituspolku="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) || $t('nimeton-suorituspolku')}}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:osasuorituspolku="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) || $t('nimeton-osasuorituspolku')}}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:tekstikappale="{ item }">
               <div class="menu-item">
-                <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
-                <router-link :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }" :node="item">
+                  <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
                   {{ $kaanna(item.label) || $t('nimetön-tekstikappale') }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:opintokokonaisuus="{ item }">
               <div class="menu-item">
-                <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
-                <router-link :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }" :node="item">
+                  <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
                   {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:osaamismerkki="{ item }">
               <div class="menu-item">
-                <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
-                <router-link :to="{ name: 'osaamismerkkikappale', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'osaamismerkkikappale', params: {sisaltoviiteId: item.id} }" :node="item">
+                  <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
                   {{ $t('kansalliset-perustaitojen-osaamismerkit') }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:koulutuksenosat="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'koulutuksenosat', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'koulutuksenosat', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $t('koulutuksenosat') }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:koulutuksenosa="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) }} <span v-if="item.koodi">({{item.koodi}})</span>
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:laajaalainenosaaminen="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:koto_kielitaitotaso="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'koto_kielitaitotaso', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'koto_kielitaitotaso', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:koto_opinto="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'koto_opinto', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'koto_opinto', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:koto_laajaalainenosaaminen="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }">
+                <EpNavigationLabel :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }" :node="item">
                   {{ $kaanna(item.label) }}
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
             <template v-slot:osaalue="{ item }">
               <div class="menu-item">
-                <router-link :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }">
+                <EpNavigationLabel :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }" :node="item">
                   {{ $kaanna(item.label) }} <span class="faded" v-if="item.koodi">({{item.koodi.toUpperCase()}})</span>
-                </router-link>
+                </EpNavigationLabel>
               </div>
             </template>
 
@@ -374,7 +374,7 @@
       </template>
 
       <template v-slot:view>
-        <router-view />
+        <router-view v-if="toteutussuunnitelma"/>
       </template>
 
       <template v-slot:bottom>
@@ -404,6 +404,7 @@ import EpProgressPopover from '@shared/components/EpProgressPopover/EpProgressPo
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import EpValidPopover from '@shared/components/EpValidPopover/EpValidPopover.vue';
+import EpNavigationLabel from '@shared/components/EpTreeNavibar/EpNavigationLabel.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
@@ -434,6 +435,7 @@ import { OsaamismerkkiKappaleStore } from '@/stores/OsaamismerkkiKappaleStore';
     EpSpinner,
     EpValidPopover,
     EpMaterialIcon,
+    EpNavigationLabel,
   },
   inject: [],
 })
