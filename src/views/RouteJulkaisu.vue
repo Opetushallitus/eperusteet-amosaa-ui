@@ -19,11 +19,12 @@
     <div>{{ $t('julkaisunakyma-kuvaus') }}</div>
 
     <div class="mt-4">
-      <h3>{{ $t('julkaisu-vaikutukset') }}</h3>
+      <h3>{{ $t('julkaisun-vaikutukset') }}</h3>
       <ul>
-        <li>{{ $t('julkaisusta-julkinen') }}</li>
-        <li>{{ $t('julkaisusta-luodaan-pdf') }}</li>
-        <li>{{ $t('julkaisusta-vanhat-versiot-sailyvat') }}</li>
+        <li>{{ $t('opetussuunnitelma-julkaisun-vaikutukset-1') }}</li>
+        <li>{{ $t('opetussuunnitelma-julkaisun-vaikutukset-2') }}</li>
+        <li>{{ $t('opetussuunnitelma-julkaisun-vaikutukset-3') }}</li>
+        <li>{{ $t('opetussuunnitelma-julkaisun-vaikutukset-4') }}</li>
       </ul>
     </div>
 
