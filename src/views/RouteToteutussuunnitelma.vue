@@ -77,8 +77,8 @@
               </div>
             </template>
 
-            <template v-slot:tutkinnonosat>
-              <div class="menu-item">
+            <template v-slot:tutkinnonosat="{ item }">
+              <div class="menu-item" >
                 <EpNavigationLabel :to="{ name: 'tutkinnonosat' }" :node="item">
                   {{ $t('tutkinnonosat') }}
                 </EpNavigationLabel>
