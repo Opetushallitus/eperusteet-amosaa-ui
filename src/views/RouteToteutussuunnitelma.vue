@@ -404,7 +404,7 @@ import EpProgressPopover from '@shared/components/EpProgressPopover/EpProgressPo
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import EpValidPopover from '@shared/components/EpValidPopover/EpValidPopover.vue';
-import EpNavigationLabel from '@shared/components/EpTreeNavibar/EpNavigationLabel.vue';
+// import EpNavigationLabel from '@shared/components/EpTreeNavibar/EpNavigationLabel.vue';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
@@ -435,7 +435,7 @@ import { OsaamismerkkiKappaleStore } from '@/stores/OsaamismerkkiKappaleStore';
     EpSpinner,
     EpValidPopover,
     EpMaterialIcon,
-    EpNavigationLabel,
+    // EpNavigationLabel,
   },
   inject: [],
 })
