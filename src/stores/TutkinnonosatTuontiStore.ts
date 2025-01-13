@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import { Opetussuunnitelmat, OpetussuunnitelmaDto, Sisaltoviitteet, Perusteet, SisaltoviiteLaajaDto } from '@shared/api/amosaa';
+import { Opetussuunnitelmat, OpetussuunnitelmaDto, Sisaltoviitteet, Perusteet, SisaltoviiteLaajaDto, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
 import { Debounced } from '@shared/utils/delay';
 import { AmmatillisetKoulutustyypit, perusteenSuoritustapa } from '@shared/utils/perusteet';
 import * as _ from 'lodash';
@@ -18,13 +18,17 @@ export class TutkinnonosatTuontiStore {
   public readonly toteutussuunnitelmat = computed(() => this.state.toteutussuunnitelmat);
 
   public async fetchOpetussuunnitelmat(koulutustoimijaId: string) {
-    this.state.toteutussuunnitelmat = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(koulutustoimijaId, AmmatillisetKoulutustyypit)).data;
+    this.state.toteutussuunnitelmat = (await Opetussuunnitelmat.getKoulutustoimijaOpetussuunnitelmat(
+      AmmatillisetKoulutustyypit,
+      [OpetussuunnitelmaDtoTilaEnum.LUONNOS, OpetussuunnitelmaDtoTilaEnum.VALMIS, OpetussuunnitelmaDtoTilaEnum.JULKAISTU],
+      koulutustoimijaId,
+    )).data;
   }
 
   @Debounced(300)
   public async fetch(toteutussuunnitelmaId: number, koulutustoimijaId: string, query) {
     this.state.tutkinnonosatPage = null;
-    const sisaltoviitteet = (await Sisaltoviitteet.getSisaltoviitteet(toteutussuunnitelmaId, koulutustoimijaId, undefined, { params: query })).data as Page<SisaltoviiteLaajaDto>;
+    const sisaltoviitteet = (await Sisaltoviitteet.getSisaltoviitteet(toteutussuunnitelmaId, koulutustoimijaId, { params: query })).data as Page<SisaltoviiteLaajaDto>;
 
     const perusteIdt = _.chain(_.get(sisaltoviitteet, 'data'))
       .map(tutkinnonosa => {

@@ -26,7 +26,6 @@ export class SisaltotuontiStore {
     this.state.opetussuunnitelmat = null;
     this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getAllOpetussuunnitelmatBaseSivutettu(
       this.koulutustoimijaId,
-      undefined,
       { params: query })).data;
   }
 
