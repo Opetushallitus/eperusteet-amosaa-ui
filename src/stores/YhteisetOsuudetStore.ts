@@ -16,7 +16,7 @@ export class YhteisetOsuudetStore implements IToteutussuunnitelmaProvider {
 
   public async updateQuery(koulutustoimijaId: number, toteutus: Toteutus, query: any) {
     this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getAllOpetussuunnitelmatSivutettu(
-      _.toString(koulutustoimijaId), undefined,
+      _.toString(koulutustoimijaId),
       {
         params: {
           ...query,

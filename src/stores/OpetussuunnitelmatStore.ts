@@ -33,15 +33,15 @@ export class OpetussuunnitelmatStore {
   }
 
   public async fetchKeskeneraiset(ktId, query: any) {
-    this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, undefined, { params: { ...query, julkaistuTaiValmis: false, sivukoko: 9 } })).data as Page<OpetussuunnitelmaDto>;
+    this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, { params: { ...query, julkaistuTaiValmis: false, sivukoko: 9 } })).data as Page<OpetussuunnitelmaDto>;
   }
 
   public async fetchPoistetut(ktId, query: any) {
-    this.state.arkistoidutOpetussuunnitelmat = ((await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, undefined, { params: { ...query, poistunut: true, sivukoko: 999, sivu: 0 } })).data as Page<OpetussuunnitelmaDto>).data;
+    this.state.arkistoidutOpetussuunnitelmat = ((await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, { params: { ...query, poistunut: true, sivukoko: 999, sivu: 0 } })).data as Page<OpetussuunnitelmaDto>).data;
   }
 
   public async fetchJulkaistut(ktId, query: any) {
-    this.state.julkaistutOpetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, undefined, { params: { ...query, julkaistuTaiValmis: true, sivukoko: 10 } })).data as Page<OpetussuunnitelmaDto>;
+    this.state.julkaistutOpetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, { params: { ...query, julkaistuTaiValmis: true, sivukoko: 10 } })).data as Page<OpetussuunnitelmaDto>;
   }
 
   public async fetchYstavien(ktId, query: any) {

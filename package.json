@@ -12,7 +12,8 @@
     "test:unit": "vue-cli-service test:unit --ci --coverage --no-cache",
     "test:unit:dev": "vue-cli-service test:unit --watch --no-cache",
     "test:unit:inspect": "node --inspect-brk ./node_modules/@vue/cli-service/bin/vue-cli-service.js test:unit",
-    "test:unit:report": "$BROWSER coverage/lcov-report/index.html"
+    "test:unit:report": "$BROWSER coverage/lcov-report/index.html",
+    "genspec": "cd eperusteet-frontend-utils/vue && ./scripts/buildapi.sh -g -s ${0} && cd .. && cd .. && yarn run serve"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
