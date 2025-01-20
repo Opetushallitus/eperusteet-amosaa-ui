@@ -65,7 +65,8 @@
                 </RouterLink>
               </div>
               <OpsKeskeneraisetTile :ops="ops" :toteutus="toteutus" v-for="ops in opetussuunnitelmat" :key="ops.id"/>
-              <div class="ops__info mt-4 ml-4" v-if="opetussuunnitelmat && opetussuunnitelmat.length === 0">
+              <div class="ops__info mt-4 ml-4"
+                v-if="(query.nimi || query.jotpa) && opetussuunnitelmat && opetussuunnitelmat.length === 0">
                 <EpAlert :ops="true" :text="$t('ei-hakutuloksia')" class="mt-4" />
               </div>
             </div>
@@ -235,7 +236,7 @@ export default class RouteOpetussuunnitelmaListaus extends Vue {
   async julkaisutSivuUpdate() {
     this.isUpdatingJulkaistutSivu = true;
     await this.initJulkaistut();
-    this.isUpdatingJulkaistutSivu = true;
+    this.isUpdatingJulkaistutSivu = false;
   }
 
   get koulutustoimijat() {
