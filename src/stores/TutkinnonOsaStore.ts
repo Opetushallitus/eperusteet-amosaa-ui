@@ -3,8 +3,8 @@ import Vue from 'vue';
 import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto, OmaOsaAlueDtoTyyppiEnum } from '@shared/api/amosaa';
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-import { Revision, Kieli } from '@shared/tyypit';
-import { requiredOneLang } from '@shared/validators/required';
+import { Revision } from '@shared/tyypit';
+import { koodiValidator, requiredOneLang } from '@shared/validators/required';
 import { Kielet } from '@shared/stores/kieli';
 
 Vue.use(VueCompositionApi);
@@ -173,6 +173,9 @@ export class TutkinnonOsaStore implements IEditoitava {
             },
           },
         },
+      },
+      omaTutkinnonosa: {
+        ...koodiValidator(4, true, true),
       },
     };
   });

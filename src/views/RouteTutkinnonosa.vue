@@ -25,8 +25,14 @@
         </b-form-group>
 
         <div class="d-flex justify-content-between" v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta'">
-          <b-form-group class="flex-grow-1 mr-5" :label="$t('koodi')">
-            <ep-field v-model="data.omaTutkinnonosa.koodi" type="string" :is-editing="isEditing"></ep-field>
+          <b-form-group class="flex-grow-1 mr-5">
+            <div slot="label" class="d-flex">
+              <span>{{$t('koodi')}}</span>
+              <EpInfoPopover class="ml-2" v-if="isEditing">
+                {{ $t('paikallinen-tutkinnon-osa-koodi-selite') }}
+              </EpInfoPopover>
+            </div>
+            <ep-field v-model="data.omaTutkinnonosa.koodi" type="string" :is-editing="isEditing" :validation="$v.omaTutkinnonosa.koodi"></ep-field>
           </b-form-group>
 
           <b-form-group :label="$t('laajuus')" v-if="data.omaTutkinnonosa && isEditing">
@@ -180,9 +186,10 @@ import draggable from 'vuedraggable';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
 import { Validations } from 'vuelidate-property-decorators';
-import { requiredOneLang } from '@shared/validators/required';
+import { koodiValidator, requiredOneLang } from '@shared/validators/required';
 import { validationMixin } from 'vuelidate';
 import EpArvioinninKohdeAlueet from '@shared/components/EpArviointi/EpArvioinninKohdeAlueet.vue';
+import EpInfoPopover from '@shared/components/EpInfoPopover/EpInfoPopover.vue';
 
 @Component({
   components: {
@@ -305,6 +312,10 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
     return this.editointiStore?.data?.value?.tutkinnonosaViite.tekstiKappale.nimi;
   }
 
+  get omaTutkinnonosa() {
+    return this.editointiStore?.data?.value?.omaTutkinnonosa;
+  }
+
   get laajuus() {
     return this.editointiStore?.data?.value?.perusteenTutkinnonosaViite?.laajuus || this.editointiStore?.data?.value?.omaTutkinnonosa?.laajuus;
   }
@@ -312,6 +323,9 @@ export default class RouteTutkinnonosa extends Mixins(validationMixin) {
   @Validations()
   validations = {
     nimi: requiredOneLang(),
+    omaTutkinnonosa: {
+      ...koodiValidator(4, true, true),
+    },
   };
 
   async updateNavigation() {
