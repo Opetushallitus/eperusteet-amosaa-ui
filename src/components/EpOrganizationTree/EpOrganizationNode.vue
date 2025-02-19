@@ -110,7 +110,7 @@ export default class EpOrganizationNode extends Vue {
   border-bottom-left-radius: 0.25rem;
   background-color: none;
   min-width: 8px;
-  color-adjust: exact;
+  print-color-adjust: exact;
   -webkit-print-color-adjust: exact
 }
 
