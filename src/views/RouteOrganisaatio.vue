@@ -509,7 +509,7 @@ ul.colors-menu {
       position: absolute;
       top: -0.3rem;
       left: 0rem;
-      color-adjust: exact;
+      print-color-adjust: exact;
       -webkit-print-color-adjust: exact
     }
 
