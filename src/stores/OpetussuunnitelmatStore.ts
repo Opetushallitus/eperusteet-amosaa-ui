@@ -28,7 +28,7 @@ export class OpetussuunnitelmatStore {
       this.fetchKeskeneraiset(ktId, query),
       this.fetchJulkaistut(ktId, query),
       this.fetchPoistetut(ktId, query),
-      ...(!admin ? this.fetchYstavien(ktId, query) : []) as any,
+      this.fetchYstavien(ktId, query, admin),
     ]);
   }
 
@@ -44,7 +44,9 @@ export class OpetussuunnitelmatStore {
     this.state.julkaistutOpetussuunnitelmat = (await Opetussuunnitelmat.getKaikkiOpetussuunnitelmat(ktId, { params: { ...query, julkaistuTaiValmis: true, sivukoko: 10 } })).data as Page<OpetussuunnitelmaDto>;
   }
 
-  public async fetchYstavien(ktId, query: any) {
-    this.state.ystavienOpetussuunnitelmat = (await Opetussuunnitelmat.getAllOtherOrgsOpetussuunnitelmat(ktId, query.koulutustyypit)).data;
+  public async fetchYstavien(ktId, query: any, isAdmin) {
+    if (!isAdmin) {
+      this.state.ystavienOpetussuunnitelmat = (await Opetussuunnitelmat.getAllOtherOrgsOpetussuunnitelmat(ktId, query.koulutustyypit)).data;
+    }
   }
 }
