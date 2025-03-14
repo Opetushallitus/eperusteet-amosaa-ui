@@ -406,6 +406,15 @@ const router = new VueRouter({
 
 export default router;
 
+router.beforeEach((to, from, next) => {
+  if (!!from.params.toteutus && !!to.params.toteutus && from.params.toteutus !== to.params.toteutus) {
+    window.location.reload();
+  }
+  else {
+    next();
+  }
+});
+
 router.beforeEach(async (to, from, next) => {
   const koulutustoimijaId = String(to.params.koulutustoimijaId);
   const toteutussuunntelmaId = Number(to.params.toteutussuunnitelmaId);
