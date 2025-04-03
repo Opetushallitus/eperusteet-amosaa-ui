@@ -83,7 +83,13 @@ export class OpintokokonaisuusStore implements IEditoitava {
 
     let validations = {
       tekstiKappale: {
-        nimi: translated([kieli]),
+        nimi: {
+          [kieli]: {
+            required: requiredIf((value) => {
+              return !this.el.editointiStore?.data?.value?.opintokokonaisuus?.koodiArvo;
+            }),
+          },
+        },
       },
       opintokokonaisuus: {
         laajuus: {
