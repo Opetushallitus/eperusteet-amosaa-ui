@@ -7,9 +7,9 @@
       <b-row>
         <b-col md="10">
 
-          <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && data.perusteteksti)">
+          <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && perusteenTeksti)">
             <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
-            <ep-content layout="normal" v-model="data.perusteteksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
+            <ep-content layout="normal" v-model="perusteenTeksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
             <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
               {{$t('nayta-perusteen-teksti')}}
             </ep-toggle>
@@ -54,6 +54,7 @@ import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/generated/amosaa';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
+import { YleinenSisaltoViiteStore } from '@/stores/YleinenSisaltoViiteStore';
 
 @Component({
   components: {
@@ -93,12 +94,12 @@ export default class RouteLaajaAlainenOsaaminen extends Vue {
 
   fetch() {
     this.editointiStore = new EditointiStore(
-      new LaajaalainenOsaaminenStore(
+      new YleinenSisaltoViiteStore(
         this.toteutussuunnitelmaId,
         this.koulutustoimijaId,
         this.sisaltoviiteId,
         this.versionumero,
-        this.toteutussuunnitelmaStore.toteutussuunnitelma));
+        this.toteutussuunnitelmaStore.toteutussuunnitelma.value as any));
   }
 
   get versionumero() {
@@ -115,6 +116,14 @@ export default class RouteLaajaAlainenOsaaminen extends Vue {
 
   get naytaPaikallinenTeksti() {
     return this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS);
+  }
+
+  get perusteenTeksti() {
+    if (this.editointiStore?.data?.value?.perusteenOsa) {
+      return this.editointiStore.data.value.perusteenOsa.teksti;
+    }
+
+    return this.editointiStore?.data.value?.perusteteksti;
   }
 }
 </script>
