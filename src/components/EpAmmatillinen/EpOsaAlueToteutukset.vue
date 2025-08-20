@@ -1,62 +1,79 @@
 <template>
   <div>
-   <draggable
+    <VueDraggable
       v-bind="defaultDragOptions"
+      v-model="model"
       tag="div"
-      v-model="model">
+    >
+      <EpCollapse
+        v-for="(toteutus, toteutusIndex) in model"
+        :key="'toteutus'+toteutusIndex"
+        class="toteutus p-3 mb-4 w-100"
+        :border-bottom="false"
+        :collapsable="!isEditing"
+        :use-padding="false"
+      >
+        <template #header>
+          <h4
+            v-if="!isEditing"
+            class="ml-3"
+          >
+            {{ $kaanna(toteutus.otsikko) }}
+          </h4>
+        </template>
 
-        <EpCollapse
-          v-for="(toteutus, toteutusIndex) in model"
-          :key="'toteutus'+toteutusIndex"
-          class="toteutus p-3 mb-4 w-100"
-          :borderBottom="false"
-          :collapsable="!isEditing"
-          :usePadding="false">
-
-          <template v-slot:header>
-            <h4 class="ml-3" v-if="!isEditing">{{$kaanna(toteutus.otsikko)}}</h4>
-          </template>
-
-          <div class="d-flex">
-            <div class="order-handle mr-3">
-              <EpMaterialIcon v-if="isEditing">drag_indicator</EpMaterialIcon>
-            </div>
-
-            <EpPaikallinenToteutus v-model="model[toteutusIndex]" :isEditing="isEditing" @poista="poistaToteutus(model[toteutusIndex])">
-              <div slot="oletustoteutus">
-                {{ $t('tallenna-oletustoteutuksena-osa-alueeseen') }}
-              </div>
-            </EpPaikallinenToteutus>
-
+        <div class="d-flex">
+          <div class="order-handle mr-3">
+            <EpMaterialIcon v-if="isEditing">
+              drag_indicator
+            </EpMaterialIcon>
           </div>
-        </EpCollapse>
-    </draggable>
+
+          <EpPaikallinenToteutus
+            v-model="model[toteutusIndex]"
+            :is-editing="isEditing"
+            @poista="poistaToteutus(model[toteutusIndex])"
+          >
+            <template #oletustoteutus>
+              <div>{{ $t('tallenna-oletustoteutuksena-osa-alueeseen') }}</div>
+            </template>
+          </EpPaikallinenToteutus>
+        </div>
+      </EpCollapse>
+    </VueDraggable>
 
     <div class="d-flex">
-      <ep-button v-if="isEditing" @click="lisaaToteutus()" variant="outline" icon="add">
+      <ep-button
+        v-if="isEditing"
+        variant="outline"
+        icon="add"
+        @click="lisaaToteutus()"
+      >
         {{ $t('lisaa-toteutus') }}
       </ep-button>
 
-      <EpOletustoteutusTuonti v-if="isEditing" @lisaaOletustoteutus="lisaaOletustoteutus" :fetch="haeOletusOsaAlueToteutukset">
-        <div slot="title">
-          {{ $t('tuo-oletustoteutus-osa-alueeseen') }}
-        </div>
-        <div slot="luotu">
-          {{ $t('luotu-osa-alueessa') }}
-        </div>
+      <EpOletustoteutusTuonti
+        v-if="isEditing"
+        :fetch="haeOletusOsaAlueToteutukset"
+        @lisaaOletustoteutus="lisaaOletustoteutus"
+      >
+        <template #title>
+          <div>{{ $t('tuo-oletustoteutus-osa-alueeseen') }}</div>
+        </template>
+        <template #luotu>
+          <div>{{ $t('luotu-osa-alueessa') }}</div>
+        </template>
       </EpOletustoteutusTuonti>
-
     </div>
-
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import * as _ from 'lodash';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { computed, getCurrentInstance } from 'vue';
 import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
-import draggable from 'vuedraggable';
+import { VueDraggable } from 'vue-draggable-plus';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
@@ -65,76 +82,67 @@ import EpPaikallinenToteutus from '@/components/EpAmmatillinen/EpPaikallinenTote
 import { OsaAlueApi, OmaOsaAlueToteutusDto } from '@shared/api/amosaa';
 import EpOletustoteutusTuonti from '@/components/EpSisaltoLisays/EpOletustoteutusTuonti.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import { $kaanna, $t } from '@shared/utils/globals';
+import { useRoute } from 'vue-router';
 
-@Component({
-  components: {
-    EpVapaatTekstit,
-    EpInput,
-    draggable,
-    EpCollapse,
-    EpContent,
-    EpButton,
-    EpPaikallinenToteutus,
-    EpOletustoteutusTuonti,
-    EpMaterialIcon,
+const props = defineProps<{
+  modelValue: OmaOsaAlueToteutusDto[];
+  isEditing?: boolean;
+}>();
+
+const emit = defineEmits(['update:modelValue']);
+
+const route = useRoute();
+
+const model = computed({
+  get() {
+    return props.modelValue;
   },
-})
-export default class EpOsaAlueToteutukset extends Vue {
-  @Prop({ required: true })
-  value!: OmaOsaAlueToteutusDto[];
+  set(value) {
+    emit('update:modelValue', value);
+  },
+});
 
-  @Prop({ required: false, default: false })
-  isEditing!: boolean;
+const lisaaToteutus = () => {
+  emit('update:modelValue', [
+    ...props.modelValue,
+    {
+      tavatjaymparisto: {},
+      arvioinnista: {},
+      vapaat: [],
+    },
+  ]);
+};
 
-  set model(value) {
-    this.$emit('input', value);
-  }
+const poistaToteutus = (poistettavaOsaalue: any) => {
+  emit('update:modelValue', _.filter(props.modelValue, toteutus => toteutus !== poistettavaOsaalue));
+};
 
-  get model() {
-    return this.value;
-  }
+const haeOletusOsaAlueToteutukset = async () => {
+  return (await OsaAlueApi.haeOletusOsaAlueToteutukset(toteutussuunnitelmaId.value, koulutustoimijaId.value)).data;
+};
 
-  lisaaToteutus() {
-    this.$emit('input', [
-      ...this.value,
-      {
-        tavatjaymparisto: {},
-        arvioinnista: {},
-        vapaat: [],
-      },
-    ]);
-  }
+const lisaaOletustoteutus = (toteutus: any) => {
+  model.value = [
+    ...(model.value || []),
+    toteutus,
+  ];
+};
 
-  poistaToteutus(poistettavaOsaalue) {
-    this.$emit('input', _.filter(this.value, toteutus => toteutus !== poistettavaOsaalue));
-  }
+const defaultDragOptions = computed(() => {
+  return {
+    ...DEFAULT_DRAGGABLE_PROPERTIES,
+    disabled: !props.isEditing,
+  };
+});
 
-  async haeOletusOsaAlueToteutukset() {
-    return (await OsaAlueApi.haeOletusOsaAlueToteutukset(this.toteutussuunnitelmaId, this.koulutustoimijaId)).data;
-  }
+const toteutussuunnitelmaId = computed(() => {
+  return _.toNumber(route.params.toteutussuunnitelmaId);
+});
 
-  lisaaOletustoteutus(toteutus) {
-    this.model = [
-      ...(this.model || []),
-      toteutus,
-    ];
-  }
-
-  get defaultDragOptions() {
-    return {
-      ...DEFAULT_DRAGGABLE_PROPERTIES,
-      disabled: !this.isEditing,
-    };
-  }
-
-  get toteutussuunnitelmaId() {
-    return _.toNumber(this.$route.params.toteutussuunnitelmaId);
-  }
-
-  get koulutustoimijaId() {
-    return this.$route.params.toteutussuunnitelmaId;
-  }
-}
+const koulutustoimijaId = computed(() => {
+  return route.params.toteutussuunnitelmaId;
+});
 </script>
 
 <style scoped lang="scss">

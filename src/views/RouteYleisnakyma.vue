@@ -1,142 +1,157 @@
 <template>
-<div class="yleisnakyma">
-
-  <EpSpinner v-if="vanhentunutPeruste === null" />
-  <div class="info-box sync-box" v-else-if="vanhentunutPeruste && !perustePaivitetty" v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
-    <h2>{{$t(perustePaivitysKielistys['otsikko'])}}</h2>
-    <div v-html="$t(perustePaivitysKielistys['teksti'])" />
-    <div class="d-flex justify-content-between">
-      <EpExternalLink :url="perusteLinkki" class="mt-2">{{$kaanna(peruste.nimi)}}</EpExternalLink>
-      <div class="d-flex align-items-center">
-        <div class="mr-3 disabled-text font-size-08" v-if="toteutussuunnitelma.perustePaivitettyPvm">
-          {{$t('viimeisin-synkronisointi-pvm')}} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
+  <div class="yleisnakyma">
+    <EpSpinner v-if="vanhentunutPeruste === null" />
+    <div
+      v-else-if="vanhentunutPeruste && !perustePaivitetty"
+      v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+      class="info-box sync-box"
+    >
+      <h2>{{ $t(perustePaivitysKielistys['otsikko']) }}</h2>
+      <div v-html="$t(perustePaivitysKielistys['teksti'])" />
+      <div class="d-flex justify-content-between">
+        <EpExternalLink
+          :url="perusteLinkki"
+          class="mt-2"
+        >
+          {{ $kaanna(peruste.nimi) }}
+        </EpExternalLink>
+        <div class="d-flex align-items-center">
+          <div
+            v-if="toteutussuunnitelma.perustePaivitettyPvm"
+            class="mr-3 disabled-text font-size-08"
+          >
+            {{ $t('viimeisin-synkronisointi-pvm') }} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
+          </div>
+          <ep-button
+            :show-spinner="syncing"
+            @click="paivitaPeruste"
+          >
+            {{ $t('paivita') }}
+          </ep-button>
         </div>
-        <ep-button @click="paivitaPeruste" :showSpinner="syncing">
-          {{$t('paivita')}}
-        </ep-button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col p-0">
+        <ep-toteutussuunnitelma-aikataulu
+          class="info-box"
+          :aikataulu-store="aikatauluStore"
+          :toteutussuunnitelma="toteutussuunnitelma"
+        />
+      </div>
+    </div>
+
+    <div class="row pt-0">
+      <div class="col-lg-12 col-xl-6 p-0">
+        <ep-toteutussuunnitelman-tiedotteet
+          v-if="peruste"
+          class="info-box"
+          :tiedotteet-store="toteutussuunnitelmaTiedotteetStore"
+        />
+        <ep-toteutussuunnitelman-perustiedot
+          class="info-box"
+          :toteutussuunnitelma="toteutussuunnitelma"
+          :toteutus="toteutus"
+        />
+        <ep-toteutussuunnitelman-sisaltoviitteet
+          v-if="!isYhteinen"
+          class="info-box"
+          :opetussuunnitelma="toteutussuunnitelma"
+          :toteutus="toteutus"
+        />
+      </div>
+      <div class="col-lg-12 col-xl-6 p-0 pl-2">
+        <ep-viimeaikainen-toiminta
+          class="info-box"
+          :muokkaustieto-store="muokkaustietoStore"
+        />
       </div>
     </div>
   </div>
-
-  <div class="row">
-    <div class="col p-0">
-      <ep-toteutussuunnitelma-aikataulu class="info-box" :aikatauluStore="aikatauluStore" :toteutussuunnitelma="toteutussuunnitelma"/>
-    </div>
-  </div>
-
-  <div class="row pt-0">
-    <div class="col-lg-12 col-xl-6 p-0">
-      <ep-toteutussuunnitelman-tiedotteet class="info-box" v-if="peruste" :tiedotteetStore="toteutussuunnitelmaTiedotteetStore"/>
-      <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma" :toteutus="toteutus"/>
-      <ep-toteutussuunnitelman-sisaltoviitteet class="info-box" v-if="!isYhteinen" :opetussuunnitelma="toteutussuunnitelma" :toteutus="toteutus"/>
-    </div>
-    <div class="col-lg-12 col-xl-6 p-0 pl-2">
-      <ep-viimeaikainen-toiminta class="info-box" :muokkaustietoStore="muokkaustietoStore"/>
-    </div>
-  </div>
-
-</div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+
 import EpToteutussuunnitelmaAikataulu from '@/components/EpYleisnakyma/EpToteutussuunnitelmaAikataulu.vue';
 import EpToteutussuunnitelmanPerustiedot from '@/components/EpYleisnakyma/EpToteutussuunnitelmanPerustiedot.vue';
 import EpToteutussuunnitelmanSisaltoviitteet from '@/components/EpYleisnakyma/EpToteutussuunnitelmanSisaltoviitteet.vue';
 import EpToteutussuunnitelmanTiedotteet from '@/components/EpYleisnakyma/EpToteutussuunnitelmanTiedotteet.vue';
 import EpViimeaikainenToiminta from '@shared/components/EpViimeaikainenToiminta/EpViimeaikainenToiminta.vue';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
+
 import { MuokkaustietoStore } from '@/stores/MuokkaustietoStore';
 import { AikatauluStore } from '@/stores/AikatauluStore';
 import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/ToteutussuunnitelmaTiedotteetStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { koulutustyyppiTheme, Toteutus } from '@shared/utils/perusteet';
-import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
-import { buildEsikatseluUrl, buildKatseluUrl } from '@shared/utils/esikatselu';
+import { buildKatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
-import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
+import { $t, $kaanna, $sdt, $success, $fail } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpToteutussuunnitelmaAikataulu,
-    EpToteutussuunnitelmanPerustiedot,
-    EpToteutussuunnitelmanSisaltoviitteet,
-    EpViimeaikainenToiminta,
-    EpToteutussuunnitelmanTiedotteet,
-    EpButton,
-    EpSpinner,
-    EpExternalLink,
-  },
-})
-export default class RouteYleisnakyma extends Vue {
-  @Prop({ required: true })
-  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const props = withDefaults(defineProps<{
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  aikatauluStore: AikatauluStore;
+  muokkaustietoStore: MuokkaustietoStore;
+  toteutussuunnitelmaTiedotteetStore: ToteutussuunnitelmaTiedotteetStore;
+  tyyppi?: 'opas' | 'peruste';
+  toteutus: Toteutus;
+}>(), {
+  tyyppi: 'peruste',
+});
 
-  @Prop({ required: true })
-  private aikatauluStore!: AikatauluStore;
+const syncing = ref(false);
+const perustePaivitetty = ref(false);
 
-  @Prop({ required: true })
-  private muokkaustietoStore!: MuokkaustietoStore;
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaTiedotteetStore!: ToteutussuunnitelmaTiedotteetStore;
+const peruste = computed(() => {
+  return toteutussuunnitelma.value?.peruste;
+});
 
-  @Prop({ required: false, default: 'peruste' })
-  private tyyppi!: 'opas' | 'peruste';
+const vanhentunutPeruste = computed(() => {
+  return props.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
+});
 
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const perustePaivitysKielistys = computed(() => {
+  return ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus];
+});
 
-  private syncing = false;
-  private perustePaivitetty = false;
+const isYhteinen = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
+});
 
-  async mounted() {
-    await this.muokkaustietoStore.refetch();
+const perusteLinkki = computed(() => {
+  return buildKatseluUrl(Kielet.getSisaltoKieli.value, `/${koulutustyyppiTheme(peruste.value!.koulutustyyppi!)}/${peruste.value!.perusteId}`);
+});
+
+const paivitaPeruste = async () => {
+  try {
+    syncing.value = true;
+    await props.toteutussuunnitelmaStore.paiviteOpetussunnitelmanPeruste();
+    await props.toteutussuunnitelmaStore.initNavigation();
+    await props.muokkaustietoStore.refetch();
+    perustePaivitetty.value = true;
+    $success($t('peruste-paivitetty') as string);
+  }
+  catch (e) {
+    $fail($t('virhe-palvelu-virhe') as string);
   }
 
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
+  syncing.value = false;
+};
 
-  get peruste() {
-    return this.toteutussuunnitelma?.peruste;
-  }
-
-  get vanhentunutPeruste() {
-    return this.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
-  }
-
-  async paivitaPeruste() {
-    try {
-      this.syncing = true;
-      await this.toteutussuunnitelmaStore.paiviteOpetussunnitelmanPeruste();
-      await this.toteutussuunnitelmaStore.initNavigation();
-      await this.muokkaustietoStore.refetch();
-      this.perustePaivitetty = true;
-      this.$success(this.$t('peruste-paivitetty') as string);
-    }
-    catch (e) {
-      this.$fail(this.$t('virhe-palvelu-virhe') as string);
-    }
-
-    this.syncing = false;
-  }
-
-  get perustePaivitysKielistys() {
-    return ToteutussuunnitelmaPerustePaivitysKielistykset[this.toteutus];
-  }
-
-  get isYhteinen() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
-  }
-
-  get perusteLinkki() {
-    return buildKatseluUrl(Kielet.getSisaltoKieli.value, `/${koulutustyyppiTheme(this.peruste?.koulutustyyppi!)}/${this.peruste?.perusteId}`);
-  }
-}
+onMounted(async () => {
+  await props.muokkaustietoStore.refetch();
+});
 </script>
 
 <style scoped lang="scss">

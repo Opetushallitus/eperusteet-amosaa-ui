@@ -1,49 +1,49 @@
 <template>
   <div class="opsbox">
     <RouterLink
-        tag="a"
-        :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
-        :key="ops.id">
-        <div class="opsbox__chart" :style="backgroundStyle">
-          <div class="opsbox__progress-clamper">
-            <EpProgress :slices="[0.2, 0.5, 1]" />
-          </div>
+      :key="ops.id"
+      tag="a"
+      :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
+    >
+      <div
+        class="opsbox__chart"
+        :style="backgroundStyle"
+      >
+        <div class="opsbox__progress-clamper">
+          <EpProgress :slices="[0.2, 0.5, 1]" />
         </div>
-        <div class="opsbox__info">
-          <div class="opsbox__name">
-            {{ $kaanna(ops.nimi) }}
-          </div>
-          <div v-if="ops.jotpatyyppi" class="opsbox__jotpa">
-            {{$t('jotpa')}}
-          </div>
+      </div>
+      <div class="opsbox__info">
+        <div class="opsbox__name">
+          {{ $kaanna(ops.nimi) }}
         </div>
-      </RouterLink>
+        <div
+          v-if="ops.jotpatyyppi"
+          class="opsbox__jotpa"
+        >
+          {{ $t('jotpa') }}
+        </div>
+      </div>
+    </RouterLink>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue';
 import { TileBackground } from '@/utils/toteutustypes';
 import * as _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
 import EpProgress from '@shared/components/EpProgressPopover/EpProgress.vue';
 import { Toteutus } from '@shared/utils/perusteet';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpProgress,
-  },
-})
-export default class OpsKeskeneraisetTile extends Vue {
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const props = defineProps<{
+  toteutus: Toteutus;
+  ops: any;
+}>();
 
-  @Prop({ required: true })
-  private ops!: any;
-
-  get backgroundStyle() {
-    return TileBackground[this.toteutus];
-  }
-}
+const backgroundStyle = computed(() => {
+  return TileBackground[props.toteutus];
+});
 </script>
 
 <style scoped lang="scss">

@@ -1,51 +1,83 @@
 <template>
   <div class="minfull p-0 m-0">
-
-    <Portal to="headerExtension">
+    <Teleport
+      defer
+      to="#headerExtension"
+    >
       <div class="portal-menu d-flex">
         <div class="upper-left d-flex justify-content-center">
           <EpValidPopover
             :validoitava="toteutussuunnitelma"
             :validoinnit="validoinnit"
-            :julkaisemattomiaMuutoksia="onkoJulkaisemattomiaMuutoksia"
+            :julkaisemattomia-muutoksia="onkoJulkaisemattomiaMuutoksia"
             :julkaistava="!isOpsPohja"
             :is-validating="isValidating"
+            :tyyppi="(toteutus as any) ==='ammatillinen' ? 'toteutussuunnitelma' as any : 'opetussuunnitelma' as any"
             @asetaValmiiksi="asetaValmiiksi"
             @palauta="palauta"
             @validoi="validoi"
-            :tyyppi="toteutus ==='ammatillinen' ? 'toteutussuunnitelma' : 'opetussuunnitelma'"
           />
         </div>
 
         <div class="flex-grow-1 align-self-center">
-          <div class="mb-5 p-2" v-if="toteutussuunnitelma">
+          <div
+            v-if="toteutussuunnitelma"
+            class="mb-5 p-2"
+          >
             <h1>
               <span>{{ $kaanna(toteutussuunnitelma.nimi) }}</span>
             </h1>
             <div class="diaarinumero mt-2">
-              <template  v-if="toteutussuunnitelma.peruste">
+              <template v-if="toteutussuunnitelma.peruste">
                 <span>{{ $kaanna(toteutussuunnitelma.peruste.nimi) }}</span>
                 <span class="ml-2 mr-2">|</span>
                 <span>{{ toteutussuunnitelma.peruste.diaarinumero }}</span>
                 <span class="ml-2 mr-2">|</span>
               </template>
 
-              <b-dropdown class="asetukset" size="sm" no-caret variant="transparent">
-                <template v-slot:button-content>
-                  <span>{{$t('lisatoiminnot')}}</span>
-                  <EpMaterialIcon icon-shape="outlined" class="hallinta" size="22px">expand_more</EpMaterialIcon>
+              <b-dropdown
+                class="asetukset"
+                size="sm"
+                no-caret
+                variant="transparent"
+              >
+                <template #button-content>
+                  <span>{{ $t('lisatoiminnot') }}</span>
+                  <EpMaterialIcon
+                    icon-shape="outlined"
+                    class="hallinta"
+                    size="22px"
+                  >
+                    expand_more
+                  </EpMaterialIcon>
                 </template>
 
-                <div v-for="(ratasvalinta, index) in ratasvalinnat" :key="'ratasvalinta'+index">
-                  <hr v-if="ratasvalinta.separator" class="mt-2 mb-2" />
-                  <b-dropdown-item v-if="ratasvalinta.route" :to="{ name: ratasvalinta.route }">
-                    <EpMaterialIcon icon-shape="outlined">{{ ratasvalinta.icon }}</EpMaterialIcon>
-                    {{ $t(ratasvalinta.text) }}
+                <div
+                  v-for="(ratasvalinta, index) in ratasvalinnat"
+                  :key="'ratasvalinta'+index"
+                >
+                  <hr
+                    v-if="(ratasvalinta as any).separator"
+                    class="mt-2 mb-2"
+                  >
+                  <b-dropdown-item
+                    v-if="(ratasvalinta as any).route"
+                    :to="{ name: (ratasvalinta as any).route }"
+                  >
+                    <EpMaterialIcon icon-shape="outlined">
+                      {{ (ratasvalinta as any).icon }}
+                    </EpMaterialIcon>
+                    {{ $t((ratasvalinta as any).text) }}
                   </b-dropdown-item>
 
-                  <b-dropdown-item v-if="ratasvalinta.click" @click="ratasClick(ratasvalinta.click, ratasvalinta.meta)">
-                    <EpMaterialIcon icon-shape="outlined">{{ ratasvalinta.icon }}</EpMaterialIcon>
-                    {{ $t(ratasvalinta.text) }}
+                  <b-dropdown-item
+                    v-if="(ratasvalinta as any).click"
+                    @click="ratasClick((ratasvalinta as any).click, (ratasvalinta as any).meta)"
+                  >
+                    <EpMaterialIcon icon-shape="outlined">
+                      {{ (ratasvalinta as any).icon }}
+                    </EpMaterialIcon>
+                    {{ $t((ratasvalinta as any).text) }}
                   </b-dropdown-item>
                 </div>
               </b-dropdown>
@@ -53,234 +85,302 @@
           </div>
         </div>
       </div>
-    </Portal>
+    </Teleport>
 
     <EpSidebar :show-social="false">
-      <template v-slot:bar>
+      <template #bar>
         <div class="m-3 ml-4 mr-4">
           <EpSearch v-model="query" />
         </div>
 
         <EpSpinner v-if="!navigationValue" />
-        <div class="navigation" v-else>
+        <div
+          v-else
+          class="navigation"
+        >
           <EpTreeNavibar
-            :store="naviStore"
+            :store="naviStore! as any"
             show-all-toggle
-            :query="query">
-            <template v-slot:header>
+            :query="query"
+          >
+            <template #header>
               <div class="heading">
                 <div class="menu-item">
-                  <router-link :to="{ name: 'toteutussuunnitelma' }" exact>
+                  <router-link
+                    :to="{ name: 'toteutussuunnitelma' }"
+                    exact
+                  >
                     {{ $t('yleisnakyma') }}
                   </router-link>
                 </div>
               </div>
             </template>
 
-            <template v-slot:tutkinnonosat="{ item }">
-              <div class="menu-item" >
-                <EpNavigationLabel :to="{ name: 'tutkinnonosat' }" :node="item">
+            <template #tutkinnonosat="{ item }">
+              <div class="menu-item">
+                <EpNavigationLabel
+                  :to="{ name: 'tutkinnonosat' }"
+                  :node="item"
+                >
                   {{ $t('tutkinnonosat') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:tutkinnonosat_pakolliset>
+            <template #tutkinnonosat_pakolliset>
               <div class="menu-item">
                 {{ $t('tutkinnonosat-pakolliset') }}
               </div>
             </template>
 
-            <template v-slot:tutkinnonosat_paikalliset>
+            <template #tutkinnonosat_paikalliset>
               <div class="menu-item clickable">
                 {{ $t('tutkinnonosat-paikalliset') }}
               </div>
             </template>
 
-            <template v-slot:tutkinnonosat_tuodut>
+            <template #tutkinnonosat_tuodut>
               <div class="menu-item">
                 {{ $t('tutkinnonosat-tuodut') }}
               </div>
             </template>
 
-            <template v-slot:pakolliset_osaalueet>
+            <template #pakolliset_osaalueet>
               <div class="menu-item faded pb-0">
                 {{ $t('pakolliset-osa-alueet') }}
               </div>
             </template>
 
-            <template v-slot:valinnaiset_osaalueet>
+            <template #valinnaiset_osaalueet>
               <div class="menu-item mt-4 faded pb-0">
                 {{ $t('valinnaiset-osa-alueet') }}
               </div>
             </template>
 
-            <template v-slot:paikalliset_osaalueet>
+            <template #paikalliset_osaalueet>
               <div class="menu-item mt-4 faded pb-0">
                 {{ $t('paikalliset-osa-alueet') }}
               </div>
             </template>
 
-            <template v-slot:suorituspolut="{ item }">
+            <template #suorituspolut="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }" :node="item">
+                <EpNavigationLabel
+                  :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
                   {{ $t('suorituspolut') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:linkki="{ item }">
+            <template #linkki="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }" :node="item">
+                <EpNavigationLabel
+                  :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
                   {{ $kaanna(item.label) }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:tutkinnonosa="{ item }">
+            <template #tutkinnonosa="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }" :node="item">
+                <EpNavigationLabel
+                  :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
                   {{ $kaanna(item.label) || $t('nimeton-tutkinnonosa') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:suorituspolku="{ item }">
+            <template #suorituspolku="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }" :node="item">
-                  {{ $kaanna(item.label) || $t('nimeton-suorituspolku')}}
+                <EpNavigationLabel
+                  :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
+                  {{ $kaanna(item.label) || $t('nimeton-suorituspolku') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:osasuorituspolku="{ item }">
+            <template #osasuorituspolku="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }" :node="item">
-                  {{ $kaanna(item.label) || $t('nimeton-osasuorituspolku')}}
+                <EpNavigationLabel
+                  :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
+                  {{ $kaanna(item.label) || $t('nimeton-osasuorituspolku') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:tekstikappale="{ item }">
+            <template #tekstikappale="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }" :node="item">
-                  <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
+                <EpNavigationLabel
+                  :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
+                  <span
+                    v-if="isVapaaSivistystyo"
+                    class="text-muted mr-1"
+                  >{{ item.chapter }}</span>
                   {{ $kaanna(item.label) || $t('nimetön-tekstikappale') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:opintokokonaisuus="{ item }">
+            <template #opintokokonaisuus="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }" :node="item">
-                  <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
+                <EpNavigationLabel
+                  :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
+                  <span
+                    v-if="isVapaaSivistystyo"
+                    class="text-muted mr-1"
+                  >{{ item.chapter }}</span>
                   {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:osaamismerkki="{ item }">
+            <template #osaamismerkki="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'osaamismerkkikappale', params: {sisaltoviiteId: item.id} }" :node="item">
-                  <span v-if="isVapaaSivistystyo" class="text-muted mr-1">{{ item.chapter }}</span>
+                <EpNavigationLabel
+                  :to="{ name: 'osaamismerkkikappale', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
+                  <span
+                    v-if="isVapaaSivistystyo"
+                    class="text-muted mr-1"
+                  >{{ item.chapter }}</span>
                   {{ $t('kansalliset-perustaitojen-osaamismerkit') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:koulutuksenosat="{ item }">
+            <template #koulutuksenosat="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'koulutuksenosat', params: {sisaltoviiteId: item.id} }" :node="item">
+                <EpNavigationLabel
+                  :to="{ name: 'koulutuksenosat', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
                   {{ $t('koulutuksenosat') }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:koulutuksenosa="{ item }">
+            <template #koulutuksenosa="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }" :node="item">
-                  {{ $kaanna(item.label) }} <span v-if="item.koodi">({{item.koodi}})</span>
+                <EpNavigationLabel
+                  :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
+                  {{ $kaanna(item.label) }} <span v-if="item.koodi">({{ item.koodi }})</span>
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:laajaalainenosaaminen="{ item }">
+            <template #laajaalainenosaaminen="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }" :node="item">
+                <EpNavigationLabel
+                  :to="{ name: 'laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
                   {{ $kaanna(item.label) }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:koto_kielitaitotaso="{ item }">
+            <template #koto_kielitaitotaso="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'koto_kielitaitotaso', params: {sisaltoviiteId: item.id} }" :node="item">
+                <EpNavigationLabel
+                  :to="{ name: 'koto_kielitaitotaso', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
                   {{ $kaanna(item.label) }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:koto_opinto="{ item }">
+            <template #koto_opinto="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'koto_opinto', params: {sisaltoviiteId: item.id} }" :node="item">
+                <EpNavigationLabel
+                  :to="{ name: 'koto_opinto', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
                   {{ $kaanna(item.label) }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:koto_laajaalainenosaaminen="{ item }">
+            <template #koto_laajaalainenosaaminen="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }" :node="item">
+                <EpNavigationLabel
+                  :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }"
+                  :node="item"
+                >
                   {{ $kaanna(item.label) }}
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:osaalue="{ item }">
+            <template #osaalue="{ item }">
               <div class="menu-item">
-                <EpNavigationLabel :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }" :node="item">
-                  {{ $kaanna(item.label) }} <span class="faded" v-if="item.koodi">({{item.koodi.toUpperCase()}})</span>
+                <EpNavigationLabel
+                  :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }"
+                  :node="item"
+                >
+                  {{ $kaanna(item.label) }} <span
+                    v-if="item.koodi"
+                    class="faded"
+                  >({{ item.koodi.toUpperCase() }})</span>
                 </EpNavigationLabel>
               </div>
             </template>
 
-            <template v-slot:new>
+            <template #new>
               <div class="mb-3">
-
                 <EpTekstikappaleLisays
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :tallenna="tallennaUusiTekstikappale"
                   :tekstikappaleet="perusteenOsat"
-                  :paatasovalinta="true">
-                  <template v-slot:default="{tekstikappale}">
-                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                    {{ $kaanna(tekstikappale.label) }}
+                  :paatasovalinta="true"
+                >
+                  <template #default="{tekstikappale}: any">
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
 
                 <EpTekstikappaleLisays
-                    v-if="isVapaaSivistystyo"
-                    v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                    :tallenna="tallennaUusiOpintokokonaisuus"
-                    :tekstikappaleet="perusteenOsat"
-                    :paatasovalinta="true"
-                    :otsikkoRequired="true"
-                    modalId="opintokokonaisuusLisays">
-                  <template v-slot:lisays-btn-text>
-                    {{$t('uusi-opintokokonaisuus')}}
+                  v-if="isVapaaSivistystyo"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
+                  :tallenna="tallennaUusiOpintokokonaisuus"
+                  :tekstikappaleet="perusteenOsat"
+                  :paatasovalinta="true"
+                  :otsikko-required="true"
+                  modal-id="opintokokonaisuusLisays"
+                >
+                  <template #lisays-btn-text>
+                    {{ $t('uusi-opintokokonaisuus') }}
                   </template>
-                  <template v-slot:modal-title>
-                    {{$t('uusi-opintokokonaisuus')}}
+                  <template #modal-title>
+                    {{ $t('uusi-opintokokonaisuus') }}
                   </template>
-                  <template v-slot:footer-lisays-btn-text>
-                    {{$t('lisaa-opintokokonaisuus')}}
+                  <template #footer-lisays-btn-text>
+                    {{ $t('lisaa-opintokokonaisuus') }}
                   </template>
-                  <template v-slot:header>
-                    {{$t('opintokokonaisuuden-sijainti')}}
+                  <template #header>
+                    {{ $t('opintokokonaisuuden-sijainti') }}
                   </template>
-                  <template v-slot:default="{tekstikappale}">
-                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                    {{ $kaanna(tekstikappale.label) }}
+                  <template #default="{tekstikappale}: any">
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
 
@@ -290,99 +390,106 @@
                   :tallenna="tallennaUusiOsaamismerkkiKappale"
                   :tekstikappaleet="perusteenOsat"
                   :paatasovalinta="true"
-                  :otsikkoRequired="false"
-                  modalId="osaamismerkkiKappaleLisays">
-                  <template v-slot:lisays-btn-text>
-                    {{$t('uusi-osaamismerkki-kappale')}}
+                  :otsikko-required="false"
+                  modal-id="osaamismerkkiKappaleLisays"
+                >
+                  <template #lisays-btn-text>
+                    {{ $t('uusi-osaamismerkki-kappale') }}
                   </template>
-                  <template v-slot:modal-title>
-                    {{$t('uusi-osaamismerkki-kappale')}}
+                  <template #modal-title>
+                    {{ $t('uusi-osaamismerkki-kappale') }}
                   </template>
-                  <template v-slot:footer-lisays-btn-text>
-                    {{$t('lisaa-osaamismerkki-kappale')}}
+                  <template #footer-lisays-btn-text>
+                    {{ $t('lisaa-osaamismerkki-kappale') }}
                   </template>
-                  <template v-slot:header>
-                    {{$t('osaamismerkki-kappaleen-sijainti')}}
+                  <template #header>
+                    {{ $t('osaamismerkki-kappaleen-sijainti') }}
                   </template>
-                  <template v-slot:default="{tekstikappale}">
-                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                    {{ $kaanna(tekstikappale.label) }}
-                  </template>
-                </EpTekstikappaleLisays>
-
-                <EpTekstikappaleLisays
-                    v-if="isAmmatillinen && !isYhteinen && !isJaettuOsa"
-                    v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                    :hide-taso="true"
-                    :tallenna="lisaaUusiSuorituspolku"
-                    :tekstikappaleet="perusteenOsat"
-                    :paatasovalinta="true"
-                    :otsikkoNimi="'suorituspolku-nimi'"
-                    :otsikkoRequired="true"
-                    modalId="suorituspolkuLisays">
-                  <template v-slot:lisays-btn-text>
-                    {{$t('uusi-suorituspolku')}}
-                  </template>
-                  <template v-slot:modal-title>
-                    {{$t('uusi-suorituspolku')}}
-                  </template>
-                  <template v-slot:footer-lisays-btn-text>
-                    {{$t('lisaa-suorituspolku')}}
-                  </template>
-                  <template v-slot:header>
-                    {{$t('suorituspolun-sijainti')}}
-                  </template>
-                  <template v-slot:default="{tekstikappale}">
-                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                    {{ $kaanna(tekstikappale.label) }}
+                  <template #default="{tekstikappale}: any">
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
 
                 <EpTekstikappaleLisays
-                    v-if="isAmmatillinen && !isYhteinen"
-                    v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
-                    :tallenna="lisaaUusiTutkinnonOsa"
-                    :hide-taso="true"
-                    :tekstikappaleet="perusteenOsat"
-                    :otsikkoNimi="'tutkinnonosa-nimi'"
-                    :paatasovalinta="true"
-                    :otsikkoRequired="true"
-                    modalId="tutkinnonOsanLisays">
-                  <template v-slot:lisays-btn-text>
-                    {{$t('luonti-tutkinnon-osa')}}
+                  v-if="isAmmatillinen && !isYhteinen && !isJaettuOsa"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
+                  :hide-taso="true"
+                  :tallenna="lisaaUusiSuorituspolku"
+                  :tekstikappaleet="perusteenOsat"
+                  :paatasovalinta="true"
+                  :otsikko-nimi="'suorituspolku-nimi'"
+                  :otsikko-required="true"
+                  modal-id="suorituspolkuLisays"
+                >
+                  <template #lisays-btn-text>
+                    {{ $t('uusi-suorituspolku') }}
                   </template>
-                  <template v-slot:modal-title>
-                    {{$t('luonti-tutkinnon-osa')}}
+                  <template #modal-title>
+                    {{ $t('uusi-suorituspolku') }}
                   </template>
-                  <template v-slot:footer-lisays-btn-text>
-                    {{$t('luonti-tutkinnon-osa')}}
+                  <template #footer-lisays-btn-text>
+                    {{ $t('lisaa-suorituspolku') }}
                   </template>
-                  <template v-slot:header>
-                    {{$t('tutkinnonosan-sijainti')}}
+                  <template #header>
+                    {{ $t('suorituspolun-sijainti') }}
                   </template>
-                  <template v-slot:default="{tekstikappale}">
-                    <span class="text-muted mr-1">{{ tekstikappale.chapter }}</span>
-                    {{ $kaanna(tekstikappale.label) }}
+                  <template #default="{tekstikappale}: any">
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
 
+                <EpTekstikappaleLisays
+                  v-if="isAmmatillinen && !isYhteinen"
+                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
+                  :tallenna="lisaaUusiTutkinnonOsa"
+                  :hide-taso="true"
+                  :tekstikappaleet="perusteenOsat"
+                  :otsikko-nimi="'tutkinnonosa-nimi'"
+                  :paatasovalinta="true"
+                  :otsikko-required="true"
+                  modal-id="tutkinnonOsanLisays"
+                >
+                  <template #lisays-btn-text>
+                    {{ $t('luonti-tutkinnon-osa') }}
+                  </template>
+                  <template #modal-title>
+                    {{ $t('luonti-tutkinnon-osa') }}
+                  </template>
+                  <template #footer-lisays-btn-text>
+                    {{ $t('luonti-tutkinnon-osa') }}
+                  </template>
+                  <template #header>
+                    {{ $t('tutkinnonosan-sijainti') }}
+                  </template>
+                  <template #default="{tekstikappale}: any">
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    {{ $kaanna((tekstikappale as any).label) }}
+                  </template>
+                </EpTekstikappaleLisays>
               </div>
             </template>
-
           </EpTreeNavibar>
         </div>
       </template>
 
-      <template v-slot:view>
-        <router-view v-if="toteutussuunnitelma"/>
+      <template #view>
+        <router-view v-if="toteutussuunnitelma" />
       </template>
 
-      <template v-slot:bottom>
+      <template #bottom>
         <div class="menu-item bottom-menu-item">
-          <router-link :to="{ name: 'jarjesta' }" v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
+          <router-link
+            v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+            :to="{ name: 'jarjesta' }"
+          >
             <span class="text-nowrap">
-              <EpMaterialIcon icon-shape="outlined" class="icon">reorder</EpMaterialIcon>
-              <a class="btn btn-link btn-link-nav">{{$t('muokkaa-jarjestysta')}}</a>
+              <EpMaterialIcon
+                icon-shape="outlined"
+                class="icon"
+              >reorder</EpMaterialIcon>
+              <a class="btn btn-link btn-link-nav">{{ $t('muokkaa-jarjestysta') }}</a>
             </span>
           </router-link>
         </div>
@@ -391,10 +498,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref, watch, provide, inject, getCurrentInstance } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useHead } from '@unhead/vue';
 import _ from 'lodash';
-import { Watch, Prop, Component, Vue, ProvideReactive } from 'vue-property-decorator';
-import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
+
 import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
@@ -402,457 +511,454 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
 import EpProgressPopover from '@shared/components/EpProgressPopover/EpProgressPopover.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 import EpValidPopover from '@shared/components/EpValidPopover/EpValidPopover.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import EpNavigationLabel from '@shared/components/EpTreeNavibar/EpNavigationLabel.vue';
+import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
+
+import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
-import { Meta } from '@shared/utils/decorators';
+import { KayttajaStore } from '@/stores/kayttaja';
+import { KuvaStore } from '@/stores/KuvaStore';
+import { OsaamismerkkiKappaleStore } from '@/stores/OsaamismerkkiKappaleStore';
+
 import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { Toteutus } from '@shared/utils/perusteet';
+
 import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
-import { KayttajaStore } from '@/stores/kayttaja';
 import { LinkkiHandler, routeToNode } from '@/utils/routing';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
-import { Toteutus } from '@shared/utils/perusteet';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
-import { KuvaStore } from '@/stores/KuvaStore';
-import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
-import { OsaamismerkkiKappaleStore } from '@/stores/OsaamismerkkiKappaleStore';
 
-@Component({
-  components: {
-    EpTreeNavibar,
-    EpSidebar,
-    EpButton,
-    EpSearch,
-    EpSisaltoLisays,
-    EpTekstikappaleLisays,
-    EpProgressPopover,
-    EpSpinner,
-    EpValidPopover,
-    EpMaterialIcon,
-    EpNavigationLabel,
-  },
-  inject: [],
-})
-export default class RouteToteutussuunnitelma extends Vue {
-  @Prop({ required: true })
-  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+import { $t, $kaanna, $hasOikeus } from '@shared/utils/globals';
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
-
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
-
-  @Prop({ required: true })
-  private kayttajaStore!: KayttajaStore;
-
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
-
-  @ProvideReactive('koulutustoimija')
-  get koulutustoimija() {
-    return this.kayttajaStore.koulutustoimija.value || null;
-  }
-
-  private isInitializing = false;
-  private naviStore: EpTreeNavibarStore | null = null;
-  private query: string = '';
-  private isValidating: boolean = false;
-
-  get opetussuunnitelmaTyyppi() {
-    return this.isOpsPohja ? OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA : this.toteutus;
-  }
-
-  @Meta
-  getMetaInfo() {
-    if (this.toteutussuunnitelmaStore
-    && this.toteutussuunnitelmaStore.toteutussuunnitelma
-    && this.toteutussuunnitelmaStore.toteutussuunnitelma.value
-    && this.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi
-    && !_.isEmpty(this.$kaanna(this.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi))) {
-      return {
-        title: this.$kaanna(this.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi),
-        titleTemplate: '%s - ' + this.$t('eperusteet-amosaa'),
-      };
-    }
-  }
-
-  @Watch('toteutussuunnitelmaId', { immediate: true })
-  async onToteutussuunnitelmaIdChange(newValue: number, oldValue: number) {
-    if (newValue && newValue !== oldValue && !this.isInitializing) {
-      this.fetch();
-    }
-  }
-
-  @Watch('koulutustoimijaId', { immediate: true })
-  async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
-    if (newValue && newValue !== oldValue && !this.isInitializing) {
-      this.fetch();
-    }
-  }
-
-  async fetch() {
-    this.isInitializing = true;
-    try {
-      Murupolku.aseta('toteutussuunnitelma', '...');
-      await this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId);
-      Murupolku.aseta('toteutussuunnitelma', this.$t(OpetussuunnitelmaTyyppi[this.opetussuunnitelmaTyyppi]));
-
-      if (this.navigation) {
-        this.naviStore = new EpTreeNavibarStore(this.navigation, routeToNode);
-      }
-    }
-    finally {
-      this.isInitializing = false;
-    }
-  }
-
-  async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation();
-  }
-
-  async tallennaUusiTekstikappale(otsikko, valittuTekstikappale) {
-    const parentId = valittuTekstikappale?.id ? valittuTekstikappale.id : this.navigation.value!.id!;
-
-    await TekstikappaleStore.add(
-      this.toteutussuunnitelmaId,
-      parentId,
-      this.koulutustoimijaId,
-      {
-        tyyppi: _.toLower(MatalaTyyppiEnum.TEKSTIKAPPALE),
-        tekstiKappale: {
-          nimi: otsikko,
-        },
-      } as SisaltoviiteMatalaDto,
-      this,
-      this.updateNavigation);
-  }
-
-  async lisaaUusiTutkinnonOsa(otsikko) {
-    const parent = this.toteutussuunnitelmaStore.naviFind('tutkinnonosat');
-    const uusi = await SisaltoEditStore.addNewSisalto(
-      this.toteutussuunnitelmaId,
-      parent.id,
-      this.koulutustoimijaId, {
-        tyyppi: _.toLower(MatalaTyyppiEnum.TUTKINNONOSA),
-        tekstiKappale: {
-          nimi: otsikko,
-        },
-        tosa: {
-          tyyppi: 'oma' as string,
-          omatutkinnonosa: {},
-        },
-      });
-
-    await this.updateNavigation();
-    this.$router.push({
-      name: 'tutkinnonosa',
-      params: {
-        sisaltoviiteId: uusi.id as any,
-      },
-    });
-  }
-
-  async lisaaSuorituspolkuImpl(otsikko: any, osapolku: boolean) {
-    const parent = this.toteutussuunnitelmaStore.naviFind('suorituspolut');
-    const uusi = await SisaltoEditStore.addNewSisalto(
-      this.toteutussuunnitelmaId,
-      parent.id,
-      this.koulutustoimijaId, {
-        tyyppi: osapolku
-          ? _.toLower(MatalaTyyppiEnum.OSASUORITUSPOLKU)
-          : _.toLower(MatalaTyyppiEnum.SUORITUSPOLKU),
-        tekstiKappale: {
-          nimi: otsikko,
-        },
-        tosa: {
-          tyyppi: 'oma' as string,
-          omatutkinnonosa: {},
-        },
-      });
-
-    await this.updateNavigation();
-    this.$router.push({
-      name: 'suorituspolku',
-      params: {
-        sisaltoviiteId: uusi.id as any,
-      },
-    });
-  }
-
-  lisaaUusiSuorituspolku = (otsikko: any) => this.lisaaSuorituspolkuImpl(otsikko, false);
-  lisaaUusiOsaSuorituspolku = (otsikko: any) => this.lisaaSuorituspolkuImpl(otsikko, true);
-
-  async tallennaUusiOpintokokonaisuus(otsikko, valittuOpintokokonaisuus) {
-    const parentId = valittuOpintokokonaisuus?.id ? valittuOpintokokonaisuus.id : this.navigation.value!.id!;
-
-    OpintokokonaisuusStore.add(
-      this.toteutussuunnitelmaId,
-      parentId,
-      this.koulutustoimijaId,
-      {
-        tyyppi: _.toLower(MatalaTyyppiEnum.OPINTOKOKONAISUUS),
-        opintokokonaisuus: { tyyppi: 'oma' as string },
-        tekstiKappale: {
-          nimi: otsikko,
-        },
-      } as SisaltoviiteMatalaDto,
-      this,
-      this.updateNavigation);
-  }
-
-  async tallennaUusiOsaamismerkkiKappale(otsikko, valittuParent) {
-    const parentId = valittuParent?.id ? valittuParent.id : this.navigation.value!.id!;
-
-    OsaamismerkkiKappaleStore.add(
-      this.toteutussuunnitelmaId,
-      parentId,
-      this.koulutustoimijaId,
-      {
-        tyyppi: _.toLower(MatalaTyyppiEnum.OSAAMISMERKKI),
-        osaamismerkkiKappale: {},
-      } as SisaltoviiteMatalaDto,
-      this,
-      this.updateNavigation);
-  }
-
-  async palauta() {
-    await vaihdaOpetussunnitelmaTilaConfirm(
-      this,
-      {
-        ...ArkistointiTekstit.palautus[this.opetussuunnitelmaTyyppi].meta,
-        callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
-      },
-    );
-  }
-
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
-  get navigation() {
-    return this.toteutussuunnitelmaStore.navigation;
-  }
-
-  @ProvideReactive('navigation')
-  get navigationValue() {
-    return this.toteutussuunnitelmaStore.navigation.value;
-  }
-
-  @ProvideReactive('linkkiHandler')
-  get linkkiHandler() {
-    return new LinkkiHandler();
-  }
-
-  @ProvideReactive('kuvaHandler')
-  get kuvaHandler() {
-    return createKuvaHandler(new KuvaStore(_.toNumber(this.toteutussuunnitelmaId), this.koulutustoimijaId));
-  }
-
-  get ratasvalinnat() {
-    let rattaat = [
-      {
-        text: ToteutussuunnitelmaTiedotKielistykset[this.opetussuunnitelmaTyyppi]['title'],
-        route: 'toteutussuunnitelmantiedot',
-        icon: 'info',
-      },
-      {
-        text: 'ystava-organisaatioiden-kayttooikeudet',
-        route: 'ystava-organisaatioiden-kayttooikeudet',
-        icon: 'verified_user',
-      },
-      {
-        text: 'luo-pdf',
-        route: 'pdfLuonti',
-        icon: 'picture_as_pdf',
-      },
-      {
-        text: 'poistetut-sisallot',
-        route: 'poistetutsisallot',
-        icon: 'delete',
-      },
-    ];
-
-    if (this.poistonVaatimaOikeus) {
-      rattaat = [
-        ...rattaat,
-        {
-          separator: true,
-          oikeus: this.poistonVaatimaOikeus,
-        },
-        {
-          icon: 'archive',
-          click: vaihdaOpetussunnitelmaTilaConfirm,
-          ...ArkistointiTekstit.arkistointi[this.opetussuunnitelmaTyyppi],
-          oikeus: this.poistonVaatimaOikeus,
-        },
-      ];
-    }
-
-    return rattaat;
-  }
-
-  get poistonVaatimaOikeus() {
-    if (this.isArchived) {
-      return;
-    }
-
-    if (this.isDraft || this.toteutus !== Toteutus.VAPAASIVISTYSTYO) {
-      return { oikeus: 'hallinta', kohde: 'toteutussuunnitelma' };
-    }
-
-    if (this.$hasOikeus('hallinta', 'oph')) {
-      return { oikeus: 'hallinta', kohde: 'oph' };
-    }
-  }
-
-  ratasClick(clickFn, meta) {
-    clickFn(this, meta);
-  }
-
-  get isAmmatillinen(): boolean {
-    return this.toteutus === Toteutus.AMMATILLINEN;
-  }
-
-  get isVapaaSivistystyo(): boolean {
-    return this.toteutus === Toteutus.VAPAASIVISTYSTYO;
-  }
-
-  get isTutkintoonValmentava(): boolean {
-    return this.toteutus === Toteutus.TUTKINTOONVALMENTAVA;
-  }
-
-  get isKoto(): boolean {
-    return this.toteutus === Toteutus.KOTOUTUMISKOULUTUS;
-  }
-
-  get isYhteinen() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
-  }
-
-  get isJaettuOsa() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YLEINEN);
-  }
-
-  get tekstikappaleet() {
-    return _.filter(this.naviStore!.connected.value, node => node.type === (NavigationNodeDtoTypeEnum.Tekstikappale as string));
-  }
-
-  get opintokokonaisuudet() {
-    return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Opintokokonaisuus);
-  }
-
-  get koulutuksenosat() {
-    return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Koulutuksenosa);
-  }
-
-  get laajaalaisetOsaamiset() {
-    return _.filter(this.naviStore!.connected.value, node => node.type === NavigationNodeDtoTypeEnum.Laajaalainenosaaminen);
-  }
-
-  get perusteenOsat() {
-    return _.sortBy([
-      ...this.tekstikappaleet,
-      ...this.opintokokonaisuudet,
-      ...this.koulutuksenosat,
-      ...this.laajaalaisetOsaamiset,
-    ], osa => chapterStringSort(osa.chapter));
-  }
-
-  get validoinnit() {
-    if (this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
-      return {
-        virheet: _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value)
-          .map('virheet')
-          .flatMap()
-          .map('kuvaus')
-          .value(),
-        huomautukset: _.chain(this.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value)
-          .map('huomautukset')
-          .flatMap()
-          .map('kuvaus')
-          .value(),
-      };
-    }
-  }
-
-  get tila() {
-    if (this.julkaisut) {
-      if (this.isPublished) {
-        return _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
-      }
-
-      return _.toLower(this.toteutussuunnitelma?.tila);
-    }
-  }
-
-  get julkaisut() {
-    return this.toteutussuunnitelmaStore.julkaisut.value;
-  }
-
-  get isPublished(): boolean {
-    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU) || _.size(this.julkaisut) > 0;
-  }
-
-  get isReady(): boolean {
-    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS);
-  }
-
-  get isDraft(): boolean | undefined {
-    return !this.isPublished && this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
-  }
-
-  get isArchived(): boolean {
-    return this.toteutussuunnitelma?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
-  }
-
-  get isOpsPohja() {
-    return this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
-  }
-
-  async asetaValmiiksi() {
-    await vaihdaOpetussunnitelmaTilaConfirm(
-      this,
-      {
-        tila: 'VALMIS',
-        title: 'aseta-pohja-valmiiksi',
-        confirm: 'pohja-valmis-varmistus',
-        okTitle: 'aseta-valmiiksi',
-        callback: async () => this.toteutussuunnitelmaStore.init(this.koulutustoimijaId, this.toteutussuunnitelmaId),
-      },
-    );
-  }
-
-  async validoi() {
-    this.isValidating = true;
-    await this.toteutussuunnitelmaStore.updateCurrent();
-    this.isValidating = false;
-  }
-
-  get onkoJulkaisemattomiaMuutoksia() {
-    return this.toteutussuunnitelmaStore.julkaisemattomiaMuutoksia.value;
-  }
+interface Props {
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  toteutussuunnitelmaId: number;
+  koulutustoimijaId: string;
+  kayttajaStore: KayttajaStore;
+  toteutus: Toteutus;
 }
+
+const props = defineProps<Props>();
+const router = useRouter();
+const route = useRoute();
+
+// Reactive data
+const isInitializing = ref(false);
+const naviStore = ref<EpTreeNavibarStore | null>(null);
+const query = ref('');
+const isValidating = ref(false);
+
+// Computed properties
+const opetussuunnitelmaTyyppi = computed(() => {
+  return isOpsPohja.value ? OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA : props.toteutus;
+});
+
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
+
+const navigation = computed(() => {
+  return props.toteutussuunnitelmaStore.navigation;
+});
+
+const navigationValue = computed(() => {
+  return props.toteutussuunnitelmaStore.navigation.value;
+});
+
+const koulutustoimija = computed(() => {
+  return props.kayttajaStore.koulutustoimija.value || null;
+});
+
+const isAmmatillinen = computed((): boolean => {
+  return props.toteutus === Toteutus.AMMATILLINEN;
+});
+
+const isVapaaSivistystyo = computed((): boolean => {
+  return props.toteutus === Toteutus.VAPAASIVISTYSTYO;
+});
+
+const isTutkintoonValmentava = computed((): boolean => {
+  return props.toteutus === Toteutus.TUTKINTOONVALMENTAVA;
+});
+
+const isKoto = computed((): boolean => {
+  return props.toteutus === Toteutus.KOTOUTUMISKOULUTUS;
+});
+
+const isYhteinen = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
+});
+
+const isJaettuOsa = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YLEINEN);
+});
+
+const isOpsPohja = computed(() => {
+  return toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
+});
+
+const julkaisut = computed(() => {
+  return props.toteutussuunnitelmaStore.julkaisut.value;
+});
+
+const isPublished = computed((): boolean => {
+  return toteutussuunnitelma.value?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU) || _.size(julkaisut.value) > 0;
+});
+
+const isReady = computed((): boolean => {
+  return toteutussuunnitelma.value?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.VALMIS);
+});
+
+const isDraft = computed((): boolean | undefined => {
+  return !isPublished.value && toteutussuunnitelma.value?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.LUONNOS);
+});
+
+const isArchived = computed((): boolean => {
+  return toteutussuunnitelma.value?.tila === _.toLower(OpetussuunnitelmaDtoTilaEnum.POISTETTU);
+});
+
+const tekstikappaleet = computed(() => {
+  if (naviStore.value?.connected) {
+    return _.filter(naviStore.value.connected, node => node.type === (NavigationNodeDtoTypeEnum.Tekstikappale as string));
+  }
+  return [];
+});
+
+const opintokokonaisuudet = computed(() => {
+  if (naviStore.value?.connected) {
+    return _.filter(naviStore.value.connected, node => node.type === NavigationNodeDtoTypeEnum.Opintokokonaisuus);
+  }
+  return [];
+});
+
+const koulutuksenosat = computed(() => {
+  if (naviStore.value?.connected) {
+    return _.filter(naviStore.value.connected, node => node.type === NavigationNodeDtoTypeEnum.Koulutuksenosa);
+  }
+  return [];
+});
+
+const laajaalaisetOsaamiset = computed(() => {
+  if (naviStore.value?.connected) {
+    return _.filter(naviStore.value.connected, node => node.type === NavigationNodeDtoTypeEnum.Laajaalainenosaaminen);
+  }
+  return [];
+});
+
+const perusteenOsat = computed(() => {
+  return _.sortBy([
+    ...tekstikappaleet.value,
+    ...opintokokonaisuudet.value,
+    ...koulutuksenosat.value,
+    ...laajaalaisetOsaamiset.value,
+  ], osa => chapterStringSort(osa.chapter));
+});
+
+const validoinnit = computed(() => {
+  if (props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
+    return {
+      virheet: _.chain(props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value)
+        .map('virheet')
+        .flatMap()
+        .map('kuvaus')
+        .value(),
+      huomautukset: _.chain(props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value)
+        .map('huomautukset')
+        .flatMap()
+        .map('kuvaus')
+        .value(),
+    };
+  }
+
+  return undefined;
+});
+
+const tila = computed(() => {
+  if (julkaisut.value) {
+    if (isPublished.value) {
+      return _.toLower(OpetussuunnitelmaDtoTilaEnum.JULKAISTU);
+    }
+
+    return _.toLower(toteutussuunnitelma.value?.tila);
+  }
+
+  return undefined;
+});
+
+const poistonVaatimaOikeus = computed(() => {
+  if (isArchived.value) {
+    return undefined;
+  }
+
+  if (isDraft.value || props.toteutus !== Toteutus.VAPAASIVISTYSTYO) {
+    return { oikeus: 'hallinta', kohde: 'toteutussuunnitelma' };
+  }
+
+  if ($hasOikeus('hallinta', 'oph')) {
+    return { oikeus: 'hallinta', kohde: 'oph' };
+  }
+
+  return undefined;
+});
+
+const ratasvalinnat = computed(() => {
+  let rattaat = [
+    {
+      text: ToteutussuunnitelmaTiedotKielistykset[opetussuunnitelmaTyyppi.value]['title'],
+      route: 'toteutussuunnitelmantiedot',
+      icon: 'info',
+    },
+    {
+      text: 'ystava-organisaatioiden-kayttooikeudet',
+      route: 'ystava-organisaatioiden-kayttooikeudet',
+      icon: 'verified_user',
+    },
+    {
+      text: 'luo-pdf',
+      route: 'pdfLuonti',
+      icon: 'picture_as_pdf',
+    },
+    {
+      text: 'poistetut-sisallot',
+      route: 'poistetutsisallot',
+      icon: 'delete',
+    },
+  ];
+
+  if (poistonVaatimaOikeus.value) {
+    rattaat = [
+      ...rattaat,
+      {
+        separator: true,
+        oikeus: poistonVaatimaOikeus.value,
+      } as any,
+      {
+        icon: 'archive',
+        click: vaihdaOpetussunnitelmaTilaConfirm,
+        ...ArkistointiTekstit.arkistointi[opetussuunnitelmaTyyppi.value],
+        oikeus: poistonVaatimaOikeus.value,
+      } as any,
+    ];
+  }
+
+  return rattaat;
+});
+
+const onkoJulkaisemattomiaMuutoksia = computed(() => {
+  return props.toteutussuunnitelmaStore.julkaisemattomiaMuutoksia.value;
+});
+
+// Methods
+const fetch = async () => {
+  isInitializing.value = true;
+  try {
+    Murupolku.aseta('toteutussuunnitelma', '...');
+    await props.toteutussuunnitelmaStore.init(props.koulutustoimijaId, props.toteutussuunnitelmaId);
+    Murupolku.aseta('toteutussuunnitelma', $t(OpetussuunnitelmaTyyppi[opetussuunnitelmaTyyppi.value]));
+
+    if (navigation.value) {
+      naviStore.value = new EpTreeNavibarStore(navigation.value, routeToNode);
+    }
+  }
+  finally {
+    isInitializing.value = false;
+  }
+};
+
+const updateNavigation = async () => {
+  await props.toteutussuunnitelmaStore.initNavigation();
+};
+
+const tallennaUusiTekstikappale = async (otsikko: any, valittuTekstikappale: any) => {
+  const parentId = valittuTekstikappale?.id ? valittuTekstikappale.id : navigation.value!.value!.id!;
+
+  await TekstikappaleStore.add(
+    props.toteutussuunnitelmaId,
+    parentId,
+    props.koulutustoimijaId,
+    {
+      tyyppi: _.toLower(MatalaTyyppiEnum.TEKSTIKAPPALE),
+      tekstiKappale: {
+        nimi: otsikko,
+      },
+    } as SisaltoviiteMatalaDto);
+};
+
+const lisaaUusiTutkinnonOsa = async (otsikko: any) => {
+  const parent = props.toteutussuunnitelmaStore.naviFind('tutkinnonosat');
+  const uusi = await SisaltoEditStore.addNewSisalto(
+    props.toteutussuunnitelmaId,
+    parent.id,
+    props.koulutustoimijaId, {
+      tyyppi: _.toLower(MatalaTyyppiEnum.TUTKINNONOSA),
+      tekstiKappale: {
+        nimi: otsikko,
+      },
+      tosa: {
+        tyyppi: 'oma' as string,
+        omatutkinnonosa: {},
+      },
+    });
+
+  await updateNavigation();
+  router.push({
+    name: 'tutkinnonosa',
+    params: {
+      sisaltoviiteId: uusi.id as any,
+    },
+  });
+};
+
+const lisaaSuorituspolkuImpl = async (otsikko: any, osapolku: boolean) => {
+  const parent = props.toteutussuunnitelmaStore.naviFind('suorituspolut');
+  const uusi = await SisaltoEditStore.addNewSisalto(
+    props.toteutussuunnitelmaId,
+    parent.id,
+    props.koulutustoimijaId, {
+      tyyppi: osapolku
+        ? _.toLower(MatalaTyyppiEnum.OSASUORITUSPOLKU)
+        : _.toLower(MatalaTyyppiEnum.SUORITUSPOLKU),
+      tekstiKappale: {
+        nimi: otsikko,
+      },
+      tosa: {
+        tyyppi: 'oma' as string,
+        omatutkinnonosa: {},
+      },
+    });
+
+  await updateNavigation();
+  router.push({
+    name: 'suorituspolku',
+    params: {
+      sisaltoviiteId: uusi.id as any,
+    },
+  });
+};
+
+const lisaaUusiSuorituspolku = (otsikko: any) => lisaaSuorituspolkuImpl(otsikko, false);
+const lisaaUusiOsaSuorituspolku = (otsikko: any) => lisaaSuorituspolkuImpl(otsikko, true);
+
+const tallennaUusiOpintokokonaisuus = async (otsikko: any, valittuOpintokokonaisuus: any) => {
+  const parentId = valittuOpintokokonaisuus?.id ? valittuOpintokokonaisuus.id : navigation.value!.value!.id!;
+
+  OpintokokonaisuusStore.add(
+    props.toteutussuunnitelmaId,
+    parentId,
+    props.koulutustoimijaId,
+    {
+      tyyppi: _.toLower(MatalaTyyppiEnum.OPINTOKOKONAISUUS),
+      opintokokonaisuus: { tyyppi: 'oma' as string },
+      tekstiKappale: {
+        nimi: otsikko,
+      },
+    } as SisaltoviiteMatalaDto);
+};
+
+const tallennaUusiOsaamismerkkiKappale = async (otsikko: any, valittuParent: any) => {
+  const parentId = valittuParent?.id ? valittuParent.id : navigation.value!.value!.id!;
+
+  OsaamismerkkiKappaleStore.add(
+    props.toteutussuunnitelmaId,
+    parentId,
+    props.koulutustoimijaId,
+    {
+      tyyppi: _.toLower(MatalaTyyppiEnum.OSAAMISMERKKI),
+      osaamismerkkiKappale: {},
+    } as SisaltoviiteMatalaDto);
+};
+
+const palauta = async () => {
+  await vaihdaOpetussunnitelmaTilaConfirm(
+    { $t, $kaanna, route, router },
+    {
+      ...ArkistointiTekstit.palautus[opetussuunnitelmaTyyppi.value].meta,
+      callback: async () => props.toteutussuunnitelmaStore.init(props.koulutustoimijaId, props.toteutussuunnitelmaId),
+    },
+  );
+};
+
+const asetaValmiiksi = async () => {
+  await vaihdaOpetussunnitelmaTilaConfirm(
+    { $t, $kaanna, route, router },
+    {
+      tila: 'VALMIS',
+      title: 'aseta-pohja-valmiiksi',
+      confirm: 'pohja-valmis-varmistus',
+      okTitle: 'aseta-valmiiksi',
+      callback: async () => props.toteutussuunnitelmaStore.init(props.koulutustoimijaId, props.toteutussuunnitelmaId),
+    },
+  );
+};
+
+const validoi = async () => {
+  isValidating.value = true;
+  await props.toteutussuunnitelmaStore.updateCurrent();
+  isValidating.value = false;
+};
+
+const ratasClick = (clickFn: any, meta: any) => {
+  clickFn(
+    { $t, $kaanna, route, router },
+    meta,
+  );
+};
+
+// Watchers
+watch(() => props.toteutussuunnitelmaId, async (newValue, oldValue) => {
+  if (newValue && newValue !== oldValue && !isInitializing.value) {
+    fetch();
+  }
+}, { immediate: true });
+
+watch(() => props.koulutustoimijaId, async (newValue, oldValue) => {
+  if (newValue && newValue !== oldValue && !isInitializing.value) {
+    fetch();
+  }
+}, { immediate: true });
+
+// Provides
+provide('koulutustoimija', koulutustoimija);
+provide('navigation', navigationValue);
+provide('linkkiHandler', new LinkkiHandler());
+provide('kuvaHandler', createKuvaHandler(new KuvaStore(_.toNumber(props.toteutussuunnitelmaId), props.koulutustoimijaId)));
+
+// Head meta
+useHead(() => {
+  if (props.toteutussuunnitelmaStore
+    && props.toteutussuunnitelmaStore.toteutussuunnitelma
+    && props.toteutussuunnitelmaStore.toteutussuunnitelma.value
+    && props.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi
+    && !_.isEmpty($kaanna(props.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi))) {
+    return {
+      title: $kaanna(props.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi),
+      titleTemplate: '%s - ' + $t('eperusteet-amosaa'),
+    };
+  }
+
+  return {};
+});
 </script>
 
 <style lang="scss" scoped>
 @import '@shared/styles/_variables';
 
-::v-deep .btn-sm {
-  font-size: 1rem;
-  font-weight: 600;
-  color: inherit;
-}
+  :deep(.btn-sm) {
+    font-size: 1rem;
+    font-weight: 600;
+    color: inherit;
+  }
 
-::v-deep .btn:focus {
-  box-shadow: unset;
-}
+  :deep(.btn:focus) {
+    box-shadow: unset;
+  }
 
 .portal-menu {
   height: 140px;
@@ -867,7 +973,7 @@ export default class RouteToteutussuunnitelma extends Vue {
       vertical-align: text-top;
     }
 
-    ::v-deep .dropdown-item {
+    :deep(.dropdown-item) {
       padding-left: 1rem;
       padding-right: 2rem;
     }
@@ -912,7 +1018,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   color: #000;
 }
 
-.navigation ::v-deep .ep-button .btn {
+.navigation :deep(.ep-button .btn) {
   font-size: 14px;
 }
 
@@ -925,7 +1031,7 @@ export default class RouteToteutussuunnitelma extends Vue {
   font-size: 14px;
 }
 
-::v-deep .structure-toggle {
+:deep(.structure-toggle) {
   margin-left: 35px;
   margin-bottom: 10px;
   margin-right: 35px;

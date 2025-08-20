@@ -1,12 +1,11 @@
 import _ from 'lodash';
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { TiedoteDto } from '@shared/api/eperusteet';
 import { ITiedotteetProvider } from '@shared/stores/types';
 import { TiedoteQuery } from '@shared/api/types';
 import { Ulkopuoliset } from '@shared/api/amosaa';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class TiedotteetStore implements ITiedotteetProvider {
   private state = reactive({
@@ -44,6 +43,7 @@ export class TiedotteetStore implements ITiedotteetProvider {
   public async changeNimiFilter(nimi) {
     if (this.state.options) {
       this.state.options!.nimi = nimi;
+      this.state.options!.sivu = 0;
       await this.fetch();
     }
   }
@@ -52,7 +52,7 @@ export class TiedotteetStore implements ITiedotteetProvider {
     this.state.isLoading = true;
     this.state.tiedotteet = null;
     const res = (await Ulkopuoliset.getTiedotteetHaku(
-      this.state.options!.sivu,
+      this.state.options!.sivu!,
       this.state.options!.sivukoko,
       this.state.options!.kieli,
       this.state.options!.nimi,

@@ -1,9 +1,8 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Page } from '@shared/tyypit';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class OpetussuunnitelmatStore {
   private state = reactive({

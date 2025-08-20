@@ -1,11 +1,10 @@
-import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { PageOpetussuunnitelmaDto, Opetussuunnitelmat } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { IToteutussuunnitelmaProvider } from '@/components/EpToteutussuunnitelmaListaus/types';
 import { Toteutus } from '@shared/utils/perusteet';
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
-Vue.use(VueCompositionApi);
 
 export class YhteisetOsuudetStore implements IToteutussuunnitelmaProvider {
   private state = reactive({

@@ -1,13 +1,9 @@
 import Vue from 'vue';
-import VueCompositionApi, { computed } from '@vue/composition-api';
 import _ from 'lodash';
-
 import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum, Perusteet } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-import { Computed } from '@shared/utils/interfaces';
 import { AbstractSisaltoviiteStore } from './AbstractSisaltoviiteStore';
-
-Vue.use(VueCompositionApi);
+import { computed } from 'vue';
 
 export class KoulutuksenosaStore extends AbstractSisaltoviiteStore implements IEditoitava {
   private koulutuksenosa: SisaltoviiteMatalaDto | undefined = undefined;
@@ -17,11 +13,9 @@ export class KoulutuksenosaStore extends AbstractSisaltoviiteStore implements IE
     public koulutustoimijaId: string,
     public sisaltoviiteId: number,
     public versionumero: number,
-    public el: any,
-    public updateNavigation: Function,
     public opetussuunnitelma: OpetussuunnitelmaDto,
   ) {
-    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation);
+    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero);
   }
 
   async editAfterLoad() {
@@ -61,11 +55,11 @@ export class KoulutuksenosaStore extends AbstractSisaltoviiteStore implements IE
     });
   }
 
-  public static async add(opsId: number, svId: number, ktId: string, koulutuksenosa: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
+  public static async add(opsId: number, svId: number, ktId: string, koulutuksenosa: SisaltoviiteMatalaDto) {
     const added = (await Sisaltoviitteet.addTekstiKappaleLapsi(opsId, svId, ktId, koulutuksenosa)).data;
-    await updateNavigation();
+    await KoulutuksenosaStore.config.updateNavigation;
 
-    el.$router.push({
+    KoulutuksenosaStore.config.router.push({
       name: 'koulutuksenosa',
       params: {
         sisaltoviiteId: '' + added.id,

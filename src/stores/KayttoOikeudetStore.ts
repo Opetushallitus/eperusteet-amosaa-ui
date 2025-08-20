@@ -1,12 +1,12 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
 import { KoulutustoimijaYstavaDto, OpetussuunnitelmaDto, Koulutustoimijat, KayttajaDto, Opetussuunnitelmat, KayttajaoikeusDto, KayttajaoikeusDtoOikeusEnum } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
 import { Toteutus } from '@shared/utils/perusteet';
 import { ToteutusSovellusRole } from '@/utils/toteutustypes';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
+import { watch } from 'vue';
 
 export class KayttoOikeudetStore {
   private state = reactive({

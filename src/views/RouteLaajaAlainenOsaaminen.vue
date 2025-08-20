@@ -1,131 +1,129 @@
 <template>
-  <EpEditointi v-if="editointiStore" :store="editointiStore" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
+  <EpEditointi
+    v-if="editointiStore"
+    :store="editointiStore"
+    :muokkaus-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+  >
     <template #header="{ data }">
-      <h2 class="m-0">{{ $kaanna(data.tuvaLaajaAlainenOsaaminen.nimi) }}</h2>
+      <h2 class="m-0">
+        {{ $kaanna(data.tuvaLaajaAlainenOsaaminen.nimi) }}
+      </h2>
     </template>
-     <template #default="{ data, data: { tuvaLaajaAlainenOsaaminen }, isEditing }">
+    <template #default="{ data, data: { tuvaLaajaAlainenOsaaminen }, isEditing }">
       <b-row>
         <b-col md="10">
-
           <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && perusteenTeksti)">
-            <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
-            <ep-content layout="normal" v-model="perusteenTeksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
-            <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
-              {{$t('nayta-perusteen-teksti')}}
+            <template #header>
+              <h4>{{ $t('perusteen-teksti') }}</h4>
+            </template>
+            <ep-content
+              v-model="perusteenTeksti"
+              layout="normal"
+              :is-editable="false"
+            />
+            <ep-toggle
+              v-if="isEditing"
+              v-model="data.naytaPerusteenTeksti"
+              :is-editing="true"
+            >
+              {{ $t('nayta-perusteen-teksti') }}
             </ep-toggle>
           </EpCollapse>
 
-          <b-form-group :label="$t('paikallinen-teksti')" v-if="naytaPaikallinenTeksti">
+          <b-form-group
+            v-if="naytaPaikallinenTeksti"
+            :label="$t('paikallinen-teksti')"
+          >
             <ep-content
-              layout="normal"
-              v-model="tuvaLaajaAlainenOsaaminen.teksti"
-              :is-editable="isEditing"
               v-if="isEditing || tuvaLaajaAlainenOsaaminen.teksti"
-              :kuvaHandler="kuvaHandler"/>
+              v-model="tuvaLaajaAlainenOsaaminen.teksti"
+              layout="normal"
+              :is-editable="isEditing"
+            />
             <EpAlert
               v-if="!isEditing && !tuvaLaajaAlainenOsaaminen.teksti"
               :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
-              class="pb-3"/>
+              class="pb-3"
+            />
           </b-form-group>
-
         </b-col>
       </b-row>
     </template>
   </EpEditointi>
-  <EpSpinner v-else class="my-3"/>
+  <EpSpinner
+    v-else
+    class="my-3"
+  />
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import * as _ from 'lodash';
-import draggable from 'vuedraggable';
 
-import { KuvaStore } from '@/stores/KuvaStore';
-
-import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
-import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { LaajaalainenOsaaminenStore } from '@/stores/LaajaalainenOsaaminenStore';
-import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/generated/amosaa';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
+
+import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
+
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/generated/amosaa';
 import { YleinenSisaltoViiteStore } from '@/stores/YleinenSisaltoViiteStore';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpSpinner,
-    EpEditointi,
-    EpContent,
-    draggable,
-    EpToggle,
-    EpAlert,
-    EpCollapse,
-  },
-})
-export default class RouteLaajaAlainenOsaaminen extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+  sisaltoviiteId: number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+}>();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const route = useRoute();
 
-  @Prop({ required: true })
-  private sisaltoviiteId!: number;
+const editointiStore = ref<EditointiStore | null>(null);
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const versionumero = computed(() => {
+  return _.toNumber(route.query.versionumero);
+});
 
-  private editointiStore: EditointiStore | null = null;
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
+
+const naytaPaikallinenTeksti = computed(() => {
+  return toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS);
+});
+
+const perusteenTeksti = computed(() => {
+  if (editointiStore.value?.data?.perusteenOsa) {
+    return editointiStore.value.data.perusteenOsa.teksti;
   }
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
-  }
+  return editointiStore.value?.data.perusteteksti;
+});
 
-  fetch() {
-    this.editointiStore = new EditointiStore(
-      new YleinenSisaltoViiteStore(
-        this.toteutussuunnitelmaId,
-        this.koulutustoimijaId,
-        this.sisaltoviiteId,
-        this.versionumero,
-        this.toteutussuunnitelmaStore.toteutussuunnitelma.value as any));
-  }
+const fetch = () => {
+  editointiStore.value = new EditointiStore(
+    new YleinenSisaltoViiteStore(
+      props.toteutussuunnitelmaId,
+      props.koulutustoimijaId,
+      props.sisaltoviiteId,
+      versionumero.value,
+      props.toteutussuunnitelmaStore.toteutussuunnitelma.value as any));
+};
 
-  get versionumero() {
-    return _.toNumber(this.$route.query.versionumero);
-  }
+watch(() => props.sisaltoviiteId, () => {
+  fetch();
+}, { immediate: true });
 
-  get kuvaHandler() {
-    return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
-  }
-
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
-  get naytaPaikallinenTeksti() {
-    return this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS);
-  }
-
-  get perusteenTeksti() {
-    if (this.editointiStore?.data?.value?.perusteenOsa) {
-      return this.editointiStore.data.value.perusteenOsa.teksti;
-    }
-
-    return this.editointiStore?.data.value?.perusteteksti;
-  }
-}
+watch(versionumero, () => {
+  fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

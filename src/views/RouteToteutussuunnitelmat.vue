@@ -5,104 +5,109 @@
       :koulutustoimija-id="koulutustoimijaId"
       :tyypit="tyypit"
       :filters="filters"
-      :fieldKeys="tableFields"
-      nameLabel="nimi-tai-koulutuskoodi"
-      :kayttajaStore="kayttajaStore">
+      :field-keys="tableFields"
+      name-label="nimi-tai-koulutuskoodi"
+      :kayttaja-store="kayttajaStore"
+    >
+      <template #header>
+        <div class="d-flex justify-content-between">
+          <h2>{{ $t(topic) }}</h2>
 
-      <div slot="header" class="d-flex justify-content-between">
-        <h2>{{ $t(topic) }}</h2>
+          <div>
+            <router-link
+              v-oikeustarkastelu="{ oikeus: 'luonti'}"
+              :to="luontiRoute"
+            >
+              <ep-button
+                variant="outline-primary"
+                icon="add"
+              >
+                {{ $t(lisaaBtnText) }}
+              </ep-button>
+            </router-link>
 
-        <div>
-          <router-link :to="luontiRoute" v-oikeustarkastelu="{ oikeus: 'luonti'}">
-            <ep-button variant="outline-primary" icon="add">
-              {{ $t(lisaaBtnText) }}
-            </ep-button>
-          </router-link>
-
-          <router-link :to="{name: 'jaettuosaLuonti'}" v-oikeustarkastelu="{ oikeus: 'luonti'}" v-if="!isOrganisaatioRyhma">
-            <ep-button variant="outline-primary" icon="add" >
-              {{ $t('lisaa-jaettu-osa') }}
-            </ep-button>
-          </router-link>
+            <router-link
+              v-if="!isOrganisaatioRyhma"
+              v-oikeustarkastelu="{ oikeus: 'luonti'}"
+              :to="{name: 'jaettuosaLuonti'}"
+            >
+              <ep-button
+                variant="outline-primary"
+                icon="add"
+              >
+                {{ $t('lisaa-jaettu-osa') }}
+              </ep-button>
+            </router-link>
+          </div>
         </div>
-      </div>
+      </template>
     </EpToteutussuunnitelmaListaus>
   </EpMainView>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+<script setup lang="ts">
+import { computed, watch } from 'vue';
+
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpToteutussuunnitelmaListaus from '@/components/EpToteutussuunnitelmaListaus/EpToteutussuunnitelmaListaus.vue';
-import { ToteutussuunnitelmatStore } from '@/stores/ToteutussuunnitelmatStore';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+
+import { ToteutussuunnitelmatStore } from '@/stores/ToteutussuunnitelmatStore';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { Murupolku } from '@shared/stores/murupolku';
+import { $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpMainView,
-    EpToteutussuunnitelmaListaus,
-    EpButton,
-  },
-})
-export default class RouteToteutussuunnitelmat extends Vue {
-  @Prop({ required: true })
-  toteutussuunnitelmatStore!: ToteutussuunnitelmatStore;
+const props = defineProps<{
+  toteutussuunnitelmatStore: ToteutussuunnitelmatStore;
+  kayttajaStore: KayttajaStore;
+  koulutustoimijaId: string | number;
+}>();
 
-  @Prop({ required: true })
-  kayttajaStore!: KayttajaStore;
+const isOrganisaatioRyhma = computed(() => {
+  return props.kayttajaStore.koulutustoimija.value?.organisaatioRyhma;
+});
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string | number;
+const topic = computed(() => {
+  return isOrganisaatioRyhma.value ? 'oppimisympariston-tunnistamisraportit' : 'toteutussuunnitelmat';
+});
 
-  @Watch('isOrganisaatioRyhma', { immediate: true })
-  organisaatioRyhmaChange() {
-    Murupolku.aseta('toteutussuunnitelmat', this.$t(this.topic));
+const lisaaBtnText = computed(() => {
+  return isOrganisaatioRyhma.value ? 'lisaa-uusi' : 'lisaa-toteutussuunnitelma';
+});
+
+const filters = computed(() => {
+  if (isOrganisaatioRyhma.value) {
+    return ['voimassaolo', 'tila'];
   }
 
-  get topic() {
-    return this.isOrganisaatioRyhma ? 'oppimisympariston-tunnistamisraportit' : 'toteutussuunnitelmat';
+  return ['tyyppi', 'voimassaolo', 'tila'];
+});
+
+const tyypit = computed(() => {
+  if (isOrganisaatioRyhma.value) {
+    return ['ops'];
   }
 
-  get lisaaBtnText() {
-    return this.isOrganisaatioRyhma ? 'lisaa-uusi' : 'lisaa-toteutussuunnitelma';
+  return ['ops', 'yleinen'];
+});
+
+const tableFields = computed(() => {
+  if (isOrganisaatioRyhma.value) {
+    return ['nimi', 'tila', 'muokattu'];
   }
 
-  get isOrganisaatioRyhma() {
-    return this.kayttajaStore.koulutustoimija.value?.organisaatioRyhma;
+  return undefined;
+});
+
+const luontiRoute = computed(() => {
+  if (isOrganisaatioRyhma.value) {
+    return { name: 'tunnistamisraporttiLuonti' };
   }
 
-  get filters() {
-    if (this.isOrganisaatioRyhma) {
-      return ['voimassaolo', 'tila'];
-    }
+  return { name: 'toteutussuunnitelmaLuonti' };
+});
 
-    return ['tyyppi', 'voimassaolo', 'tila'];
-  }
-
-  get tyypit() {
-    if (this.isOrganisaatioRyhma) {
-      return ['ops'];
-    }
-
-    return ['ops', 'yleinen'];
-  }
-
-  get tableFields() {
-    if (this.isOrganisaatioRyhma) {
-      return ['nimi', 'tila', 'muokattu'];
-    }
-
-    return undefined;
-  }
-
-  get luontiRoute() {
-    if (this.isOrganisaatioRyhma) {
-      return { name: 'tunnistamisraporttiLuonti' };
-    }
-
-    return { name: 'toteutussuunnitelmaLuonti' };
-  }
-}
+watch(isOrganisaatioRyhma, () => {
+  Murupolku.aseta('toteutussuunnitelmat', $t(topic.value));
+}, { immediate: true });
 </script>

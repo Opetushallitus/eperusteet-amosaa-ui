@@ -1,11 +1,11 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Sisaltoviitteet, SisaltoViiteKevytDto, SisaltoViiteRakenneDto, SisaltoViiteKevytDtoTyyppiEnum } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
-
-Vue.use(VueCompositionApi);
+import { computed } from 'vue';
+import { Router } from 'vue-router';
+import { App } from 'vue';
 
 const ToteutusPerusrakenneOtsikko = {
   [Toteutus.AMMATILLINEN]: 'tekstikappaleet',
@@ -13,11 +13,21 @@ const ToteutusPerusrakenneOtsikko = {
   [Toteutus.TUTKINTOONVALMENTAVA]: 'rakenne',
 };
 
+interface RakenneStoreConfig {
+  router: Router;
+  updateNavigation: () => Promise<void>;
+}
+
 export class RakenneStore implements IEditoitava {
+  protected static config: RakenneStoreConfig;
+
+  public static install(app: App, config: RakenneStoreConfig) {
+    RakenneStore.config = config;
+  }
+
   constructor(
     private opetussuunnitelmaId: number,
     private koulutustoimijaId: string,
-    private updateNavigation: Function,
     private toteutus: Toteutus,
   ) {
   }
@@ -62,7 +72,7 @@ export class RakenneStore implements IEditoitava {
     const root = _.find(data.otsikot, otsikko => _.isNil(otsikko._vanhempi)) as SisaltoViiteRakenneDto;
     root.lapset = data.rakenne;
     await Sisaltoviitteet.updateSisaltoViiteRakenne(this.opetussuunnitelmaId, root.id!, this.koulutustoimijaId, root);
-    await this.updateNavigation();
+    await RakenneStore.config.updateNavigation();
   }
 
   public features(data: any) {

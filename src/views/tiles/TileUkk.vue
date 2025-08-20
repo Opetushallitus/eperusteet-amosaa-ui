@@ -1,35 +1,28 @@
 <template>
-  <EpHomeTile icon="quiz"
-              :route="{ name: 'ukk' }"
-              :header-bg-color="{ top: '#009700', bottom: '#007500' }">
-    <template slot="header">
+  <EpHomeTile
+    icon="quiz"
+    :route="{ name: 'ukk' }"
+    :header-bg-color="{ top: '#009700', bottom: '#007500' }"
+  >
+    <template #header>
       <span>{{ $t('tile-usein-kysytyt-kysymykset') }}</span>
     </template>
-    <template slot="content">
+    <template #content>
       <p>{{ $t(text) }}</p>
     </template>
   </EpHomeTile>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop, Provide } from 'vue-property-decorator';
+<script setup lang="ts">
+import { provide } from 'vue';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+import { $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpHomeTile,
-    EpSpinner,
-  },
-})
-export default class TileUkk extends Vue {
-  @Prop({ required: false })
-  private headerStyle!: string;
+const props = defineProps<{
+  headerStyle?: string;
+  text?: string;
+}>();
 
-  @Prop({ required: false })
-  private text!: string;
-
-  @Provide('tileHeaderStyle')
-  private tileHeaderStyle = this.headerStyle;
-}
+provide('tileHeaderStyle', props.headerStyle);
 </script>

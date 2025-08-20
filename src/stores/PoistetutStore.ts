@@ -1,10 +1,10 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
 import { Opetussuunnitelmat, PoistettuDto, OpetussuunnitelmaDto, Koulutustoimijat } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
+import { watch } from 'vue';
 
 export class PoistetutStore {
   private state = reactive({

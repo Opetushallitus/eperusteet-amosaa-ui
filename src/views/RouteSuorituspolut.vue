@@ -1,165 +1,179 @@
 <template>
-  <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore" :versionumero="versionumero">
-      <template v-slot:header="{ data }">
-        <h2 class="m-0">{{ $kaanna(data.suorituspolkuViiteRoot.tekstiKappale.nimi) }}</h2>
+  <div
+    v-if="editointiStore"
+    id="scroll-anchor"
+  >
+    <EpEditointi
+      :store="editointiStore"
+      :versionumero="versionumero"
+    >
+      <template #header="{ data }">
+        <h2 class="m-0">
+          {{ $kaanna(data.suorituspolkuViiteRoot.tekstiKappale.nimi) }}
+        </h2>
       </template>
 
-      <template v-slot:default="{ data, isEditing }">
+      <template #default="{ data, isEditing }">
+        <ep-content
+          v-model="data.suorituspolkuViiteRoot.tekstiKappale.teksti"
+          layout="normal"
+          :is-editable="isEditing"
+        />
 
-        <ep-content layout="normal" v-model="data.suorituspolkuViiteRoot.tekstiKappale.teksti" :is-editable="isEditing" />
-
-        <div class="d-flex justify-content-end" v-if="!isEditing">
-          <ep-button variant="outline-primary" icon="add" @click="lisaaUusiSuorituspolku">
+        <div
+          v-if="!isEditing"
+          class="d-flex justify-content-end"
+        >
+          <ep-button
+            variant="outline-primary"
+            icon="add"
+            @click="lisaaUusiSuorituspolku"
+          >
             {{ $t('lisaa-suorituspolku') }}
           </ep-button>
-          <ep-button variant="outline-primary" icon="add" @click="lisaaUusiOsaSuorituspolku">
+          <ep-button
+            variant="outline-primary"
+            icon="add"
+            @click="lisaaUusiOsaSuorituspolku"
+          >
             {{ $t('lisaa-osasuorituspolku') }}
           </ep-button>
         </div>
 
-        <b-table striped hover responsive :items="data.suorituspolkuViitteet" :fields="fields">
-          <template v-slot:cell(nimi)="data">
+        <b-table
+          striped
+          hover
+          responsive
+          :items="data.suorituspolkuViitteet"
+          :fields="fields"
+        >
+          <template #cell(nimi)="data">
             <router-link :to="{ name: 'suorituspolku', params: { sisaltoviiteId: data.item.id } }">
               {{ $kaanna(data.item.tekstiKappale.nimi) || $t('nimeton') }}
             </router-link>
           </template>
         </b-table>
-
       </template>
-
     </EpEditointi>
-    </div>
+  </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, getCurrentInstance, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { SuorituspolutStore } from '@/stores/SuorituspolutStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
+
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { MatalaTyyppiEnum, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
+import { $t, $kaanna, $sdt } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpEditointi,
-    EpContent,
-    EpButton,
-  },
-})
-export default class RouteSuorituspolut extends Vue {
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const props = defineProps<{
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+  sisaltoviiteId: number;
+}>();
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const route = useRoute();
+const instance = getCurrentInstance();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const editointiStore = ref<EditointiStore | null>(null);
 
-  @Prop({ required: true })
-  private sisaltoviiteId!: number;
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
 
-  private editointiStore: EditointiStore | null = null;
+const versionumero = computed(() => {
+  return _.toNumber(route.query.versionumero);
+});
 
-  @Watch('toteutussuunnitelma', { immediate: true })
-  toteutussuunnitelmaChange() {
-    this.fetch();
+const fields = computed(() => {
+  return [{
+    key: 'nimi',
+    sortable: true,
+    sortByFormatted: true,
+    label: $t('nimi') as string,
+    formatter: (value: any, key: string, item: any) => {
+      return $kaanna(value);
+    },
+  }, {
+    key: 'laajuus',
+    sortable: true,
+    label: $t('laajuus') as string,
+    formatter: (value: any, key: string, item: any) => {
+      if (value) {
+        return value + ' ' + $t('osp');
+      }
+
+      return '';
+    },
+  }, {
+    key: 'suorituspolku.muokattu',
+    sortable: true,
+    label: $t('muokattu') as string,
+    formatter: (value: any, key: string, item: any) => {
+      return $sdt(item.suorituspolku.muokattu);
+    },
+  }];
+});
+
+const fetch = () => {
+  if (toteutussuunnitelma.value) {
+    editointiStore.value = new EditointiStore(
+      new SuorituspolutStore(
+        props.toteutussuunnitelmaId,
+        props.koulutustoimijaId,
+        props.sisaltoviiteId,
+        toteutussuunnitelma.value.peruste!.id!,
+        toteutussuunnitelma.value.suoritustapa!,
+        versionumero.value));
   }
+};
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
-  }
+const updateNavigation = async () => {
+  await props.toteutussuunnitelmaStore.initNavigation();
+};
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
-  }
-
-  fetch() {
-    if (this.toteutussuunnitelma) {
-      this.editointiStore = new EditointiStore(
-        new SuorituspolutStore(
-          this.toteutussuunnitelmaId,
-          this.koulutustoimijaId,
-          this.sisaltoviiteId,
-          this.toteutussuunnitelma.peruste!.id!,
-          this.toteutussuunnitelma.suoritustapa!,
-          this.versionumero));
-    }
-  }
-
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
-  get versionumero() {
-    return _.toNumber(this.$route.query.versionumero);
-  }
-
-  get fields() {
-    return [{
-      key: 'nimi',
-      sortable: true,
-      sortByFormatted: true,
-      label: this.$t('nimi') as string,
-      formatter: (value: any, key: string, item: any) => {
-        return this.$kaanna(value);
+const lisaaSuorituspolkuStoreen = async (tyyppi: MatalaTyyppiEnum) => {
+  await SisaltoViiteStore.add(
+    props.toteutussuunnitelmaId,
+    props.sisaltoviiteId,
+    props.koulutustoimijaId,
+    {
+      tyyppi: _.toLower(tyyppi),
+      tekstiKappale: {
+        nimi: { [Kielet.getSisaltoKieli.value]: '' },
       },
-    }, {
-      key: 'laajuus',
-      sortable: true,
-      label: this.$t('laajuus') as string,
-      formatter: (value: any, key: string, item: any) => {
-        if (value) {
-          return value + ' ' + this.$t('osp');
-        }
+    } as SisaltoviiteMatalaDto);
+};
 
-        return '';
-      },
-    }, {
-      key: 'suorituspolku.muokattu',
-      sortable: true,
-      label: this.$t('muokattu') as string,
-      formatter: (value: any, key: string, item: any) => {
-        return this.$sdt(item.suorituspolku.muokattu);
-      },
-    }];
-  }
+const lisaaUusiSuorituspolku = async () => {
+  await lisaaSuorituspolkuStoreen(MatalaTyyppiEnum.SUORITUSPOLKU);
+};
 
-  async lisaaUusiSuorituspolku() {
-    await this.lisaaSuorituspolkuStoreen(MatalaTyyppiEnum.SUORITUSPOLKU);
-  }
+const lisaaUusiOsaSuorituspolku = async () => {
+  await lisaaSuorituspolkuStoreen(MatalaTyyppiEnum.OSASUORITUSPOLKU);
+};
 
-  async lisaaUusiOsaSuorituspolku() {
-    await this.lisaaSuorituspolkuStoreen(MatalaTyyppiEnum.OSASUORITUSPOLKU);
-  }
+watch(toteutussuunnitelma, () => {
+  fetch();
+}, { immediate: true });
 
-  private async lisaaSuorituspolkuStoreen(tyyppi: MatalaTyyppiEnum) {
-    await SisaltoViiteStore.add(
-      this.toteutussuunnitelmaId,
-      this.sisaltoviiteId,
-      this.koulutustoimijaId,
-      {
-        tyyppi: _.toLower(tyyppi),
-        tekstiKappale: {
-          nimi: { [Kielet.getSisaltoKieli.value]: '' },
-        },
-      } as SisaltoviiteMatalaDto,
-      this,
-      this.updateNavigation);
-  }
+watch(() => props.sisaltoviiteId, () => {
+  fetch();
+}, { immediate: true });
 
-  async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation();
-  }
-}
+watch(versionumero, () => {
+  fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

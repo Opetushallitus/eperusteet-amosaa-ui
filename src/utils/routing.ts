@@ -14,27 +14,27 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
   case 'toteutussuunnitelma':
     return {
       type: 'root',
-      id: Number(route.params?.toteutussuunnitelmaId!),
+      id: Number(route.params?.toteutussuunnitelmaId),
     };
   case 'toteutussuunnitelmantiedot':
     return {
       type: 'tiedot',
-      id: Number(route.params?.toteutussuunnitelmaId!),
+      id: Number(route.params?.toteutussuunnitelmaId),
     };
   case 'tekstikappale':
     return {
       type: 'tekstikappale',
-      id: Number(route.params?.sisaltoviiteId!),
+      id: Number(route.params?.sisaltoviiteId),
     };
   case 'osaalue':
     return {
       type: 'osaalue',
-      id: Number(route.params?.osaalueId!),
+      id: Number(route.params?.osaalueId),
     };
   case 'tutkinnonosa':
     return {
       type: 'tutkinnonosa',
-      id: Number(route.params?.sisaltoviiteId!),
+      id: Number(route.params?.sisaltoviiteId),
     };
   case 'suorituspolut':
     return {
@@ -43,27 +43,27 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
   case 'suorituspolku':
     return {
       type: 'suorituspolku',
-      id: Number(route.params?.sisaltoviiteId!),
+      id: Number(route.params?.sisaltoviiteId),
     };
   case 'osasuorituspolku':
     return {
       type: 'osasuorituspolku',
-      id: Number(route.params?.sisaltoviiteId!),
+      id: Number(route.params?.sisaltoviiteId),
     };
   case 'opintokokonaisuus':
     return {
       type: 'opintokokonaisuus',
-      id: Number(route.params?.sisaltoviiteId!),
+      id: Number(route.params?.sisaltoviiteId),
     };
   case 'osaamismerkkikappale':
     return {
       type: 'osaamismerkkikappale',
-      id: Number(route.params?.sisaltoviiteId!),
+      id: Number(route.params?.sisaltoviiteId),
     };
   case 'koulutuksenosa':
     return {
       type: 'koulutuksenosa',
-      id: Number(route.params?.sisaltoviiteId!),
+      id: Number(route.params?.sisaltoviiteId),
     };
   case 'tutkinnonosat':
     return {
@@ -72,7 +72,7 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
   case 'koulutuksenosat':
     return {
       type: 'koulutuksenosat',
-      id: Number(route.params?.sisaltoviiteId!),
+      id: Number(route.params?.sisaltoviiteId),
     };
   case 'koto_kielitaitotaso':
     return {
@@ -198,7 +198,7 @@ export function nodeToRoute(node: NavigationNodeDto): Location | null {
     break;
   }
   return null;
-};
+}
 
 export class LinkkiHandler implements ILinkkiHandler {
   nodeToRoute(node: NavigationNodeDto): Location | null {

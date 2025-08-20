@@ -8,7 +8,6 @@ import { ToteutussuunnitelmaTiedotteetStore } from './ToteutussuunnitelmaTiedott
 import { ToteutussuunnitelmatStore } from './ToteutussuunnitelmatStore';
 import { PerusteetStore } from './PerusteetStore';
 import { TiedotteetStore } from './TiedotteetStore';
-import { tutoriaaliStore } from '@shared/stores/tutoriaali';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { PoistetutStore } from '@/stores/PoistetutStore';
@@ -51,7 +50,6 @@ export const stores = Object.freeze({
   toteutussuunnitelmaTiedotteetStore,
   toteutussuunnitelmatStore,
   toteutussuunnitelmaPohjatStore,
-  tutoriaaliStore,
   tiedotteetStore,
   perusteetStore,
   tutkinnonosatTuontiStore,

@@ -1,15 +1,25 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
 import { SisaltoViiteKevytDto, Sisaltoviitteet, OpetussuunnitelmaDto, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
 import _ from 'lodash';
-import { Computed } from '@shared/utils/interfaces';
+import { reactive } from 'vue';
+import { computed } from 'vue';
+import { App } from 'vue';
 
-Vue.use(VueCompositionApi);
+export interface SisaltoViiteStoreConfig {
+  router: any;
+  updateNavigation: () => Promise<void>;
+}
 
 export class SisaltoViiteStore {
   private state = reactive({
     sisaltoviitteet: null as SisaltoViiteKevytDto[] | null,
   });
+
+  public static install(app: App, config: SisaltoViiteStoreConfig) {
+    SisaltoViiteStore.config = config;
+  }
+
+  public static config: SisaltoViiteStoreConfig;
 
   public readonly sisaltoviitteet = computed(() => this.state.sisaltoviitteet);
 
@@ -18,11 +28,11 @@ export class SisaltoViiteStore {
     this.state.sisaltoviitteet = (await Sisaltoviitteet.getOtsikot(opetussuunnitelmaId, koulutustoimijaId)).data;
   }
 
-  public static async add(opsId: number, svId: number, ktId: string, sisaltoviite: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
+  public static async add(opsId: number, svId: number, ktId: string, sisaltoviite: SisaltoviiteMatalaDto) {
     const added = (await Sisaltoviitteet.addTekstiKappaleLapsi(opsId, svId, ktId, sisaltoviite)).data;
-    await updateNavigation();
+    await SisaltoViiteStore.config.updateNavigation();
 
-    el.$router.push({
+    SisaltoViiteStore.config.router.push({
       name: _.toLower(sisaltoviite.tyyppi),
       params: {
         sisaltoviiteId: '' + added.id,

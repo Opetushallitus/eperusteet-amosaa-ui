@@ -1,33 +1,82 @@
 <template>
-  <div id="scroll-anchor" v-if="editointiStore">
-    <EpEditointi :store="editointiStore" :versionumero="versionumero">
-      <template v-slot:header="{ data }">
-        <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
+  <div
+    v-if="editointiStore"
+    id="scroll-anchor"
+  >
+    <EpEditointi
+      :store="editointiStore"
+      :versionumero="versionumero"
+    >
+      <template #header="{ data }">
+        <h2 class="m-0">
+          {{ $kaanna(data.tekstiKappale.nimi) }}
+        </h2>
       </template>
-      <template v-slot:default="{ data, supportData, isEditing }">
-        <b-form-group :label="$t('suorituspolku-nimi') +' *'" v-if="isEditing">
-          <ep-field v-model="data.tekstiKappale.nimi" :is-editing="true"></ep-field>
+      <template #default="{ data, supportData, isEditing }">
+        <b-form-group
+          v-if="isEditing"
+          :label="$t('suorituspolku-nimi') +' *'"
+        >
+          <ep-field
+            v-model="data.tekstiKappale.nimi"
+            :is-editing="true"
+          />
         </b-form-group>
 
         <b-form-group :label="$t('suorituspolku-kuvaus')">
-          <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing"></ep-content>
-          <div class="mt-3" v-if="isEditing">
-            <EpToggle :value="data.tyyppi === 'osasuorituspolku'" @input="toggleTyyppi(data)" :is-editing="isEditing">
+          <ep-content
+            v-model="data.tekstiKappale.teksti"
+            layout="normal"
+            :is-editable="isEditing"
+          />
+          <div
+            v-if="isEditing"
+            class="mt-3"
+          >
+            <EpToggle
+              :model-value="data.tyyppi === 'osasuorituspolku'"
+              :is-editing="isEditing"
+              @update:model-value="toggleTyyppi(data)"
+            >
               {{ $t('osasuorituspolku') }}
             </EpToggle>
           </div>
         </b-form-group>
 
-        <b-form-group :label="$t('osasuorituspolun-kokonaislaajuus')" v-if="data.tyyppi === 'osasuorituspolku'">
+        <b-form-group
+          v-if="data.tyyppi === 'osasuorituspolku'"
+          :label="$t('osasuorituspolun-kokonaislaajuus')"
+        >
           <div class="d-flex">
-            <ep-field type="number" v-model="data.suorituspolku.osasuorituspolkuLaajuus" :is-editing="isEditing"></ep-field>
-            <div class="ml-1" :class="{'ml-2 pt-1': isEditing}">{{$t('osaamispiste')}}</div>
+            <ep-field
+              v-model="data.suorituspolku.osasuorituspolkuLaajuus"
+              type="number"
+              :is-editing="isEditing"
+            />
+            <div
+              class="ml-1"
+              :class="{'ml-2 pt-1': isEditing}"
+            >
+              {{ $t('osaamispiste') }}
+            </div>
           </div>
         </b-form-group>
-        <b-form-group :label="$t('tutkinnon-kuvaus')" v-else>
-          <ep-content layout="normal" v-model="supportData.rakenne.kuvaus"></ep-content>
-          <div class="mt-3" v-if="isEditing">
-            <EpToggle v-model="data.naytaPerusteenTeksti" :is-editing="true">
+        <b-form-group
+          v-else
+          :label="$t('tutkinnon-kuvaus')"
+        >
+          <ep-content
+            v-model="supportData.rakenne.kuvaus"
+            layout="normal"
+          />
+          <div
+            v-if="isEditing"
+            class="mt-3"
+          >
+            <EpToggle
+              v-model="data.naytaPerusteenTeksti"
+              :is-editing="true"
+            >
               {{ $t('nayta-kuvaus-julkisesti') }}
             </EpToggle>
           </div>
@@ -41,15 +90,27 @@
                   <div class="font-weight-bold mr-5">
                     {{ $t('rakenne') }}
                   </div>
-                  <b-button variant="link" @click="toggleOpen()">{{ $t('avaa-sulje-kaikki') }}</b-button>
+                  <b-button
+                    variant="link"
+                    @click="toggleOpen()"
+                  >
+                    {{ $t('avaa-sulje-kaikki') }}
+                  </b-button>
                   <div class="ml-5">
-                    <b-button variant="link" @click="toggleKuvaukset()">
+                    <b-button
+                      variant="link"
+                      @click="toggleKuvaukset()"
+                    >
                       {{ $t(naytaKuvaukset ? 'piilota-kuvaukset' : 'nayta-kuvaukset') }}
                     </b-button>
                   </div>
                   <div class="ml-5">
-                    <b-button variant="link" @click="togglePoistetut()">{{
-                      $t(naytaPoistetut ? 'piilota-poistetut' : 'nayta-poistetut') }}
+                    <b-button
+                      variant="link"
+                      @click="togglePoistetut()"
+                    >
+                      {{
+                        $t(naytaPoistetut ? 'piilota-poistetut' : 'nayta-poistetut') }}
                     </b-button>
                   </div>
                 </div>
@@ -58,19 +119,20 @@
                 {{ $t('osaamispiste') }}
               </div>
             </div>
-
           </div>
           <div class="suorituspolku-sisalto">
-            <EpSuorituspolkuNode v-model="data.suorituspolku"
-                                 :is-editing="isEditing"
-                                 :tutkinnon-osat="supportData.tutkinnonOsat"
-                                 :tutkinnon-osa-viitteet="supportData.tutkinnonOsaViitteet"
-                                 :tutkinnonOsaViitteetByTutkinnonOsaId="supportData.tutkinnonOsaViitteetByTutkinnonOsaId"
-                                 :liitettavat-osat="supportData.liitettavatOsat"
-                                 :nayta-kuvaukset="naytaKuvaukset"
-                                 :nayta-piilotetut="naytaPoistetut"
-                                 :node="supportData.rakenne"
-                                 :naytaRakenne="naytaRakenne" />
+            <EpSuorituspolkuNode
+              v-model="data.suorituspolku"
+              :is-editing="isEditing"
+              :tutkinnon-osat="supportData.tutkinnonOsat"
+              :tutkinnon-osa-viitteet="supportData.tutkinnonOsaViitteet"
+              :tutkinnon-osa-viitteet-by-tutkinnon-osa-id="supportData.tutkinnonOsaViitteetByTutkinnonOsaId"
+              :liitettavat-osat="supportData.liitettavatOsat"
+              :nayta-kuvaukset="naytaKuvaukset"
+              :nayta-piilotetut="naytaPoistetut"
+              :node="supportData.rakenne"
+              :nayta-rakenne="naytaRakenne"
+            />
           </div>
         </div>
       </template>
@@ -78,12 +140,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, getCurrentInstance, ref, watch } from 'vue';
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
-import draggable from 'vuedraggable';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSuorituspolkuNode from '@/components/EpAmmatillinen/EpSuorituspolkuNode.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
@@ -91,116 +153,93 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
+
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpButton,
-    EpCollapse,
-    EpToggle,
-    EpContent,
-    EpEditointi,
-    EpField,
-    EpSearch,
-    EpSpinner,
-    EpSuorituspolkuNode,
-    draggable,
-  },
-})
-export default class RouteSuorituspolku extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const props = withDefaults(defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: string | number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  sisaltoviiteId: string | number;
+  versionumero?: number;
+}>(), {
+  versionumero: undefined,
+});
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: string | number;
+const instance = getCurrentInstance();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const editointiStore = ref<EditointiStore | null>(null);
+const naytaPoistetut = ref(false);
+const naytaKuvaukset = ref(false);
+const naytaRakenne = ref(true);
 
-  @Prop({ required: true })
-  private sisaltoviiteId!: string | number;
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value || null;
+});
 
-  @Prop({ required: false })
-  private versionumero!: number;
+const perusteId = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value!.peruste!.id;
+});
 
-  private editointiStore: EditointiStore | null = null;
-  private naytaPoistetut = false;
-  private naytaKuvaukset = false;
-  private naytaRakenne = true;
-
-  @Watch('toteutussuunnitelma', { immediate: true })
-  toteutussuunnitelmaChange() {
-    this.fetch();
+const support = computed(() => {
+  if (editointiStore.value && editointiStore.value.supportData.value) {
+    return editointiStore.value.supportData.value;
   }
+  return null;
+});
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
+const fetch = _.debounce(() => {
+  if (toteutussuunnitelma.value) {
+    editointiStore.value = new EditointiStore(
+      new SisaltoEditStore(
+        _.toNumber(props.toteutussuunnitelmaId),
+        _.toString(props.koulutustoimijaId),
+        _.toNumber(props.sisaltoviiteId),
+        perusteId.value!,
+        props.versionumero,
+        false));
   }
+}, 100);
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
+const toggleTyyppi = (data: any) => {
+  if (data.tyyppi === 'suorituspolku') {
+    data.tyyppi = 'osasuorituspolku';
   }
-
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value || null;
+  else {
+    data.tyyppi = 'suorituspolku';
   }
+};
 
-  get perusteId() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value!.peruste!.id;
-  }
+const toggleOpen = () => {
+  naytaRakenne.value = !naytaRakenne.value;
+};
 
-  get support() {
-    if (this.editointiStore && this.editointiStore.supportData.value) {
-      return this.editointiStore.supportData.value;
-    }
-    return null;
-  }
+const toggleKuvaukset = () => {
+  naytaKuvaukset.value = !naytaKuvaukset.value;
+};
 
-  private fetch = _.debounce(this.fetchImpl, 100);
+const togglePoistetut = () => {
+  naytaPoistetut.value = !naytaPoistetut.value;
+};
 
-  fetchImpl() {
-    if (this.toteutussuunnitelma) {
-      this.editointiStore = new EditointiStore(
-        new SisaltoEditStore(
-          _.toNumber(this.toteutussuunnitelmaId),
-          _.toString(this.koulutustoimijaId),
-          _.toNumber(this.sisaltoviiteId),
-          this.perusteId!,
-          this.versionumero,
-          this,
-          false));
-    }
-  }
+const updateNavigation = async () => {
+  await props.toteutussuunnitelmaStore.initNavigation();
+};
 
-  toggleTyyppi(data) {
-    if (data.tyyppi === 'suorituspolku') {
-      data.tyyppi = 'osasuorituspolku';
-    }
-    else {
-      data.tyyppi = 'suorituspolku';
-    }
-  }
+watch(toteutussuunnitelma, () => {
+  fetch();
+}, { immediate: true });
 
-  toggleOpen() {
-    this.naytaRakenne = !this.naytaRakenne;
-  }
+watch(() => props.sisaltoviiteId, () => {
+  fetch();
+}, { immediate: true });
 
-  toggleKuvaukset() {
-    this.naytaKuvaukset = !this.naytaKuvaukset;
-  }
-
-  togglePoistetut() {
-    this.naytaPoistetut = !this.naytaPoistetut;
-  }
-
-  async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation();
-  }
-}
+watch(() => props.versionumero, () => {
+  fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

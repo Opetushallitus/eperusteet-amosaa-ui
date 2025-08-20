@@ -1,22 +1,32 @@
 <template>
   <div class="kayttooikeudet">
     <div class="ylapaneeli d-flex align-items-center">
-      <h2 class="otsikko">{{$t('ystava-organisaatioiden-kayttooikeudet')}}</h2>
+      <h2 class="otsikko">
+        {{ $t('ystava-organisaatioiden-kayttooikeudet') }}
+      </h2>
     </div>
 
     <ep-spinner v-if="!kayttajat" />
 
-    <div class="ml-3 mt-2 mr-5" v-else>
-
+    <div
+      v-else
+      class="ml-3 mt-2 mr-5"
+    >
       <div class="d-flex">
         <b-form-group :label="$t('henkilon-nimi')">
           <ep-search v-model="query" />
         </b-form-group>
 
         <b-form-group :label="$t('kayttooikeus')">
-          <ep-select class="oikeusSelect" :isEditing="true" v-model="oikeusrajaus" :items="oikeusRajausVaihtoehdot" :enableEmptyOption="false">
-            <template slot-scope="{ item }">
-              {{$t('oikeus-'+item.text)}}
+          <ep-select
+            v-model="oikeusrajaus"
+            class="oikeusSelect"
+            :is-editing="true"
+            :items="oikeusRajausVaihtoehdot"
+            :enable-empty-option="false"
+          >
+            <template #default="{ item }">
+              {{ $t('oikeus-'+item.text) }}
             </template>
           </ep-select>
         </b-form-group>
@@ -29,197 +39,197 @@
         :fields="fields"
         :per-page="sivukoko"
         :current-page="sivu"
-        :tbody-tr-class="rowClass">
-
-        <template v-slot:cell(nimi)="{value, item}">
-          <ep-button variant="link" :href="'/henkilo-ui/admin/'+item.oid">
-            {{value}}
+        :tbody-tr-class="rowClass"
+      >
+        <template #cell(nimi)="{value, item}">
+          <ep-button
+            variant="link"
+            :href="'/henkilo-ui/admin/'+item.oid"
+          >
+            {{ value }}
           </ep-button>
         </template>
 
-        <template v-slot:cell(kayttooikeus)="{ item }">
-          <ep-select class="oikeusSelect" v-if="!item.self && hallintaOikeus" :items="oikeusVaihtoehdot" v-model="item.oikeus" :isEditing="true" :enableEmptyOption="false" @input="updateOikeus(item.id, item.oikeus.value)">
-            <template slot-scope="{ item }">
-              {{$t('oikeus-'+item.text)}}
+        <template #cell(kayttooikeus)="{ item }">
+          <ep-select
+            v-if="!item.self && hallintaOikeus"
+            v-model="item.oikeus"
+            class="oikeusSelect"
+            :items="oikeusVaihtoehdot"
+            :is-editing="true"
+            :enable-empty-option="false"
+            @update:model-value="updateOikeus(item.id, item.oikeus.value)"
+          >
+            <template #default="{ item }">
+              {{ $t('oikeus-'+item.text) }}
             </template>
           </ep-select>
 
-          <div v-else-if="item.self">{{$t('oikeus-' + currentKoulutustoimijaOikeus)}}</div>
-          <div v-else>{{$t('oikeus-'+item.oikeus)}}</div>
+          <div v-else-if="item.self">
+            {{ $t('oikeus-' + currentKoulutustoimijaOikeus) }}
+          </div>
+          <div v-else>
+            {{ $t('oikeus-'+item.oikeus) }}
+          </div>
         </template>
-
       </b-table>
 
-      <b-pagination
-          v-model="sivu"
-          :per-page="sivukoko"
-          :total-rows="kayttajat.length"
-          align="center"
-        />
+      <ep-pagination
+        v-model="sivu"
+        :per-page="sivukoko"
+        :total-rows="kayttajat.length"
+        align="center"
+      />
     </div>
-
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 import _ from 'lodash';
-import { Vue, Component, Prop } from 'vue-property-decorator';
+
 import { Kielet } from '@shared/stores/kieli';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSelect from '@shared/components/forms/EpSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+import EpSearch from '@shared/components/forms/EpSearch.vue';
+import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+
 import { KayttoOikeudetStore } from '@/stores/KayttoOikeudetStore';
 import { parsiEsitysnimi } from '@shared/utils/kayttaja';
 import { KayttajaStore } from '@/stores/kayttaja';
-import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { createLogger } from '@shared/utils/logger';
+import { $t, $success, $fail, $hasOikeus, $kaanna } from '@shared/utils/globals';
 
 interface KayttoOikeusText {
   value: string;
   text: string;
 }
 
-@Component({
-  components: {
-    EpButton,
-    EpSelect,
-    EpSpinner,
-    EpSearch,
-  },
-})
-export default class RouteKayttooikeudet extends Vue {
-  @Prop({ required: true })
-  private kayttoOikeudetStore!: KayttoOikeudetStore;
+const props = defineProps<{
+  kayttoOikeudetStore: KayttoOikeudetStore;
+  kayttajaStore: KayttajaStore;
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+}>();
 
-  @Prop({ required: true })
-  private kayttajaStore!: KayttajaStore;
+const sivukoko = ref(10);
+const sivu = ref(1);
+const query = ref('');
+const oikeusrajaus = ref<KayttoOikeusText>({ value: 'kaikki', text: 'kaikki' });
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const logger = createLogger('RouteKayttooikeudet');
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const kayttajat = computed(() => {
+  return props.kayttoOikeudetStore.kayttajat.value;
+});
 
-  private sivukoko = 10;
-  private sivu = 1;
-  private query = '';
-  private oikeusrajaus: KayttoOikeusText = { value: 'kaikki', text: 'kaikki' };
+const oldOikeusToNewConvert = computed(() => ({
+  'estetty': 'estetty',
+  'luku': 'luku',
+  'muokkaus': 'luku',
+  'luonti': 'luku',
+  'poisto': 'poisto',
+  'hallinta': 'poisto',
+}));
 
-  private logger = createLogger('RouteKayttooikeudet');
+const oikeudetById = computed(() => {
+  return _.keyBy(props.kayttoOikeudetStore.kayttajaOikeudet.value, '_kayttaja');
+});
 
-  get kayttajat() {
-    return this.kayttoOikeudetStore.kayttajat.value;
+const ktYstavatByOid = computed(() => {
+  return _.keyBy(props.kayttoOikeudetStore.ktYstavat.value, 'organisaatio');
+});
+
+const oikeusVaihtoehdot = computed((): KayttoOikeusText[] => [
+  { value: 'estetty', text: 'estetty' },
+  { value: 'luku', text: 'luku' },
+  { value: 'poisto', text: 'muokkaus' },
+]);
+
+const oikeusRajausVaihtoehdot = computed((): KayttoOikeusText[] => {
+  return [{ value: 'kaikki', text: 'kaikki' }, ...oikeusVaihtoehdot.value];
+});
+
+const kayttajaId = computed(() => {
+  return _.get(props.kayttajaStore.tiedot.value, 'id');
+});
+
+const currentKoulutustoimijaOikeus = computed(() => {
+  return _.get(_.find(oikeusVaihtoehdot.value, { value: _.get(oldOikeusToNewConvert.value, (_.get(oikeudetById.value[kayttajaId.value], 'oikeus') || 'estetty')) }), 'text');
+});
+
+const kayttajatFilled = computed(() => {
+  if (props.kayttoOikeudetStore.kayttajaOikeudet.value) {
+    return _.chain(kayttajat.value)
+      .map(kayttaja => {
+        return {
+          ...kayttaja,
+          oikeus: kayttaja.id && oikeudetById.value[kayttaja.id]
+            ? _.find(oikeusVaihtoehdot.value, { value: _.get(oldOikeusToNewConvert.value, (_.get(oikeudetById.value[kayttaja.id], 'oikeus') || 'estetty')) })
+            : _.find(oikeusVaihtoehdot.value, { value: 'estetty' }),
+          self: kayttaja.oid === _.toString(props.kayttajaStore.tiedot.value.oid),
+        };
+      })
+      .filter(kayttaja => Kielet.search(query.value, parsiEsitysnimi(kayttaja)))
+      .filter(kayttaja => oikeusrajaus.value.value === 'kaikki' || kayttaja.oikeus?.value === oikeusrajaus.value.value)
+      .value();
   }
 
-  get kayttajatFilled() {
-    if (this.kayttoOikeudetStore.kayttajaOikeudet.value) {
-      return _.chain(this.kayttajat)
-        .map(kayttaja => {
-          return {
-            ...kayttaja,
-            oikeus: kayttaja.id && this.oikeudetById[kayttaja.id]
-              ? _.find(this.oikeusVaihtoehdot, { value: _.get(this.oldOikeusToNewConvert, (_.get(this.oikeudetById[kayttaja.id], 'oikeus') || 'estetty')) })
-              : _.find(this.oikeusVaihtoehdot, { value: 'estetty' }),
-            self: kayttaja.oid === _.toString(this.kayttajaStore.tiedot.value.oid),
-          };
-        })
-        .filter(kayttaja => Kielet.search(this.query, parsiEsitysnimi(kayttaja)))
-        .filter(kayttaja => this.oikeusrajaus.value === 'kaikki' || kayttaja.oikeus?.value === this.oikeusrajaus.value)
-        .value();
-    }
+  return undefined;
+});
+
+const fields = computed(() => {
+  return [{
+    key: 'nimi',
+    label: $t('henkilon-nimi') as string,
+    sortable: false,
+    tdClass: 'align-middle',
+    formatter: (value: any, key: string, item: any) => {
+      return parsiEsitysnimi(item);
+    },
+  }, {
+    key: 'organisaatioOid',
+    label: $t('organisaatio') as string,
+    sortable: false,
+    tdClass: 'align-middle',
+    formatter: (value: any, key: string, item: any) => {
+      if (ktYstavatByOid.value[value]) {
+        return $kaanna(ktYstavatByOid.value[value].nimi!);
+      }
+
+      return '';
+    },
+  }, {
+    key: 'kayttooikeus',
+    sortable: false,
+    tdClass: 'align-middle',
+    label: $t('kayttooikeus') as string,
+  }];
+});
+
+const hallintaOikeus = computed(() => {
+  return $hasOikeus('hallinta', 'koulutustoimija');
+});
+
+const updateOikeus = async (id: any, oikeus: any) => {
+  try {
+    await props.kayttoOikeudetStore.updateOikeus(id, { oikeus });
+    $success($t('kayttooikeus-paivitetty') as string);
+  }
+  catch (e) {
+    logger.error(e);
+    $fail($t('kayttooikeus-paivitys-virhe') as string);
+  }
+};
+
+const rowClass = (item: any, type: any) => {
+  if (item.self) {
+    return 'self';
   }
 
-  get oldOikeusToNewConvert() {
-    return {
-      'estetty': 'estetty',
-      'luku': 'luku',
-      'muokkaus': 'luku',
-      'luonti': 'luku',
-      'poisto': 'poisto',
-      'hallinta': 'poisto',
-    };
-  }
-
-  get oikeudetById() {
-    return _.keyBy(this.kayttoOikeudetStore.kayttajaOikeudet.value, '_kayttaja');
-  }
-
-  get ktYstavatByOid() {
-    return _.keyBy(this.kayttoOikeudetStore.ktYstavat.value, 'organisaatio');
-  }
-
-  get fields() {
-    return [{
-      key: 'nimi',
-      label: this.$t('henkilon-nimi') as string,
-      sortable: false,
-      tdClass: 'align-middle',
-      formatter: (value: any, key: string, item: any) => {
-        return parsiEsitysnimi(item);
-      },
-    }, {
-      key: 'organisaatioOid',
-      label: this.$t('organisaatio') as string,
-      sortable: false,
-      tdClass: 'align-middle',
-      formatter: (value: any, key: string, item: any) => {
-        if (this.ktYstavatByOid[value]) {
-          return this.$kaanna(this.ktYstavatByOid[value].nimi!);
-        }
-
-        return '';
-      },
-    }, {
-      key: 'kayttooikeus',
-      sortable: false,
-      tdClass: 'align-middle',
-      label: this.$t('kayttooikeus') as string,
-    }];
-  }
-
-  get oikeusRajausVaihtoehdot(): KayttoOikeusText[] {
-    return [{ value: 'kaikki', text: 'kaikki' }, ...this.oikeusVaihtoehdot];
-  }
-
-  get oikeusVaihtoehdot(): KayttoOikeusText[] {
-    return [
-      { value: 'estetty', text: 'estetty' },
-      { value: 'luku', text: 'luku' },
-      { value: 'poisto', text: 'muokkaus' },
-    ];
-  }
-
-  async updateOikeus(id, oikeus) {
-    try {
-      await this.kayttoOikeudetStore.updateOikeus(id, { oikeus });
-      this.$success(this.$t('kayttooikeus-paivitetty') as string);
-    }
-    catch (e) {
-      this.logger.error(e);
-      this.$fail(this.$t('kayttooikeus-paivitys-virhe') as string);
-    }
-  }
-
-  rowClass(item, type) {
-    if (item.self) {
-      return 'self';
-    }
-
-    return '';
-  }
-
-  get hallintaOikeus() {
-    return this.$hasOikeus('hallinta', 'koulutustoimija');
-  }
-
-  get kayttajaId() {
-    return _.get(this.kayttajaStore.tiedot.value, 'id');
-  }
-
-  get currentKoulutustoimijaOikeus() {
-    return _.get(_.find(this.oikeusVaihtoehdot, { value: _.get(this.oldOikeusToNewConvert, (_.get(this.oikeudetById[this.kayttajaId], 'oikeus') || 'estetty')) }), 'text');
-  }
-}
+  return '';
+};
 </script>
 
 <style lang="scss" scoped>
@@ -245,7 +255,7 @@ export default class RouteKayttooikeudet extends Vue {
 
   }
 
-  ::v-deep table tr.self {
+  :deep(table tr.self) {
     background-color: $green-lighten-4;
   }
 

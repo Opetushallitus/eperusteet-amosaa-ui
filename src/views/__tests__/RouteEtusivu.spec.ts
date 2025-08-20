@@ -1,23 +1,21 @@
-import { mount, createLocalVue, RouterLinkStub } from '@vue/test-utils';
+import { mount, RouterLinkStub } from '@vue/test-utils';
 import { mock } from '@shared/utils/jestutils';
+import { vi } from 'vitest';
 import RouteEtusivu from '../RouteEtusivu.vue';
 import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { Toteutus } from '@shared/utils/perusteet';
 import { KayttajaStore } from '@/stores/kayttaja';
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
+import { globalStubs } from '@shared/utils/__tests__/stubs';
 
-Vue.use(BootstrapVue);
 
 describe('RouteEtusivu tiles', () => {
   const kayttajaStore = mock(KayttajaStore);
 
   function mountWrapper(hasOikeus) {
-    kayttajaStore.hasOikeus = jest.fn(() => {
+    kayttajaStore.hasOikeus = vi.fn(() => {
       return hasOikeus;
     });
-    const localVue = createLocalVue();
     const koulutustoimijaId = '1';
     const kieliStore = mock(KieliStore);
     const paivitettavatJaSiirrettavatTotsStore = mock(PaivitettavatJaSiirrettavatTotsStore);
@@ -48,10 +46,6 @@ describe('RouteEtusivu tiles', () => {
       },
     ];
     return mount(RouteEtusivu, {
-      localVue,
-      mocks: {
-        $t: x => x,
-      },
       propsData: {
         koulutustoimijaId,
         kayttajaStore,
@@ -62,9 +56,8 @@ describe('RouteEtusivu tiles', () => {
         tervetuloaTekstiKuvaus,
         tiles,
       },
-      stubs: {
-        Portal: '<div />',
-        RouterLink: RouterLinkStub,
+      global: {
+        ...globalStubs,
       },
     });
   }

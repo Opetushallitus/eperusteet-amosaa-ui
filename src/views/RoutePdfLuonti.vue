@@ -1,21 +1,39 @@
 <template>
   <div class="dokumentit">
     <div class="ylapaneeli d-flex align-items-center">
-      <h2 class="otsikko">{{ $t('luo-pdf') }}</h2>
+      <h2 class="otsikko">
+        {{ $t('luo-pdf') }}
+      </h2>
     </div>
     <div class="sisalto mb-4">
       <h3>{{ $t('luo-ja-lataa-pdf') }}</h3>
-      <p>{{ $t(selite)}}</p>
-      <ep-pdf-luonti :store="dokumenttiStore" :pdfnimi="$kaanna(opetussuunnitelmanimi)"/>
+      <p>{{ $t(selite) }}</p>
+      <ep-pdf-luonti
+        :store="dokumenttiStore"
+        :pdfnimi="$kaanna(opetussuunnitelmanimi)"
+      />
 
-      <h3 class="mt-5">{{$t('lisaasetukset')}}</h3>
+      <h3 class="mt-5">
+        {{ $t('lisaasetukset') }}
+      </h3>
 
-      <div class="row" v-for="(kuva, index) in kuvat" :key="'kuva'+index">
+      <div
+        v-for="(kuva, index) in kuvat"
+        :key="'kuva'+index"
+        class="row"
+      >
         <div class="col kuvalataus">
-          <EpPdfKuvalataus :tyyppi="kuva.tyyppi" :kuvaUrl="kuva.url" @saveImage="saveImage" @removeImage="removeImage"></EpPdfKuvalataus>
+          <EpPdfKuvalataus
+            :tyyppi="kuva.tyyppi"
+            :kuva-url="kuva.url"
+            @saveImage="saveImage"
+            @removeImage="removeImage"
+          />
         </div>
         <div class="col-4 text-center sijaintikuva">
-          <div class="sijainti-topic"><span v-if="kuva.first">{{$t('sijainti')}}</span></div>
+          <div class="sijainti-topic">
+            <span v-if="kuva.first">{{ $t('sijainti') }}</span>
+          </div>
           <ep-public-image :image="kuva.image" />
         </div>
       </div>
@@ -23,92 +41,86 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 import _ from 'lodash';
-import { Vue, Component, Watch, Prop } from 'vue-property-decorator';
+
 import { Kielet } from '@shared/stores/kieli';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { DokumenttiStore, Kuvatyyppi } from '@/stores/DokumenttiStore';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import EpPdfLuonti from '@shared/components/EpPdfLuonti/EpPdfLuonti.vue';
 import EpPdfKuvalataus from '@shared/components/EpTiedosto/EpPdfKuvalataus.vue';
 import EpPublicImage from '@shared/components/EpPublicImage/EpPublicImage.vue';
+
+import { DokumenttiStore, Kuvatyyppi } from '@/stores/DokumenttiStore';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { Toteutus } from '@shared/utils/perusteet';
 import { PdfLuontiSelite } from '@/utils/toteutustypes';
+import { $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpButton,
-    EpFormContent,
-    EpSpinner,
-    EpPdfLuonti,
-    EpPdfKuvalataus,
-    EpPublicImage,
-  },
-})
-export default class RoutePdfLuonti extends Vue {
-  @Prop({ required: true })
-  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const props = defineProps<{
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  toteutus: Toteutus;
+}>();
 
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const dokumenttiStore = ref<DokumenttiStore | null>(null);
 
-  private dokumenttiStore: DokumenttiStore | null = null;
-
-  @Watch('opetussuunnitelmanimi', { immediate: true })
-  async opetussuunnitelmaChanged() {
-    if (this.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
-      this.dokumenttiStore = await DokumenttiStore.create(this.toteutussuunnitelmaStore.toteutussuunnitelma.value as any);
-      await this.dokumenttiStore.init();
-    }
+const opetussuunnitelmanimi = computed(() => {
+  if (props.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
+    return props.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi;
   }
 
-  get opetussuunnitelmanimi() {
-    if (this.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
-      return this.toteutussuunnitelmaStore.toteutussuunnitelma.value.nimi;
-    }
+  return undefined;
+});
+
+const dokumenttiDto = computed(() => {
+  if (dokumenttiStore.value) {
+    return dokumenttiStore.value.dokumentti;
   }
 
-  get dokumenttiDto() {
-    if (this.dokumenttiStore) {
-      return this.dokumenttiStore.dokumentti.value;
-    }
+  return undefined;
+});
+
+const kuvat = computed(() => {
+  if (dokumenttiStore.value) {
+    return _.map(dokumenttiStore.value.kuvat, (kuvatyyppi: Kuvatyyppi, index: number) => {
+      return {
+        ...kuvatyyppi,
+        first: index === 0,
+      };
+    });
   }
 
-  get kuvat() {
-    if (this.dokumenttiStore) {
-      return _.map(this.dokumenttiStore.kuvat.value, (kuvatyyppi: Kuvatyyppi, index) => {
-        return {
-          ...kuvatyyppi,
-          first: index === 0,
-        };
-      });
-    }
-  }
+  return undefined;
+});
 
-  get kieli() {
-    return Kielet.getSisaltoKieli.value;
-  }
+const kieli = computed(() => {
+  return Kielet.getSisaltoKieli.value;
+});
 
-  @Watch('kieli')
-  async kieliChanged() {
-    await this.dokumenttiStore?.init();
-  }
+const selite = computed(() => {
+  return PdfLuontiSelite[props.toteutus];
+});
 
-  saveImage(file, tyyppi) {
-    this.dokumenttiStore!.saveImage(file, tyyppi);
-  }
+const saveImage = (file: any, tyyppi: any) => {
+  dokumenttiStore.value!.saveImage(file, tyyppi);
+};
 
-  removeImage(tyyppi) {
-    this.dokumenttiStore!.removeImage(tyyppi);
-  }
+const removeImage = (tyyppi: any) => {
+  dokumenttiStore.value!.removeImage(tyyppi);
+};
 
-  get selite() {
-    return PdfLuontiSelite[this.toteutus];
+watch(opetussuunnitelmanimi, async () => {
+  if (props.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
+    dokumenttiStore.value = await DokumenttiStore.create(props.toteutussuunnitelmaStore.toteutussuunnitelma.value as any);
+    await dokumenttiStore.value?.init();
   }
-}
+}, { immediate: true });
+
+watch(kieli, async () => {
+  await dokumenttiStore.value?.init();
+});
 
 </script>
 

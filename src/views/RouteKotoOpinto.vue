@@ -1,149 +1,135 @@
 <template>
   <div>
-    <EpEditointi v-if="editointiStore" :store="editointiStore" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
+    <EpEditointi
+      v-if="editointiStore"
+      :store="editointiStore"
+      :muokkaus-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+    >
       <template #header="{ data }">
-        <h2 class="m-0">{{ $kaanna(data.perusteenOsa.nimi) }}</h2>
+        <h2 class="m-0">
+          {{ $kaanna(data.perusteenOsa.nimi) }}
+        </h2>
       </template>
       <template #default="{ isEditing, data: { perusteenOsa, kotoOpinto, perusteenLaajaAlaisetOsaamiset } }">
-
         <EpContent
-          class="mb-4"
           v-model="perusteenOsa.kuvaus"
+          class="mb-4"
           layout="normal"
           :is-editable="false"
-          :kuvaHandler="kuvaHandler"/>
+        />
 
         <EpKotoTaitotasot
-          class="mb-4"
           v-model="perusteenOsa.taitotasot"
-          :isEditing="false"
-          :kuvaHandler="kuvaHandler"
-          taitotasoTyyppi="opintokokonaisuus">
+          class="mb-4"
+          :is-editing="false"
+          taitotaso-tyyppi="opintokokonaisuus"
+        >
+          <template #paikallinentarkennus="{ taitotaso }">
+            <h4 class="mt-4">
+              {{ $t('tavoitteiden-paikallinen-tarkennus') }}
+            </h4>
+            <EpContent
+              v-if="isEditing || kotoTaitotasotByUri[taitotaso.nimi.uri].tavoiteTarkennus"
+              v-model="kotoTaitotasotByUri[taitotaso.nimi.uri].tavoiteTarkennus"
+              layout="normal"
+              :is-editable="isEditing"
+            />
+            <EpAlert
+              v-if="!isEditing && !kotoTaitotasotByUri[taitotaso.nimi.uri].tavoiteTarkennus"
+              :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+            />
 
-          <template #paikallinentarkennus="{ nimi }">
-              <h4 slot="label" class="mt-4">{{$t('tavoitteiden-paikallinen-tarkennus')}}</h4>
-              <EpContent
-                layout="normal"
-                v-model="kotoTaitotasotByUri[nimi.uri].tavoiteTarkennus"
-                :is-editable="isEditing"
-                v-if="isEditing || kotoTaitotasotByUri[nimi.uri].tavoiteTarkennus"
-                :kuvaHandler="kuvaHandler"/>
-              <EpAlert
-                v-if="!isEditing && !kotoTaitotasotByUri[nimi.uri].tavoiteTarkennus"
-                :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"/>
-
-              <h4 slot="label" class="mt-4">{{$t('sisaltojen-paikallinen-tarkennus')}}</h4>
-              <EpContent
-                layout="normal"
-                v-model="kotoTaitotasotByUri[nimi.uri].sisaltoTarkennus"
-                :is-editable="isEditing"
-                v-if="isEditing || kotoTaitotasotByUri[nimi.uri].sisaltoTarkennus"
-                :kuvaHandler="kuvaHandler"/>
-              <EpAlert
-                v-if="!isEditing && !kotoTaitotasotByUri[nimi.uri].sisaltoTarkennus"
-                :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"/>
+            <EpContent
+              v-if="isEditing || kotoTaitotasotByUri[taitotaso.nimi.uri].sisaltoTarkennus"
+              v-model="kotoTaitotasotByUri[taitotaso.nimi.uri].sisaltoTarkennus"
+              layout="normal"
+              :is-editable="isEditing"
+            />
+            <EpAlert
+              v-if="!isEditing && !kotoTaitotasotByUri[taitotaso.nimi.uri].sisaltoTarkennus"
+              :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+            />
           </template>
-
         </EpKotoTaitotasot>
 
-        <hr/>
+        <hr>
 
         <EpKotoLaajaAlainenOsaaminen
           v-model="kotoOpinto.laajaAlaisetOsaamiset"
-          :perusteenLaajaAlaisetOsaamiset="perusteenLaajaAlaisetOsaamiset"
-          :kuvaHandler="kuvaHandler"
-          :isEditing="isEditing"
+          :perusteen-laaja-alaiset-osaamiset="perusteenLaajaAlaisetOsaamiset"
+          :is-editing="isEditing"
         />
-
       </template>
     </EpEditointi>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import * as _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
-import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
-import { KuvaStore } from '@/stores/KuvaStore';
-import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { KotoSisaltoStore } from '@/stores/KotoSisaltoStore';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpKotoTaitotasot from '@shared/components/EpKotoTaitotasot/EpKotoTaitotasot.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpKotoLaajaAlainenOsaaminen from '@/components/EpKotoLaajaAlainenOsaaminen/EpKotoLaajaAlainenOsaaminen.vue';
+
+import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { KotoSisaltoStore } from '@/stores/KotoSisaltoStore';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpEditointi,
-    EpContent,
-    EpAlert,
-    EpKotoTaitotasot,
-    EpButton,
-    EpKotoLaajaAlainenOsaaminen,
-  },
-})
-export default class RouteKotoOpinto extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+  sisaltoviiteId: number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+}>();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const route = useRoute();
 
-  @Prop({ required: true })
-  private sisaltoviiteId!: number;
+const editointiStore = ref<EditointiStore | null>(null);
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
 
-  private editointiStore: EditointiStore | null = null;
+const versionumero = computed(() => {
+  return _.toNumber(route.query.versionumero);
+});
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
+
+
+const kotoTaitotasotByUri = computed(() => {
+  return _.keyBy(editointiStore.value?.data.kotoOpinto.taitotasot, 'koodiUri');
+});
+
+const fetch = () => {
+  if (props.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
+    editointiStore.value = new EditointiStore(
+      new KotoSisaltoStore(
+        props.toteutussuunnitelmaId,
+        props.koulutustoimijaId,
+        props.sisaltoviiteId,
+        versionumero.value,
+        props.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
   }
+};
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
-  }
+watch(() => props.sisaltoviiteId, () => {
+  fetch();
+}, { immediate: true });
 
-  @Watch('toteutussuunnitelma', { immediate: true })
-  opetussuunnitelmaChange() {
-    this.fetch();
-  }
+watch(versionumero, () => {
+  fetch();
+}, { immediate: true });
 
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
-  get kotoTaitotasotByUri() {
-    return _.keyBy(this.editointiStore?.data.value.kotoOpinto.taitotasot, 'koodiUri');
-  }
-
-  fetch() {
-    if (this.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
-      this.editointiStore = new EditointiStore(
-        new KotoSisaltoStore(
-          this.toteutussuunnitelmaId,
-          this.koulutustoimijaId,
-          this.sisaltoviiteId,
-          this.versionumero,
-          this.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
-    }
-  }
-
-  get versionumero() {
-    return _.toNumber(this.$route.query.versionumero);
-  }
-
-  get kuvaHandler() {
-    return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
-  }
-}
+watch(toteutussuunnitelma, () => {
+  fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

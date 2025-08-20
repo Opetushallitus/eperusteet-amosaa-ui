@@ -1,49 +1,62 @@
 <template>
   <div>
-    <ep-button class="siirra-opetussuunnitelma" variant="link" @click="$refs['epsiirtomodaali'].show()">
-          {{$t(kielistykset['siirratoteutusystavaorganisaatiolle'])}}
+    <ep-button
+      class="siirra-opetussuunnitelma"
+      variant="link"
+      @click="epsiirtomodaali?.show()"
+    >
+      {{ $t(kielistykset['siirratoteutusystavaorganisaatiolle']) }}
     </ep-button>
 
-    <b-modal id="epsiirtomodaali"
-             ref="epsiirtomodaali"
-             size="lg"
-             :title="$t(kielistykset['siirratoteutusystavaorganisaatiolle'])"
-             :hide-footer="true">
+    <b-modal
+      id="epsiirtomodaali"
+      ref="epsiirtomodaali"
+      size="lg"
+      :title="$t(kielistykset['siirratoteutusystavaorganisaatiolle'])"
+      :hide-footer="true"
+    >
       <p>{{ $t('siirra-kuvaus') }}</p>
       <div v-if="ystavatFormatted">
-        <ep-search v-model="nimiFilter"
-            :placeholder="$t('etsi-organisaatiota')"
-            class="mb-3" />
-        <b-table responsive
-                striped
-                :items="ystavatFormatted"
-                :fields="fields"
-                :per-page="perPage"
-                :current-page="currentPage">
-          <template v-slot:cell(actions)="row">
-              <ep-button
-                class="siirra"
-                @click="siirraToteutussuunnitelma(row.item)"
-                v-if="row.item.siirrettavissa"
-                variant="link">
+        <ep-search
+          v-model="nimiFilter"
+          :placeholder="$t('etsi-organisaatiota')"
+          class="mb-3"
+        />
+        <b-table
+          responsive
+          striped
+          :items="ystavatFormatted"
+          :fields="fields"
+          :per-page="perPage"
+          :current-page="currentPage"
+        >
+          <template #cell(actions)="row">
+            <ep-button
+              v-if="row.item.siirrettavissa"
+              class="siirra"
+              variant="link"
+              @click="siirraToteutussuunnitelma(row.item)"
+            >
               {{ $t(kielistykset['siirratoteutus']) }}
             </ep-button>
           </template>
         </b-table>
-        <b-pagination v-model="currentPage"
-                      :total-rows="rows"
-                      :per-page="perPage"
-                      align="center"
-                      aria-controls="epsiirtomodaali"></b-pagination>
+        <ep-pagination
+          v-model="currentPage"
+          :total-rows="rows"
+          :per-page="perPage"
+          align="center"
+          aria-controls="epsiirtomodaali"
+        />
       </div>
       <ep-spinner v-else />
     </b-modal>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import _ from 'lodash';
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import { computed, ref, watch, useTemplateRef, getCurrentInstance } from 'vue';
 
 import { Koulutustoimijat, KoulutustoimijaYstavaDto, Opetussuunnitelmat } from '@shared/api/amosaa';
 import { fail, success } from '@shared/utils/notifications';
@@ -55,108 +68,107 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { ToteutussuunnitelmaSiirtoKielistykset } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
 import { OphOrgOid } from '@/stores/kayttaja';
+import { $t, $kaanna, $filterBy, $bvModal } from '@shared/utils/globals';
+import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import { useRouter } from 'vue-router';
+import { onMounted } from 'vue';
 
-@Component({
-  components: {
-    EpButton,
-    EpSpinner,
-    EpSearch,
-  },
-})
-export default class EpSiirtoModal extends Vue {
-  private ystavat: KoulutustoimijaYstavaDto[] | null = null;
-  private currentPage = 1;
-  private perPage = 5;
-  private nimiFilter = '';
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelma: any;
+  toteutus: Toteutus;
+}>();
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const ystavat = ref<KoulutustoimijaYstavaDto[] | null>(null);
+const currentPage = ref(1);
+const perPage = ref(5);
+const nimiFilter = ref('');
 
-  @Prop({ required: true })
-  private toteutussuunnitelma!: any;
+const epsiirtomodaali = useTemplateRef('epsiirtomodaali');
+const router = useRouter();
 
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+watch(() => props.koulutustoimijaId, async (newValue, oldValue) => {
+  if (newValue && newValue !== oldValue) {
+    await fetch();
+  }
+});
 
-  @Watch('koulutustoimijaId', { immediate: true })
-  async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
-    if (newValue && newValue !== oldValue) {
-      this.fetch();
+const fetch = async () => {
+  ystavat.value = (await Koulutustoimijat.getOmatYstavat(props.koulutustoimijaId)).data;
+};
+
+const fields = computed(() => {
+  return [{
+    key: 'nimiLocalized',
+    label: $t('nimi'),
+  }, {
+    key: 'actions',
+    label: $t('toiminto'),
+  }];
+});
+
+const ystavatFormatted = computed(() => {
+  return _(ystavat.value)
+    .map(org => ({
+      ...org,
+      nimiLocalized: $kaanna(org.nimi!),
+      siirrettavissa: org.organisaatio !== OphOrgOid,
+    }))
+    .filter($filterBy('nimiLocalized', nimiFilter.value))
+    .value();
+});
+
+const rows = computed(() => {
+  if (ystavatFormatted.value) {
+    return ystavatFormatted.value.length;
+  }
+  return undefined;
+});
+
+const kieli = computed(() => {
+  return Kielet.uiKieli;
+});
+
+const siirraToteutussuunnitelma = async (org: any) => {
+  epsiirtomodaali.value?.hide();
+  if (await $bvModal.msgBoxConfirm($t('siirra-toteutussuunnitelma-varmistus', { nimi: $kaanna(props.toteutussuunnitelma.nimi) }) as string, {
+    title: $t('siirra-toteutussuunnitelma') as string,
+    okVariant: 'primary',
+    okTitle: $t('siirra-toteutussuunnitelma') as string,
+    cancelVariant: 'link',
+    cancelTitle: $t('peruuta') as string,
+    centered: true,
+  })) {
+    try {
+      await Opetussuunnitelmat.updateOpetussuunnitelmaKoulutustoimija(_.parseInt(props.toteutussuunnitelma.id), props.koulutustoimijaId, org);
+      success('siirra-toteutussuunnitelma-onnistui');
+      router.replace({
+        name: 'toteutussuunnitelmat',
+        params: {
+          lang: kieli.value.value,
+          koulutustoimijaId: props.koulutustoimijaId,
+        },
+      });
+    }
+    catch (err) {
+      fail('siirra-toteutussuunnitelma-epaonnistui');
     }
   }
+};
 
-  async fetch() {
-    this.ystavat = (await Koulutustoimijat.getOmatYstavat(this.koulutustoimijaId)).data;
-  }
+const kielistykset = computed(() => {
+  return ToteutussuunnitelmaSiirtoKielistykset[props.toteutus];
+});
 
-  get fields() {
-    return [{
-      key: 'nimiLocalized',
-      label: this.$t('nimi'),
-    }, {
-      key: 'actions',
-      label: this.$t('toiminto'),
-    }];
-  }
-
-  get ystavatFormatted() {
-    return _(this.ystavat)
-      .map(org => ({
-        ...org,
-        nimiLocalized: this.$kaanna(org.nimi!),
-        siirrettavissa: org.organisaatio !== OphOrgOid,
-      }))
-      .filter(this.$filterBy('nimiLocalized', this.nimiFilter))
-      .value();
-  }
-
-  get rows() {
-    if (this.ystavatFormatted) {
-      return this.ystavatFormatted.length;
-    }
-  }
-
-  get kieli() {
-    return Kielet.uiKieli;
-  }
-
-  async siirraToteutussuunnitelma(org) {
-    (this.$refs['epsiirtomodaali'] as any).hide();
-    if (await this.$bvModal.msgBoxConfirm(this.$t('siirra-toteutussuunnitelma-varmistus', { nimi: this.$kaanna(this.toteutussuunnitelma.nimi) }) as string, {
-      title: this.$t('siirra-toteutussuunnitelma') as string,
-      okVariant: 'primary',
-      okTitle: this.$t('siirra-toteutussuunnitelma') as string,
-      cancelVariant: 'link',
-      cancelTitle: this.$t('peruuta') as string,
-      centered: true,
-    })) {
-      try {
-        await Opetussuunnitelmat.updateOpetussuunnitelmaKoulutustoimija(_.parseInt(this.toteutussuunnitelma.id), this.koulutustoimijaId, org);
-        success('siirra-toteutussuunnitelma-onnistui');
-        this.$router.replace({
-          name: 'toteutussuunnitelmat',
-          params: {
-            lang: this.kieli.value,
-            koulutustoimijaId: this.koulutustoimijaId,
-          },
-        });
-      }
-      catch (err) {
-        fail('siirra-toteutussuunnitelma-epaonnistui');
-      }
-    }
-  }
-
-  get kielistykset() {
-    return ToteutussuunnitelmaSiirtoKielistykset[this.toteutus];
-  }
-}
+onMounted(async () => {
+  await fetch();
+});
 </script>
 
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
 
-  ::v-deep .siirra .btn .teksti, ::v-deep .siirra .btn{
+  :deep(.siirra .btn .teksti), :deep(.siirra .btn) {
     padding-left: 0px !important;
   }
 

@@ -1,36 +1,53 @@
 <template>
-  <b-row v-if="toteutus === 'vapaasivistystyo' && !value.peruste">
+  <b-row v-if="toteutus === 'vapaasivistystyo' && !model.peruste">
     <b-col :cols="asRows ? 12 : 6">
       <b-form-group :label="$t('jotpa-koulutus')">
-        <EpToggle v-model="jotpaSelect" checkbox v-if="isEditing">{{$t('koulutus-on-jotpa-rahoitteinen')}}</EpToggle>
-        <div v-if="!isEditing && !model.jotpatyyppi">{{$t('ei-asetettu')}}</div>
-        <div v-if="!isEditing && model.jotpatyyppi">{{$t('koulutus-on-jotpa-rahoitteinen')}}</div>
+        <EpToggle
+          v-if="isEditing"
+          v-model="jotpaSelect"
+          checkbox
+        >
+          {{ $t('koulutus-on-jotpa-rahoitteinen') }}
+        </EpToggle>
+        <div v-if="!isEditing && !model.jotpatyyppi">
+          {{ $t('ei-asetettu') }}
+        </div>
+        <div v-if="!isEditing && model.jotpatyyppi">
+          {{ $t('koulutus-on-jotpa-rahoitteinen') }}
+        </div>
       </b-form-group>
     </b-col>
     <b-col :cols="asRows ? 12 : 6">
       <b-form-group v-if="jotpaSelect">
-        <div slot="label">
-          {{$t('onko-kyseessa-vapaan-sivistystyon-jotpa-koulutus')}} <span v-if="isEditing">*</span>
-        </div>
+        <template #label>
+          <div>{{ $t('onko-kyseessa-vapaan-sivistystyon-jotpa-koulutus') }} <span v-if="isEditing">*</span></div>
+        </template>
         <template v-if="isEditing">
-          <b-form-radio v-for="(jotpaValinta, index) in jotpaValinnat" :key="'jotparadiobutton'+index" v-model="model.jotpatyyppi" :value="jotpaValinta.value">
-            {{$t(jotpaValinta.text)}}
-          </b-form-radio>
+          <EpRadio
+            v-for="(jotpaValinta, index) in jotpaValinnat"
+            :key="'jotparadiobutton'+index"
+            v-model="model.jotpatyyppi"
+            :value="jotpaValinta.value"
+          >
+            {{ $t(jotpaValinta.text) }}
+          </EpRadio>
         </template>
         <div v-else>
-          {{$t(jotpaValinnatValueAsKey[model.jotpatyyppi].text)}}
+          {{ $t(jotpaValinnatValueAsKey[model.jotpatyyppi].text) }}
         </div>
       </b-form-group>
     </b-col>
   </b-row>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import * as _ from 'lodash';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { computed } from 'vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import { Toteutus } from '@shared/utils/perusteet';
 import { OpetussuunnitelmaBaseDtoJotpatyyppiEnum } from '@shared/generated/amosaa';
+import { $t } from '@shared/utils/globals';
+import EpRadio from '@shared/components/forms/EpRadio.vue';
 
 export interface OpsJotpa {
   peruste?: any;
@@ -38,65 +55,57 @@ export interface OpsJotpa {
   jotpatyyppi: OpetussuunnitelmaBaseDtoJotpatyyppiEnum | null;
 }
 
-@Component({
-  components: {
-    EpToggle,
+const props = defineProps<{
+  modelValue: OpsJotpa;
+  toteutus: Toteutus;
+  isEditing?: boolean;
+  asRows?: boolean;
+}>();
+
+const emit = defineEmits(['update:modelValue']);
+
+const model = computed({
+  get() {
+    return props.modelValue;
   },
-})
-export default class EpJotpaSelect extends Vue {
-  @Prop({ required: true })
-  private value!: OpsJotpa;
+  set(value) {
+    emit('update:modelValue', value);
+  },
+});
 
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const jotpaValinnat = computed(() => {
+  return [
+    {
+      value: OpetussuunnitelmaBaseDtoJotpatyyppiEnum.VST,
+      text: 'kylla',
+    },
+    {
+      value: OpetussuunnitelmaBaseDtoJotpatyyppiEnum.MUU,
+      text: 'ei',
+    },
+  ];
+});
 
-  @Prop({ required: false, default: false, type: Boolean })
-  private isEditing!: Boolean;
+const jotpaValinnatValueAsKey = computed(() => {
+  return _.keyBy(jotpaValinnat.value, 'value');
+});
 
-  @Prop({ required: false, default: false, type: Boolean })
-  private asRows!: Boolean;
+const jotpa = computed(() => {
+  return props.modelValue.jotpa;
+});
 
-  get model() {
-    return this.value;
-  }
-
-  set model(value) {
-    this.$emit('input', value);
-  }
-
-  get jotpaValinnat() {
-    return [
-      {
-        value: OpetussuunnitelmaBaseDtoJotpatyyppiEnum.VST,
-        text: 'kylla',
-      },
-      {
-        value: OpetussuunnitelmaBaseDtoJotpatyyppiEnum.MUU,
-        text: 'ei',
-      },
-    ];
-  }
-
-  get jotpaValinnatValueAsKey() {
-    return _.keyBy(this.jotpaValinnat, 'value');
-  }
-
-  get jotpa() {
-    return this.value.jotpa;
-  }
-
-  get jotpaSelect() {
-    return !!this.model.jotpa || !!this.model.jotpatyyppi;
-  }
-
-  set jotpaSelect(value) {
-    this.model = {
-      ...this.model,
+const jotpaSelect = computed({
+  get() {
+    return !!model.value.jotpa || !!model.value.jotpatyyppi;
+  },
+  set(value) {
+    model.value = {
+      ...model.value,
       jotpa: value,
-      jotpatyyppi: !value ? null : this.model.jotpatyyppi,
+      jotpatyyppi: !value ? null : model.value.jotpatyyppi,
     };
-  }
-}
+  },
+});
 </script>
 
 <style scoped lang="scss">

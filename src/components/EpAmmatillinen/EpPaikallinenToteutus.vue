@@ -1,91 +1,108 @@
 <template>
   <div class="paikallinentoteutus w-100 pl-3">
-    <ep-field v-if="isEditing" v-model="toteutus.otsikko" :is-editing="isEditing"></ep-field>
+    <ep-field
+      v-if="isEditing"
+      v-model="toteutus.otsikko"
+      :is-editing="isEditing"
+    />
 
     <div class="mt-3">
-      <h4 slot="header" class="mt-3">{{$t('tavat-ja-ymparisto')}}</h4>
-      <ep-content layout="normal" v-model="toteutus.tavatjaymparisto.teksti" :is-editable="isEditing"> </ep-content>
+      <h4 class="mt-3">
+        {{ $t('tavat-ja-ymparisto') }}
+      </h4>
+      <ep-content
+        v-model="toteutus.tavatjaymparisto.teksti"
+        layout="normal"
+        :is-editable="isEditing"
+      />
 
-      <h4 slot="header" class="mt-3">{{$t('osaamisen-arvioinnista')}}</h4>
-      <ep-content layout="normal" v-model="toteutus.arvioinnista.teksti" :is-editable="isEditing"> </ep-content>
+      <h4 class="mt-3">
+        {{ $t('osaamisen-arvioinnista') }}
+      </h4>
+      <ep-content
+        v-model="toteutus.arvioinnista.teksti"
+        layout="normal"
+        :is-editable="isEditing"
+      />
 
-      <hr v-if="toteutus.vapaat.length > 0" />
+      <hr v-if="toteutus.vapaat.length > 0">
 
-      <EpVapaatTekstit v-model="toteutus.vapaat" :isEditing="isEditing"/>
-
+      <EpVapaatTekstit
+        v-model="toteutus.vapaat"
+        :is-editing="isEditing"
+      />
     </div>
 
-    <div class="d-flex justify-content-between align-items-center pt-3" v-if="isEditing">
+    <div
+      v-if="isEditing"
+      class="d-flex justify-content-between align-items-center pt-3"
+    >
       <EpToggle
-        class="oletustoteutus"
         v-if="isEditing"
+        v-model="toteutus.oletustoteutus"
+        class="oletustoteutus"
         checkbox
-        v-model="toteutus.oletustoteutus">
+      >
         <slot name="oletustoteutus">
-          {{$t('tallenna-oletustoteutuksena-tutkinnon-osaan')}}
+          {{ $t('tallenna-oletustoteutuksena-tutkinnon-osaan') }}
         </slot>
       </EpToggle>
-      <ep-button v-if="isEditing" variant="link" icon="delete" @click="poistaToteutus">
+      <ep-button
+        v-if="isEditing"
+        variant="link"
+        icon="delete"
+        @click="poistaToteutus"
+      >
         {{ $t('poista-toteutus') }}
       </ep-button>
     </div>
-
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Vue } from 'vue-property-decorator';
+import { computed } from 'vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
+import { $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpButton,
-    EpContent,
-    EpCollapse,
-    EpField,
-    EpVapaatTekstit,
-    EpToggle,
+const props = defineProps<{
+  isEditing?: boolean;
+  modelValue: any;
+}>();
+
+const emit = defineEmits(['update:modelValue', 'poista']);
+
+const toteutus = computed({
+  get() {
+    return props.modelValue;
   },
-})
-export default class EpPaikallinenToteutus extends Vue {
-  @Prop({ default: false })
-  isEditing!: boolean;
+  set(value) {
+    emit('update:modelValue', value);
+  },
+});
 
-  @Prop({ required: true })
-  value!: any;
+const poistaToteutus = () => {
+  emit('poista');
+};
 
-  get toteutus() {
-    return this.value;
-  }
+const lisaaTekstikappale = () => {
+  toteutus.value = {
+    ...toteutus.value,
+    vapaat: [...(toteutus.value.vapaat || []), {}],
+  };
+};
 
-  set toteutus(value) {
-    this.$emit('input', value);
-  }
-
-  poistaToteutus() {
-    this.$emit('poista');
-  }
-
-  lisaaTekstikappale() {
-    this.toteutus = {
-      ...this.toteutus,
-      vapaat: [...(this.toteutus.vapaat || []), {}],
-    };
-  }
-
-  poistaTekstikappale(poistettava: any) {
-    this.toteutus = {
-      ...this.toteutus,
-      vapaat: _.filter(this.toteutus.vapaat, vpTeksti => vpTeksti !== poistettava),
-    };
-  }
-}
+const poistaTekstikappale = (poistettava: any) => {
+  toteutus.value = {
+    ...toteutus.value,
+    vapaat: _.filter(toteutus.value.vapaat, vpTeksti => vpTeksti !== poistettava),
+  };
+};
 </script>
 
 <style scoped lang="scss">

@@ -1,18 +1,31 @@
 <template>
   <div class="home-container minfull">
-    <div class="header" ref="header" :style="headerStyle">
-      <EpNavbar :kayttaja="kayttaja" :rootNavigation="rootNavigation"/>
+    <div
+      ref="header"
+      class="header"
+      :style="headerStyle"
+    >
+      <EpNavbar
+        :kayttaja="kayttaja"
+        :root-navigation="rootNavigation"
+      />
     </div>
     <div>
-    <div class="container my-5">
-      <div v-if="koulutustoimijaId === null">
-        <EpSpinner />
-      </div>
+      <div class="container my-5">
+        <div v-if="koulutustoimijaId === null">
+          <EpSpinner />
+        </div>
 
-      <div class="px-3 px-md-0" v-if="koulutustoimijaId === 0">
+        <div
+          v-if="koulutustoimijaId === 0"
+          class="px-3 px-md-0"
+        >
           <h2>{{ $t('kayttajalla-ei-koulutustoimijaa') }}</h2>
           <div class="virhekuva">
-            <img :src="virhekuva" :alt="$t('virhe-kuva-teksti')">
+            <img
+              :src="virhekuva"
+              :alt="$t('virhe-kuva-teksti')"
+            >
           </div>
 
           <div class="d-flex flex-row-reverse">
@@ -27,9 +40,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, onMounted, ref, useTemplateRef } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import _ from 'lodash';
-import { Prop, Watch, Component, Vue } from 'vue-property-decorator';
+
 import { KayttajaStore } from '@/stores/kayttaja';
 import { setItem, getItem } from '@shared/utils/localstorage';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
@@ -39,91 +54,83 @@ import { getCasKayttajaKieli } from '@shared/api/common';
 import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { localhostOrigin } from '@shared/utils/esikatselu';
 import { Toteutus } from '@shared/utils/perusteet';
+import { $t } from '@shared/utils/globals';
 
-const virhekuva = require('@assets/img/images/virhe.png');
+const virhekuva = new URL('@assets/img/images/virhe.png', import.meta.url).href;
 
-@Component({
-  components: {
-    EpNavbar,
-    EpFooter,
-    EpSpinner,
-  },
-})
-export default class RouteLang extends Vue {
-  @Prop({ required: true })
-  private kayttajaStore!: KayttajaStore;
+const props = defineProps<{
+  kayttajaStore: KayttajaStore;
+}>();
 
-  private koulutustoimijaId: null | number = null;
+const route = useRoute();
+const router = useRouter();
+const header = useTemplateRef('header');
 
-  async mounted() {
-    // Ohjataan käyttäjän koulutustoimijan etusivulle
-    const koulutustoimijat = this.kayttajaStore?.koulutustoimijat?.value || null;
-    if (!_.isEmpty(koulutustoimijat)) {
-      const koulutustoimija = getItem('koulutustoimija');
-      let koulutustoimijaId;
-      if (koulutustoimija && _.includes(_.map(koulutustoimijat, 'id'), koulutustoimija)) {
-        koulutustoimijaId = _.toString(koulutustoimija);
-      }
-      else {
-        const id = koulutustoimijat![0].id;
-        koulutustoimijaId = _.toString(id);
-        setItem('koulutustoimija', id);
-      }
+const koulutustoimijaId = ref<null | number>(null);
 
-      const toteutus = this.toteutus;
-      const lang = this.kayttajaStore.casKayttaja.value?.lang || 'fi';
-      this.koulutustoimijaId = koulutustoimijaId;
+const defaultToteutus = () => {
+  if (localhostOrigin()) {
+    return 'ammatillinen';
+  }
+  return '';
+};
 
-      this.$router.push({
-        path: `/${toteutus}/${lang}/koulutustoimija/${koulutustoimijaId}`,
-      });
+const toteutus = computed(() => {
+  return _.has(route.params, 'toteutus') ? _.get(route.params, 'toteutus') : defaultToteutus();
+});
+
+const kayttaja = computed(() => {
+  return props.kayttajaStore?.tiedot?.value || null;
+});
+
+const nimi = computed(() => {
+  return props.kayttajaStore?.nimi?.value || null;
+});
+
+const headerStyle = computed(() => {
+  return toteutusBanner(toteutus.value);
+});
+
+const rootNavigation = computed(() => {
+  return {
+    name: 'root',
+    params: {
+      toteutus: toteutus.value,
+    },
+  };
+});
+
+onMounted(async () => {
+  // Ohjataan käyttäjän koulutustoimijan etusivulle
+  const koulutustoimijat = props.kayttajaStore?.koulutustoimijat?.value || null;
+  if (!_.isEmpty(koulutustoimijat)) {
+    const koulutustoimija = getItem('koulutustoimija');
+    let koulutustoimijaIdValue;
+    if (koulutustoimija && _.includes(_.map(koulutustoimijat, 'id'), koulutustoimija)) {
+      koulutustoimijaIdValue = _.toString(koulutustoimija);
     }
     else {
-      this.koulutustoimijaId = 0;
-    }
-  }
-
-  get virhekuva() {
-    return virhekuva;
-  }
-
-  get kayttaja() {
-    return this.kayttajaStore?.tiedot?.value || null;
-  }
-
-  get nimi() {
-    return this.kayttajaStore?.nimi?.value || null;
-  }
-
-  get toteutus() {
-    return _.has(this.$route.params, 'toteutus') ? _.get(this.$route.params, 'toteutus') : this.defaultToteutus();
-  }
-
-  defaultToteutus() {
-    if (localhostOrigin()) {
-      return 'ammatillinen';
+      const id = koulutustoimijat![0].id;
+      koulutustoimijaIdValue = _.toString(id);
+      setItem('koulutustoimija', id);
     }
 
-    return '';
-  }
+    const toteutusValue = toteutus.value;
+    const lang = props.kayttajaStore.casKayttaja.value?.lang || 'fi';
+    koulutustoimijaId.value = parseInt(koulutustoimijaIdValue);
 
-  get headerStyle() {
-    return toteutusBanner(this.toteutus);
+    router.push({
+      path: `/${toteutusValue}/${lang}/koulutustoimija/${koulutustoimijaIdValue}`,
+    });
   }
-
-  get rootNavigation() {
-    return {
-      name: 'root',
-      params: {
-        toteutus: this.toteutus,
-      },
-    };
+  else {
+    koulutustoimijaId.value = 0;
   }
-}
+});
 </script>
 
 <style lang="scss" scoped>
-@import '~@shared/styles/variables';
+@import '@shared/styles/variables';
 
 .home-container {
   .header {

@@ -1,12 +1,10 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { AbstractSisaltoviiteStore } from './AbstractSisaltoviiteStore';
 import { Computed } from '@shared/utils/interfaces';
 import { OpetussuunnitelmaDto, Sisaltoviitteet } from '@shared/api/amosaa';
-
-Vue.use(VueCompositionApi);
+import { computed } from 'vue';
 
 export class LaajaalainenOsaaminenStore extends AbstractSisaltoviiteStore implements IEditoitava {
   constructor(
