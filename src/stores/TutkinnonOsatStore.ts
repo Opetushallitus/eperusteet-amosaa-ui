@@ -1,11 +1,8 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
 import { Perusteet, OpetussuunnitelmaDto, SisaltoViiteKevytDto, Opetussuunnitelmat, Sisaltoviitteet } from '@shared/api/amosaa';
 import _ from 'lodash';
-import { Computed } from '@shared/utils/interfaces';
-import { IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class TutkinnonOsatStore {
   private state = reactive({
@@ -31,7 +28,7 @@ export class TutkinnonOsatStore {
       return {
         jarjestysnro: index + 1,
         tutkinnonosaViite,
-        perusteenTutkinnonosaViite: perusteenTutkinnonosaViitteet[tutkinnonosaViite.tosa?.perusteentutkinnonosa!],
+        perusteenTutkinnonosaViite: perusteenTutkinnonosaViitteet[tutkinnonosaViite.tosa!.perusteentutkinnonosa!],
       };
     });
   }

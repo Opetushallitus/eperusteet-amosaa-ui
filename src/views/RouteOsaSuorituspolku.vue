@@ -1,17 +1,11 @@
 <template>
-<div >
-RouteOsaSuorituspolku
-</div>
+  <div>
+    RouteOsaSuorituspolku
+  </div>
 </template>
 
-<script lang="ts">
-import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
-
-@Component
-export default class RouteOsaSuorituspolku extends Vue {
-
-}
+<script setup lang="ts">
+// Placeholder component - no functionality to migrate yet
 </script>
 
 <style scoped lang="scss">

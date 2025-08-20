@@ -1,13 +1,18 @@
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-import Vue from 'vue';
 import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto, OmaOsaAlueDtoTyyppiEnum } from '@shared/api/amosaa';
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision } from '@shared/tyypit';
 import { koodiValidator, requiredOneLang } from '@shared/validators/required';
 import { Kielet } from '@shared/stores/kieli';
+import { computed } from 'vue';
+import { $warning } from '@shared/utils/globals';
+import { Router, useRouter } from 'vue-router';
+import { App } from 'vue';
 
-Vue.use(VueCompositionApi);
+interface TutkinnonOsaStoreConfig {
+  router: Router;
+  updateNavigation: () => Promise<void>;
+}
 
 export class TutkinnonOsaStore implements IEditoitava {
   constructor(
@@ -16,8 +21,13 @@ export class TutkinnonOsaStore implements IEditoitava {
     private tutkinnonosaId: number,
     private perusteId: number,
     private versionumero: number,
-    private el: any,
     private uusi: boolean) {
+  }
+
+  protected static config: TutkinnonOsaStoreConfig;
+
+  public static install(app: App, config: TutkinnonOsaStoreConfig) {
+    TutkinnonOsaStore.config = config;
   }
 
   async acquire() {
@@ -59,7 +69,7 @@ export class TutkinnonOsaStore implements IEditoitava {
         this.setArvioinnit(perusteenTutkinnonosa, arviointiasteikot);
       }
       catch (e) {
-        this.el.$warning('perusteen-tutkinnon-osaa-ei-loydy');
+        $warning('perusteen-tutkinnon-osaa-ei-loydy');
         perusteenTutkinnonosaViite = {};
         perusteenTutkinnonosa = {};
       }
@@ -125,7 +135,7 @@ export class TutkinnonOsaStore implements IEditoitava {
       data.tutkinnonosaViite.tosa.omatutkinnonosa = data.omaTutkinnonosa;
     }
     await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.tutkinnonosaId, this.koulutustoimijaId, data.tutkinnonosaViite);
-    await this.el.updateNavigation();
+    await TutkinnonOsaStore.config.updateNavigation();
   }
 
   async release() {
@@ -150,8 +160,8 @@ export class TutkinnonOsaStore implements IEditoitava {
 
   async remove() {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId, this.tutkinnonosaId, this.koulutustoimijaId);
-    await this.el.updateNavigation();
-    this.el.$router.push({
+    await TutkinnonOsaStore.config.updateNavigation();
+    TutkinnonOsaStore.config.router.push({
       name: 'tutkinnonosat',
     });
   }
@@ -182,8 +192,8 @@ export class TutkinnonOsaStore implements IEditoitava {
 
   async copy(data) {
     const kopioituViite = (await Sisaltoviitteet.kopioiLinkattuSisalto(this.opetussuunnitelmaId, this.koulutustoimijaId, data.tutkinnonosaViite.id)).data;
-    await this.el.updateNavigation();
-    this.el.$router.push({
+    await TutkinnonOsaStore.config.updateNavigation();
+    TutkinnonOsaStore.config.router.push({
       name: 'tutkinnonosa',
       params: {
         sisaltoviiteId: kopioituViite.id,

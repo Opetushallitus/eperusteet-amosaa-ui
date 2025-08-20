@@ -1,82 +1,94 @@
 <template>
-   <div id="scroll-anchor" >
+  <div id="scroll-anchor">
     <EpEditointi :store="editointiStore">
-      <template v-slot:header>
-        <h2 class="my-1">{{ $t('koulutuksen-osat') }}</h2>
+      <template #header>
+        <h2 class="my-1">
+          {{ $t('koulutuksen-osat') }}
+        </h2>
       </template>
-      <template v-slot:default>
-
-        <div v-if="yhteisetKoulutuksenosat.length > 0" class="mb-4">
-          <h3>{{$t('yhteiset-opinnot')}}</h3>
+      <template #default>
+        <div
+          v-if="yhteisetKoulutuksenosat.length > 0"
+          class="mb-4"
+        >
+          <h3>{{ $t('yhteiset-opinnot') }}</h3>
 
           <EpKoulutuksenOsaKortti
             v-for="koulutuksenosaViite in yhteisetKoulutuksenosat"
             :key="'koulutuksenosa'+koulutuksenosaViite.id"
             :koulutuksenosa="koulutuksenosaViite.koulutuksenosa"
-            :route="{name: 'koulutuksenosa', params: {'sisaltoviiteId': koulutuksenosaViite.id}}"/>
+            :route="{name: 'koulutuksenosa', params: {'sisaltoviiteId': koulutuksenosaViite.id}}"
+          />
         </div>
 
         <template v-if="valinnaisetKoulutuksenosat.length > 0">
-          <h3>{{$t('valinnaiset-opinnot')}}</h3>
+          <h3>{{ $t('valinnaiset-opinnot') }}</h3>
 
           <EpKoulutuksenOsaKortti
             v-for="koulutuksenosaViite in valinnaisetKoulutuksenosat"
             :key="'koulutuksenosa'+koulutuksenosaViite.id"
             :koulutuksenosa="koulutuksenosaViite.koulutuksenosa"
-            :route="{name: 'koulutuksenosa', params: {'sisaltoviiteId': koulutuksenosaViite.id}}"/>
+            :route="{name: 'koulutuksenosa', params: {'sisaltoviiteId': koulutuksenosaViite.id}}"
+          />
         </template>
-
       </template>
-
     </EpEditointi>
-
   </div>
 </template>
 
-<script lang="ts">
-import { KoulutuksenOsatStore } from '@/stores/KoulutuksenOsatStore';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 import _ from 'lodash';
-import { Prop, Vue, Component, Mixins, Watch } from 'vue-property-decorator';
+
+import { KoulutuksenOsatStore } from '@/stores/KoulutuksenOsatStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
+import EpKoulutuksenOsaKortti from '@shared/components/EpKoulutuksenosa/EpKoulutuksenOsaKortti.vue';
+
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { KoulutuksenOsaDtoKoulutusOsanTyyppiEnum, OpetussuunnitelmaDto } from '@shared/api/amosaa';
-import EpKoulutuksenOsaKortti from '@shared/components/EpKoulutuksenosa/EpKoulutuksenOsaKortti.vue';
-import { AbstractRouteSisalto } from './AbstractRouteSisalto';
-import { KoulutuksenosaStore } from '../stores/KoulutuksenosaStore';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpEditointi,
-    EpKoulutuksenOsaKortti,
-  },
-})
-export default class RouteKoulutuksenOsat extends AbstractRouteSisalto {
-  private editointiStore: EditointiStore | null = null;
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+  sisaltoviiteId: number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+}>();
 
-  async fetch() {
-    this.editointiStore = new EditointiStore(
-      new KoulutuksenOsatStore(
-        this.toteutussuunnitelmaId,
-        this.koulutustoimijaId,
-        this.sisaltoviiteId,
-        this.toteutussuunnitelma as OpetussuunnitelmaDto,
-        async () => this.toteutussuunnitelmaStore.initNavigation(),
-      ),
-    );
-  }
+const editointiStore = ref<EditointiStore | null>(null);
 
-  get koulutuksenosat() {
-    return this.editointiStore?.data.value.koulutuksenosat;
-  }
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
 
-  get yhteisetKoulutuksenosat() {
-    return _.filter(this.koulutuksenosat, koulutuksenosaViite => koulutuksenosaViite.koulutuksenosa.koulutusOsanTyyppi === _.toLower(KoulutuksenOsaDtoKoulutusOsanTyyppiEnum.YHTEINEN));
-  }
+const koulutuksenosat = computed(() => {
+  return editointiStore.value?.data.koulutuksenosat;
+});
 
-  get valinnaisetKoulutuksenosat() {
-    return _.filter(this.koulutuksenosat, koulutuksenosaViite => koulutuksenosaViite.koulutuksenosa.koulutusOsanTyyppi === _.toLower(KoulutuksenOsaDtoKoulutusOsanTyyppiEnum.VALINNAINEN));
-  }
-}
+const yhteisetKoulutuksenosat = computed(() => {
+  return _.filter(koulutuksenosat.value, koulutuksenosaViite =>
+    koulutuksenosaViite.koulutuksenosa.koulutusOsanTyyppi === _.toLower(KoulutuksenOsaDtoKoulutusOsanTyyppiEnum.YHTEINEN));
+});
+
+const valinnaisetKoulutuksenosat = computed(() => {
+  return _.filter(koulutuksenosat.value, koulutuksenosaViite =>
+    koulutuksenosaViite.koulutuksenosa.koulutusOsanTyyppi === _.toLower(KoulutuksenOsaDtoKoulutusOsanTyyppiEnum.VALINNAINEN));
+});
+
+const fetch = async () => {
+  editointiStore.value = new EditointiStore(
+    new KoulutuksenOsatStore(
+      props.toteutussuunnitelmaId,
+      props.koulutustoimijaId,
+      props.sisaltoviiteId,
+      toteutussuunnitelma.value as OpetussuunnitelmaDto,
+    ),
+  );
+};
+
+// Initialize the store
+fetch();
 </script>
 
 <style scoped lang="scss">

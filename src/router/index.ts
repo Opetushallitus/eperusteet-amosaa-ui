@@ -1,6 +1,4 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import VueMeta from 'vue-meta';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import EpErrorPage from '@shared/components/EpErrorPage/EpErrorPage.vue';
 import RouteLang from '@/views/RouteLang.vue';
 import RouteRoot from '@/views/RouteRoot.vue';
@@ -39,30 +37,27 @@ import RouteKotoOpinto from '@/views/RouteKotoOpinto.vue';
 import RouteOsaAlue from '@/views/RouteOsaAlue.vue';
 
 import { stores } from '@/stores/index';
-import { createLogger } from '@shared/utils/logger';
-import { changeLang } from '@shared/utils/router';
+import { changeLang, convertRouteParamsToNumbers } from '@shared/utils/router';
 import { TervetuloaTeksti, TervetuloaTekstiKuvaus, ToteutusTekstikappaleStore, ToteutusTiles } from '@/utils/toteutustypes';
 import { Maintenance } from '@shared/api/amosaa';
 import _ from 'lodash';
 import RouteOsaamismerkkiKappale from '@/views/RouteOsaamismerkkiKappale.vue';
 import { BrowserStore } from '@shared/stores/BrowserStore';
-
-Vue.use(VueRouter);
-Vue.use(VueMeta, {
-  refreshOnceOnNavigation: true,
-});
-
-const logger = createLogger('Router');
+import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
+import { Kielet } from '@shared/stores/kieli';
+import { useLoading } from 'vue-loading-overlay';
+import { loadingOptions } from '@/utils/loading';
 
 const props = (route: any) => {
   return {
-    ...route.params,
-    ..._.mapValues(route.query, value => !_.isNaN(_.toNumber(value)) ? _.toNumber(value) : value),
+    ...convertRouteParamsToNumbers(route.params),
+    ...convertRouteParamsToNumbers(route.query),
     ...stores,
   };
 };
 
-const router = new VueRouter({
+const router = createRouter({
+  history: createWebHashHistory(),
   routes: [{
     path: '',
     alias: '/',
@@ -392,7 +387,6 @@ const router = new VueRouter({
     }, {
       path: '*',
       redirect: (to) => {
-        logger.error('Unknown route', to);
         return {
           name: 'virhe',
           query: {
@@ -404,7 +398,33 @@ const router = new VueRouter({
   }],
 });
 
-export default router;
+window.addEventListener('beforeunload', e => {
+  if (EditointiStore.anyEditing()) {
+    e.preventDefault();
+    // Vanhemmat selainversiot vaativat erillisen varmistustekstin
+    e.returnValue = Kielet.kaannaOlioTaiTeksti('poistumisen-varmistusteksti');
+  }
+});
+
+router.beforeEach((to, from, next) => {
+  const hash = window.location.hash;
+
+  if (hash.includes('%2F')) {
+    const decoded = decodeURIComponent(hash).replace('//', '/');
+    window.location.replace(window.location.pathname + window.location.search + decoded);
+    window.location.reload();
+  }
+  else {
+    next();
+  }
+});
+
+router.beforeEach((to, from, next) => {
+  if (!EditointiStore.anyEditing()) {
+    loader = $loading.show();
+  }
+  next();
+});
 
 router.beforeEach((to, from, next) => {
   if (!!from.params.toteutus && !!to.params.toteutus && from.params.toteutus !== to.params.toteutus) {
@@ -439,6 +459,9 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
+const $loading = useLoading(loadingOptions);
+let loader: any = null;
+
 router.beforeEach((to, from, next) => {
   changeLang(to, from);
   next();
@@ -452,5 +475,15 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach(() => {
+  hideLoading();
   BrowserStore.changeLocation(location.href);
 });
+
+function hideLoading() {
+  if (loader !== null) {
+    (loader as any).hide();
+    loader = null;
+  }
+}
+
+export default router;

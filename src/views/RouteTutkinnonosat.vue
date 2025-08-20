@@ -1,273 +1,299 @@
 <template>
-  <div class="m-3" id="scroll-anchor">
-    <h2 class="m-0">{{ $t('tutkinnon-osat') }}</h2>
+  <div
+    id="scroll-anchor"
+    class="m-3"
+  >
+    <h2 class="m-0">
+      {{ $t('tutkinnon-osat') }}
+    </h2>
 
-    <ep-spinner v-if="!tutkinnonosat || isDeleting"></ep-spinner>
+    <ep-spinner v-if="!tutkinnonosat || isDeleting" />
 
     <div v-else>
       <div class="d-flex justify-content-between mb-4">
-
-        <EpSearch v-model="queryNimi" :placeholder="$t('etsi')"/>
+        <EpSearch
+          v-model="queryNimi"
+          :placeholder="$t('etsi')"
+        />
 
         <div class="d-flex">
-          <EpButton variant="link"
-                    icon="delete"
-                    class="btn btn-link p-0"
-                    @click="removeSelected()"
-                    :disabled="selectedTutkinnonosat.length === 0">
-            {{$t('poista-valitut')}}
+          <EpButton
+            variant="link"
+            icon="delete"
+            class="btn btn-link p-0"
+            :disabled="selectedTutkinnonosat.length === 0"
+            @click="removeSelected()"
+          >
+            {{ $t('poista-valitut') }}
           </EpButton>
           <ep-tutkinnonosa-tuonti
-            :tutkinnonosatTuontiStore="tutkinnonosatTuontiStore"
-            :toteutussuunnitelmaId="toteutussuunnitelmaId"
-            :koulutustoimijaId="koulutustoimijaId"
-            :updateNavigation="updateNavigation" />
+            :tutkinnonosat-tuonti-store="tutkinnonosatTuontiStore"
+            :toteutussuunnitelma-id="toteutussuunnitelmaId"
+            :koulutustoimija-id="koulutustoimijaId"
+            :update-navigation="updateNavigation"
+          />
         </div>
       </div>
 
-      <b-table responsive striped hover no-local-sorting no-sort-reset
-               :items="tutkinnonosatWithSelected"
-               :fields="fields"
-               @row-clicked="selectRow"
-      class="vertical-middle">
-        <template v-slot:head(valitse-kaikki)>
-          <div class="selectable" @click="selectAllRows()">
-            <EpMaterialIcon v-if="valitseKaikki" class="checked mr-2">check_box</EpMaterialIcon>
-            <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
+      <b-table
+        responsive
+        striped
+        hover
+        no-local-sorting
+        no-sort-reset
+        :items="tutkinnonosatWithSelected"
+        :fields="fields"
+        class="vertical-middle"
+        @row-clicked="selectRow"
+      >
+        <template #head(valitse-kaikki)>
+          <div
+            class="selectable"
+            @click="selectAllRows()"
+          >
+            <EpMaterialIcon
+              v-if="valitseKaikki"
+              class="checked mr-2"
+            >
+              check_box
+            </EpMaterialIcon>
+            <EpMaterialIcon
+              v-else
+              class="checked mr-2"
+            >
+              check_box_outline_blank
+            </EpMaterialIcon>
           </div>
         </template>
-        <template v-slot:cell(valitse-kaikki)="{ item }">
+        <template #cell(valitse-kaikki)="{ item }">
           <div class="selectable">
-            <EpMaterialIcon v-if="item.selected" class="checked mr-2">check_box</EpMaterialIcon>
-            <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
+            <EpMaterialIcon
+              v-if="item.selected"
+              class="checked mr-2"
+            >
+              check_box
+            </EpMaterialIcon>
+            <EpMaterialIcon
+              v-else
+              class="checked mr-2"
+            >
+              check_box_outline_blank
+            </EpMaterialIcon>
           </div>
         </template>
-        <template v-slot:cell(nimi)="data">
+        <template #cell(nimi)="data">
           <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
             {{ $kaanna(data.item.nimi) }}
-            <span class="paikallinen" v-if="data.item.tutkinnonosaViite.tosa.tyyppi === 'oma'">({{$t('tutkinnon-osa-paikallinen-merkki')}})</span>
+            <span
+              v-if="data.item.tutkinnonosaViite.tosa.tyyppi === 'oma'"
+              class="paikallinen"
+            >({{ $t('tutkinnon-osa-paikallinen-merkki') }})</span>
           </router-link>
         </template>
-        <template v-slot:cell(actions)="data">
-          <EpSpinner v-if="data.item.poistossa" small/>
-          <EpButton v-else
-                    variant="link"
-                    icon="delete"
-                    class="btn btn-link p-0"
-                    @click="remove(data.item.tutkinnonosaViite.id)">
-          </EpButton>
+        <template #cell(actions)="data">
+          <EpSpinner
+            v-if="data.item.poistossa"
+            small
+          />
+          <EpButton
+            v-else
+            variant="link"
+            icon="delete"
+            class="btn btn-link p-0"
+            @click="remove(data.item.tutkinnonosaViite.id)"
+          />
         </template>
       </b-table>
-
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 import _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+
 import { TutkinnonOsatStore } from '@/stores/TutkinnonOsatStore';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
-import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpTutkinnonosaTuonti from '@/components/EpSisaltoLisays/EpTutkinnonosaTuonti.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+
+import { Kielet } from '@shared/stores/kieli';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import { SisaltoviiteLaajaDto, Sisaltoviitteet } from '@shared/api/amosaa';
-import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import { $t, $kaanna, $sdt, $bvModal } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpButton,
-    EpSearch,
-    EpSpinner,
-    EpTutkinnonosaTuonti,
-    EpMaterialIcon,
-  },
-})
-export default class RouteTutkinnonosat extends Vue {
-  @Prop({ required: true })
-  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const props = defineProps<{
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  tutkinnonosatTuontiStore: TutkinnonosatTuontiStore;
+  toteutussuunnitelmaId: number;
+  koulutustoimijaId: string;
+}>();
 
-  @Prop({ required: true })
-  private tutkinnonosatTuontiStore!: TutkinnonosatTuontiStore;
+const tutkinnonOsatStore = new TutkinnonOsatStore();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const queryNimi = ref('');
+const poistossa = ref<number[]>([]);
+const isDeleting = ref(false);
+const valitseKaikki = ref(false);
+const selectedTutkinnonosat = ref<SisaltoviiteLaajaDto[]>([]);
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const opetussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
 
-  private tutkinnonOsatStore = new TutkinnonOsatStore();
-
-  private queryNimi: string = '';
-  private poistossa: number[] = [];
-  private isDeleting: boolean = false;
-  private valitseKaikki = false;
-  private selectedTutkinnonosat: SisaltoviiteLaajaDto[] = [];
-
-  @Watch('opetussuunnitelma', { immediate: true })
-  async opetussuunnitelmachange() {
-    await this.fetch();
-  }
-
-  async fetch() {
-    this.valitseKaikki = false;
-    if (this.opetussuunnitelma) {
-      await this.tutkinnonOsatStore.fetch(this.opetussuunnitelma.id!,
-        _.toString(this.opetussuunnitelma.koulutustoimija?.id),
-        this.opetussuunnitelma.peruste?.id!);
-    }
-    this.selectedTutkinnonosat = [];
-  }
-
-  async remove(tutkinnonosaId) {
-    if (await this.confirm()) {
-      this.poistossa.push(tutkinnonosaId);
-      await Sisaltoviitteet.removeSisaltoViite(this.toteutussuunnitelmaId, tutkinnonosaId, this.koulutustoimijaId);
-      await this.updateNavigation();
-      await this.fetch();
-      _.pull(this.poistossa, tutkinnonosaId);
-    }
-  }
-
-  async removeSelected() {
-    let ids = _.chain(this.selectedTutkinnonosat)
-      .map(osa => _.toNumber(_.get(osa, 'tutkinnonosaViite.id')))
+const tutkinnonosat = computed(() => {
+  if (tutkinnonOsatStore?.tutkinnonosat.value) {
+    return _.chain(tutkinnonOsatStore.tutkinnonosat.value)
+      .filter(tutkinnonosa => _.includes(
+        _.toLower(_.get(tutkinnonosa, 'tutkinnonosaViite.tekstiKappale.nimi.' + Kielet.getSisaltoKieli.value)),
+        _.toLower(queryNimi.value),
+      ))
+      .map(tutkinnonosa => {
+        return {
+          ...tutkinnonosa,
+          nimi: _.has(tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi, Kielet.getSisaltoKieli.value) ? tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi : $t('uusi-tutkinnonosa'),
+          poistossa: _.includes(poistossa.value, tutkinnonosa.tutkinnonosaViite.id),
+        };
+      })
       .value();
-    if (await this.confirm()) {
-      this.isDeleting = true;
-      await Sisaltoviitteet.removeSisaltoViitteet(this.toteutussuunnitelmaId, this.koulutustoimijaId, ids);
-      await this.updateNavigation();
-      await this.fetch();
-      this.isDeleting = false;
-    }
   }
+  return undefined;
+});
 
-  async confirm() {
-    let modalContent = [
-      this.$createElement('strong', this.$t('tata-toimintoa-ei-voida-perua') as string),
+const tutkinnonosatWithSelected = computed(() => {
+  return _.map(tutkinnonosat.value, tutkinnonosa => {
+    return {
+      ...tutkinnonosa,
+      selected: _.includes(_.map(selectedTutkinnonosat.value, 'tutkinnonosaViite.id'), _.get(tutkinnonosa, 'tutkinnonosaViite.id')),
+    };
+  });
+});
+
+const fields = computed(() => {
+  return [{
+    key: 'valitse-kaikki',
+    sortable: false,
+    tdClass: 'align-middle',
+  }, {
+    key: 'jarjestysnro',
+    label: $t('nro') as string,
+    sortable: true,
+    tdClass: 'align-middle',
+  }, {
+    key: 'nimi',
+    sortable: true,
+    sortByFormatted: true,
+    label: $t('nimi') as string,
+    tdClass: 'align-middle',
+    formatter: (value: any, key: string, item: any) => {
+      return $kaanna(value);
+    },
+  }, {
+    key: 'perusteenTutkinnonosaViite.laajuus',
+    sortable: true,
+    label: $t('laajuus') as string,
+    tdClass: 'align-middle',
+    formatter: (value: any, key: string, item: any) => {
+      const laajuus = item.perusteenTutkinnonosaViite?.laajuus || item.tutkinnonosaViite?.tosa?.omatutkinnonosa?.laajuus;
+      return laajuus ? laajuus + ' ' + $t('osaamispiste') : '';
+    },
+  }, {
+    key: 'tutkinnonosaViite.tosa.muokattu',
+    sortable: true,
+    label: $t('muokattu') as string,
+    tdClass: 'align-middle',
+    formatter: (value: any, key: string, item: any) => {
+      return $sdt(item.tutkinnonosaViite.tosa.muokattu);
+    },
+  }, {
+    key: 'actions',
+    label: '',
+    thStyle: { borderBottom: '0px' },
+    tdStyle: { width: '50px' },
+    tdClass: 'text-center',
+  }];
+});
+
+const fetch = async () => {
+  valitseKaikki.value = false;
+  if (opetussuunnitelma.value) {
+    await tutkinnonOsatStore.fetch(opetussuunnitelma.value.id!,
+      _.toString(opetussuunnitelma.value.koulutustoimija!.id),
+      opetussuunnitelma.value.peruste!.id!);
+  }
+  selectedTutkinnonosat.value = [];
+};
+
+const confirm = async () => {
+  return $bvModal.msgBoxConfirm($t('tata-toimintoa-ei-voida-perua') as string, {
+    title: $t('varmista-poisto'),
+    okVariant: 'primary',
+    okTitle: $t('poista'),
+    cancelVariant: 'link',
+    cancelTitle: $t('peruuta'),
+    centered: true,
+  });
+};
+
+const remove = async (tutkinnonosaId: any) => {
+  if (await confirm()) {
+    poistossa.value.push(tutkinnonosaId);
+    await Sisaltoviitteet.removeSisaltoViite(props.toteutussuunnitelmaId, tutkinnonosaId, props.koulutustoimijaId);
+    await updateNavigation();
+    await fetch();
+    _.pull(poistossa.value, tutkinnonosaId);
+  }
+};
+
+const removeSelected = async () => {
+  let ids = _.chain(selectedTutkinnonosat.value)
+    .map(osa => _.toNumber(_.get(osa, 'tutkinnonosaViite.id')))
+    .value();
+  if (await confirm()) {
+    isDeleting.value = true;
+    await Sisaltoviitteet.removeSisaltoViitteet(props.toteutussuunnitelmaId, props.koulutustoimijaId, ids);
+    await updateNavigation();
+    await fetch();
+    isDeleting.value = false;
+  }
+};
+
+const updateNavigation = async () => {
+  await props.toteutussuunnitelmaStore.initNavigation();
+};
+
+const selectAllRows = () => {
+  valitseKaikki.value = !valitseKaikki.value;
+  if (valitseKaikki.value) {
+    selectedTutkinnonosat.value = [
+      ...(tutkinnonosat.value || []) as SisaltoviiteLaajaDto[],
     ];
-    const vahvistusSisalto = this.$createElement('div', {}, modalContent).children;
+  }
+  else {
+    selectedTutkinnonosat.value = [];
+  }
+};
 
-    return this.$bvModal.msgBoxConfirm((vahvistusSisalto as any), {
-      title: this.$t('varmista-poisto'),
-      okVariant: 'primary',
-      okTitle: this.$t('poista'),
-      cancelVariant: 'link',
-      cancelTitle: this.$t('peruuta'),
-      centered: true,
-      ...{} as any,
+const selectRow = (item: any) => {
+  if (_.includes(_.map(selectedTutkinnonosat.value, 'tutkinnonosaViite.id'), item.tutkinnonosaViite.id)) {
+    selectedTutkinnonosat.value = _.filter(selectedTutkinnonosat.value, tutkinnonosa => {
+      return _.get(tutkinnonosa, 'tutkinnonosaViite.id') !== item.tutkinnonosaViite.id;
     });
   }
-
-  async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation();
+  else {
+    selectedTutkinnonosat.value = [
+      ...selectedTutkinnonosat.value,
+      item,
+    ];
   }
+};
 
-  selectAllRows() {
-    this.valitseKaikki = !this.valitseKaikki;
-    if (this.valitseKaikki) {
-      this.selectedTutkinnonosat = [
-        ...(this.tutkinnonosat || []) as SisaltoviiteLaajaDto[],
-      ];
-    }
-    else {
-      this.selectedTutkinnonosat = [];
-    }
-  }
-
-  selectRow(item) {
-    if (_.includes(_.map(this.selectedTutkinnonosat, 'tutkinnonosaViite.id'), item.tutkinnonosaViite.id)) {
-      this.selectedTutkinnonosat = _.filter(this.selectedTutkinnonosat, tutkinnonosa => {
-        return _.get(tutkinnonosa, 'tutkinnonosaViite.id') !== item.tutkinnonosaViite.id;
-      });
-    }
-    else {
-      this.selectedTutkinnonosat = [
-        ...this.selectedTutkinnonosat,
-        item,
-      ];
-    }
-  }
-
-  get tutkinnonosatWithSelected() {
-    return _.map(this.tutkinnonosat, tutkinnonosa => {
-      return {
-        ...tutkinnonosa,
-        selected: _.includes(_.map(this.selectedTutkinnonosat, 'tutkinnonosaViite.id'), _.get(tutkinnonosa, 'tutkinnonosaViite.id')),
-      };
-    });
-  }
-
-  get opetussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
-  get tutkinnonosat() {
-    if (this.tutkinnonOsatStore?.tutkinnonosat.value) {
-      return _.chain(this.tutkinnonOsatStore.tutkinnonosat.value)
-        .filter(tutkinnonosa => _.includes(
-          _.toLower(_.get(tutkinnonosa, 'tutkinnonosaViite.tekstiKappale.nimi.' + Kielet.getSisaltoKieli.value)),
-          _.toLower(this.queryNimi),
-        ))
-        .map(tutkinnonosa => {
-          return {
-            ...tutkinnonosa,
-            nimi: _.has(tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi, Kielet.getSisaltoKieli.value) ? tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi : this.$t('uusi-tutkinnonosa'),
-            poistossa: _.includes(this.poistossa, tutkinnonosa.tutkinnonosaViite.id),
-          };
-        })
-        .value();
-    }
-  }
-
-  get fields() {
-    return [{
-      key: 'valitse-kaikki',
-      sortable: false,
-      tdClass: 'align-middle',
-    }, {
-      key: 'jarjestysnro',
-      label: this.$t('nro') as string,
-      sortable: true,
-      tdClass: 'align-middle',
-    }, {
-      key: 'nimi',
-      sortable: true,
-      sortByFormatted: true,
-      label: this.$t('nimi') as string,
-      tdClass: 'align-middle',
-      formatter: (value: any, key: string, item: any) => {
-        return this.$kaanna(value);
-      },
-    }, {
-      key: 'perusteenTutkinnonosaViite.laajuus',
-      sortable: true,
-      label: this.$t('laajuus') as string,
-      tdClass: 'align-middle',
-      formatter: (value: any, key: string, item: any) => {
-        const laajuus = item.perusteenTutkinnonosaViite?.laajuus || item.tutkinnonosaViite?.tosa?.omatutkinnonosa?.laajuus;
-        return laajuus ? laajuus + ' ' + this.$t('osaamispiste') : '';
-      },
-    }, {
-      key: 'tutkinnonosaViite.tosa.muokattu',
-      sortable: true,
-      label: this.$t('muokattu') as string,
-      tdClass: 'align-middle',
-      formatter: (value: any, key: string, item: any) => {
-        return this.$sdt(item.tutkinnonosaViite.tosa.muokattu);
-      },
-    }, {
-      key: 'actions',
-      label: '',
-      thStyle: { borderBottom: '0px' },
-      tdStyle: { width: '50px' },
-      tdClass: 'text-center',
-    }];
-  }
-}
+watch(opetussuunnitelma, async () => {
+  await fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

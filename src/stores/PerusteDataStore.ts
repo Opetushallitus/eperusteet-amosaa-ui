@@ -1,12 +1,11 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto } from '@shared/api/amosaa';
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, Kieli } from '@shared/tyypit';
 import { koodiValidator } from '@shared/validators/required';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class PerusteDataStore {
   constructor(private perusteId: number,

@@ -1,8 +1,8 @@
 import { EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-import { computed } from '@vue/composition-api';
 import { SisaltoEditStore } from './SisaltoEditStore';
 import _ from 'lodash';
 import { Sisaltoviitteet } from '@shared/api/amosaa';
+import { computed } from 'vue';
 
 export class OsaAlueStore extends SisaltoEditStore {
   constructor(
@@ -11,10 +11,9 @@ export class OsaAlueStore extends SisaltoEditStore {
     sisaltoViiteId: number,
     perusteId: number,
     versionumero: number,
-    el: any,
     uusi: boolean,
     private osaAlueId: number) {
-    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoViiteId, perusteId, versionumero, el, uusi);
+    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoViiteId, perusteId, versionumero, uusi, updateNavigation);
   }
 
   public features(data: any) {
@@ -35,14 +34,14 @@ export class OsaAlueStore extends SisaltoEditStore {
       ...data,
       osaAlueet: _.filter(data.osaAlueet, osaAlue => osaAlue.id !== this.osaAlueId),
     });
-    this.el.$router.push({
+    SisaltoEditStore.config.router.push({
       name: 'tutkinnonosa',
       params: {
         sisaltoviiteId: this.sisaltoViiteId,
       },
     });
 
-    await this.el.updateNavigation();
+    await this.updateNavigation();
   }
 
   async hide(data) {

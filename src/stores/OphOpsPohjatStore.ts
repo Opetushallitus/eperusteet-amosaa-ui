@@ -1,11 +1,8 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { Opetussuunnitelmat, OpetussuunnitelmaBaseDto, PageOpetussuunnitelmaDto } from '@shared/api/amosaa';
 import _ from 'lodash';
-import { IToteutussuunnitelmaProvider } from '@/components/EpToteutussuunnitelmaListaus/types';
-import { Toteutus } from '@shared/utils/perusteet';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class OphOpsPohjatStore {
   private state = reactive({

@@ -1,19 +1,29 @@
 <template>
-  <div class="home-container minfull" sticky-container>
+  <div
+    class="home-container minfull"
+    sticky-container
+  >
     <EpTestiymparisto />
 
     <div class="view-container">
-      <div class="header" ref="header" :style="headerStyle" :class="toteutus" id="scroll-anchor">
+      <div
+        id="scroll-anchor"
+        ref="headerRef"
+        class="header"
+        :style="headerStyle"
+        :class="toteutus"
+      >
         <EpNavbar
           :class="toteutus"
           :kayttaja="kayttaja"
           :koulutustoimija="koulutustoimija"
           :koulutustoimijat="koulutustoimijatOikeuksilla"
-          :rootNavigation="rootNavigation"
-          :sovellusOikeudet="sovellusOikeudet"
-          :logoutHref="logoutHref"
-          :sticky="routeStickyNavi"/>
-        <PortalTarget ref="innerPortal" name="headerExtension" />
+          :root-navigation="rootNavigation"
+          :sovellus-oikeudet="sovellusOikeudet"
+          :logout-href="logoutHref"
+          :sticky="routeStickyNavi"
+        />
+        <div id="headerExtension" />
       </div>
       <RouterView />
     </div>
@@ -25,146 +35,131 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref, useTemplateRef, watch } from 'vue';
+import { useHead } from '@unhead/vue';
+import { useRoute } from 'vue-router';
 import _ from 'lodash';
-import { Prop, Watch, Component, Vue } from 'vue-property-decorator';
 import Sticky from 'vue-sticky-directive';
+
 import { KayttajaStore } from '@/stores/kayttaja';
-import { Meta } from '@shared/utils/decorators';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
+import EpTestiymparisto from '@shared/components/EpTestiymparisto/EpTestiymparisto.vue';
+import EpPalauteLinkki from '@shared/components/EpPalauteLinkki/EpPalauteLinkki.vue';
+
 import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
 import { Koulutustoimijat, KoulutustoimijaDto, baseURL } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
-import EpTestiymparisto from '@shared/components/EpTestiymparisto/EpTestiymparisto.vue';
-import EpPalauteLinkki from '@shared/components/EpPalauteLinkki/EpPalauteLinkki.vue';
+import { $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpNavbar,
-    EpFooter,
-    EpTestiymparisto,
-    EpPalauteLinkki,
+const props = withDefaults(defineProps<{
+  kayttajaStore: KayttajaStore;
+  toteutus: Toteutus;
+  koulutustoimijaId: number;
+}>(), {
+  toteutus: undefined,
+});
+
+const route = useRoute();
+
+const headerRef = useTemplateRef('headerRef');
+
+const koulutustoimija = ref<KoulutustoimijaDto | null>(null);
+
+const routeStickyNavi = computed(() => {
+  return route.name !== 'home';
+});
+
+const kayttaja = computed(() => {
+  return props.kayttajaStore?.tiedot?.value || null;
+});
+
+const koulutustoimijat = computed(() => {
+  return props.kayttajaStore?.koulutustoimijat?.value || null;
+});
+
+const koulutustoimijatOikeuksilla = computed(() => {
+  return _.map(koulutustoimijat.value, kt => {
+    return {
+      ...kt,
+      oikeus: props.kayttajaStore.organisaatioOikeudet.value[kt.id!],
+    };
+  });
+});
+
+const headerStyle = computed(() => {
+  return {
+    ...toteutusBanner(props.toteutus),
+    ...FrontpageHeaderStyles[props.toteutus],
+  };
+});
+
+const rootNavigation = computed(() => {
+  return {
+    name: 'rootToteutus',
+    params: {
+      toteutus: props.toteutus,
+    },
+  };
+});
+
+const sovellusOikeudet = computed(() => {
+  return props.kayttajaStore?.sovellusOikeudet.value;
+});
+
+const logoutHref = computed(() => {
+  return baseURL + '/api/logout';
+});
+
+// Meta information setup
+const lang = computed(() => _.get(route, 'params.lang'));
+const hasRouteName = computed(() => route && route.name);
+
+useHead(computed(() => ({
+  title: hasRouteName.value ? $t('route-' + route.name) : $t(SovellusTitle[props.toteutus!]),
+  titleTemplate: hasRouteName.value ? '%s - ' + $t(SovellusTitle[props.toteutus!]) : null,
+  htmlAttrs: {
+    lang: lang.value || 'fi',
   },
-  directives: {
-    Sticky,
-  },
-})
-export default class RouteRoot extends Vue {
-  @Prop({ required: true })
-  private kayttajaStore!: KayttajaStore;
+  meta: [
+    {
+      name: 'description',
+      content: $t('amosaa-tervetuloa-kuvaus'),
+    },
+    {
+      name: 'keywords',
+      content: $t('avainsanalista'),
+    },
+    {
+      name: 'author',
+      content: $t('opetushallitus'),
+    },
+    {
+      property: 'og:site_name',
+      content: $t('eperusteet'),
+    },
+    {
+      property: 'og:description',
+      content: $t('amosaa-tervetuloa-kuvaus'),
+    },
+    {
+      property: 'og:locale',
+      content: (lang.value || 'fi') + '_FI',
+    },
+  ],
+})));
 
-  @Prop({ required: false })
-  private toteutus!: Toteutus;
-
-  private height = null as number | null;
-  private koulutustoimija = null as KoulutustoimijaDto | null;
-
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
-
-  @Watch('koulutustoimijaId', { immediate: true })
-  async onKoulutustoimijaIdChange(newValue: number, oldValue: number) {
-    if (newValue && newValue !== oldValue) {
-      this.koulutustoimija = (await Koulutustoimijat.getKoulutustoimija(this.koulutustoimijaId)).data;
-    }
+watch(() => props.koulutustoimijaId, async (newValue, oldValue) => {
+  if (newValue && newValue !== oldValue) {
+    koulutustoimija.value = (await Koulutustoimijat.getKoulutustoimija(props.koulutustoimijaId)).data;
   }
-
-  get routeStickyNavi() {
-    return this.$route.name !== 'home';
-  }
-
-  @Meta
-  getMetaInfo() {
-    const lang = _.get(this.$route, 'params.lang');
-    const hasRouteName = this.$route && this.$route.name;
-    return {
-      title: hasRouteName ? this.$t('route-' + this.$route.name) : this.$t(SovellusTitle[this.toteutus]),
-      titleTemplate: hasRouteName ? '%s - ' + this.$t(SovellusTitle[this.toteutus]) : null,
-      htmlAttrs: {
-        lang: lang || 'fi',
-      },
-      meta: [
-        {
-          vmid: 'description',
-          name: 'description',
-          content: this.$t('amosaa-tervetuloa-kuvaus'),
-        },
-        {
-          vmid: 'keywords',
-          name: 'keywords',
-          content: this.$t('avainsanalista'),
-        },
-        {
-          vmid: 'author',
-          name: 'author',
-          content: this.$t('opetushallitus'),
-        },
-        {
-          vmid: 'og:site_name',
-          property: 'og:site_name',
-          content: this.$t('eperusteet'),
-        },
-        {
-          vmid: 'og:description',
-          property: 'og:description',
-          content: this.$t('amosaa-tervetuloa-kuvaus'),
-        },
-        {
-          vmid: 'og:locale',
-          property: 'og:locale',
-          content: lang + '_FI',
-        },
-      ],
-    };
-  }
-
-  get kayttaja() {
-    return this.kayttajaStore?.tiedot?.value || null;
-  }
-
-  get koulutustoimijatOikeuksilla() {
-    return _.map(this.koulutustoimijat, kt => {
-      return {
-        ...kt,
-        oikeus: this.kayttajaStore.organisaatioOikeudet.value[kt.id!],
-      };
-    });
-  }
-
-  get koulutustoimijat() {
-    return this.kayttajaStore?.koulutustoimijat?.value || null;
-  }
-
-  get headerStyle() {
-    return {
-      ...toteutusBanner(this.toteutus),
-      ...FrontpageHeaderStyles[this.toteutus],
-    };
-  }
-
-  get rootNavigation() {
-    return {
-      name: 'rootToteutus',
-      params: {
-        toteutus: this.toteutus,
-      },
-    };
-  }
-
-  get sovellusOikeudet() {
-    return this.kayttajaStore?.sovellusOikeudet.value;
-  }
-
-  get logoutHref() {
-    return baseURL + '/api/logout';
-  }
-}
+}, { immediate: true });
 </script>
 
 <style lang="scss" scoped>
-@import '~@shared/styles/variables';
+@import '@shared/styles/variables';
 
 .home-container {
   min-height: 100vh;
@@ -184,15 +179,15 @@ export default class RouteRoot extends Vue {
 
 .header {
   &.kotoutumiskoulutus {
-    ::v-deep .navbar .breadcrumb .breadcrumb-item,
-    ::v-deep .navbar .breadcrumb .breadcrumb-item::before,
-    ::v-deep .navbar .breadcrumb .breadcrumb-item a,
-    ::v-deep .navbar #content-lang-selector a,
-    ::v-deep .navbar #content-lang-selector a .kieli-valikko,
-    ::v-deep .navbar #content-lang-selector a .kieli-valikko .kielivalitsin,
-    ::v-deep .navbar .kayttaja #kayttaja-dropdown a,
-    ::v-deep .navbar .kayttaja #kayttaja-dropdown a .kayttaja-valikko,
-    ::v-deep .portal-menu h1 .asetukset .hallinta {
+    :deep(.navbar .breadcrumb .breadcrumb-item),
+    :deep(.navbar .breadcrumb .breadcrumb-item::before),
+    :deep(.navbar .breadcrumb .breadcrumb-item a),
+    :deep(.navbar #content-lang-selector a),
+    :deep(.navbar #content-lang-selector a .kieli-valikko),
+    :deep(.navbar #content-lang-selector a .kieli-valikko .kielivalitsin),
+    :deep(.navbar .kayttaja #kayttaja-dropdown a),
+    :deep(.navbar .kayttaja #kayttaja-dropdown a .kayttaja-valikko),
+    :deep(.portal-menu h1 .asetukset .hallinta) {
       color: #000000;
     }
   }

@@ -424,6 +424,7 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
   [OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA]: {
     title: 'pohjan-tiedot',
     nimi: 'pohjan-nimi',
+    tiivistelma: 'kuvaus',
   },
   [Toteutus.TUTKINTOONVALMENTAVA]: {
     title: 'toteutussuunnitelman-tiedot',

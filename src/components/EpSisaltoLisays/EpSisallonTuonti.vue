@@ -1,94 +1,145 @@
 <template>
-<div>
-  <div v-b-modal.sisallontuonti>
-    <span @click="openModal">
-      {{$t(kaannokset['tuoBtn'])}}
-    </span>
-  </div>
-  <b-modal ref="sisallontuontiModal"
-           id="sisallontuonti"
-           size="lg"
-           centered
-           @close="clear">
-    <template v-slot:modal-title>
-      {{ $t('tuo-sisaltoa') }}
-    </template>
-
-    <div v-if="!toteutussuunnitelma">
-      <p>{{$t(kaannokset['topicNoOps'])}}</p>
-      <ep-search v-model="query.nimi" :placeholder="$t(kaannokset['searchPlaceholder'])"/>
-      <ep-spinner v-if="!opetussuunnitelmatpage" />
-
-      <div v-else>
-        <b-table responsive striped :items="opetussuunnitelmatFiltered" :fields="opetussuunnitelmaFields">
-          <template v-slot:cell(nimi)="data">
-            <ep-button variant="link" @click="valitseToteutussuunnitelma(data.item)">
-              {{ $kaanna(data.item.nimi) }}
-            </ep-button>
-          </template>
-        </b-table>
-
-        <b-pagination
-          v-model="page"
-          :total-rows="totalRows"
-          :per-page="query.sivukoko"
-          align="center"
-          aria-controls="tuo-sisaltoa-modaali"></b-pagination>
-      </div>
+  <div>
+    <div v-b-modal.sisallontuonti>
+      <span @click="openModal">
+        {{ $t(kaannokset['tuoBtn']) }}
+      </span>
     </div>
+    <b-modal
+      id="sisallontuonti"
+      ref="sisallontuontiModal"
+      size="lg"
+      centered
+      @close="clear"
+    >
+      <template #modal-title>
+        {{ $t('tuo-sisaltoa') }}
+      </template>
 
-    <div v-else>
-      <p>{{$t(kaannokset['topicOps'])}} {{$kaanna(toteutussuunnitelma.nimi)}}</p>
-      <ep-spinner v-if="!sisaltoviitteet" />
+      <div v-if="!toteutussuunnitelma">
+        <p>{{ $t(kaannokset['topicNoOps']) }}</p>
+        <ep-search
+          v-model="query.nimi"
+          :placeholder="$t(kaannokset['searchPlaceholder'])"
+        />
+        <ep-spinner v-if="!opetussuunnitelmatpage" />
 
-      <div v-else>
-        <div v-for="(sisaltoTaulu, index) in sisaltoTaulut" :key="'sisaltotaulu'+index">
+        <div v-else>
           <b-table
             responsive
             striped
-            :items="sisaltoTaulu.items"
-            :fields="sisaltoTaulu.fields"
-            :per-page="sisaltoSivuKoko"
-            :current-page="sisaltoPages[sisaltoTaulu.page]"
-            >
-            <template v-slot:cell(nimi)="{ item }">
-              <div class="selectable" @click="selectRow(item.id)">
-                <EpMaterialIcon v-if="item.selected" class="checked mr-2">check_box</EpMaterialIcon>
-                <EpMaterialIcon v-else class="checked mr-2">check_box_outline_blank</EpMaterialIcon>
-                <span>{{$kaanna(item.tekstiKappale.nimi)}}</span>
-              </div>
+            :items="opetussuunnitelmatFiltered"
+            :fields="opetussuunnitelmaFields"
+          >
+            <template #cell(nimi)="data">
+              <ep-button
+                variant="link"
+                @click="valitseToteutussuunnitelma(data.item)"
+              >
+                {{ $kaanna(data.item.nimi) }}
+              </ep-button>
             </template>
           </b-table>
-          <b-pagination v-if="sisaltoTaulu.items.length > sisaltoSivuKoko"
+
+          <ep-pagination
+            v-model="page"
+            :total-rows="totalRows"
+            :per-page="query.sivukoko"
+            align="center"
+            aria-controls="tuo-sisaltoa-modaali"
+          />
+        </div>
+      </div>
+
+      <div v-else>
+        <p>{{ $t(kaannokset['topicOps']) }} {{ $kaanna(toteutussuunnitelma.nimi) }}</p>
+        <ep-spinner v-if="!sisaltoviitteet" />
+
+        <div v-else>
+          <div
+            v-for="(sisaltoTaulu, index) in sisaltoTaulut"
+            :key="'sisaltotaulu'+index"
+          >
+            <b-table
+              responsive
+              striped
+              :items="sisaltoTaulu.items"
+              :fields="sisaltoTaulu.fields"
+              :per-page="sisaltoSivuKoko"
+              :current-page="sisaltoPages[sisaltoTaulu.page]"
+            >
+              <template #cell(nimi)="{ item }">
+                <div
+                  class="selectable"
+                  @click="selectRow(item.id)"
+                >
+                  <EpMaterialIcon
+                    v-if="item.selected"
+                    class="checked mr-2"
+                  >
+                    check_box
+                  </EpMaterialIcon>
+                  <EpMaterialIcon
+                    v-else
+                    class="checked mr-2"
+                  >
+                    check_box_outline_blank
+                  </EpMaterialIcon>
+                  <span>{{ $kaanna(item.tekstiKappale.nimi) }}</span>
+                </div>
+              </template>
+            </b-table>
+            <ep-pagination
+              v-if="sisaltoTaulu.items.length > sisaltoSivuKoko"
               v-model="sisaltoPages[sisaltoTaulu.page]"
               :total-rows="sisaltoTaulu.items.length"
               :per-page="sisaltoSivuKoko"
               align="center"
-              aria-controls="tuo-sisaltoa-tekstikappaleet"></b-pagination>
+              aria-controls="tuo-sisaltoa-tekstikappaleet"
+            />
+          </div>
         </div>
       </div>
 
-    </div>
-
-    <div slot="modal-footer">
-      <ep-button @click="back" variant="link" v-if="toteutussuunnitelma">{{ $t('edellinen')}}</ep-button>
-      <ep-button @click="clear" variant="link">{{ $t('peruuta')}}</ep-button>
-      <ep-button @click="save" v-if="toteutussuunnitelma">{{ $t('tuo-valitut-sisallot')}}</ep-button>
-    </div>
-  </b-modal>
-</div>
+      <template #modal-footer>
+        <ep-button
+          v-if="toteutussuunnitelma"
+          variant="link"
+          @click="back"
+        >
+          {{ $t('edellinen') }}
+        </ep-button>
+        <ep-button
+          variant="link"
+          @click="clear"
+        >
+          {{ $t('peruuta') }}
+        </ep-button>
+        <ep-button
+          v-if="toteutussuunnitelma"
+          @click="save"
+        >
+          {{ $t('tuo-valitut-sisallot') }}
+        </ep-button>
+      </template>
+    </b-modal>
+  </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, inject, onMounted, ref, watch } from 'vue';
 import _ from 'lodash';
-import { Prop, Component, Vue, Watch, InjectReactive } from 'vue-property-decorator';
+
 import EpButton from '@shared/components/EpButton/EpButton.vue';
-import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
-import { Kielet } from '@shared/stores/kieli';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import { SisaltotuontiStore } from '@/stores/SisaltotuontiStore';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+
+import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { Kielet } from '@shared/stores/kieli';
+import { SisaltotuontiStore } from '@/stores/SisaltotuontiStore';
+import { $t, $kaanna, $success, $bvModal } from '@shared/utils/globals';
 
 const kaannokset = {
   default: {
@@ -96,7 +147,6 @@ const kaannokset = {
     topicNoOps: 'valitse-ensin-mista-suunnitelmasta-haluat-tuoda-sisaltoa',
     topicOps: 'valitse-mitka-sisallot-haluat-tuoda-toteutussuunnitelmasta',
     searchPlaceholder: 'etsi-toteutussuunnitelmaa-tai-jaettua-osaa-tai-yhteista-osaa',
-
   },
   organisaatioRyhma: {
     tuoBtn: 'tuo-sisaltoa-toisesta-raportista',
@@ -106,238 +156,229 @@ const kaannokset = {
   },
 };
 
-@Component({
-  components: {
-    EpButton,
-    EpSpinner,
-    EpSearch,
-    EpMaterialIcon,
-  },
-})
-export default class EpSisallonTuonti extends Vue {
-  @Prop({ required: true })
-  private opetussuunnitelmaId!: number;
+const props = defineProps<{
+  opetussuunnitelmaId: number;
+  koulutustoimijaId: string;
+  updateNavigation: () => Promise<void>;
+}>();
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const koulutustoimija = inject<any>('koulutustoimija');
 
-  @Prop({ required: true })
-  private updateNavigation!: Function;
+const query = ref<any>({});
+const sisaltoPages = ref<any>({});
+const sisaltoSivuKoko = ref(5);
+const sisaltotuontiStore = ref<SisaltotuontiStore | null>(null);
+const toteutussuunnitelma = ref<OpetussuunnitelmaDto | null>(null);
+const valitutSisaltoviitteet = ref<number[]>([]);
 
-  @InjectReactive('koulutustoimija')
-  private readonly koulutustoimija!: any;
-
-  private query = {} as any;
-  private sisaltoPages = {};
-  private sisaltoSivuKoko = 5;
-
-  private sisaltotuontiStore: SisaltotuontiStore | null = null;
-  private toteutussuunnitelma: OpetussuunnitelmaDto | null = null;
-  private valitutSisaltoviitteet: number[] = [];
-
-  mounted() {
-    this.sisaltotuontiStore = new SisaltotuontiStore(this.opetussuunnitelmaId, this.koulutustoimijaId);
-  }
-
-  defaults() {
-    this.query = {
-      sivu: 0,
-      sivukoko: 10,
-      kieli: Kielet.getSisaltoKieli.value,
-      tila: ['luonnos', 'valmis', 'julkaistu'],
-      nimi: '',
-    } as any;
-
-    this.sisaltoPages = {
-      tekstikappaleet: 1,
-      suorituspolut: 1,
-      tutkinnonosat: 1,
-    };
-  }
-
-  get opetussuunnitelmat() {
-    if (this.sisaltotuontiStore && this.sisaltotuontiStore.opetussuunnitelmat.value) {
-      return (this.sisaltotuontiStore.opetussuunnitelmat.value as any).data;
-    }
-  }
-
-  get opetussuunnitelmatFiltered() {
-    return _.filter(this.opetussuunnitelmat, ops => ops.id !== this.opetussuunnitelmaId);
-  }
-
-  get sisaltoviitteet() {
-    if (this.sisaltotuontiStore) {
-      return this.sisaltotuontiStore.sisaltoviitteet.value;
-    }
-  }
-
-  get tekstikappaleet() {
-    if (this.sisaltotuontiStore) {
-      return this.sisaltotuontiStore.tekstikappaleet.value;
-    }
-  }
-
-  get suorituspolut() {
-    if (this.sisaltotuontiStore) {
-      return this.sisaltotuontiStore.suorituspolut.value;
-    }
-  }
-
-  get tutkinnonosat() {
-    if (this.sisaltotuontiStore) {
-      return this.sisaltotuontiStore.tutkinnonosat.value;
-    }
-  }
-
-  get opetussuunnitelmatpage() {
-    if (this.sisaltotuontiStore) {
-      return this.sisaltotuontiStore.opetussuunnitelmat.value;
-    }
-  }
-
-  async openModal() {
-    (this as any).$bvModal.show('sisallontuonti');
-    this.defaults();
-    await this.sisaltotuontiStore!.fetch(this.query);
-  }
-
-  @Watch('query', { deep: true })
-  async onQueryChange(query: any) {
-    await this.sisaltotuontiStore!.fetch(this.query);
-  }
-
-  get totalRows() {
-    return _.get(this.opetussuunnitelmatpage, 'kokonaismäärä');
-  }
-
-  get page() {
-    return _.get(this.opetussuunnitelmatpage as any, 'sivu') + 1;
-  }
-
-  set page(value: number) {
-    this.query.sivu = value - 1;
-  }
-
-  get okDisabled() {
-    return true;
-  }
-
-  async save() {
-    await this.sisaltotuontiStore!.tuoSisaltoa(this.valitutSisaltoviitteet);
-    this.sisaltotuontiStore!.clear();
-    this.clear();
-    this.$success(this.$t('sisallot-tuotu-onnistuneesti') as string);
-    await this.updateNavigation();
-  }
-
-  back() {
-    this.toteutussuunnitelma = null;
-    this.valitutSisaltoviitteet = [];
-  }
-
-  clear() {
-    this.toteutussuunnitelma = null;
-    this.valitutSisaltoviitteet = [];
-    this.sisaltotuontiStore!.clear();
-    (this as any).$bvModal.hide('sisallontuonti');
-  }
-
-  get opetussuunnitelmaFields() {
-    let tableFields: any[] = [{
-      key: 'nimi',
-      label: this.$t('nimi') as string,
-      sortable: false,
-    }];
-
-    if (!this.koulutustoimija?.organisaatioRyhma) {
-      tableFields = [
-        ...tableFields,
-        {
-          key: 'tyyppi',
-          sortable: false,
-          label: this.$t('tyyppi') as string,
-          formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
-            return this.$t('amosaa-tyyppi-' + value);
-          },
-        }, {
-          key: 'perusteDiaarinumero',
-          sortable: false,
-          label: this.$t('diaarinumero') as string,
-        }];
-    }
-
-    return tableFields;
-  }
-
-  get sisaltoTaulut() {
-    return [
-      {
-        items: this.sisaltoviiteMap(this.tekstikappaleet),
-        fields: this.sisaltoviiteFields('tekstikappale'),
-        page: 'tekstikappaleet',
-      },
-      {
-        items: this.sisaltoviiteMap(this.suorituspolut),
-        fields: this.sisaltoviiteFields('suorituspolku'),
-        page: 'suorituspolut',
-      },
-      {
-        items: this.sisaltoviiteMap(this.tutkinnonosat),
-        fields: this.sisaltoviiteFields('tutkinnonosa'),
-        page: 'tutkinnonosat',
-      },
-    ];
-  }
-
-  sisaltoviiteMap(sisaltoviitteet) {
-    return _.map(sisaltoviitteet, sisaltoviite => {
-      return {
-        ...sisaltoviite,
-        selected: this.itemSelected(sisaltoviite.id),
-      };
-    });
+const defaults = () => {
+  query.value = {
+    sivu: 0,
+    sivukoko: 10,
+    kieli: Kielet.getSisaltoKieli.value,
+    tila: ['luonnos', 'valmis', 'julkaistu'],
+    nimi: '',
   };
 
-  itemSelected(itemId) {
-    return _.includes(this.valitutSisaltoviitteet, itemId);
+  sisaltoPages.value = {
+    tekstikappaleet: 1,
+    suorituspolut: 1,
+    tutkinnonosat: 1,
+  };
+};
+
+const opetussuunnitelmat = computed(() => {
+  if (sisaltotuontiStore.value && sisaltotuontiStore.value.opetussuunnitelmat.value) {
+    return (sisaltotuontiStore.value.opetussuunnitelmat.value as any).data;
+  }
+  return undefined;
+});
+
+const opetussuunnitelmatFiltered = computed(() => {
+  return _.filter(opetussuunnitelmat.value, ops => ops.id !== props.opetussuunnitelmaId);
+});
+
+const sisaltoviitteet = computed(() => {
+  if (sisaltotuontiStore.value) {
+    return sisaltotuontiStore.value.sisaltoviitteet.value;
+  }
+  return undefined;
+});
+
+const tekstikappaleet = computed(() => {
+  if (sisaltotuontiStore.value) {
+    return sisaltotuontiStore.value.tekstikappaleet.value;
+  }
+  return undefined;
+});
+
+const suorituspolut = computed(() => {
+  if (sisaltotuontiStore.value) {
+    return sisaltotuontiStore.value.suorituspolut.value;
+  }
+  return undefined;
+});
+
+const tutkinnonosat = computed(() => {
+  if (sisaltotuontiStore.value) {
+    return sisaltotuontiStore.value.tutkinnonosat.value;
+  }
+  return undefined;
+});
+
+const opetussuunnitelmatpage = computed(() => {
+  if (sisaltotuontiStore.value) {
+    return sisaltotuontiStore.value.opetussuunnitelmat.value;
+  }
+  return 0;
+});
+
+const totalRows = computed(() => {
+  return _.get(opetussuunnitelmatpage.value, 'kokonaismäärä');
+});
+
+const page = computed({
+  get() {
+    return _.get(opetussuunnitelmatpage.value, 'sivu') + 1;
+  },
+  set(value: number) {
+    query.value.sivu = value - 1;
+  },
+});
+
+const okDisabled = computed(() => {
+  return true;
+});
+
+const opetussuunnitelmaFields = computed(() => {
+  let tableFields: any[] = [{
+    key: 'nimi',
+    label: $t('nimi'),
+    sortable: false,
+  }];
+
+  if (!koulutustoimija?.organisaatioRyhma) {
+    tableFields = [
+      ...tableFields,
+      {
+        key: 'tyyppi',
+        sortable: false,
+        label: $t('tyyppi'),
+        formatter: (value: any, key: string, item: OpetussuunnitelmaDto) => {
+          return $t('amosaa-tyyppi-' + value);
+        },
+      }, {
+        key: 'perusteDiaarinumero',
+        sortable: false,
+        label: $t('diaarinumero'),
+      }];
   }
 
-  selectRow(itemId) {
-    if (this.itemSelected(itemId)) {
-      this.valitutSisaltoviitteet = _.filter(this.valitutSisaltoviitteet, id => id !== itemId);
-    }
-    else {
-      this.valitutSisaltoviitteet = [
-        ...this.valitutSisaltoviitteet,
-        itemId,
-      ];
-    }
-  }
+  return tableFields;
+});
 
-  sisaltoviiteFields(tyyppi: string) {
-    return [{
-      key: 'nimi',
-      label: this.$t(tyyppi) as string,
-      sortable: false,
-    }];
-  }
+const sisaltoviiteMap = (sisaltoviitteet: any[]) => {
+  return _.map(sisaltoviitteet, sisaltoviite => {
+    return {
+      ...sisaltoviite,
+      selected: itemSelected(sisaltoviite.id),
+    };
+  });
+};
 
-  valitseToteutussuunnitelma(toteutussuunnitelma) {
-    this.toteutussuunnitelma = toteutussuunnitelma;
-    this.sisaltotuontiStore!.fetchSisallot(toteutussuunnitelma.id);
-  }
+const itemSelected = (itemId: number) => {
+  return _.includes(valitutSisaltoviitteet.value, itemId);
+};
 
-  get kaannokset() {
-    return kaannokset[this.koulutustoimija?.organisaatioRyhma ? 'organisaatioRyhma' : 'default'];
+const sisaltoviiteFields = (tyyppi: string) => {
+  return [{
+    key: 'nimi',
+    label: $t(tyyppi),
+    sortable: false,
+  }];
+};
+
+const sisaltoTaulut = computed(() => {
+  return [
+    {
+      items: sisaltoviiteMap(tekstikappaleet.value || []),
+      fields: sisaltoviiteFields('tekstikappale'),
+      page: 'tekstikappaleet',
+    },
+    {
+      items: sisaltoviiteMap(suorituspolut.value || []),
+      fields: sisaltoviiteFields('suorituspolku'),
+      page: 'suorituspolut',
+    },
+    {
+      items: sisaltoviiteMap(tutkinnonosat.value || []),
+      fields: sisaltoviiteFields('tutkinnonosa'),
+      page: 'tutkinnonosat',
+    },
+  ];
+});
+
+const kaannoksetValue = computed(() => {
+  return kaannokset[koulutustoimija?.organisaatioRyhma ? 'organisaatioRyhma' : 'default'];
+});
+
+const openModal = async () => {
+  $bvModal.show('sisallontuonti');
+  defaults();
+  await sisaltotuontiStore.value!.fetch(query.value);
+};
+
+const selectRow = (itemId: number) => {
+  if (itemSelected(itemId)) {
+    valitutSisaltoviitteet.value = _.filter(valitutSisaltoviitteet.value, id => id !== itemId);
   }
-}
+  else {
+    valitutSisaltoviitteet.value = [
+      ...valitutSisaltoviitteet.value,
+      itemId,
+    ];
+  }
+};
+
+const valitseToteutussuunnitelma = (toteutussuunnitelmaValue: any) => {
+  toteutussuunnitelma.value = toteutussuunnitelmaValue;
+  sisaltotuontiStore.value!.fetchSisallot(toteutussuunnitelmaValue.id);
+};
+
+const save = async () => {
+  await sisaltotuontiStore.value!.tuoSisaltoa(valitutSisaltoviitteet.value);
+  sisaltotuontiStore.value!.clear();
+  clear();
+  $success($t('sisallot-tuotu-onnistuneesti'));
+  await props.updateNavigation();
+};
+
+const back = () => {
+  toteutussuunnitelma.value = null;
+  valitutSisaltoviitteet.value = [];
+};
+
+const clear = () => {
+  toteutussuunnitelma.value = null;
+  valitutSisaltoviitteet.value = [];
+  sisaltotuontiStore.value!.clear();
+  $bvModal.hide('sisallontuonti');
+};
+
+onMounted(() => {
+  sisaltotuontiStore.value = new SisaltotuontiStore(props.opetussuunnitelmaId, props.koulutustoimijaId);
+});
+
+watch(query, async () => {
+  await sisaltotuontiStore.value!.fetch(query.value);
+}, { deep: true });
 
 </script>
 
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
 
-  ::v-deep .filter {
+  :deep(.filter) {
     max-width: 100%;
   }
 

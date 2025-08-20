@@ -1,20 +1,28 @@
 import Vue from 'vue';
-import VueCompositionApi, { computed } from '@vue/composition-api';
 import { Sisaltoviitteet, SisaltoViiteDto, Perusteet, SisaltoViiteDtoTyyppiEnum, SisaltoviiteLukko } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { ILukko, Revision } from '@shared/tyypit';
+import { Router, useRouter } from 'vue-router';
+import { App } from 'vue';
 
-Vue.use(VueCompositionApi);
+interface AbstractSisaltoviiteStoreConfig {
+  router: Router;
+  updateNavigation: () => Promise<void>;
+}
 
 export class AbstractSisaltoviiteStore {
   constructor(
     public opetussuunnitelmaId?: number,
     public koulutustoimijaId?: string,
     public sisaltoviiteId?: number,
-    public versionumero?: number,
-    public el?: any,
-    public updateNavigation?: Function) {
+    public versionumero?: number) {
+  }
+
+  protected static config: AbstractSisaltoviiteStoreConfig;
+
+  public static install(app: App, config: AbstractSisaltoviiteStoreConfig) {
+    AbstractSisaltoviiteStore.config = config;
   }
 
   async fetchSisaltoviite() {
@@ -50,8 +58,8 @@ export class AbstractSisaltoviiteStore {
 
   async remove() {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId!, this.sisaltoviiteId!, this.koulutustoimijaId!);
-    await this.updateNavigation?.();
-    this.el?.$router.replace({
+    await AbstractSisaltoviiteStore.config.updateNavigation;
+    AbstractSisaltoviiteStore.config.router.replace({
       name: 'toteutussuunnitelma',
     });
   }

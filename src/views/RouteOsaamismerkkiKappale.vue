@@ -1,75 +1,78 @@
 <template>
-  <div id="scroll-anchor" v-if="editointiStore">
-    <EpEditointi :store="editointiStore" :versionumero="versionumero" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
-      <template v-slot:header>
-        <h2 class="m-0">{{ $t('kansalliset-perustaitojen-osaamismerkit') }}</h2>
+  <div
+    v-if="editointiStore"
+    id="scroll-anchor"
+  >
+    <EpEditointi
+      :store="editointiStore"
+      :versionumero="versionumero"
+      :muokkaus-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+    >
+      <template #header>
+        <h2 class="m-0">
+          {{ $t('kansalliset-perustaitojen-osaamismerkit') }}
+        </h2>
       </template>
-      <template v-slot:default="{ isEditing, data }">
-        <EpOsaamismerkkiKappale v-model="data.osaamismerkkiKappale"
-                                :toteutussuunnitelma-id="toteutussuunnitelmaId"
-                                :koulutustoimija-id="koulutustoimijaId"
-                                :is-editing="isEditing"></EpOsaamismerkkiKappale>
+      <template #default="{ isEditing, data }">
+        <EpOsaamismerkkiKappale
+          v-model="data.osaamismerkkiKappale"
+          :toteutussuunnitelma-id="toteutussuunnitelmaId"
+          :koulutustoimija-id="koulutustoimijaId"
+          :is-editing="isEditing"
+        />
       </template>
     </EpEditointi>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, getCurrentInstance, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { OsaamismerkkiKappaleStore } from '@/stores/OsaamismerkkiKappaleStore';
 import EpOsaamismerkkiKappale from '@/components/EpOsaamismerkkiKappale/EpOsaamismerkkiKappale.vue';
 
-@Component({
-  components: {
-    EpOsaamismerkkiKappale,
-    EpEditointi,
-  },
-})
-export default class RouteOsaamismerkkiKappale extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { OsaamismerkkiKappaleStore } from '@/stores/OsaamismerkkiKappaleStore';
+import { $t } from '@shared/utils/globals';
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+  sisaltoviiteId: number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+}>();
 
-  @Prop({ required: true })
-  private sisaltoviiteId!: number;
+const route = useRoute();
+const instance = getCurrentInstance();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const editointiStore = ref<EditointiStore | null>(null);
 
-  private editointiStore: EditointiStore | null = null;
+const versionumero = computed(() => {
+  return _.toNumber(route.query.versionumero);
+});
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
-  }
+const fetch = () => {
+  editointiStore.value = new EditointiStore(
+    new OsaamismerkkiKappaleStore(
+      props.toteutussuunnitelmaId,
+      props.koulutustoimijaId,
+      props.sisaltoviiteId,
+      versionumero.value,
+      instance,
+      props.toteutussuunnitelmaStore.toteutussuunnitelma,
+      () => props.toteutussuunnitelmaStore.initNavigation()));
+};
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
-  }
+watch(() => props.sisaltoviiteId, () => {
+  fetch();
+}, { immediate: true });
 
-  fetch() {
-    this.editointiStore = new EditointiStore(
-      new OsaamismerkkiKappaleStore(
-        this.toteutussuunnitelmaId,
-        this.koulutustoimijaId,
-        this.sisaltoviiteId,
-        this.versionumero,
-        this,
-        this.toteutussuunnitelmaStore.toteutussuunnitelma,
-        () => this.toteutussuunnitelmaStore.initNavigation()));
-  }
-
-  get versionumero() {
-    return _.toNumber(this.$route.query.versionumero);
-  }
-}
+watch(versionumero, () => {
+  fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

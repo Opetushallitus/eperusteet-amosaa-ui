@@ -1,12 +1,10 @@
-import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { Opetussuunnitelmat, OpetussuunnitelmaDto, Sisaltoviitteet, Perusteet, SisaltoviiteLaajaDto, OpetussuunnitelmaDtoTilaEnum } from '@shared/api/amosaa';
-import { Debounced } from '@shared/utils/delay';
 import { AmmatillisetKoulutustyypit, perusteenSuoritustapa } from '@shared/utils/perusteet';
 import * as _ from 'lodash';
 import { Page } from '@shared/tyypit';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
+import { debounced } from '@shared/utils/delay';
 
 export class TutkinnonosatTuontiStore {
   public state = reactive({
@@ -25,8 +23,7 @@ export class TutkinnonosatTuontiStore {
     )).data;
   }
 
-  @Debounced(300)
-  public async fetch(toteutussuunnitelmaId: number, koulutustoimijaId: string, query) {
+  public fetch = debounced(async (toteutussuunnitelmaId: number, koulutustoimijaId: string, query) => {
     this.state.tutkinnonosatPage = null;
     const sisaltoviitteet = (await Sisaltoviitteet.getSisaltoviitteet(toteutussuunnitelmaId, koulutustoimijaId, { params: query })).data as Page<SisaltoviiteLaajaDto>;
 
@@ -72,7 +69,7 @@ export class TutkinnonosatTuontiStore {
         perusteenTutkinnonosa: perusteidentutkinnonosatByTutkinnonosa[tutkinnonosa.tosa!.perusteentutkinnonosa!],
       })),
     } as any;
-  }
+  });
 
   public async tuoSisaltoa(toteutussuunnitelmaId: number, koulutustoimijaId: string, sisaltoIdt: number[]) {
     await Sisaltoviitteet.linkkaaUusiSisalto(toteutussuunnitelmaId, koulutustoimijaId, sisaltoIdt);

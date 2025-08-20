@@ -1,11 +1,10 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { OpetussuunnitelmaDto, Opetussuunnitelmat, NavigationNodeDto, OpetussuunnitelmaLuontiDto, Validointi, JulkaisuBaseDto, Julkaisut, VanhentunutPohjaperusteDto, OpetussuunnitelmaBaseDto, JulkaisuBaseDtoTilaEnum } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { createLogger } from '@shared/utils/logger';
 import { delay } from '@shared/utils/delay';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 const logger = createLogger('Toteutussuunnitelma');
 
@@ -58,7 +57,7 @@ export class ToteutussuunnitelmaStore {
   }
 
   public async fetchJulkaisemattomiaMuutoksia() {
-    this.state.julkaisemattomiaMuutoksia = (await Julkaisut.julkaisemattomiaMuutoksia(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+    this.state.julkaisemattomiaMuutoksia = (await Julkaisut.julkaisemattomiaMuutoksia(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id))).data;
   }
 
   public async create(ktId: string, toteutussuunnitelma: OpetussuunnitelmaLuontiDto) {
@@ -66,24 +65,24 @@ export class ToteutussuunnitelmaStore {
   }
 
   public async initNavigation() {
-    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+    this.state.navigation = (await Opetussuunnitelmat.getOpetussuunnitelmaNavigation(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id))).data;
   }
 
   public async updateValidation() {
     if (this.toteutussuunnitelma.value) {
       this.state.toteutussuunnitelmaStatus = null;
-      this.state.toteutussuunnitelmaStatus = (await Opetussuunnitelmat.validoiOpetussuunnitelma(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+      this.state.toteutussuunnitelmaStatus = (await Opetussuunnitelmat.validoiOpetussuunnitelma(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id))).data;
       await this.fetchJulkaisemattomiaMuutoksia();
     }
   }
 
   async updateCurrent() {
-    this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+    this.state.toteutussuunnitelma = (await Opetussuunnitelmat.getOpetussuunnitelma(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id))).data;
     await this.updateValidation();
   }
 
   async fetchJulkaisut() {
-    this.state.julkaisut = (await Julkaisut.getJulkaisut(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+    this.state.julkaisut = (await Julkaisut.getJulkaisut(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id))).data;
     if (_.includes(_.map(this.state.julkaisut, 'tila'), JulkaisuBaseDtoTilaEnum.KESKEN)) {
       await this.fetchViimeisinJulkaisuTila();
       await this.pollTila();
@@ -91,13 +90,13 @@ export class ToteutussuunnitelmaStore {
   }
 
   async fetchViimeisinJulkaisuTila() {
-    this.state.viimeisinJulkaisuTila = (await Julkaisut.viimeisinJulkaisuTila(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+    this.state.viimeisinJulkaisuTila = (await Julkaisut.viimeisinJulkaisuTila(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id))).data;
 
     if (this.state.viimeisinJulkaisuTila !== JulkaisuBaseDtoTilaEnum.KESKEN) {
       await delay(2000);
       clearInterval(this.state.tilaPolling);
       this.state.tilaPolling = null;
-      this.state.julkaisut = (await Julkaisut.getJulkaisut(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id))).data;
+      this.state.julkaisut = (await Julkaisut.getJulkaisut(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id))).data;
       await this.updateCurrent();
     }
   }
@@ -109,7 +108,7 @@ export class ToteutussuunnitelmaStore {
   }
 
   public async julkaise(julkaisu: JulkaisuBaseDto) {
-    await Julkaisut.teeJulkaisu(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id), julkaisu);
+    await Julkaisut.teeJulkaisu(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id), julkaisu);
     await this.fetchJulkaisut();
     if (!_.includes(_.map(this.state.julkaisut, 'tila'), JulkaisuBaseDtoTilaEnum.KESKEN)) {
       await this.updateCurrent();
@@ -117,14 +116,14 @@ export class ToteutussuunnitelmaStore {
   }
 
   public async paiviteOpetussunnitelmanPeruste() {
-    await Opetussuunnitelmat.paivitaOpetussuunnitelmanPeruste(this.toteutussuunnitelma.value?.id!, _.toString(this.toteutussuunnitelma.value?.koulutustoimija?.id));
+    await Opetussuunnitelmat.paivitaOpetussuunnitelmanPeruste(this.state.toteutussuunnitelma!.id!, _.toString(this.state.toteutussuunnitelma!.koulutustoimija!.id));
   }
 
   public async palautaJulkaisu(revision: number) {
     const uusiJulkaisu = (await Julkaisut.aktivoiJulkaisu(
-      this.toteutussuunnitelma.value?.id!,
+      this.state.toteutussuunnitelma!.id!,
       revision,
-      this.toteutussuunnitelma.value?.koulutustoimija?.id as any,
+      this.state.toteutussuunnitelma!.koulutustoimija!.id as any,
     )).data;
     this.state.julkaisut?.unshift(uusiJulkaisu);
   }
