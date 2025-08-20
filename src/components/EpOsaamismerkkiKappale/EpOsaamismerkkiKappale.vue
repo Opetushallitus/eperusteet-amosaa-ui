@@ -2,52 +2,83 @@
   <div>
     <b-row>
       <b-col md="10">
-        <b-form-group :label="$t('osaamismerkkien-suorittaminen')" required>
-          <EpContent v-model="innerModel.kuvaus"
-                     layout="normal"
-                     :is-editable="isEditing"
-                     :kuvaHandler="kuvaHandler"/>
+        <b-form-group
+          :label="$t('osaamismerkkien-suorittaminen')"
+          required
+        >
+          <EpContent
+            v-model="innerModel.kuvaus"
+            layout="normal"
+            :is-editable="isEditing"
+            :kuva-handler="kuvaHandler"
+          />
         </b-form-group>
       </b-col>
     </b-row>
     <b-row>
       <b-col md="10">
         <b-form-group :label="$t('osaamismerkit')">
-          <div v-for="(merkki, idx) in osaamismerkkiKoodit" :key="'koodi-'+idx" class="p-3 rivi">
-            <div v-if="isEditing" class="d-flex">
+          <div
+            v-for="(merkki, idx) in osaamismerkkiKoodit"
+            :key="'koodi-'+idx"
+            class="p-3 rivi"
+          >
+            <div
+              v-if="isEditing"
+              class="d-flex"
+            >
               <div class="d-flex">
-                <span>{{ $kaanna(merkki.nimi) }} ({{merkki.koodi}})</span>
-                <span v-if="merkki.vanhentunut" class="ml-2 vanhentunut">{{$t('vanhentunut')}}</span>
+                <span>{{ $kaanna(merkki.nimi) }} ({{ merkki.koodi }})</span>
+                <span
+                  v-if="merkki.vanhentunut"
+                  class="ml-2 vanhentunut"
+                >{{ $t('vanhentunut') }}</span>
               </div>
-              <div class="default-icon clickable ml-auto" @click="onRemoveListItem(merkki)">
-                <EpMaterialIcon icon-shape="outlined">delete</EpMaterialIcon>
+              <div
+                class="default-icon clickable ml-auto"
+                @click="onRemoveListItem(merkki)"
+              >
+                <EpMaterialIcon icon-shape="outlined">
+                  delete
+                </EpMaterialIcon>
               </div>
             </div>
             <div v-else>
               <EpLinkki :url="merkki.url">
                 <div class="d-flex">
-                  <span>{{ $kaanna(merkki.nimi) }} ({{merkki.koodi}})</span>
-                  <span v-if="merkki.vanhentunut" class="ml-2 vanhentunut">{{$t('vanhentunut')}}</span>
+                  <span>{{ $kaanna(merkki.nimi) }} ({{ merkki.koodi }})</span>
+                  <span
+                    v-if="merkki.vanhentunut"
+                    class="ml-2 vanhentunut"
+                  >{{ $t('vanhentunut') }}</span>
                 </div>
               </EpLinkki>
             </div>
           </div>
-          <EpKoodistoSelect :store="koodisto"
-                            @add="onAddListItem($event)"
-                            :is-editing="isEditing"
-                            :naytaArvo="true"
-                            :multiple="true" class="mt-4">
+          <EpKoodistoSelect
+            :store="koodisto"
+            :is-editing="isEditing"
+            :nayta-arvo="true"
+            :multiple="true"
+            class="mt-4"
+            @add="onAddListItem($event)"
+          >
             <template #default="{ open }">
               <b-input-group>
                 <b-input-group-append>
-                  <EpButton variant="outline" icon="add" @click="open" v-if="isEditing">
+                  <EpButton
+                    v-if="isEditing"
+                    variant="outline"
+                    icon="add"
+                    @click="open"
+                  >
                     {{ $t('lisaa-osaamismerkkeja') }}
                   </EpButton>
                 </b-input-group-append>
               </b-input-group>
             </template>
-            <template v-slot:empty>
-              <div v-if="innerModel.osaamismerkkiKoodit && innerModel.osaamismerkkiKoodit.length > 0"></div>
+            <template #empty>
+              <div v-if="innerModel.osaamismerkkiKoodit && innerModel.osaamismerkkiKoodit.length > 0" />
               <div v-else>
                 {{ $t('ei-lisattyja-osaamismerkkeja') }}
               </div>
@@ -59,8 +90,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { computed } from 'vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
@@ -71,93 +102,86 @@ import { osaamismerkkiUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import _ from 'lodash';
 import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
+import { $t, $kaanna } from '@shared/utils/globals';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
-@Component({
-  components: {
-    EpLinkki,
-    EpKoodistoSelect,
-    EpContent,
+
+const props = defineProps<{
+  modelValue: any;
+  isEditing?: boolean;
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+}>();
+
+const emit = defineEmits(['update:modelValue']);
+
+const koodisto = new KoodistoSelectStore({
+  koodisto: 'osaamismerkit',
+  async query(query: string, sivu = 0, koodisto, onlyValidKoodis) {
+    return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
+      params: {
+        sivu,
+        sivukoko: 10,
+        onlyValidKoodis: onlyValidKoodis,
+      },
+    })).data as any;
   },
-})
-export default class EpOsaamismerkkiKappale extends Vue {
-  @Prop({ required: true })
-  private value!: any;
+});
 
-  @Prop({ required: false, default: false, type: Boolean })
-  private isEditing!: Boolean;
+const innerModel = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(val) {
+    emit('update:modelValue', val);
+  },
+});
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
-
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
-
-  private readonly koodisto = new KoodistoSelectStore({
-    koodisto: 'osaamismerkit',
-    async query(query: string, sivu = 0, koodisto, onlyValidKoodis) {
-      return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
-        params: {
-          sivu,
-          sivukoko: 10,
-          onlyValidKoodis: onlyValidKoodis,
-        },
-      })).data as any;
-    },
+const osaamismerkkiKoodit = computed(() => {
+  return _.map(innerModel.value.osaamismerkkiKoodit, koodi => {
+    return {
+      ...koodi,
+      url: osaamismerkkiUrl(Kielet.getSisaltoKieli.value, koodi.koodi),
+      vanhentunut: isVanhentunut(koodi.voimassaLoppuPvm),
+    };
   });
+});
 
-  onAddListItem(merkit) {
-    this.innerModel = {
-      ...this.innerModel,
-      osaamismerkkiKoodit: [
-        ...this.innerModel.osaamismerkkiKoodit,
-        ...this.addMerkit(merkit),
-      ],
+const kuvaHandler = computed(() => {
+  return createKuvaHandler(new KuvaStore(props.toteutussuunnitelmaId, props.koulutustoimijaId));
+});
+
+const onAddListItem = (merkit: any) => {
+  innerModel.value = {
+    ...innerModel.value,
+    osaamismerkkiKoodit: [
+      ...innerModel.value.osaamismerkkiKoodit,
+      ...addMerkit(merkit),
+    ],
+  };
+};
+
+const addMerkit = (merkit: any) => {
+  return _.map(merkit, merkki => {
+    return {
+      nimi: merkki.nimi,
+      koodi: merkki.arvo,
     };
-  }
+  });
+};
 
-  addMerkit(merkit) {
-    return _.map(merkit, merkki => {
-      return {
-        nimi: merkki.nimi,
-        koodi: merkki.arvo,
-      };
-    });
-  }
+const onRemoveListItem = (poistettavaRivi: any) => {
+  innerModel.value = {
+    ...innerModel.value,
+    osaamismerkkiKoodit: _.filter(osaamismerkkiKoodit.value, rivi => rivi.koodi !== poistettavaRivi.koodi),
+  };
+};
 
-  onRemoveListItem(poistettavaRivi: any) {
-    this.innerModel = {
-      ...this.innerModel,
-      osaamismerkkiKoodit: _.filter(this.osaamismerkkiKoodit, rivi => rivi.koodi !== poistettavaRivi.koodi),
-    };
-  }
-
-  get innerModel() {
-    return this.value;
-  }
-
-  set innerModel(val) {
-    this.$emit('input', val);
-  }
-
-  get osaamismerkkiKoodit() {
-    return _.map(this.innerModel.osaamismerkkiKoodit, koodi => {
-      return {
-        ...koodi,
-        url: osaamismerkkiUrl(Kielet.getSisaltoKieli.value, koodi.koodi),
-        vanhentunut: this.isVanhentunut(koodi.voimassaLoppuPvm),
-      };
-    });
-  }
-
-  get kuvaHandler() {
-    return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
-  }
-
-  private isVanhentunut(voimassaLoppuPvm) {
-    let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
-    return voimassaLoppuPvm && _.toNumber(voimassaLoppuPvm) < currentDate.getTime();
-  }
-}
+const isVanhentunut = (voimassaLoppuPvm: any) => {
+  let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+  return voimassaLoppuPvm && _.toNumber(voimassaLoppuPvm) < currentDate.getTime();
+};
 </script>
 
 <style scoped lang="scss">

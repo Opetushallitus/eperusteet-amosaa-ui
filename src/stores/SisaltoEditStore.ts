@@ -1,12 +1,19 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto, MatalaTyyppiEnum } from '@shared/api/amosaa';
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, Kieli } from '@shared/tyypit';
 import { Kielet } from '@shared/stores/kieli';
+import { computed } from 'vue';
+import { Router } from 'vue-router';
+import { App } from 'vue';
+import { ToteutussuunnitelmaStore } from './ToteutussuunnitelmaStore';
+import { $t } from '@shared/utils/globals';
 
-Vue.use(VueCompositionApi);
+interface SisaltoEditStoreConfig {
+  router: Router;
+  updateNavigation: () => Promise<void>;
+}
 
 export class SisaltoEditStore implements IEditoitava {
   constructor(
@@ -15,8 +22,14 @@ export class SisaltoEditStore implements IEditoitava {
     public sisaltoViiteId: number,
     public perusteId: number,
     public versionumero: number,
-    public el: any,
-    public uusi: boolean) {
+    public uusi: boolean,
+  ) {
+  }
+
+  protected static config: SisaltoEditStoreConfig;
+
+  public static install(app: App, config: SisaltoEditStoreConfig) {
+    SisaltoEditStore.config = config;
   }
 
   async acquire() {
@@ -94,7 +107,7 @@ export class SisaltoEditStore implements IEditoitava {
   }
 
   asetaPakollisuus(node, parentMandatory) {
-    const pakollinen = parentMandatory || node.pakollinen || (!!node.nimi && node.nimi[Kielet.getUiKieli.value] === this.el.$t('rakenne-moduuli-pakollinen'));
+    const pakollinen = parentMandatory || node.pakollinen || (!!node.nimi && node.nimi[Kielet.getUiKieli.value] === $t('rakenne-moduuli-pakollinen'));
     return {
       ...node,
       pakollinen,
@@ -115,9 +128,7 @@ export class SisaltoEditStore implements IEditoitava {
 
   async save(data: any) {
     await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId, data);
-    if (this.el.updateNavigation) {
-      await this.el.updateNavigation();
-    }
+    await SisaltoEditStore.config.updateNavigation();
   }
 
   async release() {
@@ -142,10 +153,8 @@ export class SisaltoEditStore implements IEditoitava {
 
   async remove(data) {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId, this.sisaltoViiteId, this.koulutustoimijaId);
-    if (this.el.updateNavigation) {
-      await this.el.updateNavigation();
-    }
-    this.el.$router.push({
+    await SisaltoEditStore.config.updateNavigation();
+    SisaltoEditStore.config.router.push({
       name: 'poistetutsisallot',
     });
   }
@@ -165,7 +174,7 @@ export class SisaltoEditStore implements IEditoitava {
     });
   }
 
-  static async addNewSisalto(toteutussuunnitelmaId: number, parentId: number, ktId: string, params: Object) {
+  static async addNewSisalto(toteutussuunnitelmaId: number, parentId: number, ktId: string, params: any) {
     const { data } = await Sisaltoviitteet.addTekstiKappaleLapsi(toteutussuunnitelmaId, parentId, ktId, params);
     return data;
   }

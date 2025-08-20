@@ -1,100 +1,99 @@
 <template>
-  <EpHomeTile icon="description"
-              :route="{ name: 'tiedotteet' }"
-              :count="uudetTiedotteetCount">
-    <template slot="header">
+  <EpHomeTile
+    icon="description"
+    :route="{ name: 'tiedotteet' }"
+    :count="uudetTiedotteetCount"
+  >
+    <template #header>
       <span>{{ $t('tile-tiedotteet') }}</span>
     </template>
-    <template slot="content">
-      <ep-spinner v-if="!tiedotteet"></ep-spinner>
+    <template #content>
+      <ep-spinner v-if="!tiedotteet" />
       <div v-else>
         <div v-if="tiedotteet && tiedotteet.length > 0">
-          <div class="tiedote row justify-content-center text-left" v-for="(tiedote, idx) in tiedotteetFormatted" :key="idx">
-            <div class="col-3">{{ $sd(tiedote.luotu) }}</div>
-            <div class="col-7 otsikko" :class="{'font-weight-bold': tiedote.uusi}">{{ $kaanna(tiedote.otsikko) }}</div>
+          <div
+            v-for="(tiedote, idx) in tiedotteetFormatted"
+            :key="idx"
+            class="tiedote row justify-content-center text-left"
+          >
+            <div class="col-3">
+              {{ $sd(tiedote.luotu) }}
+            </div>
+            <div
+              class="col-7 otsikko"
+              :class="{'font-weight-bold': tiedote.uusi}"
+            >
+              {{ $kaanna(tiedote.otsikko) }}
+            </div>
           </div>
         </div>
-        <p v-else>{{ $t('tile-tiedotteet-kuvaus') }}</p>
+        <p v-else>
+          {{ $t('tile-tiedotteet-kuvaus') }}
+        </p>
       </div>
     </template>
   </EpHomeTile>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, onMounted, provide, ref, watch } from 'vue';
 import _ from 'lodash';
-import { Vue, Component, Prop, Watch, Provide } from 'vue-property-decorator';
+
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { onkoUusi } from '@shared/utils/tiedote';
-import { Debounced } from '@shared/utils/delay';
+import { $t, $sd, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpHomeTile,
-    EpSpinner,
-  },
-})
-export default class TileTiedotteet extends Vue {
-  @Prop({ required: true })
-  private kieli!: string;
+const props = withDefaults(defineProps<{
+  kieli: string;
+  headerStyle?: string;
+  julkaisupaikka?: string;
+}>(), {
+  julkaisupaikka: 'amosaa',
+});
 
-  @Prop({ required: false })
-  private headerStyle!: string;
 
-  @Prop({ required: false, default: 'amosaa' })
-  private julkaisupaikka!: string;
+provide('tileHeaderStyle', props.headerStyle);
 
-  @Provide('tileHeaderStyle')
-  private tileHeaderStyle = this.headerStyle;
+const tiedotteetStore = ref<TiedotteetStore | null>(null);
 
-  private tiedotteetStore: TiedotteetStore | null = null;
+const fetch = _.debounce(async () => {
+  await tiedotteetStore.value!.init({
+    sivu: 0,
+    sivukoko: 3,
+    kieli: [_.toUpper(props.kieli)],
+    tiedoteJulkaisuPaikka: [props.julkaisupaikka],
+  });
+},300);
 
-  @Watch('kieli', { immediate: true })
-  async onSisaltoKieliChange(newValue: string, oldValue: string) {
-    if (newValue && newValue !== oldValue) {
-      this.fetch();
-    }
+const tiedotteet = computed(() => {
+  return tiedotteetStore.value?.tiedotteet;
+});
+
+const tiedotteetFormatted = computed(() => {
+  return _.map(tiedotteet.value, tiedote => {
+    return {
+      ...tiedote,
+      uusi: onkoUusi(tiedote.luotu),
+    };
+  });
+});
+
+const uudetTiedotteetCount = computed(() => {
+  return _.size(_.filter(tiedotteetFormatted.value, 'uusi'));
+});
+
+onMounted(async () => {
+  tiedotteetStore.value = new TiedotteetStore();
+  await fetch();
+});
+
+watch(() => props.kieli, async (newValue: string, oldValue: string) => {
+  if (newValue && newValue !== oldValue) {
+    await fetch();
   }
-
-  async mounted() {
-    this.tiedotteetStore = new TiedotteetStore();
-    this.fetch();
-  }
-
-  @Debounced()
-  async fetch() {
-    try {
-      await this.tiedotteetStore!.init(
-        {
-          sivu: 0,
-          sivukoko: 3,
-          kieli: [_.toUpper(this.kieli)],
-          tiedoteJulkaisuPaikka: [this.julkaisupaikka],
-        });
-    }
-    catch (err) {
-      throw err;
-    }
-  }
-
-  get tiedotteet() {
-    return this.tiedotteetStore?.tiedotteet.value;
-  }
-
-  get tiedotteetFormatted() {
-    return _.map(this.tiedotteet, tiedote => {
-      return {
-        ...tiedote,
-        uusi: onkoUusi(tiedote.luotu),
-      };
-    });
-  }
-
-  get uudetTiedotteetCount() {
-    return _.size(_.filter(this.tiedotteetFormatted, 'uusi'));
-  }
-}
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

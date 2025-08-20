@@ -1,6 +1,9 @@
 <template>
   <div>
-    <Portal to="headerExtension">
+    <Teleport
+      defer
+      to="#headerExtension"
+    >
       <div class="container">
         <div class="container-fluid">
           <div class="row no-gutters">
@@ -11,92 +14,67 @@
           </div>
         </div>
       </div>
-    </Portal>
+    </Teleport>
     <div class="container tile-container">
       <div class="d-flex flex-row flex-wrap justify-content-center">
-        <component v-for="(tile, index) in tilesFiltered" :key="'tile'+index"
-          :is="tile.component"
+        <component
           v-bind="tile.props"
+          :is="tile.component"
+          v-for="(tile, index) in tilesFiltered"
+          :key="'tile'+index"
         />
       </div>
     </div>
-
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useHead } from '@unhead/vue';
+import { useRoute } from 'vue-router';
 import _ from 'lodash';
-import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 
-import EpRoute from '@shared/mixins/EpRoute';
-import { KayttajaStore } from '@/stores/kayttaja';
-import { Meta } from '@shared/utils/decorators';
 import TileToteutussuunnitelmat from './tiles/TileToteutussuunnitelmat.vue';
 import TileKoulutustoimijanYhteinenOsuus from './tiles/TileKoulutustoimijanYhteinenOsuus.vue';
 import TilePaivitettavatJaSiirrettavatToteutussuunnitelmat from './tiles/TilePaivitettavatJaSiirrettavatToteutussuunnitelmat.vue';
 import TileOrganisaationHallinta from './tiles/TileOrganisaationHallinta.vue';
 import TileTiedotteet from './tiles/TileTiedotteet.vue';
 import TileUkk from './tiles/TileUkk.vue';
+
+import { KayttajaStore } from '@/stores/kayttaja';
 import { KieliStore } from '@shared/stores/kieli';
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { SovellusTitle } from '@/utils/toteutustypes';
+import { $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    TileToteutussuunnitelmat,
-    TileKoulutustoimijanYhteinenOsuus,
-    TilePaivitettavatJaSiirrettavatToteutussuunnitelmat,
-    TileOrganisaationHallinta,
-    TileTiedotteet,
-    TileUkk,
-  },
-})
-export default class RouteEtusivu extends Mixins(EpRoute) {
-  @Prop({ required: true })
-  private kayttajaStore!: KayttajaStore;
+const props = defineProps<{
+  kayttajaStore: KayttajaStore;
+  koulutustoimijaId: string;
+  kieliStore: KieliStore;
+  paivitettavatJaSiirrettavatTotsStore: PaivitettavatJaSiirrettavatTotsStore;
+  toteutus: Toteutus;
+  tervetuloaTeksti: string;
+  tervetuloaTekstiKuvaus: string;
+  tiles: any;
+}>();
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const tilesFiltered = computed(() => {
+  return _.filter(props.tiles, tile => (!tile.oikeustarkastelu || props.kayttajaStore.hasOikeus(tile.oikeustarkastelu?.oikeus, tile.oikeustarkastelu?.kohde)));
+});
 
-  @Prop({ required: true })
-  private kieliStore!: KieliStore;
+const nimi = computed(() => {
+  return props.kayttajaStore?.nimi?.value || null;
+});
 
-  @Prop({ required: true })
-  private paivitettavatJaSiirrettavatTotsStore!: PaivitettavatJaSiirrettavatTotsStore;
-
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
-
-  @Prop({ required: true })
-  private tervetuloaTeksti!: string;
-
-  @Prop({ required: true })
-  private tervetuloaTekstiKuvaus!: string;
-
-  @Prop({ required: true })
-  private tiles!: any;
-
-  get tilesFiltered() {
-    return _.filter(this.tiles, tile => (!tile.oikeustarkastelu || this.kayttajaStore.hasOikeus(tile.oikeustarkastelu?.oikeus, tile.oikeustarkastelu?.kohde)));
-  }
-
-  @Meta
-  getMetaInfo() {
-    return {
-      title: this.$t(SovellusTitle[this.toteutus]),
-      titleTemplate: null,
-    };
-  }
-
-  get nimi() {
-    return this.kayttajaStore?.nimi?.value || null;
-  }
-}
+useHead(() => ({
+  title: $t(SovellusTitle[props.toteutus]) as string,
+  titleTemplate: null,
+}));
 </script>
 
 <style lang="scss" scoped>
-@import '~@shared/styles/variables';
+@import '@shared/styles/variables';
 
 .home-container {
   background-color: $etusivu-background;
@@ -106,7 +84,7 @@ export default class RouteEtusivu extends Mixins(EpRoute) {
   .header {
     color: white;
     background-color: $etusivu-header-background;
-    background-image: url('~@assets/img/banners/header.svg');
+    background-image: url('@assets/img/banners/header.svg');
     background-position: 100% 0;
     background-repeat: no-repeat;
     @media only screen and (min-width: 2503px)  {

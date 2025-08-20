@@ -1,6 +1,6 @@
 <template>
   <ep-main-view>
-    <template slot="header">
+    <template #header>
       <div class="d-flex justify-content-between">
         <h1>{{ $t('otsikko') }}</h1>
       </div>
@@ -9,19 +9,14 @@
   </ep-main-view>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+/**
+ * @deprecated
+ */
 import _ from 'lodash';
-import { Prop, Vue, Component, Mixins, Watch } from 'vue-property-decorator';
 
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
-
-@Component({
-  components: {
-    EpMainView,
-  },
-})
-export default class RouteTiedote extends Vue {
-}
+import { $t } from '@shared/utils/globals';
 </script>
 
 <style scoped lang="scss">

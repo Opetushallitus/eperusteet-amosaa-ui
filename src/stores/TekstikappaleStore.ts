@@ -1,20 +1,19 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko, Koulutustyyppi } from '@shared/tyypit';
 import { YleinenSisaltoViiteStore } from './YleinenSisaltoViiteStore';
-
-Vue.use(VueCompositionApi);
+import { computed } from 'vue';
+import { Router, useRouter } from 'vue-router';
+import { App } from 'vue';
+import { AbstractSisaltoviiteStore } from './AbstractSisaltoviiteStore';
 
 export interface ITekstikappale {
   create(opetussuunnitelmaId: number,
     koulutustoimijaId: string,
     sisaltoviiteId: number,
     versionumero: number,
-    el: any,
-    updateNavigation: Function,
     opetussuunnitelma: OpetussuunnitelmaDto): TekstikappaleStore
 }
 
@@ -24,8 +23,6 @@ export class TekstikappaleStore extends YleinenSisaltoViiteStore implements IEdi
     public koulutustoimijaId?: string,
     public sisaltoviiteId?: number,
     public versionumero?: number,
-    public el?: any,
-    public updateNavigation?: Function,
     public opetussuunnitelma?: OpetussuunnitelmaDto,
   ) {
     super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, opetussuunnitelma);
@@ -42,8 +39,8 @@ export class TekstikappaleStore extends YleinenSisaltoViiteStore implements IEdi
 
   async remove() {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId!, this.sisaltoviiteId!, this.koulutustoimijaId!);
-    await this.updateNavigation!();
-    this.el.$router.replace({
+    await TekstikappaleStore.config.updateNavigation();
+    AbstractSisaltoviiteStore.config.router.replace({
       name: 'toteutussuunnitelma',
     });
   }
@@ -63,11 +60,11 @@ export class TekstikappaleStore extends YleinenSisaltoViiteStore implements IEdi
     });
   }
 
-  public static async add(opsId: number, svId: number, ktId: string, tekstikappale: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
+  public static async add(opsId: number, svId: number, ktId: string, tekstikappale: SisaltoviiteMatalaDto) {
     const added = (await Sisaltoviitteet.addTekstiKappaleLapsi(opsId, svId, ktId, tekstikappale)).data;
-    await updateNavigation();
+    await TekstikappaleStore.config.updateNavigation();
 
-    el.$router.push({
+    AbstractSisaltoviiteStore.config.router.push({
       name: 'tekstikappale',
       params: {
         sisaltoviiteId: '' + added.id,
@@ -79,9 +76,13 @@ export class TekstikappaleStore extends YleinenSisaltoViiteStore implements IEdi
     koulutustoimijaId: string,
     sisaltoviiteId: number,
     versionumero: number,
-    el: any,
-    updateNavigation: Function,
     opetussuunnitelma: OpetussuunnitelmaDto) {
-    return new TekstikappaleStore(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation, opetussuunnitelma);
+    return new TekstikappaleStore(
+      opetussuunnitelmaId,
+      koulutustoimijaId,
+      sisaltoviiteId,
+      versionumero,
+      opetussuunnitelma,
+    );
   }
 }

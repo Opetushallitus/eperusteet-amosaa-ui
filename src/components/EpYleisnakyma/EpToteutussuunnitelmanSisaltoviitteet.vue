@@ -1,20 +1,25 @@
 <template>
   <div class="content">
-    <h3>{{$t(title)}}</h3>
+    <h3>{{ $t(title) }}</h3>
 
     <ep-spinner v-if="!sisaltoviitteet" />
 
-    <div class="d-flex" v-else>
-      <ep-small-data-box v-for="(sisaltoviite, index) in toteutuksenSisaltoviitteet" :key="'sisaltoviite'+index"
-        :topic="$t(sisaltoviite.teksti)" :count="sisaltoviite.lkm" />
+    <div
+      v-else
+      class="d-flex"
+    >
+      <ep-small-data-box
+        v-for="(sisaltoviite, index) in toteutuksenSisaltoviitteet"
+        :key="'sisaltoviite'+index"
+        :topic="$t(sisaltoviite.teksti)"
+        :count="sisaltoviite.lkm"
+      />
     </div>
-
   </div>
 </template>
 
-<script lang="ts">
-
-import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator';
+<script setup lang="ts">
+import { computed, watch, ref } from 'vue';
 import _ from 'lodash';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSmallDataBox from '@shared/components/EpSmallDataBox/EpSmallDataBox.vue';
@@ -22,80 +27,70 @@ import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { OpetussuunnitelmaDto, SisaltoViiteKevytDtoTyyppiEnum, TutkinnonOsaKevytDtoTyyppiEnum } from '@shared/api/amosaa';
 import { YleisnakymaSisaltoviitteTiedot } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
+import { $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpSpinner,
-    EpSmallDataBox,
-  },
-})
-export default class EpToteutussuunnitelmanSisaltoviitteet extends Vue {
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const props = defineProps<{
+  toteutus: Toteutus;
+  opetussuunnitelma?: OpetussuunnitelmaDto;
+}>();
 
-  @Prop()
-  private opetussuunnitelma!: OpetussuunnitelmaDto;
+const sisaltoViiteStore = new SisaltoViiteStore();
 
-  private sisaltoViiteStore = new SisaltoViiteStore();
-
-  @Watch('opetussuunnitelma', { immediate: true })
-  async opetussuunnitelmachange() {
-    if (this.opetussuunnitelma) {
-      await this.sisaltoViiteStore.fetch(this.opetussuunnitelma.id!, _.toString(this.opetussuunnitelma.koulutustoimija?.id));
-    }
+watch(() => props.opetussuunnitelma, async (newValue) => {
+  if (newValue) {
+    await sisaltoViiteStore.fetch(newValue.id!, _.toString(newValue.koulutustoimija?.id));
   }
+}, { immediate: true });
 
-  get title() {
-    return YleisnakymaSisaltoviitteTiedot[this.toteutus].title;
-  }
+const title = computed(() => {
+  return YleisnakymaSisaltoviitteTiedot[props.toteutus].title;
+});
 
-  get toteutuksenSisaltoviitteet() {
-    return _.map(YleisnakymaSisaltoviitteTiedot[this.toteutus].sisaltoviitetyypit, sisaltoviitetyyppi => (this.sisaltoviiteLkm[sisaltoviitetyyppi]));
-  }
+const sisaltoviitteet = computed(() => {
+  return sisaltoViiteStore.sisaltoviitteet.value;
+});
 
-  get sisaltoviiteLkm() {
-    return {
-      tekstikappale: {
-        teksti: 'tekstikappaletta',
-        lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite =>
-          sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.TEKSTIKAPPALE)
-          && _.get(sisaltoviite, '_vanhempi') != null)),
-      },
-      tutkinnonosa: {
-        teksti: 'tutkinnon-osaa',
-        lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSA))),
-      },
-      paikallinentutkinnonosa: {
-        teksti: 'paikallista-tutkinnon-osaa',
-        lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite =>
-          sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSA)
-          && sisaltoviite.tosa
-          && sisaltoviite.tosa.tyyppi === _.lowerCase(TutkinnonOsaKevytDtoTyyppiEnum.OMA))),
-      },
-      suorituspolku: {
-        teksti: 'suorituspolkua',
-        lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLKU))),
-      },
-      osasuorituspolku: {
-        teksti: 'osasuoritus-polkua',
-        lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.OSASUORITUSPOLKU))),
-      },
-      opintokokonaisuus: {
-        teksti: 'osaamis-ja-opintokokonaisuuksia-yhteensa',
-        lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.OPINTOKOKONAISUUS))),
-      },
-      koulutuksenosa: {
-        teksti: 'koulutuksen-osaa',
-        lkm: _.size(_.filter(this.sisaltoviitteet, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.KOULUTUKSENOSA))),
-      },
-
-    };
+const sisaltoviiteLkm = computed(() => {
+  return {
+    tekstikappale: {
+      teksti: 'tekstikappaletta',
+      lkm: _.size(_.filter(sisaltoviitteet.value, sisaltoviite =>
+        sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.TEKSTIKAPPALE)
+        && _.get(sisaltoviite, '_vanhempi') != null)),
+    },
+    tutkinnonosa: {
+      teksti: 'tutkinnon-osaa',
+      lkm: _.size(_.filter(sisaltoviitteet.value, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSA))),
+    },
+    paikallinentutkinnonosa: {
+      teksti: 'paikallista-tutkinnon-osaa',
+      lkm: _.size(_.filter(sisaltoviitteet.value, sisaltoviite =>
+        sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSA)
+        && sisaltoviite.tosa
+        && sisaltoviite.tosa.tyyppi === _.lowerCase(TutkinnonOsaKevytDtoTyyppiEnum.OMA))),
+    },
+    suorituspolku: {
+      teksti: 'suorituspolkua',
+      lkm: _.size(_.filter(sisaltoviitteet.value, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLKU))),
+    },
+    osasuorituspolku: {
+      teksti: 'osasuoritus-polkua',
+      lkm: _.size(_.filter(sisaltoviitteet.value, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.OSASUORITUSPOLKU))),
+    },
+    opintokokonaisuus: {
+      teksti: 'osaamis-ja-opintokokonaisuuksia-yhteensa',
+      lkm: _.size(_.filter(sisaltoviitteet.value, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.OPINTOKOKONAISUUS))),
+    },
+    koulutuksenosa: {
+      teksti: 'koulutuksen-osaa',
+      lkm: _.size(_.filter(sisaltoviitteet.value, sisaltoviite => sisaltoviite.tyyppi === _.lowerCase(SisaltoViiteKevytDtoTyyppiEnum.KOULUTUKSENOSA))),
+    },
   };
+});
 
-  get sisaltoviitteet() {
-    return this.sisaltoViiteStore.sisaltoviitteet.value;
-  }
-}
+const toteutuksenSisaltoviitteet = computed(() => {
+  return _.map(YleisnakymaSisaltoviitteTiedot[props.toteutus].sisaltoviitetyypit, sisaltoviitetyyppi => (sisaltoviiteLkm.value[sisaltoviitetyyppi]));
+});
 </script>
 
 <style scoped lang="scss">

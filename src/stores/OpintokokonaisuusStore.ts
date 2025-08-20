@@ -1,17 +1,28 @@
 import Vue from 'vue';
 import _ from 'lodash';
-import VueCompositionApi, { computed } from '@vue/composition-api';
-import { minLength, required, requiredIf } from 'vuelidate/lib/validators';
 import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
-import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
+import { IEditoitava, EditoitavaFeatures, EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko } from '@shared/tyypit';
 import { Kielet } from '@shared/stores/kieli';
-import { translated } from '@shared/validators/required';
+import { koodistoKoodiValidator, translated } from '@shared/validators/required';
 import { Computed } from '@shared/utils/interfaces';
+import { computed } from 'vue';
+import { Router, useRouter } from 'vue-router';
+import { App } from 'vue';
+import { required, minLength, requiredIf, helpers } from '@vuelidate/validators';
 
-Vue.use(VueCompositionApi);
+interface OpintokokonaisuusStoreConfig {
+  router: Router;
+  updateNavigation: () => Promise<void>;
+}
 
 export class OpintokokonaisuusStore implements IEditoitava {
+  protected static config: OpintokokonaisuusStoreConfig;
+
+  public static install(app: App, config: OpintokokonaisuusStoreConfig) {
+    OpintokokonaisuusStore.config = config;
+  }
+
   private opintokokonaisuus: SisaltoviiteMatalaDto | undefined = undefined;
 
   constructor(
@@ -19,9 +30,8 @@ export class OpintokokonaisuusStore implements IEditoitava {
     private koulutustoimijaId: string,
     private sisaltoviiteId: number,
     private versionumero: number,
-    private el: any,
     private opetussuunnitelma: Computed<OpetussuunnitelmaDto>,
-    private updateNavigation: Function,
+    private editointiStore: EditointiStore,
   ) {
   }
 
@@ -54,7 +64,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
 
   async save(data: any) {
     await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, data);
-    await this.updateNavigation();
+    await OpintokokonaisuusStore.config.updateNavigation();
   }
 
   async restore(rev: number) {
@@ -72,8 +82,8 @@ export class OpintokokonaisuusStore implements IEditoitava {
 
   async remove() {
     await Sisaltoviitteet.removeSisaltoViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId);
-    await this.updateNavigation();
-    this.el.$router.replace({
+    await OpintokokonaisuusStore.config.updateNavigation();
+    OpintokokonaisuusStore.config.router.replace({
       name: 'toteutussuunnitelma',
     });
   }
@@ -85,40 +95,38 @@ export class OpintokokonaisuusStore implements IEditoitava {
       tekstiKappale: {
         nimi: {
           [kieli]: {
-            required: requiredIf((value) => {
-              return !this.el.editointiStore?.data?.value?.opintokokonaisuus?.koodiArvo;
+            required: requiredIf(() => {
+              return !this.editointiStore?.data?.value?.opintokokonaisuus?.koodiArvo;
             }),
           },
         },
       },
       opintokokonaisuus: {
         laajuus: {
-          required: requiredIf((value) => {
-            return !!value.laajuusYksikko;
+          required: requiredIf(() => {
+            return !!this.editointiStore?.data?.value?.opintokokonaisuus?.laajuusYksikko;
           }),
         },
         laajuusYksikko: {
-          required: requiredIf((value) => {
-            return value.laajuus > 0;
+          required: requiredIf(() => {
+            return (this.editointiStore?.data?.value?.opintokokonaisuus?.laajuus ?? 0) > 0;
           }),
         },
         kuvaus: translated([kieli]),
         tavoitteet: {
-          'min-length': minLength(0),
-          $each: {
-            tavoite: {
-              [kieli]: {
-                required,
-              },
+          $each: helpers.forEach({
+            [kieli]: {
+              required,
+              'min-length': minLength(1),
             },
-          },
+          }),
         },
         arvioinnit: {
-          'min-length': minLength(0),
           $each: {
             arviointi: {
               [kieli]: {
                 required,
+                'min-length': minLength(1),
               },
             },
           },
@@ -192,11 +200,11 @@ export class OpintokokonaisuusStore implements IEditoitava {
     });
   }
 
-  public static async add(opsId: number, svId: number, ktId: string, opintokokonaisuus: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
+  public static async add(opsId: number, svId: number, ktId: string, opintokokonaisuus: SisaltoviiteMatalaDto) {
     const added = (await Sisaltoviitteet.addTekstiKappaleLapsi(opsId, svId, ktId, opintokokonaisuus)).data;
-    await updateNavigation();
+    await OpintokokonaisuusStore.config.updateNavigation();
 
-    el.$router.push({
+    OpintokokonaisuusStore.config.router.push({
       name: 'opintokokonaisuus',
       params: {
         sisaltoviiteId: '' + added.id,

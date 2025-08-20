@@ -1,192 +1,184 @@
 <template>
-  <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
-    <template v-slot:button-content>
-      + {{$t('lisaa-sisaltoa')}}
+  <b-dropdown
+    variant="link"
+    toggle-class="text-decoration-none"
+    no-caret
+  >
+    <template #button-content>
+      + {{ $t('lisaa-sisaltoa') }}
     </template>
 
     <b-dropdown-item>
-      <ep-tekstikappale-lisays :tekstikappaleet="tekstikappaleet" :paatasovalinta="true" :tallenna="lisaaUusiTekstikappale">
-        <template v-slot:default="{tekstikappale}">
-          {{$kaanna(tekstikappale.label)}}
+      <ep-tekstikappale-lisays
+        :tekstikappaleet="tekstikappaleet"
+        :paatasovalinta="true"
+        :tallenna="lisaaUusiTekstikappale"
+      >
+        <template #default="{tekstikappale}">
+          {{ $kaanna(tekstikappale.label) }}
         </template>
       </ep-tekstikappale-lisays>
     </b-dropdown-item>
 
     <div v-if="!opsYhteinenOsuus">
       <b-dropdown-item>
-        <span @click="lisaaUusiTutkinnonosa">{{$t('uusi-tutkinnon-osa')}}</span>
+        <span @click="lisaaUusiTutkinnonosa">{{ $t('uusi-tutkinnon-osa') }}</span>
       </b-dropdown-item>
 
-      <hr class="mt-1 mb-1"/>
+      <hr class="mt-1 mb-1">
 
       <b-dropdown-item>
-        <span @click="lisaaUusiSuorituspolku">{{$t('uusi-suorituspolku')}}</span>
+        <span @click="lisaaUusiSuorituspolku">{{ $t('uusi-suorituspolku') }}</span>
       </b-dropdown-item>
 
       <b-dropdown-item>
-        <span @click="lisaaUusiOsaSuorituspolku">{{$t('uusi-osasuorituspolku')}}</span>
+        <span @click="lisaaUusiOsaSuorituspolku">{{ $t('uusi-osasuorituspolku') }}</span>
       </b-dropdown-item>
 
-      <hr class="mt-1 mb-1"/>
+      <hr class="mt-1 mb-1">
 
       <b-dropdown-item>
-        <ep-sisallon-tuonti v-if="toteutussuunnitelma" :opetussuunnitelmaId="toteutussuunnitelma.id" :koulutustoimijaId="koulutustoimijaId" :updateNavigation="updateNavigation"/>
+        <ep-sisallon-tuonti
+          v-if="toteutussuunnitelma"
+          :opetussuunnitelma-id="toteutussuunnitelma.id"
+          :koulutustoimija-id="koulutustoimijaId"
+          :update-navigation="updateNavigation"
+        />
       </b-dropdown-item>
     </div>
-
   </b-dropdown>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Mixins, Vue } from 'vue-property-decorator';
+import { computed, getCurrentInstance } from 'vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { SisaltoviiteMatalaDto, MatalaTyyppiEnum, SisaltoViiteKevytDtoTyyppiEnum, NavigationNodeDto, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import EpSisallonTuonti from '@/components/EpSisaltoLisays/EpSisallonTuonti.vue';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpTekstikappaleLisays,
-    EpButton,
-    EpSisallonTuonti,
-  },
-})
-export default class EpSisaltoLisays extends Vue {
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const props = defineProps<{
+  toteutussuunnitelmaId: number;
+  koulutustoimijaId: string;
+  navigation: NavigationNodeDto;
+  updateNavigation: () => Promise<void>;
+  toteutussuunnitelma: OpetussuunnitelmaDto;
+}>();
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const instance = getCurrentInstance();
 
-  @Prop({ required: true })
-  private navigation!: NavigationNodeDto;
+const navigationChildren = (navigations: NavigationNodeDto[]): NavigationNodeDto[] => {
+  return _.flatten(_.map(navigations, navigation => {
+    return [
+      navigation,
+      ...navigationChildren(navigation.children as []),
+    ];
+  }));
+};
 
-  @Prop({ required: true })
-  private updateNavigation!: Function;
+const navigationNodes = computed(() => {
+  if (props.navigation) {
+    return [
+      props.navigation,
+      ...navigationChildren(props.navigation.children as []),
+    ];
+  }
+  return undefined;
+});
 
-  @Prop({ required: true })
-  private toteutussuunnitelma!: OpetussuunnitelmaDto;
+const tekstikappaleet = computed(() => {
+  return _.filter(navigationNodes.value, navigationNode => navigationNode.type === 'tekstikappale');
+});
 
-  get tekstikappaleet() {
-    return _.filter(this.navigationNodes, navigationNode => navigationNode.type === 'tekstikappale');
+const rootSisaltoviiteId = computed((): number => {
+  return props.navigation.id!;
+});
+
+const lisaaUusiTekstikappale = async (otsikko: any, valittuTekstikappale: any) => {
+  let parentId = rootSisaltoviiteId.value;
+  if (valittuTekstikappale && valittuTekstikappale.id) {
+    parentId = valittuTekstikappale.id;
   }
 
-  get navigationNodes() {
-    if (this.navigation) {
-      return [
-        this.navigation,
-        ...this.navigationChildren(this.navigation.children as []),
-      ];
-    }
-  }
+  SisaltoViiteStore.add(
+    props.toteutussuunnitelmaId,
+    parentId,
+    props.koulutustoimijaId,
+    {
+      tyyppi: _.toLower(MatalaTyyppiEnum.TEKSTIKAPPALE),
+      tekstiKappale: {
+        nimi: otsikko,
+      },
+    } as SisaltoviiteMatalaDto);
+};
 
-  navigationChildren(navigations: NavigationNodeDto[]): NavigationNodeDto[] {
-    return _.flatten(_.map(navigations, navigation => {
-      return [
-        navigation,
-        ...this.navigationChildren(navigation.children as []),
-      ];
-    }));
-  }
+const lisaaUusiTutkinnonosa = async () => {
+  let parentId = _.find(navigationNodes.value, navigationNode => navigationNode.type === 'tutkinnonosat')!.id!;
 
-  get rootSisaltoviiteId(): number {
-    return this.navigation.id!;
-  }
+  SisaltoViiteStore.add(
+    props.toteutussuunnitelmaId,
+    parentId,
+    props.koulutustoimijaId,
+    {
+      tyyppi: _.toLower(MatalaTyyppiEnum.TUTKINNONOSA),
+      tekstiKappale: {
+        nimi: { [Kielet.getSisaltoKieli.value]: '' },
+      },
+    } as SisaltoviiteMatalaDto);
+};
 
-  async lisaaUusiTekstikappale(otsikko: any, valittuTekstikappale: any) {
-    let parentId = this.rootSisaltoviiteId;
-    if (valittuTekstikappale && valittuTekstikappale.id) {
-      parentId = valittuTekstikappale.id;
-    }
+const lisaaUusiSuorituspolku = async () => {
+  let parentId = _.find(navigationNodes.value, navigationNode => navigationNode.type === 'suorituspolut')!.id!;
 
-    SisaltoViiteStore.add(
-      this.toteutussuunnitelmaId,
-      parentId,
-      this.koulutustoimijaId,
-      {
-        tyyppi: _.toLower(MatalaTyyppiEnum.TEKSTIKAPPALE),
-        tekstiKappale: {
-          nimi: otsikko,
-        },
-      } as SisaltoviiteMatalaDto,
-      this,
-      this.updateNavigation);
-  }
+  SisaltoViiteStore.add(
+    props.toteutussuunnitelmaId,
+    parentId,
+    props.koulutustoimijaId,
+    {
+      tyyppi: _.toLower(MatalaTyyppiEnum.SUORITUSPOLKU),
+      tekstiKappale: {
+        nimi: { [Kielet.getSisaltoKieli.value]: '' },
+      },
+    } as SisaltoviiteMatalaDto);
+};
 
-  async lisaaUusiTutkinnonosa() {
-    let parentId = _.find(this.navigationNodes, navigationNode => navigationNode.type === 'tutkinnonosat')!.id!;
+const lisaaUusiOsaSuorituspolku = async () => {
+  let parentId = _.find(navigationNodes.value, navigationNode => navigationNode.type === 'suorituspolut')!.id!;
 
-    SisaltoViiteStore.add(
-      this.toteutussuunnitelmaId,
-      parentId,
-      this.koulutustoimijaId,
-      {
-        tyyppi: _.toLower(MatalaTyyppiEnum.TUTKINNONOSA),
-        tekstiKappale: {
-          nimi: { [Kielet.getSisaltoKieli.value]: '' },
-        },
-      } as SisaltoviiteMatalaDto,
-      this,
-      this.updateNavigation);
-  }
+  SisaltoViiteStore.add(
+    props.toteutussuunnitelmaId,
+    parentId,
+    props.koulutustoimijaId,
+    {
+      tyyppi: _.toLower(MatalaTyyppiEnum.OSASUORITUSPOLKU),
+      tekstiKappale: {
+        nimi: { [Kielet.getSisaltoKieli.value]: '' },
+      },
+    } as SisaltoviiteMatalaDto);
+};
 
-  async lisaaUusiSuorituspolku() {
-    let parentId = _.find(this.navigationNodes, navigationNode => navigationNode.type === 'suorituspolut')!.id!;
-
-    SisaltoViiteStore.add(
-      this.toteutussuunnitelmaId,
-      parentId,
-      this.koulutustoimijaId,
-      {
-        tyyppi: _.toLower(MatalaTyyppiEnum.SUORITUSPOLKU),
-        tekstiKappale: {
-          nimi: { [Kielet.getSisaltoKieli.value]: '' },
-        },
-      } as SisaltoviiteMatalaDto,
-      this,
-      this.updateNavigation);
-  }
-
-  async lisaaUusiOsaSuorituspolku() {
-    let parentId = _.find(this.navigationNodes, navigationNode => navigationNode.type === 'suorituspolut')!.id!;
-
-    SisaltoViiteStore.add(
-      this.toteutussuunnitelmaId,
-      parentId,
-      this.koulutustoimijaId,
-      {
-        tyyppi: _.toLower(MatalaTyyppiEnum.OSASUORITUSPOLKU),
-        tekstiKappale: {
-          nimi: { [Kielet.getSisaltoKieli.value]: '' },
-        },
-      } as SisaltoviiteMatalaDto,
-      this,
-      this.updateNavigation);
-  }
-
-  get opsYhteinenOsuus() {
-    return this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
-  }
-}
+const opsYhteinenOsuus = computed(() => {
+  return props.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
+});
 
 </script>
 
 <style scoped lang="scss">
 
-  ::v-deep .dropdown-toggle {
+  :deep(.dropdown-toggle) {
     font-size: 0.8rem !important;
     padding-bottom: 0px;
   }
 
-  ::v-deep .dropdown-item {
+  :deep(.dropdown-item) {
     padding-left: 1rem;
     padding-right: 1rem;
   }
 
-  ::v-deep .dropdown-menu {
+  :deep(.dropdown-menu) {
     margin-left: 15px;
     font-size: 0.8rem;
   }

@@ -1,12 +1,10 @@
 import Vue from 'vue';
-import VueCompositionApi, { computed } from '@vue/composition-api';
 import { Sisaltoviitteet, SisaltoViiteDto, Perusteet, SisaltoViiteDtoTyyppiEnum, SisaltoviiteLukko } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { ILukko, Revision } from '@shared/tyypit';
 import { AbstractSisaltoviiteStore } from './AbstractSisaltoviiteStore';
-
-Vue.use(VueCompositionApi);
+import { computed } from 'vue';
 
 export class SuorituspolutStore extends AbstractSisaltoviiteStore implements IEditoitava {
   constructor(

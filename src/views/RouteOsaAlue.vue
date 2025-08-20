@@ -1,121 +1,202 @@
 <template>
-  <div id="scroll-anchor" v-if="editointiStore">
+  <div
+    v-if="editointiStore"
+    id="scroll-anchor"
+  >
     <EpEditointi :store="editointiStore">
-      <template v-slot:header>
+      <template #header>
         <div class="d-flex">
           <h2 class="m-0">
             <span v-if="perusteenOsaAlue">{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
             <span v-else-if="osaAlueValue.nimi">{{ $kaanna(osaAlueValue.nimi) }}</span>
           </h2>
-          <span v-if="osaAlueValue.piilotettu" class="ml-2">({{ $t('piilotettu') }})</span>
+          <span
+            v-if="osaAlueValue.piilotettu"
+            class="ml-2"
+          >({{ $t('piilotettu') }})</span>
         </div>
       </template>
-      <template v-slot:default="{ data, supportData, isEditing }">
-
-        <div v-if="isEditing" class="mb-4">
-          <ep-toggle v-model="osaAlueValue.piilotettu">{{ $t('piilota-osa-alue-julkisesta-suunnitelmasta') }}</ep-toggle>
+      <template #default="{ data, supportData, isEditing }">
+        <div
+          v-if="isEditing"
+          class="mb-4"
+        >
+          <ep-toggle v-model="osaAlueValue.piilotettu">
+            {{ $t('piilota-osa-alue-julkisesta-suunnitelmasta') }}
+          </ep-toggle>
         </div>
-        <div v-else-if="osaAlueValue.piilotettu" class="disabled-text mb-4">{{$t('osa-alue-piilotettu-julkisesta-suunnitelmasta')}}</div>
+        <div
+          v-else-if="osaAlueValue.piilotettu"
+          class="disabled-text mb-4"
+        >
+          {{ $t('osa-alue-piilotettu-julkisesta-suunnitelmasta') }}
+        </div>
 
         <div class="d-flex flex-lg-wrap justify-content-between">
-          <b-form-group class="flex-grow-1 mr-6" :label="$t('osa-alueen-nimi')" v-if="isEditing">
+          <b-form-group
+            v-if="isEditing"
+            class="flex-grow-1 mr-6"
+            :label="$t('osa-alueen-nimi')"
+          >
             <ep-field
               v-if="tyyppi === 'paikallinen'"
               v-model="data.osaAlueet[osaAlueIdx].nimi"
-              :is-editing="isEditing">
-            </ep-field>
+              :is-editing="isEditing"
+            />
             <span v-else>{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
           </b-form-group>
 
-          <b-form-group class="flex-grow-1 mr-6" :label="$t('koodi')" v-if="perusteenOsaAlue">
+          <b-form-group
+            v-if="perusteenOsaAlue"
+            class="flex-grow-1 mr-6"
+            :label="$t('koodi')"
+          >
             <span>{{ perusteenOsaAlue.koodi.arvo }}</span>
           </b-form-group>
         </div>
 
-        <div v-if="tyyppi === 'paikallinen'" class="d-flex flex-lg-wrap justify-content-between">
-          <b-form-group class="flex-grow-1 mr-6" :label="$t('koodi')">
-            <ep-field v-model="data.osaAlueet[osaAlueIdx].koodi"
-                      type="string"
-                      :is-editing="isEditing">
-            </ep-field>
+        <div
+          v-if="tyyppi === 'paikallinen'"
+          class="d-flex flex-lg-wrap justify-content-between"
+        >
+          <b-form-group
+            class="flex-grow-1 mr-6"
+            :label="$t('koodi')"
+          >
+            <ep-field
+              v-model="data.osaAlueet[osaAlueIdx].koodi"
+              type="string"
+              :is-editing="isEditing"
+            />
           </b-form-group>
         </div>
 
-        <b-form-group :label="$t('tutkinnon-osa')" v-if="supportData.tutkinnonOsa">
-          <router-link :to="{ name: 'tutkinnonosa' }">{{ $kaanna(supportData.tutkinnonOsa.nimi) }}</router-link>
+        <b-form-group
+          v-if="supportData.tutkinnonOsa"
+          :label="$t('tutkinnon-osa')"
+        >
+          <router-link :to="{ name: 'tutkinnonosa' }">
+            {{ $kaanna(supportData.tutkinnonOsa.nimi) }}
+          </router-link>
         </b-form-group>
 
-        <h3 v-if="isEditing">{{$t('paikallinen-tarkennus')}}</h3>
-        <ep-content layout="normal" v-model="data.osaAlueet[osaAlueIdx].paikallinenTarkennus" :is-editable="isEditing"> </ep-content>
+        <h3 v-if="isEditing">
+          {{ $t('paikallinen-tarkennus') }}
+        </h3>
+        <ep-content
+          v-model="data.osaAlueet[osaAlueIdx].paikallinenTarkennus"
+          layout="normal"
+          :is-editable="isEditing"
+        />
 
-        <h3 v-if="isEditing && data.osaAlueet[osaAlueIdx].vapaat.length > 0" class="pt-5 pb-2">{{$t('tekstikappaleet')}}</h3>
-        <EpVapaatTekstit v-model="data.osaAlueet[osaAlueIdx].vapaat" :isEditing="isEditing"/>
+        <h3
+          v-if="isEditing && data.osaAlueet[osaAlueIdx].vapaat.length > 0"
+          class="pt-5 pb-2"
+        >
+          {{ $t('tekstikappaleet') }}
+        </h3>
+        <EpVapaatTekstit
+          v-model="data.osaAlueet[osaAlueIdx].vapaat"
+          :is-editing="isEditing"
+        />
 
         <b-tabs class="ml-0 pl-0 mt-4">
-          <b-tab :title="$t('paikallinen-toteutus')" class="mt-4">
-
-            <h3 class="mt-4 mb-4">{{$t('toteutukset')}}</h3>
-            <EpOsaAlueToteutukset v-model="data.osaAlueet[osaAlueIdx].toteutukset" :isEditing="isEditing"/>
+          <b-tab
+            :title="$t('paikallinen-toteutus')"
+            class="mt-4"
+          >
+            <h3 class="mt-4 mb-4">
+              {{ $t('toteutukset') }}
+            </h3>
+            <EpOsaAlueToteutukset
+              v-model="data.osaAlueet[osaAlueIdx].toteutukset"
+              :is-editing="isEditing"
+            />
           </b-tab>
 
-          <b-tab v-if="tyyppi === 'paikallinen'" :title="$t('sisalto')">
-            <h3 class="mt-4 mb-4">{{$t('sisalto')}}</h3>
+          <b-tab
+            v-if="tyyppi === 'paikallinen'"
+            :title="$t('sisalto')"
+          >
+            <h3 class="mt-4 mb-4">
+              {{ $t('sisalto') }}
+            </h3>
 
             <b-form-group>
-              <h4 slot="label" class="pt-3">{{$t('laajuus')}}</h4>
-              <div class="d-flex align-items-center" >
-                <ep-field type="number" v-model="data.osaAlueet[osaAlueIdx].laajuus" :is-editing="isEditing"></ep-field>
-                <div class="ml-2">{{ $t('osaamispiste') }}</div>
+              <template #label>
+                <h4 class="pt-3">
+                  {{ $t('laajuus') }}
+                </h4>
+              </template>
+              <div class="d-flex align-items-center">
+                <ep-field
+                  v-model="data.osaAlueet[osaAlueIdx].laajuus"
+                  type="number"
+                  :is-editing="isEditing"
+                />
+                <div class="ml-2">
+                  {{ $t('osaamispiste') }}
+                </div>
               </div>
             </b-form-group>
 
             <b-form-group>
-              <h4 slot="label" class="pt-3">{{$t('osaamistavoitteet')}}</h4>
-              <EpAmmattitaitovaatimukset v-model="data.osaAlueet[osaAlueIdx].osaamistavoitteet"
-                                 :kohdealueettomat="false"
-                                 :kaannos-tavoiteet="$t('tavoitteet')"
-                                 :kaannos-lisaa-kohdealue="$t('lisaa-tavoiteryhma')"
-                                 :kaannos-lisaa-ammattitaitovaatimus="$t('lisaa-tavoite')"
-                                 kaannos-kohdealueet=""
-                                 :kaannos-kohdealue="$t('tavoitteiden-otsikko')"
-                                 :kaannos-vaatimukset="$t('tavoitteet')"
-                                 :kaannos-kohde="$t('opiskelija')"
-                                 tavoitekoodisto=""
-                                 :show-kohde="false"
-                                 :is-editing="isEditing" />
-
+              <template #label>
+                <h4 class="pt-3">
+                  {{ $t('osaamistavoitteet') }}
+                </h4>
+              </template>
+              <EpAmmattitaitovaatimukset
+                v-model="data.osaAlueet[osaAlueIdx].osaamistavoitteet"
+                :kohdealueettomat="false"
+                :kaannos-tavoiteet="$t('tavoitteet')"
+                :kaannos-lisaa-kohdealue="$t('lisaa-tavoiteryhma')"
+                :kaannos-lisaa-ammattitaitovaatimus="$t('lisaa-tavoite')"
+                kaannos-kohdealueet=""
+                :kaannos-kohdealue="$t('tavoitteiden-otsikko')"
+                :kaannos-vaatimukset="$t('tavoitteet')"
+                :kaannos-kohde="$t('opiskelija')"
+                tavoitekoodisto=""
+                :show-kohde="false"
+                :is-editing="isEditing"
+              />
             </b-form-group>
 
             <b-form-group>
-              <GeneerinenArviointi :is-editing="isEditing" v-model="data.osaAlueet[osaAlueIdx].geneerinenarviointi"></GeneerinenArviointi>
+              <GeneerinenArviointi
+                v-model="data.osaAlueet[osaAlueIdx].geneerinenarviointi"
+                :is-editing="isEditing"
+              />
             </b-form-group>
           </b-tab>
 
-          <b-tab v-else :title="$t('perusteen-sisalto')">
-            <Osaamistavoitteet v-model="data.osaAlueet[osaAlueIdx]"
-                           :is-editing="isEditing"
-                           :tyyppi="tyyppi"
-                           :peruste-data="perusteenOsaAlue" />
+          <b-tab
+            v-else
+            :title="$t('perusteen-sisalto')"
+          >
+            <Osaamistavoitteet
+              v-model="data.osaAlueet[osaAlueIdx]"
+              :is-editing="isEditing"
+              :tyyppi="tyyppi"
+              :peruste-data="perusteenOsaAlue"
+            />
           </b-tab>
         </b-tabs>
-
       </template>
     </EpEditointi>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, getCurrentInstance, ref, watch } from 'vue';
 import _ from 'lodash';
-import { Watch, Prop, Component, Vue } from 'vue-property-decorator';
+
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
-import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import Osaamistavoitteet from '@shared/components/EpTutkinnonosa/Osaamistavoitteet.vue';
-import { OsaAlueStore } from '@/stores/OsaAlueStore';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpOsaAlueToteutukset from '@/components/EpAmmatillinen/EpOsaAlueToteutukset.vue';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
@@ -123,140 +204,112 @@ import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
 
-@Component({
-  components: {
-    EpVapaatTekstit,
-    EpButton,
-    EpCollapse,
-    EpContent,
-    EpEditointi,
-    EpField,
-    Osaamistavoitteet,
-    EpInput,
-    EpOsaAlueToteutukset,
-    EpAmmattitaitovaatimukset,
-    GeneerinenArviointi,
-    EpToggle,
-  },
-})
-export default class RouteOsaAlue extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { OsaAlueStore } from '@/stores/OsaAlueStore';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: string | number;
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: string | number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  sisaltoviiteId: string | number;
+  osaalueId: string | number;
+}>();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const instance = getCurrentInstance();
 
-  @Prop({ required: true })
-  private sisaltoviiteId!: string | number;
+const editointiStore = ref<EditointiStore | null>(null);
 
-  @Prop({ required: true })
-  private osaalueId!: string | number;
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value || null;
+});
 
-  private editointiStore: EditointiStore | null = null;
+const perusteId = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value!.peruste!.id;
+});
 
-  get tyyppi() {
-    return this.osaAlueValue?.tyyppi;
+const support = computed(() => {
+  if (editointiStore.value && editointiStore.value.supportData.value) {
+    return editointiStore.value.supportData.value;
   }
+  return null;
+});
 
-  get osaamistavoitteidenNimi() {
-    if (this.tyyppi === 'pakollinen') {
-      return 'pakolliset-osaamistavoitteet';
-    }
-    else if (this.tyyppi === 'valinnainen') {
-      return 'valinnaiset-osaamistavoitteet';
-    }
-    else if (this.tyyppi === 'paikallinen') {
-      return 'paikalliset-osaamistavoitteet';
-    }
+const storeData = computed(() => {
+  if (editointiStore.value) {
+    return editointiStore.value.data;
   }
+  return null;
+});
 
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value || null;
+const osaAlueIdx = computed(() => {
+  if (!storeData.value) {
+    return -1;
   }
+  return _.findIndex(storeData.value.osaAlueet, { id: Number(props.osaalueId) });
+});
 
-  get perusteId() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value!.peruste!.id;
+const osaAlueValue = computed(() => {
+  if (storeData.value && osaAlueIdx.value > -1) {
+    return storeData.value.osaAlueet[osaAlueIdx.value as number];
   }
+  return null;
+});
 
-  get support() {
-    if (this.editointiStore && this.editointiStore.supportData.value) {
-      return this.editointiStore.supportData.value;
-    }
-    return null;
+const perusteenOsaAlue = computed(() => {
+  if (osaAlueValue.value && support.value) {
+    return _.find(support.value.tutkinnonOsa.osaAlueet || [], { id: Number(osaAlueValue.value.perusteenOsaAlueId!) }) || null;
   }
+  return null;
+});
 
-  get storeData() {
-    if (this.editointiStore) {
-      return this.editointiStore.data.value;
-    }
-    return null;
+const tyyppi = computed(() => {
+  return osaAlueValue.value?.tyyppi;
+});
+
+const osaamistavoitteidenNimi = computed(() => {
+  if (tyyppi.value === 'pakollinen') {
+    return 'pakolliset-osaamistavoitteet';
   }
-
-  get osaAlueIdx() {
-    if (!this.storeData) {
-      return -1;
-    }
-    return _.findIndex(this.storeData.osaAlueet, { id: Number(this.osaalueId) });
+  else if (tyyppi.value === 'valinnainen') {
+    return 'valinnaiset-osaamistavoitteet';
   }
-
-  get osaAlueValue() {
-    if (this.storeData && this.osaAlueIdx > -1) {
-      return this.storeData.osaAlueet[this.osaAlueIdx as number];
-    }
-    return null;
+  else if (tyyppi.value === 'paikallinen') {
+    return 'paikalliset-osaamistavoitteet';
   }
+  return undefined;
+});
 
-  get perusteenOsaAlue() {
-    if (this.osaAlueValue && this.support) {
-      return _.find(this.support.tutkinnonOsa.osaAlueet || [], { id: Number(this.osaAlueValue.perusteenOsaAlueId!) }) || null;
-    }
-    return null;
+const fetch = _.debounce(() => {
+  if (toteutussuunnitelma.value) {
+    editointiStore.value = new EditointiStore(
+      new OsaAlueStore(
+        _.toNumber(props.toteutussuunnitelmaId),
+        _.toString(props.koulutustoimijaId),
+        _.toNumber(props.sisaltoviiteId),
+        perusteId.value!,
+        null as unknown as number,
+        false,
+        _.toNumber(props.osaalueId)));
   }
+}, 100);
 
-  @Watch('toteutussuunnitelma', { immediate: true })
-  toteutussuunnitelmaChange() {
-    this.fetch();
-  }
+const updateNavigation = async () => {
+  await props.toteutussuunnitelmaStore.initNavigation();
+};
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
-  }
+watch(toteutussuunnitelma, () => {
+  fetch();
+}, { immediate: true });
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
-  }
+watch(() => props.sisaltoviiteId, () => {
+  fetch();
+}, { immediate: true });
 
-  @Watch('osaalueId', { immediate: true })
-  osaalueIdChange() {
-    this.fetch();
-  }
-
-  private fetch = _.debounce(this.fetchImpl, 100);
-
-  fetchImpl() {
-    if (this.toteutussuunnitelma) {
-      this.editointiStore = new EditointiStore(
-        new OsaAlueStore(
-          _.toNumber(this.toteutussuunnitelmaId),
-          _.toString(this.koulutustoimijaId),
-          _.toNumber(this.sisaltoviiteId),
-          this.perusteId!,
-          null as unknown as number,
-          this,
-          false,
-          _.toNumber(this.osaalueId)));
-    }
-  }
-
-  async updateNavigation() {
-    await this.toteutussuunnitelmaStore.initNavigation();
-  }
-}
+watch(() => props.osaalueId, () => {
+  fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

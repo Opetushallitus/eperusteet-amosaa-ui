@@ -1,12 +1,11 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
 import { Perusteet, OpetussuunnitelmaDto, SisaltoViiteKevytDto, Opetussuunnitelmat, Sisaltoviitteet } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
 import { EditoitavaFeatures, IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
 import { AbstractSisaltoviiteStore } from './AbstractSisaltoviiteStore';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class KoulutuksenOsatStore extends AbstractSisaltoviiteStore implements IEditoitava {
   private state = reactive({
@@ -18,7 +17,6 @@ export class KoulutuksenOsatStore extends AbstractSisaltoviiteStore implements I
     public koulutustoimijaId: string,
     public sisaltoviiteId: number,
     public opetussuunnitelma: OpetussuunnitelmaDto,
-    public updateNavigation: Function,
   ) {
     super(toteutussuunnitelmaId, koulutustoimijaId, sisaltoviiteId);
   }
@@ -56,12 +54,12 @@ export class KoulutuksenOsatStore extends AbstractSisaltoviiteStore implements I
 
   async hide(data) {
     await Sisaltoviitteet.updateTekstiKappaleViite(this.toteutussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, { ...data.sisaltoviite, piilotettu: true });
-    await this.updateNavigation();
+    await KoulutuksenOsatStore.config.updateNavigation;
   }
 
   async unHide(data) {
     await Sisaltoviitteet.updateTekstiKappaleViite(this.toteutussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, { ...data.sisaltoviite, piilotettu: false });
-    await this.updateNavigation();
+    await KoulutuksenOsatStore.config.updateNavigation;
   }
 
   public features(data: any) {

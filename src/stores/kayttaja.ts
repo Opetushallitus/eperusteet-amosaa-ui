@@ -2,19 +2,18 @@ import _ from 'lodash';
 import Vue from 'vue';
 import { KayttajaApi, Koulutustoimijat, EtusivuDto, KoulutustoimijaBaseDto, Kayttajaoikeudet, OpetussuunnitelmaDto, JulkinenApi, KoulutustoimijaJulkinenDto } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
-import VueCompositionApi, { reactive, computed, ref, watch } from '@vue/composition-api';
 import { getSovellusoikeudet, IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
-import { Debounced } from '@shared/utils/delay';
+import { debounced } from '@shared/utils/delay';
 import { getCasKayttaja } from '@shared/api/common';
 import { ToteutusSovellus, ToteutusSovellusRole } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
-
-Vue.use(VueCompositionApi);
+import { computed } from 'vue';
+import { reactive } from 'vue';
 
 // FIXME: tyypitä backendiin
 export type Oikeus = 'luku' | 'kommentointi' | 'muokkaus' | 'luonti' | 'poisto' | 'tilanvaihto' | 'hallinta';
-export interface KoulutustoimijaOikeudet {[key: string]: Oikeus};
-export interface ToteutussuunnitelmaOikeudet {[key: number]: Oikeus};
+export interface KoulutustoimijaOikeudet {[key: string]: Oikeus}
+export interface ToteutussuunnitelmaOikeudet {[key: number]: Oikeus}
 export type OikeusKohde = 'koulutustoimija' | 'toteutussuunnitelma' | 'oph';
 export const OphOrgOid = '1.2.246.562.10.00000000001';
 
@@ -135,11 +134,10 @@ export class KayttajaStore implements IOikeusProvider {
     return this.organisaatioOikeudet.value[kohde];
   }
 
-  @Debounced(300)
-  public async fetchEtusivu(koulutustoimijaId: string | number, koulutustyypit: string[]) {
+  public fetchEtusivu = debounced(async (koulutustoimijaId: string | number, koulutustyypit: string[]) => {
     this.state.etusivu = null;
     this.state.etusivu = (await Koulutustoimijat.getEtusivu(koulutustyypit, _.toString(koulutustoimijaId))).data;
-  }
+  });
 
   private vertaa(oikeus: Oikeus, kohdeKt: string, kohdeOps?: number) {
     const haettu = getOikeusArvo(oikeus);
