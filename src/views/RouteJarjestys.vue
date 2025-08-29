@@ -1,70 +1,67 @@
 <template>
-  <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
-      <template v-slot:header>
-        <h2 class="m-0">{{ $t('muokkaa-jarjestysta') }}</h2>
+  <div
+    v-if="editointiStore"
+    id="scroll-anchor"
+  >
+    <EpEditointi
+      :store="editointiStore"
+      :muokkaus-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+    >
+      <template #header>
+        <h2 class="m-0">
+          {{ $t('muokkaa-jarjestysta') }}
+        </h2>
       </template>
 
-      <template v-slot:default="{ data, isEditing }">
-          <ep-jarjesta v-if="data.rakenne"
-              :isEditable="isEditing"
-              v-model="data.rakenne"
-              :group="'rakenne'"
-              child-field="lapset">
-            <template #default="{ node }">
-              <span>
-                {{ $kaanna(node.nimi) }}
-              </span>
-            </template>
-            <div slot="chapter"></div>
-          </ep-jarjesta>
+      <template #default="{ data, isEditing }">
+        <ep-jarjesta
+          v-if="data.rakenne"
+          v-model="data.rakenne"
+          :is-editable="isEditing"
+          :group="'rakenne'"
+          child-field="lapset"
+        >
+          <template #default="{ node }">
+            <span>
+              {{ $kaanna(node.nimi) }}
+            </span>
+          </template>
+          <template #chapter />
+        </ep-jarjesta>
       </template>
-
     </EpEditointi>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import _ from 'lodash';
-import { Prop, Mixins, Component, Vue, Watch } from 'vue-property-decorator';
+
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { RakenneStore } from '@/stores/RakenneStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpJarjesta from '@shared/components/EpJarjesta/EpJarjesta.vue';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { Toteutus } from '@shared/utils/perusteet';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpEditointi,
-    EpJarjesta,
-  },
-})
-export default class RouteJarjestys extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+  toteutus: Toteutus;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+}>();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const editointiStore = ref<EditointiStore | null>(null);
 
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
-
-  @Prop({ required: true })
-  protected toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
-
-  private editointiStore: EditointiStore | null = null;
-
-  mounted() {
-    this.editointiStore = new EditointiStore(
-      new RakenneStore(
-        this.toteutussuunnitelmaId,
-        this.koulutustoimijaId,
-        async () => this.toteutussuunnitelmaStore.initNavigation(),
-        this.toteutus,
-      ));
-  }
-}
+onMounted(async () => {
+  editointiStore.value = new EditointiStore(
+    new RakenneStore(
+      props.toteutussuunnitelmaId,
+      props.koulutustoimijaId,
+      props.toteutus,
+    ));
+});
 </script>
 
 <style scoped lang="scss">

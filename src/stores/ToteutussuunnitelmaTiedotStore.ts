@@ -1,15 +1,13 @@
-import Vue from 'vue';
-import VueCompositionApi, { computed } from '@vue/composition-api';
 import { OpetussuunnitelmaDto, Perusteet, Opetussuunnitelmat, PerusteDto } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision } from '@shared/tyypit';
 import { requiredLokalisoituTeksti } from '@shared/validators/required';
-import { minValue, maxValue, requiredIf } from 'vuelidate/lib/validators';
 import { Toteutus } from '@shared/utils/perusteet';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { KuvaStore } from './KuvaStore';
+import { computed } from 'vue';
+import { maxValue, minValue, requiredIf } from '@vuelidate/validators';
 
-Vue.use(VueCompositionApi);
 
 export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
   private peruste: PerusteDto | null = null;
@@ -40,7 +38,7 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
     const opetussuunnitelma = (await this.getOpetussuunnitelmaVersion()) as OpetussuunnitelmaDto;
 
     if (opetussuunnitelma.peruste) {
-      this.peruste = (await Perusteet.getPeruste(opetussuunnitelma.peruste?.id!)).data;
+      this.peruste = (await Perusteet.getPeruste(opetussuunnitelma.peruste!.id!)).data;
     }
 
     return {
@@ -109,8 +107,8 @@ export class ToteutussuunnitelmaTiedotStore implements IEditoitava {
           'max-value': peruste && peruste.voimassaoloLoppuu ? maxValue(peruste.voimassaoloLoppuu) : '',
         },
         jotpatyyppi: {
-          required: requiredIf((value) => {
-            return !!value.jotpa;
+          required: requiredIf((value, vm) => {
+            return !!vm.jotpa;
           }),
         },
       },

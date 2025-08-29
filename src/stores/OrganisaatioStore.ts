@@ -1,11 +1,7 @@
 import _ from 'lodash';
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
-
 import { Koulutustoimijat, KoulutustoimijaDto } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-
-Vue.use(VueCompositionApi);
 
 export class OrganisaatioStore implements IEditoitava {
   constructor(

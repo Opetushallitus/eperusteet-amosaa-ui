@@ -1,40 +1,62 @@
 <template>
-<div class="d-flex align-content-stretch mb-3 organisaatio-box-container">
-<div class="organisaatio-box-color"
-        :style="nodeStyle" />
-<div class="d-flex justify-content-between align-items-center organisaatio-box">
-    <div class="p-3">{{ $kaanna(value.nimi) }}</div>
-    <div v-if="!isEditing && !value.oid">
-      <div v-if="status === 'oma'"></div>
-      <ep-button variant="link" v-else-if="status === 'odotetaan'" @click="OrgEventBus.$emit('peruuta-yhteistyopyynto', value)">
-        {{ $t('peruuta-yhteistyopyynto') }}
-      </ep-button>
-      <div v-else-if="status === 'pyynto'">
-        <ep-button variant="link" @click="OrgEventBus.$emit('hylkaa-yhteistyopyynto', value)">
-          {{ $t('hylkaa') }}
+  <div class="d-flex align-content-stretch mb-3 organisaatio-box-container">
+    <div
+      class="organisaatio-box-color"
+      :style="nodeStyle"
+    />
+    <div class="d-flex justify-content-between align-items-center organisaatio-box">
+      <div class="p-3">
+        {{ $kaanna(value.nimi) }}
+      </div>
+      <div v-if="!isEditing && !value.oid">
+        <div v-if="status === 'oma'" />
+        <ep-button
+          v-else-if="status === 'odotetaan'"
+          variant="link"
+          @click="OrgEventBus.$emit('peruuta-yhteistyopyynto', value)"
+        >
+          {{ $t('peruuta-yhteistyopyynto') }}
         </ep-button>
-        <ep-button variant="primary" class="custom-margin" @click="OrgEventBus.$emit('hyvaksy-yhteistyopyynto', value)">
-          {{ $t('hyvaksy-yhteistyopyynto') }}
+        <div v-else-if="status === 'pyynto'">
+          <ep-button
+            variant="link"
+            @click="OrgEventBus.$emit('hylkaa-yhteistyopyynto', value)"
+          >
+            {{ $t('hylkaa') }}
+          </ep-button>
+          <ep-button
+            variant="primary"
+            class="custom-margin"
+            @click="OrgEventBus.$emit('hyvaksy-yhteistyopyynto', value)"
+          >
+            {{ $t('hyvaksy-yhteistyopyynto') }}
+          </ep-button>
+        </div>
+        <ep-button
+          v-else-if="status === 'yhteistyo'"
+          variant="link"
+          @click="OrgEventBus.$emit('lopeta-yhteistyo', value)"
+        >
+          {{ $t('lopeta-yhteistyo') }}
+        </ep-button>
+        <ep-button
+          v-else
+          variant="link"
+          @click="OrgEventBus.$emit('laheta-yhteistyopyynto', value)"
+        >
+          {{ $t('laheta-yhteistyopyynto') }}
         </ep-button>
       </div>
-      <ep-button variant="link" v-else-if="status === 'yhteistyo'" @click="OrgEventBus.$emit('lopeta-yhteistyo', value)">
-        {{ $t('lopeta-yhteistyo') }}
-      </ep-button>
-      <ep-button variant="link" v-else @click="OrgEventBus.$emit('laheta-yhteistyopyynto', value)">
-        {{ $t('laheta-yhteistyopyynto') }}
-      </ep-button>
     </div>
-</div>
-</div>
+  </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Vue } from 'vue-property-decorator';
-
+import { computed } from 'vue';
 import { OrganizationEventBus } from '@/components/EpOrganizationTree/OrganizationEventBus';
-
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import { $kaanna, $t } from '@shared/utils/globals';
 
 const colors = Object.freeze({
   'oma': '#E60895',
@@ -43,49 +65,39 @@ const colors = Object.freeze({
   'yhteistyo': '#BEEAA0',
 });
 
-@Component({
-  components: {
-    EpButton,
-  },
-})
-export default class EpOrganizationNode extends Vue {
-  @Prop({ required: true })
-  private value!: any;
+const props = defineProps<{
+  value: any;
+  isEditing: boolean;
+  yhteistyoMap?: any[];
+}>();
 
-  @Prop({ required: true })
-  private isEditing!: boolean;
+const yhteistyo = computed(() => {
+  return props.yhteistyoMap?.[props.value.oid || props.value.organisaatio];
+});
 
-  @Prop({ required: false, default: [] })
-  private yhteistyoMap!: any[];
-
-  get yhteistyo() {
-    return this.yhteistyoMap[this.value.oid || this.value.organisaatio];
+const status = computed(() => {
+  if (yhteistyo.value) {
+    return yhteistyo.value.status;
   }
+  return undefined;
+});
 
-  get status() {
-    if (this.yhteistyo) {
-      return this.yhteistyo.status;
-    }
+const ktId = computed(() => {
+  if (yhteistyo.value) {
+    return yhteistyo.value.id;
   }
+  return undefined;
+});
 
-  get ktId() {
-    if (this.yhteistyo) {
-      return this.yhteistyo.id;
-    }
-  }
+const color = computed(() => {
+  return colors[status.value];
+});
 
-  get color() {
-    return colors[this.status];
-  }
+const nodeStyle = computed(() => {
+  return color.value ? { 'background': color.value, 'border-color': color.value } : {};
+});
 
-  get nodeStyle() {
-    return this.color ? { 'background': this.color, 'border-color': this.color } : {};
-  }
-
-  get OrgEventBus() {
-    return OrganizationEventBus;
-  }
-}
+const OrgEventBus = OrganizationEventBus;
 </script>
 
 <style scoped lang="scss">

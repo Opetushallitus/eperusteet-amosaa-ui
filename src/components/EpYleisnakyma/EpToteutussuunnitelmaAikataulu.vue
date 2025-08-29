@@ -1,74 +1,76 @@
 <template>
   <div class="content">
-
     <div class="d-flex justify-content-between">
-      <h3>{{$t('aikataulu')}}</h3>
-      <ep-aikataulu-modal
-        ref="aikataulumodal"
-        :rootModel="toteutussuunnitelma"
+      <h3>{{ $t('aikataulu') }}</h3>
+      <EpAikatauluModal
+        ref="aikataulumodalRef"
+        :root-model="toteutussuunnitelma"
         :aikataulut="aikataulut"
-        @tallenna="tallenna">
-        <span slot="luomispaiva-topic" v-html="$t('suunnitelman-luomispaiva-br')"></span>
-      </ep-aikataulu-modal>
+        @tallenna="tallenna"
+      >
+        <template #luomispaiva-topic>
+          <span v-html="$t('suunnitelman-luomispaiva-br')" />
+        </template>
+      </EpAikatauluModal>
     </div>
 
     <ep-spinner v-if="!aikataulut" />
 
-    <div v-else-if="aikataulut.length === 0" class="text-center">
-      <ep-button @click="otaAikatauluKayttoon" buttonClass="pl-5 pr-5"
-        v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
+    <div
+      v-else-if="aikataulut.length === 0"
+      class="text-center"
+    >
+      <ep-button
+        v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+        button-class="pl-5 pr-5"
+        @click="otaAikatauluKayttoon"
+      >
         <span>{{ $t('ota-kayttoon') }}</span>
       </ep-button>
     </div>
 
-    <ep-aikataulu v-else :aikataulut="aikataulut">
-      <span slot="luomispaiva-topic" v-html="$t('suunnitelman-luomispaiva-br')"></span>
+    <ep-aikataulu
+      v-else
+      :aikataulut="aikataulut"
+    >
+      <template #luomispaiva-topic>
+        <span v-html="$t('suunnitelman-luomispaiva-br')" />
+      </template>
     </ep-aikataulu>
-
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { computed, useTemplateRef } from 'vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpAikataulu from '@shared/components/EpAikataulu/EpAikataulu.vue';
 import EpAikatauluModal from '@shared/components/EpAikataulu/EpAikatauluModal.vue';
-import { PerusteprojektiDto, PerusteDto } from '@shared/api/eperusteet';
 import { AikatauluStore } from '@/stores/AikatauluStore';
-import { Kielet } from '@shared/stores/kieli';
 import * as _ from 'lodash';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Tapahtuma } from '@shared/utils/aikataulu';
+import { $t, $success } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpSpinner,
-    EpButton,
-    EpAikataulu,
-    EpAikatauluModal,
-  },
-})
-export default class EpToteutussuunnitelmaAikataulu extends Vue {
-  @Prop({ required: true })
-  private aikatauluStore!: AikatauluStore;
+const props = defineProps<{
+  aikatauluStore: AikatauluStore;
+  toteutussuunnitelma: OpetussuunnitelmaDto;
+}>();
 
-  @Prop({ required: true })
-  private toteutussuunnitelma!: OpetussuunnitelmaDto;
+const aikataulumodalRef = useTemplateRef('aikataulumodalRef');
 
-  get aikataulut() {
-    return this.aikatauluStore.aikataulutapahtumat.value;
-  }
+const aikataulut = computed(() => {
+  return props.aikatauluStore.aikataulutapahtumat.value;
+});
 
-  async otaAikatauluKayttoon() {
-    (this as any).$refs.aikataulumodal.openModal();
-  }
+const otaAikatauluKayttoon = async () => {
+  aikataulumodalRef.value?.openModal();
+};
 
-  async tallenna(aikataulut: Tapahtuma[]) {
-    await this.aikatauluStore.saveAikataulut(aikataulut);
-    this.$success(this.$t('aikataulu-tallennettu') as string);
-  }
-}
+const tallenna = async (aikataulutValue: Tapahtuma[]) => {
+  await props.aikatauluStore.saveAikataulut(aikataulutValue);
+  $success($t('aikataulu-tallennettu') as string);
+};
 </script>
 
 <style scoped lang="scss">
