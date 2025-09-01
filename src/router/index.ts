@@ -407,6 +407,19 @@ const router = new VueRouter({
 export default router;
 
 router.beforeEach((to, from, next) => {
+  const hash = window.location.hash;
+
+  if (hash.includes('%2F')) {
+    const decoded = decodeURIComponent(hash).replace('//', '/');
+    window.location.replace(window.location.pathname + window.location.search + decoded);
+    window.location.reload();
+  }
+  else {
+    next();
+  }
+});
+
+router.beforeEach((to, from, next) => {
   if (!!from.params.toteutus && !!to.params.toteutus && from.params.toteutus !== to.params.toteutus) {
     window.location.reload();
   }
