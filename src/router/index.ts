@@ -46,6 +46,8 @@ import { Maintenance } from '@shared/api/amosaa';
 import _ from 'lodash';
 import RouteOsaamismerkkiKappale from '@/views/RouteOsaamismerkkiKappale.vue';
 import { BrowserStore } from '@shared/stores/BrowserStore';
+import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
+import { Kielet } from '@shared/stores/kieli';
 
 Vue.use(VueRouter);
 Vue.use(VueMeta, {
@@ -406,6 +408,14 @@ const router = new VueRouter({
 
 export default router;
 
+window.addEventListener('beforeunload', e => {
+  if (EditointiStore.anyEditing()) {
+    e.preventDefault();
+    // Vanhemmat selainversiot vaativat erillisen varmistustekstin
+    e.returnValue = Kielet.kaannaOlioTaiTeksti('poistumisen-varmistusteksti');
+  }
+});
+
 router.beforeEach((to, from, next) => {
   const hash = window.location.hash;
 
@@ -422,6 +432,30 @@ router.beforeEach((to, from, next) => {
 router.beforeEach((to, from, next) => {
   if (!!from.params.toteutus && !!to.params.toteutus && from.params.toteutus !== to.params.toteutus) {
     window.location.reload();
+  }
+  else {
+    next();
+  }
+});
+
+router.beforeEach(async (to, from, next) => {
+  if (EditointiStore.anyEditing()) {
+    const value = await router.app.$bvModal.msgBoxConfirm(
+      Kielet.kaannaOlioTaiTeksti('poistumisen-varmistusteksti-dialogi'), {
+        title: Kielet.kaannaOlioTaiTeksti('haluatko-poistua-tallentamatta'),
+        okTitle: Kielet.kaannaOlioTaiTeksti('poistu-tallentamatta'),
+        cancelTitle: Kielet.kaannaOlioTaiTeksti('peruuta'),
+        size: 'lg',
+      });
+
+    if (value) {
+      try {
+        await EditointiStore.cancelAll();
+      }
+      finally {
+        next();
+      }
+    }
   }
   else {
     next();
