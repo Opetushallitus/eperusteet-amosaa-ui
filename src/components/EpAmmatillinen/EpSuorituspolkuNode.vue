@@ -27,11 +27,8 @@
             </div>
             <div class="w-25 text-right">
               <span v-if="isRyhma">
-                <span v-if="osienLaajuus >= info.minimi">
+                <span :class="{'text-warning': osienLaajuus < info.minimi}">
                   {{ info.minimi }} - {{ info.maksimi }}
-                </span>
-                <span v-else class="text-warning">
-                  {{ osienLaajuus }} &lt; {{ info.minimi }}
                 </span>
               </span>
               <span v-else>
