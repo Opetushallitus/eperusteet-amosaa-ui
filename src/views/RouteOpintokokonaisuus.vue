@@ -158,13 +158,13 @@
                   >
                     <template #default="{ open }">
                       <b-input-group>
-                          <EpInput
-                            v-model="tavoiteItem.tavoite"
-                            :is-editing="isEditing"
-                            :disabled="tavoiteItem.perusteesta || !!tavoiteItem.tavoiteKoodi"
-                            :validation="validation.opintokokonaisuus.tavoitteet?.$each?.$iter?.[index]?.tavoite"
-                            class="input-wrapper"
-                          >
+                        <EpInput
+                          v-model="tavoiteItem.tavoite"
+                          :is-editing="isEditing"
+                          :disabled="tavoiteItem.perusteesta || !!tavoiteItem.tavoiteKoodi"
+                          :validation="validation.opintokokonaisuus.tavoitteet?.$each?.$iter?.[index]?.tavoite"
+                          class="input-wrapper"
+                        >
                           <template #left>
                             <div class="order-handle m-2">
                               <EpMaterialIcon>drag_indicator</EpMaterialIcon>
@@ -284,7 +284,7 @@
                     v-model="arviointiItem.arviointi"
                     :is-editing="isEditing"
                     :disabled="arviointiItem.perusteesta"
-                                         :validation="validation.opintokokonaisuus.arvioinnit?.$each?.$iter?.[index]?.arviointi"
+                    :validation="validation.opintokokonaisuus.arvioinnit?.$each?.$iter?.[index]?.arviointi"
                   >
                     <template #left>
                       <div class="order-handle m-2">

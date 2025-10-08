@@ -6,7 +6,6 @@
     <RouterLink
       :key="ops.id"
       class="d-block h-100"
-      tag="a"
       :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
     >
       <div class="opsbox__info opsbox__info--published d-flex flex-column">

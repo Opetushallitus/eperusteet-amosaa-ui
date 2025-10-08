@@ -2,7 +2,6 @@
   <div class="opsbox">
     <RouterLink
       :key="ops.id"
-      tag="a"
       :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
     >
       <div

@@ -59,7 +59,7 @@
       <EpOletustoteutusTuonti
         v-if="isEditing"
         :fetch="haeOletusTutkinnonosaToteutukset"
-        @lisaaOletustoteutus="lisaaOletustoteutus"
+        @lisaa-oletustoteutus="lisaaOletustoteutus"
       />
     </div>
   </div>

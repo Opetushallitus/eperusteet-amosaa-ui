@@ -26,8 +26,8 @@
           <EpPdfKuvalataus
             :tyyppi="kuva.tyyppi"
             :kuva-url="kuva.url"
-            @saveImage="saveImage"
-            @removeImage="removeImage"
+            @save-image="saveImage"
+            @remove-image="removeImage"
           />
         </div>
         <div class="col-4 text-center sijaintikuva">

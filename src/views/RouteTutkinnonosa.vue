@@ -47,18 +47,20 @@
           class="d-flex justify-content-between"
         >
           <b-form-group class="flex-grow-1 mr-5">
-            <div
-              slot="label"
-              class="d-flex"
-            >
-              <span>{{ $t('koodi') }}</span>
-              <EpInfoPopover
-                v-if="isEditing"
-                class="ml-2"
+            <template #label>
+              <div
+              
+                class="d-flex"
               >
-                {{ $t('paikallinen-tutkinnon-osa-koodi-selite') }}
-              </EpInfoPopover>
-            </div>
+                <span>{{ $t('koodi') }}</span>
+                <EpInfoPopover
+                  v-if="isEditing"
+                  class="ml-2"
+                >
+                  {{ $t('paikallinen-tutkinnon-osa-koodi-selite') }}
+                </EpInfoPopover>
+              </div>
+            </template>
             <ep-field
               v-model="data.omaTutkinnonosa.koodi"
               type="string"

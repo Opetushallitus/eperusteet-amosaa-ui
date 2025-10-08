@@ -16,7 +16,7 @@
     <ep-julki-lista
       v-else
       :tiedot="tiedotteet"
-      @avaaTieto="avaaTiedote"
+      @avaa-tieto="avaaTiedote"
     >
       <template #eiTietoja>
         <span>{{ $t('ei-tiedotteita') }}</span>

@@ -190,8 +190,8 @@
                 <EpOatValintaModal
                   v-if="isEditing"
                   ref="oatModalRef"
-                  @tallennaOat="tallennaOat"
-                  @poistaOat="poistaOat"
+                  @tallenna-oat="tallennaOat"
+                  @poista-oat="poistaOat"
                 />
               </b-form-group>
             </b-col>

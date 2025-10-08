@@ -13,7 +13,7 @@
             :julkaistava="!isOpsPohja"
             :is-validating="isValidating"
             :tyyppi="(toteutus as any) ==='ammatillinen' ? 'toteutussuunnitelma' as any : 'opetussuunnitelma' as any"
-            @asetaValmiiksi="asetaValmiiksi"
+            @aseta-valmiiksi="asetaValmiiksi"
             @palauta="palauta"
             @validoi="validoi"
           />

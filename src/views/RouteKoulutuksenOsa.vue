@@ -113,9 +113,11 @@
       <b-row>
         <b-col md="10">
           <b-form-group>
-            <h3 slot="label">
-              {{ $t('keskeinen-sisalto') }}
-            </h3>
+            <template #label>
+              <h3>
+                {{ $t('keskeinen-sisalto') }}
+              </h3>
+            </template>
             <EpContent
               v-if="perusteenOsa.keskeinenSisalto"
               v-model="perusteenOsa.keskeinenSisalto"
@@ -143,9 +145,11 @@
       <b-row>
         <b-col md="10">
           <b-form-group>
-            <h3 slot="label">
-              {{ $t('arviointi-teksti') }}
-            </h3>
+            <template #label>
+              <h3>
+                {{ $t('arviointi-teksti') }}
+              </h3>
+            </template>
             <EpContent
               v-if="perusteenOsa.arvioinninKuvaus"
               v-model="perusteenOsa.arvioinninKuvaus"
@@ -174,9 +178,11 @@
         <b-row>
           <b-col md="10">
             <b-form-group>
-              <h3 slot="label">
-                {{ $t('koulutuksen-jarjestajat') }}
-              </h3>
+              <template #label>
+                <h3>
+                  {{ $t('koulutuksen-jarjestajat') }}
+                </h3>
+              </template>
 
               <EpKoulutuksenJarjestajaSelect
                 v-model="koulutuksenosa.paikallinenTarkennus.koulutuksenJarjestajat"

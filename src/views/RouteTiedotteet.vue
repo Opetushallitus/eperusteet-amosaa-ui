@@ -13,7 +13,7 @@
         :total-rows="totalRows"
         :per-page="perPage"
         align="center"
-        @update:modelValue="pageChanged"
+        @update:model-value="pageChanged"
       />
     </template>
   </ep-tiedote-view>

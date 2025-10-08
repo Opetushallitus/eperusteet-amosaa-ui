@@ -112,6 +112,8 @@
 
       <div v-if="items.data.length > 0">
         <b-table
+          v-model:sort-by="sort.sortBy"
+          v-model:sort-desc="sort.sortDesc"
           striped
           hover
           responsive
@@ -119,8 +121,6 @@
           :fields="fields"
           no-local-sorting
           no-sort-reset
-          :sort-by.sync="sort.sortBy"
-          :sort-desc.sync="sort.sortDesc"
           @sort-changed="sortingChanged"
         >
           <template #cell(nimi)="data">

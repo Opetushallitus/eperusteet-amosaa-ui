@@ -84,7 +84,6 @@
                   class="opsbox"
                 >
                   <RouterLink
-                    tag="a"
                     :to="{ name: kaannoksetValue['uusiRoute'] }"
                   >
                     <div class="opsbox__new">

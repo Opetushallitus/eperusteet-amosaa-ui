@@ -55,7 +55,7 @@
       <EpOletustoteutusTuonti
         v-if="isEditing"
         :fetch="haeOletusOsaAlueToteutukset"
-        @lisaaOletustoteutus="lisaaOletustoteutus"
+        @lisaa-oletustoteutus="lisaaOletustoteutus"
       >
         <template #title>
           <div>{{ $t('tuo-oletustoteutus-osa-alueeseen') }}</div>

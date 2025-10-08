@@ -64,13 +64,13 @@
 
       <div v-else>
         <b-table
+          v-model:sort-by="sortBy"
+          v-model:sort-desc="query.sortDesc"
           responsive
           striped
           hover
           :items="tutkinnonosatWithSelected"
           no-local-sorting
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="query.sortDesc"
           :fields="tutkinnonosatFields"
           no-sort-reset
           @sort-changed="sortingChanged"
