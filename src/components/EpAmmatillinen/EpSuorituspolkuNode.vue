@@ -60,12 +60,6 @@
                 <span :class="{'text-warning': osienLaajuus < info.minimi}">
                   {{ info.minimi }} - {{ info.maksimi }}
                 </span>
-                <span
-                  v-else
-                  class="text-warning"
-                >
-                  {{ osienLaajuus }} &lt; {{ info.minimi }}
-                </span>
               </span>
               <span v-else>
                 {{ info.minimi }}
