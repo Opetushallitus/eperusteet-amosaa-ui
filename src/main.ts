@@ -5,7 +5,7 @@ import Vue, { createApp } from 'vue';
 import { configureCompat } from 'vue';
 import App from './App.vue';
 import { setAppInstance } from '@shared/utils/globals';
-import router from './router';
+import router from './router/router';
 import Kaannos from '@shared/plugins/kaannos';
 import { Kieli } from '@shared/tyypit';
 import { createI18n } from 'vue-i18n';

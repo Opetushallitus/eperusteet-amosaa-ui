@@ -220,7 +220,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useTemplateRef, watch, withDefaults } from 'vue';
+import { computed, ref, useTemplateRef, watch } from 'vue';
 import _ from 'lodash';
 
 import EpColorIndicator from '@shared/components/EpColorIndicator/EpColorIndicator.vue';

@@ -5,6 +5,7 @@ import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perustee
 import { Koulutustyyppi } from '@shared/tyypit';
 import { reactive } from 'vue';
 import { computed } from 'vue';
+import { Kielet } from '@shared/stores/kieli';
 
 export class PerusteetStore {
   private state = reactive({
@@ -53,7 +54,8 @@ export class PerusteetStore {
     return PerusteetStore.Geneeriset;
   }
 
-  public async fetchJulkaistutPerusteet() {
-    this.state.perusteetKevyt = (await Ulkopuoliset.getJulkaistutPerusteetKevyt(EperusteetKoulutustyyppiRyhmat[this.toteutus.value!])).data;
+  public async fetchJulkaistutPerusteet(nimi?: string) {
+    this.state.perusteetKevyt = null;
+    this.state.perusteetKevyt = (await Ulkopuoliset.getPerusteet(EperusteetKoulutustyyppiRyhmat[this.toteutus.value!], nimi, Kielet.getSisaltoKieli.value)).data;
   }
 }

@@ -52,9 +52,6 @@
                 >
                   {{ $t(radiobutton.text) }}
                 </EpRadio>
-                <!-- <b-form-radio v-for="(radiobutton, index) in tyypinRadioButtons" :key="'radiobutton'+index" class="p-2 pl-4" v-model="pohjanTyyppi" :value="radiobutton.value" :disabled="radiobutton.disabled"> -->
-                <!-- {{$t(radiobutton.text)}} -->
-                <!-- </b-form-radio> -->
               </b-form-group>
 
               <template v-if="pohjanTyyppi !== 'pohjaton'">
@@ -64,22 +61,31 @@
                 >
                   <div v-if="pohjanTyyppi === 'peruste'">
                     <EpMultiSelect
-                      v-if="perusteet"
                       v-model="peruste"
                       :placeholder="$t(kaannokset[pohjanTyyppi].pohjaValintaPlaceHolder)"
                       :is-editing="true"
-                      :options="perusteet"
+                      :options="perusteet || []"
                       :validation="$v.peruste"
-                      :search-identity="nimiSearchIdentity"
+                      @search="onPerusteSearch"
                     >
                       <template #singleLabel="{ option }">
-                        {{ $kaanna(option.nimi) }} ({{ option.diaarinumero }}<span v-if="option.voimassaoloAlkaa">, {{ $sd(option.voimassaoloAlkaa) }}</span>)
+                        {{ $kaanna(option.nimi) }} | {{ option.diaarinumero }}<span v-if="option.voimassaoloAlkaa"> | {{ $t('astuu-voimaan') }}: {{ $sd(option.voimassaoloAlkaa) }}</span>
                       </template>
                       <template #option="{ option }">
-                        {{ $kaanna(option.nimi) }} ({{ option.diaarinumero }}<span v-if="option.voimassaoloAlkaa">, {{ $sd(option.voimassaoloAlkaa) }}</span>)
+                        {{ $kaanna(option.nimi) }} | {{ option.diaarinumero }}<span v-if="option.voimassaoloAlkaa"> | {{ $t('astuu-voimaan') }}: {{ $sd(option.voimassaoloAlkaa) }}</span>
+                      </template>
+                      <template #noOptions>
+                        <EpSpinner v-if="perusteetFetching" />
+                        <span v-else>
+                          {{ $t('voit-hakea-tutkintoa-nimella') }}
+                        </span>
+                      </template>
+                      <template #noResult>
+                        <EpSpinner v-if="perusteetFetching" />
+                        <span v-else-if="perusteet && perusteet.length === 0">{{ $t('ei-hakutuloksia') }}</span>
+                        <span/>
                       </template>
                     </EpMultiSelect>
-                    <EpSpinner v-else />
                   </div>
 
                   <div v-if="pohjanTyyppi === 'toteutussuunnitelma' || pohjanTyyppi === 'ophPohja' || pohjanTyyppi === 'opsPohja'">
@@ -218,12 +224,14 @@ import { EperusteetKoulutustyyppiRyhmat, isAmmatillinenKoulutustyyppi, perusteen
 import { KayttajaStore } from '@/stores/kayttaja';
 import { $t, $kaanna, $sd, $fail } from '@shared/utils/globals';
 import EpRadio from '@shared/components/forms/EpRadio.vue';
+import { JaetutOsaPerustePohjatStore } from '@/stores/JaetutOsaPerustePohjatStore';
 
 const props = defineProps<{
   toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
   perusteetStore?: PerusteetStore;
   ophPohjatStore?: OphPohjatStore;
   ophOpsPohjatStore?: OphOpsPohjatStore;
+  jaetutOsaPerustePohjatStore?: JaetutOsaPerustePohjatStore;
   pohjanTutkinnonosatStore: PohjanTutkinnonosatStore;
   kayttajaStore: KayttajaStore;
   koulutustoimijaId: string | number;
@@ -244,6 +252,7 @@ const toteutussuunnitelmaPohjatStoreLocal = ref<OpetussuunnitelmaPohjatStore | n
 const jotpa = ref<OpsJotpa>({ jotpa: false, jotpatyyppi: null });
 const korvaavaPeruste = ref<PerusteDto | null>(null);
 const kopioiPohjanTiedot = ref(false);
+const perusteetFetching = ref(false);
 
 const tyyppi = computed(() => {
   return props.opetussuunnitelmanTyyppi !== 'tunnistamisraportti' ? props.opetussuunnitelmanTyyppi : 'ops';
@@ -257,6 +266,10 @@ const kielistykset = computed(() => {
       toteutussuunnitelma: {
         pohjaLabel: 'jaetun-osan-pohja',
         pohjaValintaPlaceHolder: 'valitse-jaettu-osa',
+      },
+      peruste: {
+        pohjaLabel: 'pohja',
+        pohjaValintaPlaceHolder: 'valitse-pohja',
       },
       nimiLabel: 'jaetun-osan-nimi',
       luoLabel: 'luo-jaettu-osa',
@@ -309,7 +322,7 @@ const radioButtons = computed(() => {
         text: 'toista-jaettua-osaa',
       },
       {
-        value: 'uusi',
+        value: 'peruste',
         text: 'luo-uusi',
       },
     ],
@@ -435,15 +448,26 @@ const pohjat = computed(() => {
       ], ops => ops.id),
       ops => $kaanna(ops.nimi!));
   }
+
   return undefined;
 });
 
 const perusteet = computed(() => {
-  if (props.perusteetStore && props.perusteetStore.perusteetKevyt.value) {
-    return _.sortBy(props.perusteetStore.perusteetKevyt.value, [(perusteItem: any) => {
+  if (props.perusteetStore) {
+    if (props.perusteetStore.perusteetKevyt.value) {
+      return _.sortBy(props.perusteetStore.perusteetKevyt.value, [(perusteItem: any) => {
+        return $kaanna(perusteItem.nimi);
+      }]);
+    }
+    return undefined;
+  }
+
+  if (props.jaetutOsaPerustePohjatStore && props.jaetutOsaPerustePohjatStore.jaetutOsatPohjat.value) {
+    return _.sortBy(props.jaetutOsaPerustePohjatStore.jaetutOsatPohjat.value, [(perusteItem: any) => {
       return $kaanna(perusteItem.nimi);
     }]);
   }
+
   return undefined;
 });
 
@@ -512,6 +536,14 @@ const nimiSearchIdentity = (tietue: any) => {
   return _.toLower($kaanna(tietue.nimi));
 };
 
+const onPerusteSearch = _.debounce(async (query: string) => {
+  if (props.perusteetStore && query && query.length > 2) {
+    perusteetFetching.value = true;
+    await props.perusteetStore.fetchJulkaistutPerusteet(query);
+    perusteetFetching.value = false;
+  }
+}, 500);
+
 const onSave = async () => {
   try {
     const luotu = await props.toteutussuunnitelmaStore.create(_.toString(props.koulutustoimijaId), {
@@ -563,12 +595,20 @@ onMounted(async () => {
     props.opetussuunnitelmaPohjatStore.fetch(_.toNumber(props.koulutustoimijaId), props.toteutus, ['valmis', 'julkaistu'], 'opsPohja');
   }
 
-  if (props.perusteetStore) {
-    props.perusteetStore.fetchJulkaistutPerusteet();
+  if (props.perusteetStore && props.toteutus !== Toteutus.AMMATILLINEN) {
+    perusteetFetching.value = true;
+    await props.perusteetStore.fetchJulkaistutPerusteet();
+    perusteetFetching.value = false;
   }
 
   if (props.ophPohjatStore) {
     await props.ophPohjatStore.fetch();
+  }
+
+  if (props.jaetutOsaPerustePohjatStore) {
+    perusteetFetching.value = true;
+    await props.jaetutOsaPerustePohjatStore.fetch();
+    perusteetFetching.value = false;
   }
 
   if (props.ophOpsPohjatStore) {

@@ -47,6 +47,8 @@ import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { Kielet } from '@shared/stores/kieli';
 import { useLoading } from 'vue-loading-overlay';
 import { loadingOptions } from '@/utils/loading';
+import { JaetutOsaPerustePohjatStore } from '@/stores/JaetutOsaPerustePohjatStore';
+import { $bvModal } from '@shared/utils/globals';
 
 const props = (route: any) => {
   return {
@@ -206,6 +208,7 @@ const router = createRouter({
           ophPohjatStore: null,
           ophOpsPohjatStore: null,
           opetussuunnitelmaPohjatStore: null,
+          jaetutOsaPerustePohjatStore: new JaetutOsaPerustePohjatStore(),
         };
       },
     }, {
@@ -426,21 +429,25 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-window.addEventListener('beforeunload', e => {
+// Estetään tilan vaihtaminen muokkaustilassa
+router.beforeEach(async (to, from, next) => {
   if (EditointiStore.anyEditing()) {
-    e.preventDefault();
-    // Vanhemmat selainversiot vaativat erillisen varmistustekstin
-    e.returnValue = Kielet.kaannaOlioTaiTeksti('poistumisen-varmistusteksti');
-  }
-});
+    const value = await $bvModal.msgBoxConfirm(
+      Kielet.kaannaOlioTaiTeksti('poistumisen-varmistusteksti-dialogi'), {
+        title: Kielet.kaannaOlioTaiTeksti('haluatko-poistua-tallentamatta'),
+        okTitle: Kielet.kaannaOlioTaiTeksti('poistu-tallentamatta'),
+        cancelTitle: Kielet.kaannaOlioTaiTeksti('peruuta'),
+        size: 'lg',
+      });
 
-router.beforeEach((to, from, next) => {
-  const hash = window.location.hash;
-
-  if (hash.includes('%2F')) {
-    const decoded = decodeURIComponent(hash).replace('//', '/');
-    window.location.replace(window.location.pathname + window.location.search + decoded);
-    window.location.reload();
+    if (value) {
+      try {
+        await EditointiStore.cancelAll();
+      }
+      finally {
+        next();
+      }
+    }
   }
   else {
     next();
