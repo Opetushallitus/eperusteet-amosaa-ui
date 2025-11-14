@@ -1,213 +1,259 @@
 <template>
   <div>
-    <ep-collapse :borderBottom="true" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
-      <h3 slot="header">{{ $t('pakolliset-osa-alueet') }}</h3>
+    <ep-collapse
+      :border-bottom="true"
+      :collapsable="!isEditing"
+      :class="{'pt-0 pb-0': isEditing}"
+    >
+      <template #header>
+        <h3>{{ $t('pakolliset-osa-alueet') }}</h3>
+      </template>
 
-      <draggable
+      <VueDraggable
         v-bind="pakollisetDraggableOptions"
+        v-model="pakollisetOsaAlueet"
         tag="div"
-        v-model="pakollisetOsaAlueet">
-        <div class="osaalue d-flex" v-for="(osaalue, idx) in pakollisetOsaAlueet" :key="'pakollinen-' + idx">
-          <div class="order-handle mr-2" v-if="isEditing">
+      >
+        <div
+          v-for="(osaalue, idx) in pakollisetOsaAlueet"
+          :key="'pakollinen-' + idx"
+          class="osaalue d-flex"
+        >
+          <div
+            v-if="isEditing"
+            class="order-handle mr-2"
+          >
             <EpMaterialIcon>drag_indicator</EpMaterialIcon>
           </div>
           <div class="nimi">
-            <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }" :is="isEditing ? 'span' : 'router-link'">
+            <router-link
+              :is="isEditing ? 'span' : 'router-link'"
+              :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }"
+            >
               {{ $kaanna(osaalue.perusteenData.nimi) }}
             </router-link>
           </div>
-          <div class="koodi ml-1"> ({{ osaalue.perusteenData.koodi.arvo }})</div>
+          <div class="koodi ml-1">
+            ({{ osaalue.perusteenData.koodi.arvo }})
+          </div>
         </div>
-      </draggable>
+      </VueDraggable>
     </ep-collapse>
 
-    <ep-collapse :borderBottom="true" :collapsable="!isEditing" :class="{'pt-0 pb-0': isEditing}">
-      <h3 slot="header">{{ $t('valinnaiset-osa-alueet') }}</h3>
+    <ep-collapse
+      :border-bottom="true"
+      :collapsable="!isEditing"
+      :class="{'pt-0 pb-0': isEditing}"
+    >
+      <template #header>
+        <h3>{{ $t('valinnaiset-osa-alueet') }}</h3>
+      </template>
 
-      <draggable
+      <VueDraggable
         v-bind="valinnaisetDraggableOptions"
+        v-model="valinnaisetOsaAlueet"
         tag="div"
-        v-model="valinnaisetOsaAlueet">
-        <div class="osaalue d-flex" :class="{ 'piilotettu': osaalue.piilotettu }" v-for="(osaalue, idx) in valinnaisetOsaAlueet" :key="'valinnainen-' + idx">
-          <div class="order-handle mr-2" v-if="isEditing">
+      >
+        <div
+          v-for="(osaalue, idx) in valinnaisetOsaAlueet"
+          :key="'valinnainen-' + idx"
+          class="osaalue d-flex"
+          :class="{ 'piilotettu': osaalue.piilotettu }"
+        >
+          <div
+            v-if="isEditing"
+            class="order-handle mr-2"
+          >
             <EpMaterialIcon>drag_indicator</EpMaterialIcon>
           </div>
           <div class="nimi">
-            <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }" :is="isEditing ? 'span' : 'router-link'">
+            <router-link
+              :is="isEditing ? 'span' : 'router-link'"
+              :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }"
+            >
               {{ $kaanna(osaalue.perusteenData.nimi) }}
               <span v-if="osaalue.piilotettu">
                 ({{ $t('piilotettu') }})
               </span>
             </router-link>
           </div>
-          <div class="koodi ml-1"> ({{ osaalue.perusteenData.koodi.arvo }})</div>
+          <div class="koodi ml-1">
+            ({{ osaalue.perusteenData.koodi.arvo }})
+          </div>
         </div>
-      </draggable>
+      </VueDraggable>
     </ep-collapse>
 
-    <ep-collapse :borderBottom="false" :class="{'pt-0 pb-0': isEditing}">
-      <h3 slot="header">{{ $t('paikalliset-osa-alueet') }}</h3>
+    <ep-collapse
+      :border-bottom="false"
+      :class="{'pt-0 pb-0': isEditing}"
+    >
+      <template #header>
+        <h3>{{ $t('paikalliset-osa-alueet') }}</h3>
+      </template>
 
-      <draggable
+      <VueDraggable
         v-bind="paikallisetDraggableOptions"
+        v-model="paikallisetOsaAlueet"
         tag="div"
-        v-model="paikallisetOsaAlueet">
-        <div class="osaalue d-flex" v-for="(osaalue, idx) in paikallisetOsaAlueet" :key="'paikallinen-' + idx">
-          <div class="order-handle mr-2" v-if="isEditing">
+      >
+        <div
+          v-for="(osaalue, idx) in paikallisetOsaAlueet"
+          :key="'paikallinen-' + idx"
+          class="osaalue d-flex"
+        >
+          <div
+            v-if="isEditing"
+            class="order-handle mr-2"
+          >
             <EpMaterialIcon>drag_indicator</EpMaterialIcon>
           </div>
           <div class="nimi">
-            <router-link :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }" :is="isEditing ? 'span' : 'router-link'">
+            <router-link
+              :is="isEditing ? 'span' : 'router-link'"
+              :to="{ name: 'osaalue', params: { osaalueId: osaalue.id } }"
+            >
               {{ $kaanna(osaalue.nimi) }}
             </router-link>
           </div>
-          <div class="koodi ml-1" v-if="osaalue.koodi"> ({{ osaalue.koodi }})</div>
+          <div
+            v-if="osaalue.koodi"
+            class="koodi ml-1"
+          >
+            ({{ osaalue.koodi }})
+          </div>
         </div>
-      </draggable>
+      </VueDraggable>
     </ep-collapse>
 
     <slot name="uusiosaalue" />
-
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 import _ from 'lodash';
-import { Prop, Component, Vue } from 'vue-property-decorator';
+
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
-import draggable from 'vuedraggable';
-import { DEFAULT_DRAGGABLE_PROPERTIES } from '@shared/utils/defaults';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import { VueDraggable } from 'vue-draggable-plus';
 
-@Component({
-  components: {
-    EpButton,
-    EpCollapse,
-    EpContent,
-    EpField,
-    EpInput,
-    EpMaterialIcon,
-    draggable,
+import { DEFAULT_DRAGGABLE_PROPERTIES } from '@shared/utils/defaults';
+import { $t, $kaanna } from '@shared/utils/globals';
+
+const props = defineProps<{
+  isEditing: boolean;
+  modelValue: any;
+  perusteen: any;
+}>();
+
+const emit = defineEmits(['update:modelValue']);
+
+const uudenNimi = ref<any | null>(null);
+
+const model = computed({
+  get() {
+    return props.modelValue;
   },
-})
-export default class EpYhteiset extends Vue {
-  @Prop({ required: true })
-  private isEditing!: boolean;
+  set(val) {
+    emit('update:modelValue', val);
+  },
+});
 
-  @Prop({ required: true })
-  value!: any;
+const perusteenOsaAlueet = computed(() => {
+  return _(props.perusteen.osaAlueet)
+    .filter((oa) => oa.tyyppi === 'osaalue2020')
+    .keyBy('id')
+    .value();
+});
 
-  @Prop({ required: true })
-  perusteen!: any;
-
-  private uudenNimi = null as any | null;
-
-  get model() {
-    return this.value;
-  }
-
-  set model(val) {
-    this.$emit('input', val);
-  }
-
-  get perusteenOsaAlueet() {
-    return _(this.perusteen.osaAlueet)
-      .filter((oa) => oa.tyyppi === 'osaalue2020')
-      .keyBy('id')
-      .value();
-  }
-
-  get osaAlueet() {
-    return _(this.value.osaAlueet)
+const osaAlueet = computed({
+  get() {
+    return _(props.modelValue.osaAlueet)
       .map(oa => ({
         ...oa,
-        perusteenData: this.perusteenOsaAlueet[oa.perusteenOsaAlueId],
+        perusteenData: perusteenOsaAlueet.value[oa.perusteenOsaAlueId],
       }))
       .value();
-  }
+  },
+  set(val) {
+    model.value.osaAlueet = val;
+  },
+});
 
-  set osaAlueet(val) {
-    this.model.osaAlueet = val;
-  }
-
-  get pakollisetOsaAlueet() {
-    return _.filter(this.osaAlueet, oa => oa.tyyppi === 'pakollinen');
-  }
-
-  set pakollisetOsaAlueet(val) {
-    this.osaAlueet = [
+const pakollisetOsaAlueet = computed({
+  get() {
+    return _.filter(osaAlueet.value, oa => oa.tyyppi === 'pakollinen');
+  },
+  set(val) {
+    osaAlueet.value = [
       ...val,
-      ...this.valinnaisetOsaAlueet,
-      ...this.paikallisetOsaAlueet,
+      ...valinnaisetOsaAlueet.value,
+      ...paikallisetOsaAlueet.value,
     ];
-  }
+  },
+});
 
-  get valinnaisetOsaAlueet() {
-    return _.filter(this.osaAlueet, oa => oa.tyyppi === 'valinnainen');
-  }
-
-  set valinnaisetOsaAlueet(val) {
-    this.osaAlueet = [
-      ...this.pakollisetOsaAlueet,
+const valinnaisetOsaAlueet = computed({
+  get() {
+    return _.filter(osaAlueet.value, oa => oa.tyyppi === 'valinnainen');
+  },
+  set(val) {
+    osaAlueet.value = [
+      ...pakollisetOsaAlueet.value,
       ...val,
-      ...this.paikallisetOsaAlueet,
+      ...paikallisetOsaAlueet.value,
     ];
-  }
+  },
+});
 
-  get paikallisetOsaAlueet() {
-    return _.filter(this.osaAlueet, oa => oa.tyyppi === 'paikallinen');
-  }
-
-  set paikallisetOsaAlueet(val) {
-    this.osaAlueet = [
-      ...this.pakollisetOsaAlueet,
-      ...this.valinnaisetOsaAlueet,
+const paikallisetOsaAlueet = computed({
+  get() {
+    return _.filter(osaAlueet.value, oa => oa.tyyppi === 'paikallinen');
+  },
+  set(val) {
+    osaAlueet.value = [
+      ...pakollisetOsaAlueet.value,
+      ...valinnaisetOsaAlueet.value,
       ...val,
     ];
-  }
+  },
+});
 
-  lisaaPaikallinen() {
-    this.value.osaAlueet.push({
-      tyyppi: 'paikallinen',
-      nimi: this.uudenNimi,
-    });
-    this.uudenNimi = null;
-  }
+const pakollisetDraggableOptions = computed(() => {
+  return {
+    ...DEFAULT_DRAGGABLE_PROPERTIES,
+    disabled: !props.isEditing,
+    group: {
+      name: 'pakolliset',
+    },
+  };
+});
 
-  get pakollisetDraggableOptions() {
-    return {
-      ...DEFAULT_DRAGGABLE_PROPERTIES,
-      disabled: !this.isEditing,
-      group: {
-        name: 'pakolliset',
-      },
-    };
-  }
+const valinnaisetDraggableOptions = computed(() => {
+  return {
+    ...DEFAULT_DRAGGABLE_PROPERTIES,
+    disabled: !props.isEditing,
+    group: {
+      name: 'valinnaiset',
+    },
+  };
+});
 
-  get valinnaisetDraggableOptions() {
-    return {
-      ...DEFAULT_DRAGGABLE_PROPERTIES,
-      disabled: !this.isEditing,
-      group: {
-        name: 'valinnaiset',
-      },
-    };
-  }
+const paikallisetDraggableOptions = computed(() => {
+  return {
+    ...DEFAULT_DRAGGABLE_PROPERTIES,
+    disabled: !props.isEditing,
+    group: {
+      name: 'paikalliset',
+    },
+  };
+});
 
-  get paikallisetDraggableOptions() {
-    return {
-      ...DEFAULT_DRAGGABLE_PROPERTIES,
-      disabled: !this.isEditing,
-      group: {
-        name: 'paikalliset',
-      },
-    };
-  }
-}
 </script>
 
 <style scoped lang="scss">

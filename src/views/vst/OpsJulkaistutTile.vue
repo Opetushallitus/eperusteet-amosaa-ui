@@ -1,41 +1,43 @@
 <template>
   <div
     class="opsbox opsbox--published"
-    :style="ops.bannerImage">
+    :style="ops.bannerImage"
+  >
     <RouterLink
+      :key="ops.id"
       class="d-block h-100"
-      tag="a"
       :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
-      :key="ops.id">
+    >
       <div class="opsbox__info opsbox__info--published d-flex flex-column">
         <div class="opsbox__name">
           {{ $kaanna(ops.nimi) }}
         </div>
         <div>
-          <div v-if="ops.jotpatyyppi" class="opsbox__jotpa">
-            {{$t('jotpa')}}
+          <div
+            v-if="ops.jotpatyyppi"
+            class="opsbox__jotpa"
+          >
+            {{ $t('jotpa') }}
           </div>
         </div>
-        <div class="opsbox__info--footer mt-auto" v-if="ops.viimeisinJulkaisuAika">
-          {{$t('julkaistu')}} {{$sd(ops.viimeisinJulkaisuAika)}}
+        <div
+          v-if="ops.viimeisinJulkaisuAika"
+          class="opsbox__info--footer mt-auto"
+        >
+          {{ $t('julkaistu') }} {{ $sd(ops.viimeisinJulkaisuAika) }}
         </div>
       </div>
     </RouterLink>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import * as _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+import { $t, $sd, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-  },
-})
-export default class OpsJulkaistutTile extends Vue {
-  @Prop({ required: true })
-  private ops!: any;
-}
+const props = defineProps<{
+  ops: any;
+}>();
 </script>
 
 <style scoped lang="scss">

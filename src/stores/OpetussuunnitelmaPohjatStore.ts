@@ -1,10 +1,9 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { PageOpetussuunnitelmaDto, Opetussuunnitelmat, OpetussuunnitelmaDto, OpetussuunnitelmaBaseDto } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class OpetussuunnitelmaPohjatStore {
   private state = reactive({

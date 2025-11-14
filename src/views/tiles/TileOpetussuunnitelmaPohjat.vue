@@ -1,87 +1,84 @@
 <template>
-  <EpHomeTile icon="article" :route="{ name: route }">
-    <template slot="header">
+  <EpHomeTile
+    icon="article"
+    :route="{ name: route }"
+  >
+    <template #header>
       <span>{{ $t(title) }}</span>
     </template>
-    <template slot="content">
+    <template #content>
       <div v-if="etusivu">
         <table class="count-table">
-          <tr>
-            <td width="50%">
-              <div class="bignumber">{{ etusivu.toteutussuunnitelmaPohjatKeskeneraiset }}</div>
-              <div class="description">{{ $t('keskeneraista') }}</div>
-            </td>
-            <td class="spacer" width="50%">
-              <div class="bignumber">{{ etusivu.toteutussuunnitelmaPohjatValmiit }}</div>
-              <div class="description">{{ $t('valmista') }}</div>
-            </td>
-          </tr>
+          <tbody>
+            <tr>
+              <td width="50%">
+                <div class="bignumber">
+                  {{ etusivu.toteutussuunnitelmaPohjatKeskeneraiset }}
+                </div>
+                <div class="description">
+                  {{ $t('keskeneraista') }}
+                </div>
+              </td>
+              <td
+                class="spacer"
+                width="50%"
+              >
+                <div class="bignumber">
+                  {{ etusivu.toteutussuunnitelmaPohjatValmiit }}
+                </div>
+                <div class="description">
+                  {{ $t('valmista') }}
+                </div>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
-      <ep-spinner v-else></ep-spinner>
+      <ep-spinner v-else />
     </template>
   </EpHomeTile>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop, Provide, Watch } from 'vue-property-decorator';
+<script setup lang="ts">
+import { computed, onMounted, provide, watch } from 'vue';
 import EpHomeTile from '@shared/components/EpHomeTiles/EpHomeTile.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
+
 import { KayttajaStore } from '@/stores/kayttaja';
 import { EtusivuDto } from '@shared/api/amosaa';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
-import { watch } from '@vue/composition-api';
+import { $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpHomeTile,
-    EpSpinner,
-  },
-})
-export default class TileOpetussuunnitelmaPohjat extends Vue {
-  @Prop({ required: true })
-  private kayttajaStore!: KayttajaStore;
+const props = defineProps<{
+  kayttajaStore: KayttajaStore;
+  koulutustoimijaId: string;
+  toteutus: Toteutus;
+  title: string;
+  route: string;
+  headerStyle?: string;
+}>();
 
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+provide('tileHeaderStyle', props.headerStyle);
 
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const fetch = async () => {
+  await props.kayttajaStore.fetchEtusivu(props.koulutustoimijaId, EperusteetKoulutustyyppiRyhmat[props.toteutus]);
+};
 
-  @Prop({ required: true })
-  private title!: string;
+const etusivu = computed(() => {
+  return props.kayttajaStore?.etusivu?.value || null;
+});
 
-  @Prop({ required: true })
-  private route!: string;
+onMounted(async () => {
+  await fetch();
+});
 
-  @Prop({ required: false })
-  private headerStyle!: string;
+watch(() => props.koulutustoimijaId, async () => {
+  await fetch();
+});
 
-  @Provide('tileHeaderStyle')
-  private tileHeaderStyle = this.headerStyle;
-
-  async mounted() {
-    await this.fetch();
-  }
-
-  @Watch('koulutustoimijaId')
-  async koulutustoimijaChange() {
-    await this.fetch();
-  }
-
-  @Watch('toteutus')
-  async toteutusChange() {
-    await this.fetch();
-  }
-
-  async fetch() {
-    await this.kayttajaStore.fetchEtusivu(this.koulutustoimijaId, EperusteetKoulutustyyppiRyhmat[this.toteutus]);
-  }
-
-  get etusivu() {
-    return this.kayttajaStore?.etusivu?.value || null;
-  }
-}
+watch(() => props.toteutus, async () => {
+  await fetch();
+});
 </script>
 
 <style scoped lang="scss">

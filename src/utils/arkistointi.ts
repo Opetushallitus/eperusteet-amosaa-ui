@@ -1,40 +1,42 @@
 import { Opetussuunnitelmat } from '@shared/api/amosaa';
+import { $bvModal, $fail, $success, $t } from '@shared/utils/globals';
+import { useRoute, useRouter } from 'vue-router';
 
-export async function vaihdaOpetussunnitelmaTilaConfirm(el, meta) {
-  const arkistoi = await el.$bvModal.msgBoxConfirm(el.$t(meta.confirm) as any, {
-    title: el.$t(meta.title),
+export async function vaihdaOpetussunnitelmaTilaConfirm(instance, meta) {
+  const arkistoi = await $bvModal.msgBoxConfirm($t(meta.confirm) as any, {
+    title: $t(meta.title),
     okVariant: 'primary',
-    okTitle: el.$t('kylla') as any,
+    okTitle: $t('kylla') as any,
     cancelVariant: 'link',
-    cancelTitle: el.$t('peruuta') as any,
+    cancelTitle: $t('peruuta') as any,
     centered: true,
   });
 
   if (arkistoi) {
-    const toteutussuunnitelmaId = meta.toteutussuunnitelmaId ? meta.toteutussuunnitelmaId : el.$route.params.toteutussuunnitelmaId;
+    const toteutussuunnitelmaId = meta.toteutussuunnitelmaId ? meta.toteutussuunnitelmaId : instance.route.params.toteutussuunnitelmaId;
 
     try {
-      await Opetussuunnitelmat.updateOpetussuunnitelmaTila(toteutussuunnitelmaId, meta.tila, el.$route.params.koulutustoimijaId);
+      await Opetussuunnitelmat.updateOpetussuunnitelmaTila(toteutussuunnitelmaId, meta.tila, instance.route.params.koulutustoimijaId as string);
       switch (meta.tila) {
       case 'POISTETTU':
-        el.$success(el.$t('arkistoi-suunnitelma-onnistui'));
+        $success($t('arkistoi-suunnitelma-onnistui'));
         break;
       case 'LUONNOS':
-        el.$success(el.$t('palautus-onnistui'));
+        $success($t('palautus-onnistui'));
         break;
       case 'VALMIS':
-        el.$success(el.$t('tilan-vaihto-valmis-onnistui'));
+        $success($t('tilan-vaihto-valmis-onnistui'));
         break;
       default:
         break;
       }
     }
     catch (e) {
-      el.$fail(el.$t('tilan-vaihto-epaonnistui'));
+      $fail($t('tilan-vaihto-epaonnistui'));
     }
 
     if (meta.reroute) {
-      el.$router.push({
+      instance.router.push({
         name: meta.reroute,
       });
     }

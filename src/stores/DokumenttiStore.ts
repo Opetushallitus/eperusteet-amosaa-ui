@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import * as _ from 'lodash';
 import {
   Dokumentit,
@@ -13,9 +12,9 @@ import {
 } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import { IDokumenttiStore } from '@shared/tyypit';
-import { Debounced } from '@shared/utils/delay';
-
-Vue.use(VueCompositionApi);
+import { debounced } from '@shared/utils/delay';
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export interface Kuvatyyppi {
   tyyppi: string;
@@ -71,8 +70,7 @@ export class DokumenttiStore implements IDokumenttiStore {
     this.setHref();
   }
 
-  @Debounced(2000)
-  async getDokumenttiTila() {
+  getDokumenttiTila = debounced(async () => {
     this.state.dokumentti = (await Dokumentit.getLatestDokumentti(this.opetussuunnitelma.id!, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!))).data;
 
     await this.getJulkaistuDokumentti();
@@ -90,7 +88,7 @@ export class DokumenttiStore implements IDokumenttiStore {
         await this.getDokumenttiTila();
       }
     }
-  }
+  }, 2000);
 
   async getJulkaistuDokumentti() {
     if (!this.state.dokumenttiJulkaisu || _.kebabCase(this.state.dokumenttiJulkaisu?.tila) === _.kebabCase(DokumenttiDtoTilaEnum.EPAONNISTUI)) {
@@ -119,7 +117,7 @@ export class DokumenttiStore implements IDokumenttiStore {
   }
 
   generateKuvaHref() {
-    this.state.kuvat = _.map(this.kuvat.value, (kuva: Kuvatyyppi) => {
+    this.state.kuvat = _.map(this.state.kuvat, (kuva: Kuvatyyppi) => {
       let url;
       if (_.get(this.state.dokumenttiKuva, kuva.tyyppi)) {
         url = baseURL + DokumentitParams.getDokumenttiImage(this.opetussuunnitelma.id!, kuva.tyyppi, Kielet.getSisaltoKieli.value, _.toString(this.opetussuunnitelma.koulutustoimija!.id!)).url;

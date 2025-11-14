@@ -1,12 +1,8 @@
-import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
-import { Computed } from '@shared/utils/interfaces';
 import { TekstikappaleStore, ITekstikappale } from './TekstikappaleStore';
-
-Vue.use(VueCompositionApi);
+import { computed } from 'vue';
 
 export class TuvaTekstikappaleStore extends TekstikappaleStore implements ITekstikappale {
   constructor(
@@ -14,11 +10,9 @@ export class TuvaTekstikappaleStore extends TekstikappaleStore implements ITekst
     public koulutustoimijaId?: string,
     public sisaltoviiteId?: number,
     public versionumero?: number,
-    public el?: any,
-    public updateNavigation?: Function,
     public opetussuunnitelma?: OpetussuunnitelmaDto,
   ) {
-    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation, opetussuunnitelma);
+    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, opetussuunnitelma);
   }
 
   public features(data: any) {
@@ -37,9 +31,7 @@ export class TuvaTekstikappaleStore extends TekstikappaleStore implements ITekst
     koulutustoimijaId: string,
     sisaltoviiteId: number,
     versionumero: number,
-    el: any,
-    updateNavigation: Function,
     opetussuunnitelma: OpetussuunnitelmaDto) {
-    return new TuvaTekstikappaleStore(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation, opetussuunnitelma);
+    return new TuvaTekstikappaleStore(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, opetussuunnitelma);
   }
 }

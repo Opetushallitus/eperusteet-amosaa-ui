@@ -1,117 +1,113 @@
 <template>
   <div>
-    <EpEditointi v-if="editointiStore" :store="editointiStore" :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }">
+    <EpEditointi
+      v-if="editointiStore"
+      :store="editointiStore"
+      :muokkaus-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+    >
       <template #header="{ data }">
-        <h2 class="m-0">{{ $kaanna(data.perusteenOsa.nimi) }}</h2>
+        <h2 class="m-0">
+          {{ $kaanna(data.perusteenOsa.nimi) }}
+        </h2>
       </template>
       <template #default="{ isEditing, data: { perusteenOsa, kotoLaajaAlainenOsaaminen } }">
-
         <EpContent
-          class="mb-4"
           v-model="perusteenOsa.yleiskuvaus"
+          class="mb-4"
           layout="normal"
           :is-editable="false"
-          :kuvaHandler="kuvaHandler"/>
+        />
 
-        <div v-for="(osaamisalue, index) in perusteenOsa.osaamisAlueet" :key="index+'kotoLaajaAlainenOsaaminen'" class="mb-4">
+        <div
+          v-for="(osaamisalue, index) in perusteenOsa.osaamisAlueet"
+          :key="index+'kotoLaajaAlainenOsaaminen'"
+          class="mb-4"
+        >
           <h3>{{ $kaanna(osaamisalue.koodi.nimi) }}</h3>
           <EpContent
-            layout="normal"
             v-model="osaamisalue.kuvaus"
-            :is-editable="false"></EpContent>
+            layout="normal"
+            :is-editable="false"
+          />
         </div>
 
         <b-form-group>
-          <h3 slot="label">{{$t('laaja-alaisen-osaamisen-paikallinen-tarkennus')}}</h3>
+          <template #label>
+            <h3>{{ $t('laaja-alaisen-osaamisen-paikallinen-tarkennus') }}</h3>
+          </template>
           <EpContent
-            layout="normal"
-            v-model="kotoLaajaAlainenOsaaminen.teksti"
-            :is-editable="isEditing"
             v-if="isEditing || kotoLaajaAlainenOsaaminen.teksti"
-            :kuvaHandler="kuvaHandler"/>
+            v-model="kotoLaajaAlainenOsaaminen.teksti"
+            layout="normal"
+            :is-editable="isEditing"
+          />
           <EpAlert
             v-if="!isEditing && !kotoLaajaAlainenOsaaminen.teksti"
-            :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"/>
+            :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+          />
         </b-form-group>
       </template>
     </EpEditointi>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import * as _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
-import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
-import { KuvaStore } from '@/stores/KuvaStore';
+import EpContent from '@shared/components/EpContent/EpContent.vue';
+import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
+
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { YleinenSisaltoViiteStore } from '@/stores/YleinenSisaltoViiteStore';
-import EpContent from '@shared/components/EpContent/EpContent.vue';
-import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpEditointi,
-    EpContent,
-    EpAlert,
-  },
-})
-export default class RouteKotoLaajaAlainenOsaaminen extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+  sisaltoviiteId: number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+}>();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const route = useRoute();
 
-  @Prop({ required: true })
-  private sisaltoviiteId!: number;
+const editointiStore = ref<EditointiStore | null>(null);
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const versionumero = computed(() => {
+  return _.toNumber(route.query.versionumero);
+});
 
-  private editointiStore: EditointiStore | null = null;
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
+const fetch = () => {
+  if (props.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
+    editointiStore.value = new EditointiStore(
+      new YleinenSisaltoViiteStore(
+        props.toteutussuunnitelmaId,
+        props.koulutustoimijaId,
+        props.sisaltoviiteId,
+        versionumero.value,
+        props.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
   }
+};
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
-  }
+watch(() => props.sisaltoviiteId, () => {
+  fetch();
+}, { immediate: true });
 
-  @Watch('toteutussuunnitelma', { immediate: true })
-  opetussuunnitelmaChange() {
-    this.fetch();
-  }
+watch(versionumero, () => {
+  fetch();
+}, { immediate: true });
 
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
-  fetch() {
-    if (this.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
-      this.editointiStore = new EditointiStore(
-        new YleinenSisaltoViiteStore(
-          this.toteutussuunnitelmaId,
-          this.koulutustoimijaId,
-          this.sisaltoviiteId,
-          this.versionumero,
-          this.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
-    }
-  }
-
-  get versionumero() {
-    return _.toNumber(this.$route.query.versionumero);
-  }
-
-  get kuvaHandler() {
-    return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
-  }
-}
+watch(toteutussuunnitelma, () => {
+  fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

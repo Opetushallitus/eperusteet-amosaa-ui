@@ -1,10 +1,8 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { Opetussuunnitelmat, VanhentunutPohjaperusteDto, Koulutustoimijat } from '@shared/api/amosaa';
 import _ from 'lodash';
-import { Debounced } from '@shared/utils/delay';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class PaivitettavatJaSiirrettavatTotsStore {
   private state = reactive({

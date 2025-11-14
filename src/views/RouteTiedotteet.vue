@@ -1,100 +1,90 @@
 <template>
   <ep-tiedote-view :tiedotteet="tiedotteet">
     <template #search>
-      <ep-search v-model="nimiFilter" @input="nimiFilterChanged" :is-loading="isLoading" />
+      <ep-search
+        v-model="nimiFilter"
+        :is-loading="isLoading"
+        @update:model-value="nimiFilterChanged"
+      />
     </template>
     <template #pagination>
-      <b-pagination
+      <EpPagination
         v-model="currentPage"
         :total-rows="totalRows"
         :per-page="perPage"
-        @change="pageChanged"
-        align="center" />
+        align="center"
+        @update:model-value="pageChanged"
+      />
     </template>
   </ep-tiedote-view>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
 import _ from 'lodash';
-import { Prop, Vue, Component, Watch } from 'vue-property-decorator';
 
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTiedoteView from '@shared/components/EpTiedoteView/EpTiedoteView.vue';
 
 import { KieliStore } from '@shared/stores/kieli';
-import { Debounced } from '@shared/utils/delay';
-
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
-
 import { TiedoteJulkaisupaikka } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
+import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
 
-@Component({
-  components: {
-    EpSearch,
-    EpTiedoteView,
-  },
-})
-export default class RouteTiedotteet extends Vue {
-  private nimiFilter = '';
-  private currentPage = 1;
+const props = defineProps<{
+  tiedotteetStore: TiedotteetStore;
+  kieliStore: KieliStore;
+  toteutus: Toteutus;
+}>();
 
-  @Prop({ required: true })
-  private tiedotteetStore!: TiedotteetStore;
+const nimiFilter = ref('');
+const currentPage = ref(1);
 
-  @Prop({ required: true })
-  private kieliStore!: KieliStore;
+const sisaltoKieli = computed(() => {
+  return props.kieliStore.getSisaltoKieli.value || null;
+});
 
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const perPage = computed(() => {
+  return props.tiedotteetStore.options.value?.sivukoko;
+});
 
-  @Watch('sisaltoKieli', { immediate: true })
-  async onSisaltoKieliChange(newValue: string, oldValue: string) {
-    if (newValue && newValue !== oldValue) {
-      this.currentPage = 1;
-      this.tiedotteetStore.changeLang(newValue);
-    }
+const totalRows = computed(() => {
+  return props.tiedotteetStore.kokonaismaara.value;
+});
+
+const tiedotteet = computed(() => {
+  return props.tiedotteetStore.tiedotteet.value;
+});
+
+const isLoading = computed(() => {
+  return props.tiedotteetStore.isLoading.value;
+});
+
+const nimiFilterChanged = _.debounce(async (value: any) => {
+  nimiFilter.value = value;
+  props.tiedotteetStore.changeNimiFilter(nimiFilter.value);
+}, 300);
+
+const pageChanged = (value: any) => {
+  currentPage.value = value;
+  props.tiedotteetStore.changePage(currentPage.value - 1);
+};
+
+onMounted(async () => {
+  props.tiedotteetStore.init({
+    sivu: currentPage.value - 1,
+    sivukoko: 10,
+    tiedoteJulkaisuPaikka: [
+      TiedoteJulkaisupaikka[props.toteutus],
+    ],
+  });
+});
+
+watch(sisaltoKieli, async (newValue: string, oldValue: string) => {
+  if (newValue && newValue !== oldValue) {
+    currentPage.value = 1;
+    props.tiedotteetStore.changeLang(newValue);
   }
-
-  async mounted() {
-    this.tiedotteetStore.init({
-      sivu: this.currentPage - 1,
-      sivukoko: 10,
-      tiedoteJulkaisuPaikka: [
-        TiedoteJulkaisupaikka[this.toteutus],
-      ],
-    });
-  }
-
-  @Debounced(300)
-  async nimiFilterChanged(value) {
-    this.nimiFilter = value;
-    this.tiedotteetStore.changeNimiFilter(this.nimiFilter);
-  }
-
-  pageChanged(value) {
-    this.currentPage = value;
-    this.tiedotteetStore.changePage(this.currentPage - 1);
-  }
-
-  get sisaltoKieli() {
-    return this.kieliStore.getSisaltoKieli.value || null;
-  }
-
-  get perPage() {
-    return this.tiedotteetStore.options.value?.sivukoko;
-  }
-
-  get totalRows() {
-    return this.tiedotteetStore.kokonaismaara.value;
-  }
-
-  get tiedotteet() {
-    return this.tiedotteetStore.tiedotteet.value;
-  }
-
-  get isLoading() {
-    return this.tiedotteetStore.isLoading.value;
-  }
-}
+}, { immediate: true });
 </script>

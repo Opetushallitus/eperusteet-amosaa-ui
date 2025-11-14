@@ -1,11 +1,11 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { Arviointiasteikot, Ulkopuoliset, PerusteDtoKoulutustyyppiEnum, PerusteKevytDto } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { Koulutustyyppi } from '@shared/tyypit';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
+import { Kielet } from '@shared/stores/kieli';
 
 export class PerusteetStore {
   private state = reactive({
@@ -54,7 +54,8 @@ export class PerusteetStore {
     return PerusteetStore.Geneeriset;
   }
 
-  public async fetchJulkaistutPerusteet() {
-    this.state.perusteetKevyt = (await Ulkopuoliset.getJulkaistutPerusteetKevyt(EperusteetKoulutustyyppiRyhmat[this.toteutus.value!])).data;
+  public async fetchJulkaistutPerusteet(nimi?: string) {
+    this.state.perusteetKevyt = null;
+    this.state.perusteetKevyt = (await Ulkopuoliset.getPerusteet(EperusteetKoulutustyyppiRyhmat[this.toteutus.value!], nimi, Kielet.getSisaltoKieli.value)).data;
   }
 }

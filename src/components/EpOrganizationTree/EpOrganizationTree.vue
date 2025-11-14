@@ -1,52 +1,48 @@
 <template>
-<li>
-  <ep-organization-node :value="value"
-                        :is-editing="isEditing"
-                        :yhteistyo-map="yhteistyoMap" />
-  <div v-if="hasChildren" class="tree">
-    <ul>
-      <ep-organization-tree v-for="(node, idx) in children"
-                            :key="idx"
-                            :value="node"
-                            :is-editing="isEditing"
-                            :yhteistyo-map="yhteistyoMap" />
-    </ul>
-  </div>
-</li>
+  <li>
+    <ep-organization-node
+      :value="value"
+      :is-editing="isEditing"
+      :yhteistyo-map="yhteistyoMap"
+    />
+    <div
+      v-if="hasChildren"
+      class="tree"
+    >
+      <ul>
+        <ep-organization-tree
+          v-for="(node, idx) in children"
+          :key="idx"
+          :value="node"
+          :is-editing="isEditing"
+          :yhteistyo-map="yhteistyoMap"
+        />
+      </ul>
+    </div>
+  </li>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import _ from 'lodash';
-import { Prop, Component, Vue } from 'vue-property-decorator';
-
+import { computed } from 'vue';
 import EpOrganizationNode from '@/components/EpOrganizationTree/EpOrganizationNode.vue';
+import { $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpOrganizationNode,
-  },
-  name: 'EpOrganizationTree',
-})
-export default class EpOrganizationTree extends Vue {
-  @Prop({ required: true })
-  private value!: any;
+const props = defineProps<{
+  value: any;
+  isEditing: boolean;
+  yhteistyoMap?: any[];
+}>();
 
-  @Prop({ required: true })
-  private isEditing!: boolean;
+const hasChildren = computed(() => {
+  return !_.isEmpty(props.value.children);
+});
 
-  @Prop({ required: false, default: [] })
-  private yhteistyoMap!: any[];
-
-  get hasChildren() {
-    return !_.isEmpty(this.value.children);
-  }
-
-  get children() {
-    return _(this.value.children)
-      .sortBy(node => this.$kaanna(node.nimi))
-      .value();
-  }
-}
+const children = computed(() => {
+  return _(props.value.children)
+    .sortBy(node => $kaanna(node.nimi))
+    .value();
+});
 </script>
 
 <style scoped lang="scss">

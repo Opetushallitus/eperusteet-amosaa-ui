@@ -1,29 +1,23 @@
 <template>
-  <EpOppaat :koulutustyypit="koulutustyypit"/>
+  <EpOppaat :koulutustyypit="koulutustyypit" />
 </template>
 
-<script lang="ts">
-import { Prop, Vue, Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { computed } from 'vue';
 import EpOppaat from '@shared/components/EpOppaat/EpOppaat.vue';
 import { ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
 
-@Component({
-  components: {
-    EpOppaat,
-  },
-})
-export default class RouteOppaat extends Vue {
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const props = defineProps<{
+  toteutus: Toteutus;
+}>();
 
-  get koulutustyypit() {
-    if (this.toteutus === Toteutus.VAPAASIVISTYSTYO) {
-      return [...ToteutuksenKoulutustyypit[this.toteutus], 'koulutustyyppi_muu'];
-    }
-    return ToteutuksenKoulutustyypit[this.toteutus];
+const koulutustyypit = computed(() => {
+  if (props.toteutus === Toteutus.VAPAASIVISTYSTYO) {
+    return [...ToteutuksenKoulutustyypit[props.toteutus], 'koulutustyyppi_muu'];
   }
-}
+  return ToteutuksenKoulutustyypit[props.toteutus];
+});
 </script>
 
 <style scoped lang="scss">

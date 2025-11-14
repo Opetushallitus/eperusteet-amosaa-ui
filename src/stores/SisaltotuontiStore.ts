@@ -1,10 +1,9 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed } from '@vue/composition-api';
 import { Opetussuunnitelmat, PageOpetussuunnitelmaBaseDto, SisaltoViiteKevytDto, Sisaltoviitteet, SisaltoViiteKevytDtoTyyppiEnum } from '@shared/api/amosaa';
-import { Debounced } from '@shared/utils/delay';
+import { debounced } from '@shared/utils/delay';
 import * as _ from 'lodash';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 export class SisaltotuontiStore {
   public state = reactive({
@@ -21,13 +20,12 @@ export class SisaltotuontiStore {
   public readonly suorituspolut = computed(() => _.filter(this.state.sisaltoviitteet, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.SUORITUSPOLKU) as any }));
   public readonly tutkinnonosat = computed(() => _.filter(this.state.sisaltoviitteet, { tyyppi: _.toLower(SisaltoViiteKevytDtoTyyppiEnum.TUTKINNONOSA) as any }));
 
-  @Debounced(300)
-  public async fetch(query) {
+  public fetch = debounced(async (query) => {
     this.state.opetussuunnitelmat = null;
     this.state.opetussuunnitelmat = (await Opetussuunnitelmat.getAllOpetussuunnitelmatBaseSivutettu(
       this.koulutustoimijaId,
       { params: query })).data;
-  }
+  });
 
   clear() {
     this.state.opetussuunnitelmat = null;

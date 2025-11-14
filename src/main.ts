@@ -1,79 +1,90 @@
-import Vue from 'vue';
-import Vuelidate from 'vuelidate';
-import VueApexCharts from 'vue-apexcharts';
-
-import App from './App.vue';
 import '@shared/config/bootstrap';
 import '@shared/config/styles';
-import 'animate.css/animate.min.css';
-import 'material-icons/iconfont/material-icons.css';
-import '@shared/config/defaultcomponents';
-
-import VueI18n from 'vue-i18n';
-import VueCompositionApi from '@vue/composition-api';
-import VueScrollTo from 'vue-scrollto';
-import Loading from 'vue-loading-overlay';
-import Notifications from 'vue-notification';
-import PortalVue from 'portal-vue';
-
-import { Oikeustarkastelu } from '@shared/plugins/oikeustarkastelu';
-import Aikaleima from '@shared/plugins/aikaleima';
-import { Vahvistus } from '@shared/plugins/vahvistus';
+import { createPinia } from 'pinia';
+import Vue, { createApp } from 'vue';
+import { configureCompat } from 'vue';
+import App from './App.vue';
+import { setAppInstance } from '@shared/utils/globals';
+import router from './router/router';
 import Kaannos from '@shared/plugins/kaannos';
-import { Notifikaatiot } from '@shared/plugins/notifikaatiot';
+import { Kieli } from '@shared/tyypit';
+import { createI18n } from 'vue-i18n';
+import fiLocale from '@shared/translations/locale-fi.json';
+import svLocale from '@shared/translations/locale-sv.json';
+import enLocale from '@shared/translations/locale-en.json';
 import { Kielet } from '@shared/stores/kieli';
+import Aikaleima from '@shared/plugins/aikaleima';
+import { LoadingPlugin } from 'vue-loading-overlay';
+import { createHead } from '@unhead/vue/client';
+import { Oikeustarkastelu } from '@shared/plugins/oikeustarkastelu';
+import { Notifikaatiot } from '@shared/plugins/notifikaatiot';
+import { Kayttajat } from './stores/kayttaja';
+import VueScrollTo from 'vue-scrollto';
+import VueApexCharts from 'vue-apexcharts';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { Kayttajat } from '@/stores/kayttaja';
-import { VueTutorial } from '@shared/plugins/tutoriaali';
-import { tutoriaaliStore } from '@shared/stores/tutoriaali';
+import Sticky from 'vue-sticky-directive';
+import { TekstikappaleStore } from './stores/TekstikappaleStore';
+import { TutkinnonOsaStore } from './stores/TutkinnonOsaStore';
+import { stores } from './stores';
+import { SisaltoEditStore } from './stores/SisaltoEditStore';
+import { SisaltoViiteStore } from './stores/SisaltoViiteStore';
+import { RakenneStore } from './stores/RakenneStore';
+import { OpintokokonaisuusStore } from './stores/OpintokokonaisuusStore';
 import { registerIconColorSchemeChange } from '@shared/utils/icon';
 
-import router from './router';
-import { getKaannokset } from '@shared/api/eperusteet';
+const app = createApp(App);
 
-Vue.config.productionTip = false;
+registerIconColorSchemeChange();
 
-Vue.use(VueI18n);
-Vue.use(VueCompositionApi);
-Vue.use(Vuelidate);
-Vue.use(VueScrollTo);
-Vue.use(Notifications);
-Vue.use(PortalVue);
-Vue.use(Loading, {
-  fullPage: true,
-  color: '#159ecb',
-  loader: 'dots',
+configureCompat({
+  COMPONENT_V_MODEL: false,
 });
-Vue.use(Kielet, {
+
+setAppInstance(app);
+
+app.use(createPinia());
+app.use(router);
+app.use(Kaannos);
+
+export const i18n = createI18n({
+  legacy: false, // Set to false to use Composition API
+  locale: Kieli.fi,
+  fallbackLocale: Kieli.fi,
   messages: {
     fi: {
-      ...require('@shared/translations/locale-fi.json'),
+      ...fiLocale,
     },
     sv: {
-      ...require('@shared/translations/locale-sv.json'),
+      ...svLocale,
+    },
+    en: {
+      ...enLocale,
     },
   },
 });
 
-Vue.use(Kaannos);
-Vue.use(Vahvistus);
-Vue.use(Aikaleima);
-Vue.use(Notifikaatiot);
-Vue.use(Oikeustarkastelu, { oikeusProvider: Kayttajat });
-Vue.use(EditointiStore, { router, kayttajaProvider: Kayttajat });
-Vue.use(VueTutorial, { tutoriaaliStore });
+app.use(i18n);
+app.use(Kielet, { i18n });
+app.use(Aikaleima);
+app.use(LoadingPlugin);
+app.use(createHead());
+app.use(Oikeustarkastelu, { oikeusProvider: Kayttajat });
+app.use(Notifikaatiot);
+
+Vue.use(VueScrollTo, {
+  duration: 1000,
+});
 Vue.use(VueApexCharts);
-Vue.component('apexchart', VueApexCharts);
+Vue.component('Apexchart', VueApexCharts);
 
-async function main() {
-  registerIconColorSchemeChange();
-  new Vue({
-    router,
-    i18n: Kielet.i18n,
-    render: h => h(App),
-  }).$mount('#app');
+app.use(EditointiStore, { router, kayttajaProvider: Kayttajat });
+app.use(Sticky);
 
-  Kielet.load(await getKaannokset('eperusteet'));
-}
+app.use(TekstikappaleStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });
+app.use(TutkinnonOsaStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });
+app.use(SisaltoEditStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });
+app.use(SisaltoViiteStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });
+app.use(RakenneStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });
+app.use(OpintokokonaisuusStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });
 
-main();
+app.mount('#app');

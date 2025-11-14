@@ -1,69 +1,97 @@
 <template>
   <div>
-    <div v-for="(vapaateksti, index) in value" :key="'vapaateksti'+index" class="mt-4">
-      <h4 slot="header" v-if="!isEditing">{{$kaanna(vapaateksti.nimi)}}</h4>
-      <h4 slot="header" v-if="isEditing">{{$t('tekstikappaleen-otsikko')}}</h4>
-      <ep-field v-if="isEditing" v-model="vapaateksti.nimi" :is-editing="isEditing"></ep-field>
+    <div
+      v-for="(vapaateksti, index) in modelValue"
+      :key="'vapaateksti'+index"
+      class="mt-4"
+    >
+      <h4 v-if="!isEditing">
+        {{ $kaanna(vapaateksti.nimi) }}
+      </h4>
+      <h4 v-if="isEditing">
+        {{ $t('tekstikappaleen-otsikko') }}
+      </h4>
+      <ep-field
+        v-if="isEditing"
+        v-model="vapaateksti.nimi"
+        :is-editing="isEditing"
+      />
 
-      <h4 class="pt-3" v-if="isEditing">{{$t('tekstikappaleen-sisalto')}}</h4>
-      <ep-content layout="normal" v-model="vapaateksti.teksti" :is-editable="isEditing"> </ep-content>
+      <h4
+        v-if="isEditing"
+        class="pt-3"
+      >
+        {{ $t('tekstikappaleen-sisalto') }}
+      </h4>
+      <ep-content
+        v-model="vapaateksti.teksti"
+        layout="normal"
+        :is-editable="isEditing"
+      />
 
-      <div class="d-flex justify-content-between mt-1" v-if="isEditing">
-        <ep-button variant="outline-primary" icon="add" v-if="index+1 === value.length" @click="lisaaTekstikappale()">
+      <div
+        v-if="isEditing"
+        class="d-flex justify-content-between mt-1"
+      >
+        <ep-button
+          v-if="index+1 === modelValue.length"
+          variant="outline-primary"
+          icon="add"
+          @click="lisaaTekstikappale()"
+        >
           {{ $t('lisaa-tekstikappale') }}
         </ep-button>
-        <div v-else/>
+        <div v-else />
 
-        <ep-button variant="link" icon="delete" @click="poistaTekstikappale(vapaateksti)">
+        <ep-button
+          variant="link"
+          icon="delete"
+          @click="poistaTekstikappale(vapaateksti)"
+        >
           {{ $t('poista-tekstikappale') }}
         </ep-button>
       </div>
 
-      <hr v-if="value.length > index+1" />
+      <hr v-if="modelValue.length > index+1">
     </div>
 
-    <ep-button variant="outline-primary" icon="add" v-if="isEditing &&value.length === 0" @click="lisaaTekstikappale()">
+    <ep-button
+      v-if="isEditing && modelValue.length === 0"
+      variant="outline-primary"
+      icon="add"
+      @click="lisaaTekstikappale()"
+    >
       {{ $t('lisaa-tekstikappale') }}
     </ep-button>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import * as _ from 'lodash';
-import { Component, Prop, Vue } from 'vue-property-decorator';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import { VapaaTekstiDto } from '@shared/api/amosaa';
+import { $kaanna, $t } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpButton,
-    EpContent,
-    EpCollapse,
-    EpField,
-  },
-})
-export default class EpVapaatTekstit extends Vue {
-  @Prop({ required: true })
-  value!: Array<VapaaTekstiDto>;
+const props = defineProps<{
+  modelValue: Array<VapaaTekstiDto>;
+  isEditing?: boolean;
+}>();
 
-  @Prop({ default: false })
-  isEditing!: boolean;
+const emit = defineEmits(['update:modelValue']);
 
-  lisaaTekstikappale() {
-    this.$emit('input',
-      [
-        ...this.value,
-        {},
-      ]);
-  }
+const lisaaTekstikappale = () => {
+  emit('update:modelValue', [
+    ...props.modelValue,
+    {},
+  ]);
+};
 
-  poistaTekstikappale(poistettava: any) {
-    this.$emit('input', _.filter(this.value, vpTeksti => vpTeksti !== poistettava));
-  }
-}
+const poistaTekstikappale = (poistettava: any) => {
+  emit('update:modelValue', _.filter(props.modelValue, vpTeksti => vpTeksti !== poistettava));
+};
 </script>
 
 <style scoped lang="scss">

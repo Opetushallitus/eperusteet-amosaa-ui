@@ -1,175 +1,206 @@
 <template>
-  <div id="scroll-anchor" v-if="editointiStore" >
-    <EpEditointi :store="editointiStore"
-                 :versionumero="versionumero"
-                 :muokkausOikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
-                 label-remove-confirm="vahvista-tekstikappaleen-poisto">
-      <template v-slot:header="{ data }">
-        <h2 class="m-0">{{ $kaanna(data.tekstiKappale.nimi) }}</h2>
+  <div
+    v-if="editointiStore"
+    id="scroll-anchor"
+  >
+    <EpEditointi
+      :store="editointiStore"
+      :versionumero="versionumero"
+      :muokkaus-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+      label-remove-confirm="vahvista-tekstikappaleen-poisto"
+    >
+      <template #header="{ data }">
+        <h2 class="m-0">
+          {{ $kaanna(data.tekstiKappale.nimi) }}
+        </h2>
       </template>
 
-      <template v-slot:default="{ data, isEditing }">
-
+      <template #default="{ data, isEditing }">
         <div class="container">
-
           <div v-if="perusteteksti || data.pohjanTekstikappale">
-
-            <EpCollapse v-if="perusteteksti && (isEditing || data.naytaPerusteenTeksti)" :borderBottom="naytaPaikallinenTeksti">
-              <h4 slot="header">{{$t('perusteen-teksti')}}</h4>
-              <ep-content layout="normal" v-model="perusteteksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
-              <ep-toggle v-model="data.naytaPerusteenTeksti" :is-editing="true" v-if="isEditing">
-                {{$t('nayta-perusteen-teksti')}}
+            <EpCollapse
+              v-if="perusteteksti && (isEditing || data.naytaPerusteenTeksti)"
+              :border-bottom="naytaPaikallinenTeksti"
+            >
+              <template #header>
+                <h4>{{ $t('perusteen-teksti') }}</h4>
+              </template>
+              <ep-content
+                v-model="perusteteksti"
+                layout="normal"
+                :is-editable="false"
+                :kuva-handler="kuvaHandler"
+              />
+              <ep-toggle
+                v-if="isEditing"
+                v-model="data.naytaPerusteenTeksti"
+                :is-editing="true"
+              >
+                {{ $t('nayta-perusteen-teksti') }}
               </ep-toggle>
             </EpCollapse>
 
             <EpCollapse v-if="data.pohjanTekstikappale && data.pohjanTekstikappale.teksti">
-              <h4 slot="header">{{$t('pohjan-teksti')}} <template v-if="pohja">({{$kaanna(pohja.nimi)}})</template></h4>
-              <ep-content layout="normal" v-model="data.pohjanTekstikappale.teksti" :is-editable="false" :kuvaHandler="kuvaHandler"/>
-              <ep-toggle v-model="data.naytaPohjanTeksti" :is-editing="true" v-if="isEditing">
-                {{$t('nayta-pohjan-teksti')}}
+              <template #header>
+                <h4>
+                  {{ $t('pohjan-teksti') }} <template v-if="pohja">
+                    ({{ $kaanna(pohja.nimi) }})
+                  </template>
+                </h4>
+              </template>
+              <ep-content
+                v-model="data.pohjanTekstikappale.teksti"
+                layout="normal"
+                :is-editable="false"
+                :kuva-handler="kuvaHandler"
+              />
+              <ep-toggle
+                v-if="isEditing"
+                v-model="data.naytaPohjanTeksti"
+                :is-editing="true"
+              >
+                {{ $t('nayta-pohjan-teksti') }}
               </ep-toggle>
             </EpCollapse>
 
-            <b-form-group :label="$t('paikallinen-teksti')" v-if="naytaPaikallinenTeksti">
+            <b-form-group
+              v-if="naytaPaikallinenTeksti"
+              :label="$t('paikallinen-teksti')"
+            >
               <ep-content
-                layout="normal"
-                v-model="data.tekstiKappale.teksti"
-                :is-editable="isEditing"
                 v-if="isEditing || data.tekstiKappale.teksti"
-                :kuvaHandler="kuvaHandler"/>
+                v-model="data.tekstiKappale.teksti"
+                layout="normal"
+                :is-editable="isEditing"
+                :kuva-handler="kuvaHandler"
+              />
               <EpAlert
                 v-if="!isEditing && !data.tekstiKappale.teksti"
                 :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
-                class="pb-3"/>
+                class="pb-3"
+              />
             </b-form-group>
           </div>
 
           <div v-else>
-            <b-form-group :label="$t('otsikko')" v-if="isEditing">
-              <ep-field v-model="data.tekstiKappale.nimi" :is-editing="isEditing"></ep-field>
+            <b-form-group
+              v-if="isEditing"
+              :label="$t('otsikko')"
+            >
+              <ep-field
+                v-model="data.tekstiKappale.nimi"
+                :is-editing="isEditing"
+              />
             </b-form-group>
 
-            <b-form-group :label="$t('kappaleen-teksti')" :label-sr-only="!isEditing">
-              <ep-content layout="normal" v-model="data.tekstiKappale.teksti" :is-editable="isEditing" :kuvaHandler="kuvaHandler"/>
+            <b-form-group
+              :label="$t('kappaleen-teksti')"
+              :label-sr-only="!isEditing"
+            >
+              <ep-content
+                v-model="data.tekstiKappale.teksti"
+                layout="normal"
+                :is-editable="isEditing"
+                :kuva-handler="kuvaHandler"
+              />
             </b-form-group>
           </div>
         </div>
       </template>
-
     </EpEditointi>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed, getCurrentInstance, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import _ from 'lodash';
-import { Prop, Component, Vue, Watch } from 'vue-property-decorator';
+
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ITekstikappale } from '@/stores/TekstikappaleStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
-import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
+
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
 import { Koulutustyyppi } from '@shared/tyypit';
 import { Toteutus } from '@shared/utils/perusteet';
 import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { $t, $kaanna } from '@shared/utils/globals';
 
-@Component({
-  components: {
-    EpEditointi,
-    EpField,
-    EpContent,
-    EpToggle,
-    EpCollapse,
-    EpAlert,
-  },
-})
-export default class RouteTekstikappale extends Vue {
-  @Prop({ required: true })
-  private koulutustoimijaId!: string;
+const props = defineProps<{
+  koulutustoimijaId: string;
+  toteutussuunnitelmaId: number;
+  sisaltoviiteId: number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  toteutus: Toteutus;
+  tekstikappaleStore: ITekstikappale;
+}>();
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaId!: number;
+const route = useRoute();
 
-  @Prop({ required: true })
-  private sisaltoviiteId!: number;
+const editointiStore = ref<EditointiStore | null>(null);
 
-  @Prop({ required: true })
-  private toteutussuunnitelmaStore!: ToteutussuunnitelmaStore;
+const versionumero = computed(() => {
+  return _.toNumber(route.query.versionumero);
+});
 
-  @Prop({ required: true })
-  private toteutus!: Toteutus;
+const kuvaHandler = computed(() => {
+  return createKuvaHandler(new KuvaStore(props.toteutussuunnitelmaId, props.koulutustoimijaId));
+});
 
-  @Prop({ required: true })
-  private tekstikappaleStore!: ITekstikappale;
+const toteutussuunnitelma = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
+});
 
-  private editointiStore: EditointiStore | null = null;
+const naytaPaikallinenTeksti = computed(() => {
+  return toteutussuunnitelma.value?.koulutustyyppi as any !== Koulutustyyppi.tutkintoonvalmentava
+    || toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS)
+    || perusteteksti.value;
+});
 
-  @Watch('sisaltoviiteId', { immediate: true })
-  sisaltoviiteChange() {
-    this.fetch();
+const pohja = computed(() => {
+  return props.toteutussuunnitelmaStore.pohja.value;
+});
+
+const perusteteksti = computed(() => {
+  return editointiStore.value?.data?.perusteenOsa?.teksti;
+});
+
+const fetch = () => {
+  if (props.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
+    editointiStore.value = new EditointiStore(
+      props.tekstikappaleStore.create(
+        props.toteutussuunnitelmaId,
+        props.koulutustoimijaId,
+        props.sisaltoviiteId,
+        versionumero.value,
+        props.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
   }
+};
 
-  @Watch('versionumero', { immediate: true })
-  versionumeroChange() {
-    this.fetch();
-  }
+watch(() => props.sisaltoviiteId, () => {
+  fetch();
+}, { immediate: true });
 
-  @Watch('toteutussuunnitelma', { immediate: true })
-  opetussuunnitelmaChange() {
-    this.fetch();
-  }
+watch(versionumero, () => {
+  fetch();
+}, { immediate: true });
 
-  fetch() {
-    if (this.toteutussuunnitelmaStore.toteutussuunnitelma.value) {
-      this.editointiStore = new EditointiStore(
-        this.tekstikappaleStore.create(
-          this.toteutussuunnitelmaId,
-          this.koulutustoimijaId,
-          this.sisaltoviiteId,
-          this.versionumero,
-          this,
-          () => this.toteutussuunnitelmaStore.initNavigation(),
-          this.toteutussuunnitelmaStore.toteutussuunnitelma.value as OpetussuunnitelmaDto));
-    }
-  }
-
-  get versionumero() {
-    return _.toNumber(this.$route.query.versionumero);
-  }
-
-  get kuvaHandler() {
-    return createKuvaHandler(new KuvaStore(this.toteutussuunnitelmaId, this.koulutustoimijaId));
-  }
-
-  get toteutussuunnitelma() {
-    return this.toteutussuunnitelmaStore.toteutussuunnitelma.value;
-  }
-
-  get naytaPaikallinenTeksti() {
-    return this.toteutussuunnitelma?.koulutustyyppi as any !== Koulutustyyppi.tutkintoonvalmentava
-      || this.toteutussuunnitelma?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS)
-      || this.perusteteksti;
-  }
-
-  get pohja() {
-    return this.toteutussuunnitelmaStore.pohja.value;
-  }
-
-  get perusteteksti() {
-    return this.editointiStore?.data?.value?.perusteenOsa?.teksti;
-  }
-}
+watch(toteutussuunnitelma, () => {
+  fetch();
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">
 @import "@shared/styles/_variables.scss";
 
-  ::v-deep fieldset {
+  :deep(fieldset) {
     padding-right: 0;
   }
 

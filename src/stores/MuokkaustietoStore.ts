@@ -1,12 +1,12 @@
 import Vue from 'vue';
-import VueCompositionApi, { reactive, computed, watch } from '@vue/composition-api';
 import { OpetussuunnitelmaMuokkaustietoDto, Muokkaustiedot, OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { IMuokkaustietoProvider } from '@shared/components/EpViimeaikainenToiminta/types';
 import _ from 'lodash';
 import { Computed } from '@shared/utils/interfaces';
 import { nodeToRoute } from '@/utils/routing';
-
-Vue.use(VueCompositionApi);
+import { reactive } from 'vue';
+import { computed } from 'vue';
+import { watch } from 'vue';
 
 export class MuokkaustietoStore implements IMuokkaustietoProvider {
   private state = reactive({

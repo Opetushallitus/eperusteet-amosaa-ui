@@ -1,13 +1,11 @@
 import Vue from 'vue';
-import VueCompositionApi, { computed } from '@vue/composition-api';
 import { OpetussuunnitelmaDto, SisaltoviiteMatalaDto, Sisaltoviitteet } from '@shared/api/amosaa';
 import { EditoitavaFeatures, IEditoitava } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision } from '@shared/tyypit';
 import { Computed } from '@shared/utils/interfaces';
-import { minLength, required } from 'vuelidate/lib/validators';
+import { minLength, required } from '@vuelidate/validators';
 import { AbstractSisaltoviiteStore } from '@/stores/AbstractSisaltoviiteStore';
-
-Vue.use(VueCompositionApi);
+import { computed } from 'vue';
 
 export class OsaamismerkkiKappaleStore extends AbstractSisaltoviiteStore implements IEditoitava {
   private osaamismerkkiKappale: SisaltoviiteMatalaDto | undefined = undefined;
@@ -17,11 +15,9 @@ export class OsaamismerkkiKappaleStore extends AbstractSisaltoviiteStore impleme
     public koulutustoimijaId: string,
     public sisaltoviiteId: number,
     public versionumero: number,
-    public el: any,
     public opetussuunnitelma: Computed<OpetussuunnitelmaDto>,
-    public updateNavigation: Function,
   ) {
-    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero, el, updateNavigation);
+    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoviiteId, versionumero);
   }
 
   async load() {
@@ -43,7 +39,7 @@ export class OsaamismerkkiKappaleStore extends AbstractSisaltoviiteStore impleme
 
   async save(data: any) {
     await Sisaltoviitteet.updateTekstiKappaleViite(this.opetussuunnitelmaId, this.sisaltoviiteId, this.koulutustoimijaId, data);
-    await this.updateNavigation();
+    await OsaamismerkkiKappaleStore.config.updateNavigation;
   }
 
   public readonly validator = computed(() => {
@@ -69,11 +65,11 @@ export class OsaamismerkkiKappaleStore extends AbstractSisaltoviiteStore impleme
     });
   }
 
-  public static async add(opsId: number, svId: number, ktId: string, osaamismerkkiKappale: SisaltoviiteMatalaDto, el: any, updateNavigation: Function) {
+  public static async add(opsId: number, svId: number, ktId: string, osaamismerkkiKappale: SisaltoviiteMatalaDto) {
     const added = (await Sisaltoviitteet.addTekstiKappaleLapsi(opsId, svId, ktId, osaamismerkkiKappale)).data;
-    await updateNavigation();
+    await OsaamismerkkiKappaleStore.config.updateNavigation;
 
-    el.$router.push({
+    OsaamismerkkiKappaleStore.config.router.push({
       name: 'osaamismerkkikappale',
       params: {
         sisaltoviiteId: '' + added.id,
