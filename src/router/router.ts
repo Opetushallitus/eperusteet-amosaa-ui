@@ -424,7 +424,7 @@ router.beforeEach((to, from, next) => {
 
 router.beforeEach((to, from, next) => {
   if (!EditointiStore.anyEditing()) {
-    loader = $loading.show();
+    loaders.push($loading.show());
   }
   next();
 });
@@ -465,7 +465,7 @@ router.beforeEach((to, from, next) => {
 
 router.beforeEach(async (to, from, next) => {
   if (EditointiStore.anyEditing()) {
-    const value = await router.app.$bvModal.msgBoxConfirm(
+    const value = await $bvModal.msgBoxConfirm(
       Kielet.kaannaOlioTaiTeksti('poistumisen-varmistusteksti-dialogi'), {
         title: Kielet.kaannaOlioTaiTeksti('haluatko-poistua-tallentamatta'),
         okTitle: Kielet.kaannaOlioTaiTeksti('poistu-tallentamatta'),
@@ -512,7 +512,7 @@ router.beforeEach(async (to, from, next) => {
 });
 
 const $loading = useLoading(loadingOptions);
-let loader: any = null;
+const loaders: any[] = [];
 
 router.beforeEach((to, from, next) => {
   changeLang(to, from);
@@ -532,9 +532,9 @@ router.afterEach(() => {
 });
 
 function hideLoading() {
-  if (loader !== null) {
-    (loader as any).hide();
-    loader = null;
+  if (loaders.length > 0) {
+    (loaders[loaders.length - 1] as any).hide();
+    loaders.pop();
   }
 }
 
