@@ -5,14 +5,14 @@
     </slot>
     <div v-if="isEditing">
       <b-form-group>
-        <b-form-radio
+        <EpRadio
           v-for="vaihtoehto in vaihtoehdot"
           :key="vaihtoehto.id"
           v-model="model"
           :value="vaihtoehto.id"
         >
           {{ $kaanna(vaihtoehto.nimi) }}
-        </b-form-radio>
+        </EpRadio>
       </b-form-group>
     </div>
     <div v-else>
@@ -70,6 +70,7 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import * as _ from 'lodash';
 import { $t, $kaanna } from '@shared/utils/globals';
+import EpRadio from '@shared/components/forms/EpRadio.vue';
 
 const props = defineProps<{
   isEditing: boolean;
