@@ -83,7 +83,7 @@
                       <template #noResult>
                         <EpSpinner v-if="perusteetFetching" />
                         <span v-else-if="perusteet && perusteet.length === 0">{{ $t('ei-hakutuloksia') }}</span>
-                        <span/>
+                        <span />
                       </template>
                     </EpMultiSelect>
                   </div>

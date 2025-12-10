@@ -13,6 +13,7 @@ import { Koulutustyyppi } from '@shared/tyypit';
 import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { TuvaTekstikappaleStore } from '@/stores/TuvaTekstikappaleStore';
+import { localhostOrigin } from '@shared/utils/esikatselu';
 
 export const ToteutuksenKoulutustyypit = {
   [Toteutus.VAPAASIVISTYSTYO]: EperusteetKoulutustyyppiRyhmat.vapaasivistystyo,
@@ -818,4 +819,11 @@ export const PdfLuontiSelite = {
   [Toteutus.AMMATILLINEN]: 'luo-pdf-selite-amosaa',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'luo-pdf-selite',
   [Toteutus.KOTOUTUMISKOULUTUS]: 'luo-pdf-selite',
+};
+
+export const defaultToteutus = () => {
+  if (localhostOrigin()) {
+    return 'ammatillinen';
+  }
+  return '';
 };

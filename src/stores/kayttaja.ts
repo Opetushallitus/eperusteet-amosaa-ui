@@ -5,7 +5,7 @@ import { createLogger } from '@shared/utils/logger';
 import { getSovellusoikeudet, IOikeusProvider } from '@shared/plugins/oikeustarkastelu';
 import { debounced } from '@shared/utils/delay';
 import { getCasKayttaja } from '@shared/api/common';
-import { ToteutusSovellus, ToteutusSovellusRole } from '@/utils/toteutustypes';
+import { defaultToteutus, ToteutusSovellus, ToteutusSovellusRole } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
 import { computed } from 'vue';
 import { reactive } from 'vue';
@@ -169,7 +169,7 @@ export class KayttajaStore implements IOikeusProvider {
   }
 
   public setToteutus(toteutus) {
-    this.state.toteutus = toteutus;
+    this.state.toteutus = toteutus || defaultToteutus();
   }
 }
 

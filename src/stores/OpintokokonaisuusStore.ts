@@ -2,9 +2,9 @@ import Vue from 'vue';
 import _ from 'lodash';
 import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { IEditoitava, EditoitavaFeatures, EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import { Revision, ILukko } from '@shared/tyypit';
+import { Revision, ILukko, Kieli } from '@shared/tyypit';
 import { Kielet } from '@shared/stores/kieli';
-import { koodistoKoodiValidator, translated } from '@shared/validators/required';
+import { langOnlyCharacterOrNumber, langMinLength, translated } from '@shared/validators/required';
 import { Computed } from '@shared/utils/interfaces';
 import { computed } from 'vue';
 import { Router, useRouter } from 'vue-router';
@@ -113,24 +113,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
           }),
         },
         kuvaus: translated([kieli]),
-        tavoitteet: {
-          $each: helpers.forEach({
-            [kieli]: {
-              required,
-              'min-length': minLength(1),
-            },
-          }),
-        },
-        arvioinnit: {
-          $each: {
-            arviointi: {
-              [kieli]: {
-                required,
-                'min-length': minLength(1),
-              },
-            },
-          },
-        },
+        ...this.tavoiteArviointiValidations(),
       },
     } as any;
 
@@ -140,34 +123,33 @@ export class OpintokokonaisuusStore implements IEditoitava {
         opintokokonaisuus: {
           ...validations.opintokokonaisuus,
           opetuksenTavoiteOtsikko: translated([kieli]),
-          tavoitteet: {
-            'min-length': minLength(1),
-            required,
-            $each: {
-              tavoite: {
-                [kieli]: {
-                  required,
-                },
-              },
-            },
-          },
-          arvioinnit: {
-            'min-length': minLength(1),
-            required,
-            $each: {
-              arviointi: {
-                [kieli]: {
-                  required,
-                },
-              },
-            },
-          },
+          ...this.tavoiteArviointiValidations(),
         },
       };
     }
 
     return validations;
   });
+
+  private tavoiteArviointiValidations() {
+    return {
+      tavoitteet: {
+        $each: helpers.forEach({
+          tavoite: {
+            ...langMinLength(3),
+            ...langOnlyCharacterOrNumber(),
+          },
+        }),
+      },
+      arvioinnit: {
+        $each: helpers.forEach({
+          arviointi: {
+            ...langMinLength(3),
+          },
+        }),
+      },
+    };
+  };
 
   public async lock() {
     try {
