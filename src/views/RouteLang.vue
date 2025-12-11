@@ -55,6 +55,7 @@ import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { localhostOrigin } from '@shared/utils/esikatselu';
 import { Toteutus } from '@shared/utils/perusteet';
 import { $t } from '@shared/utils/globals';
+import { defaultToteutus } from '@/utils/toteutustypes';
 
 const virhekuva = new URL('@assets/img/images/virhe.png', import.meta.url).href;
 
@@ -67,13 +68,6 @@ const router = useRouter();
 const header = useTemplateRef('header');
 
 const koulutustoimijaId = ref<null | number>(null);
-
-const defaultToteutus = () => {
-  if (localhostOrigin()) {
-    return 'ammatillinen';
-  }
-  return '';
-};
 
 const toteutus = computed(() => {
   return _.has(route.params, 'toteutus') ? _.get(route.params, 'toteutus') : defaultToteutus();

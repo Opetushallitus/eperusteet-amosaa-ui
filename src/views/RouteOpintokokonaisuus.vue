@@ -149,39 +149,15 @@
                   cols="11"
                   md="10"
                 >
-                  <EpKoodistoSelect
-                    :store="koodisto"
-                    :value="opintokokonaisuus.tavoitteet[index]"
+                  <VaatimusField
+                    ref="koodistoSelect"
+                    v-model="opintokokonaisuus.tavoitteet[index]"
+                    nimi-key="tavoite"
+                    :koodisto="koodisto"
                     :is-editing="isEditing"
-                    :nayta-arvo="false"
+                    :validation="validation.opintokokonaisuus.tavoitteet?.$each?.$response.$data[index]?.tavoite"
                     @add="updateTavoiteByIndex($event, index)"
-                  >
-                    <template #default="{ open }">
-                      <b-input-group>
-                        <EpInput
-                          v-model="tavoiteItem.tavoite"
-                          :is-editing="isEditing"
-                          :disabled="tavoiteItem.perusteesta || !!tavoiteItem.tavoiteKoodi"
-                          :validation="validation.opintokokonaisuus.tavoitteet?.$each?.$iter?.[index]?.tavoite"
-                          class="input-wrapper"
-                        >
-                          <template #left>
-                            <div class="order-handle m-2">
-                              <EpMaterialIcon>drag_indicator</EpMaterialIcon>
-                            </div>
-                          </template>
-                        </EpInput>
-                        <b-input-group-append>
-                          <b-button
-                            variant="primary"
-                            @click="open"
-                          >
-                            {{ $t('hae-koodistosta') }}
-                          </b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </template>
-                  </EpKoodistoSelect>
+                  />
                 </b-col>
                 <b-col
                   v-if="isEditing && !tavoiteItem.perusteesta"
@@ -202,7 +178,7 @@
               v-if="isEditing"
               variant="outline"
               icon="add"
-              @click="onAddListItem('tavoitteet')"
+              @click="addTavoite()"
             >
               {{ $t('lisaa-tavoite') }}
             </EpButton>
@@ -284,7 +260,7 @@
                     v-model="arviointiItem.arviointi"
                     :is-editing="isEditing"
                     :disabled="arviointiItem.perusteesta"
-                    :validation="validation.opintokokonaisuus.arvioinnit?.$each?.$iter?.[index]?.arviointi"
+                    :validation="validation.opintokokonaisuus.arvioinnit?.$each?.$response.$data[index]?.arviointi"
                   >
                     <template #left>
                       <div class="order-handle m-2">
@@ -382,7 +358,6 @@ import EpInput from '@shared/components/forms/EpInput.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
-import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import EpOpintokokonaisuusArviointiImport from '@/components/EpOpintokokonaisuusArviointiImport/EpOpintokokonaisuusArviointiImport.vue';
 import EpOsaamismerkkiKappale from '@/components/EpOsaamismerkkiKappale/EpOsaamismerkkiKappale.vue';
@@ -395,6 +370,10 @@ import { KuvaStore } from '@/stores/KuvaStore';
 import { Murupolku } from '@shared/stores/murupolku';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { $t, $kaanna } from '@shared/utils/globals';
+import { nextTick } from 'vue';
+import VaatimusField from '@shared/components/EpAmmattitaitovaatimukset/VaatimusField.vue';
+import { Kielet } from '@shared/stores/kieli';
+
 
 enum TyyppiSource {
   PERUSTEESTA = 'perusteesta',
@@ -409,7 +388,7 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
-const instance = getCurrentInstance();
+const koodistoSelect = ref<InstanceType<typeof VaatimusField>[]>([]);
 
 const editointiStore = ref<EditointiStore | null>(null);
 
@@ -505,6 +484,9 @@ const updateTavoiteByIndex = (val: any, index: number) => {
     perusteesta: false,
     tavoite: val.nimi,
     tavoiteKoodi: val.uri,
+    koodi: {
+      nimi: val.nimi,
+    },
   };
 
   editointiStore.value?.setData({
@@ -518,7 +500,13 @@ const updateTavoiteByIndex = (val: any, index: number) => {
   });
 };
 
-const onAddListItem = (array: string, values?: any) => {
+const addTavoite = async () => {
+  onAddListItem('tavoitteet', { tavoite: {[Kielet.getSisaltoKieli.value]: null}});
+  await nextTick();
+  await koodistoSelect.value?.[koodistoSelect.value?.length - 1]?.openDialog();
+};
+
+const onAddListItem = async (array: string, values?: any) => {
   editointiStore.value?.setData({
     ...editointiStore.value?.data,
     opintokokonaisuus: {
