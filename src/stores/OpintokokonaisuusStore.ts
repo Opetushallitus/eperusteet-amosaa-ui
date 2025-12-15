@@ -4,7 +4,7 @@ import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, Opetussuunni
 import { IEditoitava, EditoitavaFeatures, EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko, Kieli } from '@shared/tyypit';
 import { Kielet } from '@shared/stores/kieli';
-import { langOnlyCharacterOrNumber, langMinLength, translated } from '@shared/validators/required';
+import { langMinLength, translated, langStrictCodeValidator } from '@shared/validators/required';
 import { Computed } from '@shared/utils/interfaces';
 import { computed } from 'vue';
 import { Router, useRouter } from 'vue-router';
@@ -149,7 +149,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
               return !parent.koodi;
             }),
             'min-length-3': skipIfKoodi(langMinLength(3)['min-length-3']),
-            'only-character-or-number': skipIfKoodi(langOnlyCharacterOrNumber()['only-character-or-number']),
+            'strict-code-validator': skipIfKoodi(langStrictCodeValidator()['strict-code-validator']),
           },
         }),
       },
