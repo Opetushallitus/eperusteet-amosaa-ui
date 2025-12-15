@@ -290,7 +290,7 @@
                 v-if="isEditing"
                 variant="outline"
                 icon="add"
-                @click="onAddListItem('arvioinnit')"
+                @click="addArviointi()"
               >
                 {{ $t('lisaa-arvioinnin-kohde') }}
               </EpButton>
@@ -504,6 +504,10 @@ const addTavoite = async () => {
   onAddListItem('tavoitteet', { tavoite: {[Kielet.getSisaltoKieli.value]: null}});
   await nextTick();
   await koodistoSelect.value?.[koodistoSelect.value?.length - 1]?.openDialog();
+};
+
+const addArviointi = async () => {
+  onAddListItem('arvioinnit', { arviointi: {[Kielet.getSisaltoKieli.value]: null}});
 };
 
 const onAddListItem = async (array: string, values?: any) => {

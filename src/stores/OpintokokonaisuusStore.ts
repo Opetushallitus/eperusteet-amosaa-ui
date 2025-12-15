@@ -132,18 +132,32 @@ export class OpintokokonaisuusStore implements IEditoitava {
   });
 
   private tavoiteArviointiValidations() {
+
+    const skipIfKoodi = (validatorFn: (value: any) => boolean) => {
+      return (value: any, siblings: any) => {
+        if (siblings.koodi) return true;
+        return validatorFn(value);
+      };
+    };
+
     return {
       tavoitteet: {
+        required,
         $each: helpers.forEach({
           tavoite: {
-            ...langMinLength(3),
-            ...langOnlyCharacterOrNumber(),
+            required: requiredIf((value, parent) => {
+              return !parent.koodi;
+            }),
+            'min-length-3': skipIfKoodi(langMinLength(3)['min-length-3']),
+            'only-character-or-number': skipIfKoodi(langOnlyCharacterOrNumber()['only-character-or-number']),
           },
         }),
       },
       arvioinnit: {
+        required,
         $each: helpers.forEach({
           arviointi: {
+            required,
             ...langMinLength(3),
           },
         }),
