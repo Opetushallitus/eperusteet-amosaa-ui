@@ -10,7 +10,7 @@
     <b-modal
       id="tuotutkinnonosa"
       ref="tuotutkinnonosaModal"
-      size="lg"
+      size="xl"
       centered
       @close="close"
     >
@@ -257,7 +257,25 @@ const tutkinnonosatFields = computed(() => {
       label: $t('nimi'),
       sortable: true,
       thStyle: { width: '40%' },
-    }, {
+    },
+    {
+      key: 'koodi',
+      label: $t('koodi'),
+      sortable: true,
+      thStyle: { width: '20%' },
+      formatter: (value: any, key: string, item: any) => {
+        if (_.split(item.tosa?.koodi, '_').length > 1) {
+          return _.split(item.tosa?.koodi, '_')[1];
+        }
+
+        if (item.tosa?.omatutkinnonosa?.koodi) {
+          return item.tosa.omatutkinnonosa.koodi;
+        }
+
+        return '';
+      },
+    },
+    {
       key: 'opetussuunnitelma.voimaantulo',
       label: $t('voimaantulo'),
       sortable: false,
