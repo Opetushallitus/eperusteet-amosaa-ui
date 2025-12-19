@@ -5,7 +5,7 @@ import { Revision } from '@shared/tyypit';
 import { koodiValidator, requiredOneLang } from '@shared/validators/required';
 import { Kielet } from '@shared/stores/kieli';
 import { computed } from 'vue';
-import { $warning } from '@shared/utils/globals';
+import { $t, $warning } from '@shared/utils/globals';
 import { Router, useRouter } from 'vue-router';
 import { App } from 'vue';
 
@@ -220,7 +220,7 @@ export class TutkinnonOsaStore implements IEditoitava {
       ...(sisaltoviite.osaAlueet || []),
       {
         tyyppi: _.toLower(OmaOsaAlueDtoTyyppiEnum.PAIKALLINEN),
-        nimi: { [Kielet.getSisaltoKieli.value]: el.$t('nimeton-osa-alue') },
+        nimi: { [Kielet.getSisaltoKieli.value]: $t('nimeton-osa-alue') },
       } as any,
     ];
 

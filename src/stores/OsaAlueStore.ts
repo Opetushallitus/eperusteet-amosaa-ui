@@ -13,7 +13,7 @@ export class OsaAlueStore extends SisaltoEditStore {
     versionumero: number,
     uusi: boolean,
     private osaAlueId: number) {
-    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoViiteId, perusteId, versionumero, uusi, updateNavigation);
+    super(opetussuunnitelmaId, koulutustoimijaId, sisaltoViiteId, perusteId, versionumero, uusi);
   }
 
   public features(data: any) {
@@ -34,14 +34,14 @@ export class OsaAlueStore extends SisaltoEditStore {
       ...data,
       osaAlueet: _.filter(data.osaAlueet, osaAlue => osaAlue.id !== this.osaAlueId),
     });
-    SisaltoEditStore.config.router.push({
+    OsaAlueStore.config.router.push({
       name: 'tutkinnonosa',
       params: {
         sisaltoviiteId: this.sisaltoViiteId,
       },
     });
 
-    await this.updateNavigation();
+    await OsaAlueStore.config.updateNavigation();
   }
 
   async hide(data) {
