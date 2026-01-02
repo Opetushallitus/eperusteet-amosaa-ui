@@ -4,7 +4,7 @@ import { SisaltoviiteMatalaDto, Sisaltoviitteet, SisaltoviiteLukko, Opetussuunni
 import { IEditoitava, EditoitavaFeatures, EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision, ILukko, Kieli } from '@shared/tyypit';
 import { Kielet } from '@shared/stores/kieli';
-import { langMinLength, translated, langStrictCodeValidator } from '@shared/validators/required';
+import { langMinLength, translated, langStrictCodeValidator, minValue } from '@shared/validators/required';
 import { Computed } from '@shared/utils/interfaces';
 import { computed } from 'vue';
 import { Router, useRouter } from 'vue-router';
@@ -95,21 +95,28 @@ export class OpintokokonaisuusStore implements IEditoitava {
       tekstiKappale: {
         nimi: {
           [kieli]: {
-            required: requiredIf(() => {
-              return !this.editointiStore?.data?.value?.opintokokonaisuus?.koodiArvo;
+            required: requiredIf((value, parent) => {
+              return !parent?.koodiArvo;
             }),
           },
         },
       },
       opintokokonaisuus: {
         laajuus: {
-          required: requiredIf(() => {
-            return !!this.editointiStore?.data?.value?.opintokokonaisuus?.laajuusYksikko;
+          required: requiredIf((value, parent) => {
+            return !!parent?.laajuusYksikko;
           }),
+          'min-value': (value: any, parent: any) => {
+            if (!parent?.laajuusYksikko) return true;
+            if (value == null || value === '' || value === undefined) return true;
+            const numValue = Number(value);
+            return !isNaN(numValue) && numValue >= 1;
+          },
         },
         laajuusYksikko: {
-          required: requiredIf(() => {
-            return (this.editointiStore?.data?.value?.opintokokonaisuus?.laajuus ?? 0) > 0;
+          required: requiredIf((value, parent) => {
+            const laajuus = parent?.laajuus;
+            return laajuus != null && laajuus !== '' && !isNaN(Number(laajuus)) && Number(laajuus) > 0;
           }),
         },
         kuvaus: translated([kieli]),
