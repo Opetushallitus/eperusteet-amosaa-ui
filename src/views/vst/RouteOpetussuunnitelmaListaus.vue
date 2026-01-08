@@ -15,10 +15,10 @@
           @restore="onRestoreOps"
         />
       </div>
-      <div class="d-flex">
+      <div class="d-flex align-items-center">
         <b-form-group
           :label="$t('nimi')"
-          class="col-6 col-lg-4"
+          class="col-6 m-0"
         >
           <EpSearch
             v-model="query.nimi"
@@ -29,7 +29,7 @@
         <b-form-group
           v-if="$isAdmin()"
           :label="$t('koulutustoimija')"
-          class="col-6 col-lg-4"
+          class="col-6 m-0"
         >
           <EpMultiSelect
             v-model="valitutKoulutustoimijat"
@@ -52,24 +52,27 @@
             </template>
           </EpMultiSelect>
         </b-form-group>
-        <b-form-group
-          v-if="toteutus === 'vapaasivistystyo'"
-          class="ml-4 mt-3"
+      </div>
+      <div class="d-flex">
+        <EpToggle
+        v-model="query.vanhentunut"
+        checkbox
         >
-          <label>&nbsp;</label>
-          <EpToggle
-            v-model="query.jotpa"
-            checkbox
-          >
-            {{ $t('nayta-vain-jotpa-rahoitteiset') }}
-          </EpToggle>
-        </b-form-group>
+        {{ $t('nayta-vanhentuneet-suunnitelmat') }}
+      </EpToggle>
+      <EpToggle
+          v-if="toteutus === 'vapaasivistystyo'"
+          v-model="query.jotpa"
+          checkbox
+        >
+          {{ $t('nayta-vain-jotpa-rahoitteiset') }}
+        </EpToggle>
       </div>
     </template>
     <template #custom-content>
       <b-container
         fluid
-        class="mt-2 pl-0"
+        class="mt-4 pl-0"
       >
         <b-row>
           <b-col>
@@ -250,6 +253,8 @@ const query = reactive<any>({
   tyyppi: props.opsTyyppi,
   nimi: '',
   jotpa: false,
+  voimassaolo: true,
+  vanhentunut: false,
   kieli: Kielet.getSisaltoKieli.value,
 });
 
@@ -377,7 +382,7 @@ const koulutustoimijaSearchIdentity = (obj: any) => {
 };
 
 onMounted(async () => {
-  await init();
+  valitutKoulutustoimijat.value = _.filter(koulutustoimijat.value, (kt: any) => kt.id === _.toNumber(props.koulutustoimijaId));
 });
 
 watch(() => props.koulutustoimijaId, async () => {
