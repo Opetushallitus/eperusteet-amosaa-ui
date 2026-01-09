@@ -188,8 +188,8 @@ const defaults = () => {
 };
 
 const opetussuunnitelmat = computed(() => {
-  if (sisaltotuontiStore.value && sisaltotuontiStore.value.opetussuunnitelmat.value) {
-    return (sisaltotuontiStore.value.opetussuunnitelmat.value as any).data;
+  if (sisaltotuontiStore.value && sisaltotuontiStore.value.opetussuunnitelmat) {
+    return (sisaltotuontiStore.value.opetussuunnitelmat as any).data;
   }
   return undefined;
 });
@@ -200,35 +200,35 @@ const opetussuunnitelmatFiltered = computed(() => {
 
 const sisaltoviitteet = computed(() => {
   if (sisaltotuontiStore.value) {
-    return sisaltotuontiStore.value.sisaltoviitteet.value;
+    return sisaltotuontiStore.value.sisaltoviitteet;
   }
   return undefined;
 });
 
 const tekstikappaleet = computed(() => {
   if (sisaltotuontiStore.value) {
-    return sisaltotuontiStore.value.tekstikappaleet.value;
+    return sisaltotuontiStore.value.tekstikappaleet;
   }
   return undefined;
 });
 
 const suorituspolut = computed(() => {
   if (sisaltotuontiStore.value) {
-    return sisaltotuontiStore.value.suorituspolut.value;
+    return sisaltotuontiStore.value.suorituspolut;
   }
   return undefined;
 });
 
 const tutkinnonosat = computed(() => {
   if (sisaltotuontiStore.value) {
-    return sisaltotuontiStore.value.tutkinnonosat.value;
+    return sisaltotuontiStore.value.tutkinnonosat;
   }
   return undefined;
 });
 
 const opetussuunnitelmatpage = computed(() => {
   if (sisaltotuontiStore.value) {
-    return sisaltotuontiStore.value.opetussuunnitelmat.value;
+    return sisaltotuontiStore.value.opetussuunnitelmat;
   }
   return 0;
 });

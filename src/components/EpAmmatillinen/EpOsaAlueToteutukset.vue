@@ -71,11 +71,8 @@
 <script setup lang="ts">
 import * as _ from 'lodash';
 import { computed, getCurrentInstance } from 'vue';
-import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
-import EpInput from '@shared/components/forms/EpInput.vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
-import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import { DEFAULT_DRAGGABLE_PROPERTIES } from '@shared/utils/defaults';
 import EpPaikallinenToteutus from '@/components/EpAmmatillinen/EpPaikallinenToteutus.vue';
