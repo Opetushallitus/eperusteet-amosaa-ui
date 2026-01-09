@@ -233,7 +233,16 @@
         <EpJulkaisuHistoria
           :julkaisut="julkaisut"
           :palauta="palautaJulkaisu"
-        />
+        >
+          <template #katsele="{ julkaisu }">
+            <ep-external-link
+              v-if="julkaisu"
+              :url="opintopolkuKatseluUrl(julkaisu)"
+            >
+              {{ $t('katsele') }}
+            </ep-external-link>
+          </template>
+        </EpJulkaisuHistoria>
       </template>
     </div>
   </div>
@@ -257,7 +266,7 @@ import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButt
 import EpJulkaisuValidointi from '@shared/components/EpJulkaisuValidointi/EpJulkaisuValidointi.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
-import { buildEsikatseluUrl } from '@shared/utils/esikatselu';
+import { buildEsikatseluUrl, buildKatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum, Maintenance } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
@@ -368,6 +377,15 @@ const poistaJulkaisut = async () => {
   await props.toteutussuunnitelmaStore.fetchJulkaisut();
   $success($t('suunnitelman-julkaisut-poistettu') as string);
   hallintaLoading.value = false;
+};
+
+const opintopolkuKatseluUrl = (julkaisu: any) => {
+  let revision = julkaisu.revision;
+  if (revision === _.max(_.map(julkaisut.value, 'revision'))) {
+    revision = null;
+  }
+
+  return buildKatseluUrl(Kielet.getSisaltoKieli.value,  `/toteutussuunnitelma/${props.toteutussuunnitelmaId}`, revision, `/${props.toteutus}`);
 };
 
 onMounted(async () => {
