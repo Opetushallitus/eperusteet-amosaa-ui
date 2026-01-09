@@ -184,13 +184,6 @@ const perusteId = computed(() => {
   return props.toteutussuunnitelmaStore.toteutussuunnitelma.value!.peruste!.id;
 });
 
-const support = computed(() => {
-  if (editointiStore.value && editointiStore.value.supportData.value) {
-    return editointiStore.value.supportData.value;
-  }
-  return null;
-});
-
 const fetch = _.debounce(() => {
   if (toteutussuunnitelma.value) {
     editointiStore.value = new EditointiStore(

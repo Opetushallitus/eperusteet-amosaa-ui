@@ -514,7 +514,6 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpValidPopover from '@shared/components/EpValidPopover/EpValidPopover.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import EpNavigationLabel from '@shared/components/EpTreeNavibar/EpNavigationLabel.vue';
-import EpSisaltoLisays from '@/components/EpSisaltoLisays/EpSisaltoLisays.vue';
 
 import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';

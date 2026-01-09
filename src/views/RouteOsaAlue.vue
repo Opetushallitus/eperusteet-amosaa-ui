@@ -190,14 +190,10 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, ref, watch } from 'vue';
 import _ from 'lodash';
-
-import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
-import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import Osaamistavoitteet from '@shared/components/EpTutkinnonosa/Osaamistavoitteet.vue';
-import EpInput from '@shared/components/forms/EpInput.vue';
 import EpOsaAlueToteutukset from '@/components/EpAmmatillinen/EpOsaAlueToteutukset.vue';
 import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimukset/EpAmmattitaitovaatimukset.vue';
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
@@ -230,8 +226,8 @@ const perusteId = computed(() => {
 });
 
 const support = computed(() => {
-  if (editointiStore.value && editointiStore.value.supportData.value) {
-    return editointiStore.value.supportData.value;
+  if (editointiStore.value && editointiStore.value.supportData) {
+    return editointiStore.value.supportData;
   }
   return null;
 });
