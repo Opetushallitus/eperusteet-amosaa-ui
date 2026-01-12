@@ -110,7 +110,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
             if (!parent?.laajuusYksikko) return true;
             if (value == null || value === '' || value === undefined) return true;
             const numValue = Number(value);
-            return !isNaN(numValue) && numValue >= 1;
+            return !isNaN(numValue) && numValue >= 0.5 && numValue % 0.5 === 0;
           },
         },
         laajuusYksikko: {
