@@ -94,7 +94,7 @@
 import { computed } from 'vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
-import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
+import { getKoodistoSivutettuna, KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { Koodisto } from '@shared/api/eperusteet';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { KuvaStore } from '@/stores/KuvaStore';
@@ -119,13 +119,7 @@ const emit = defineEmits(['update:modelValue']);
 const koodisto = new KoodistoSelectStore({
   koodisto: 'osaamismerkit',
   async query(query: string, sivu = 0, koodisto, onlyValidKoodis) {
-    return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
-      params: {
-        sivu,
-        sivukoko: 10,
-        onlyValidKoodis: onlyValidKoodis,
-      },
-    })).data as any;
+    return await getKoodistoSivutettuna(koodisto, query, sivu) as any;
   },
 });
 

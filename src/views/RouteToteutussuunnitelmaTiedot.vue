@@ -273,7 +273,7 @@ import { ToteutussuunnitelmaTiedotStore } from '@/stores/ToteutussuunnitelmaTied
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { OpetussuunnitelmaTyyppi, ToteutussuunnitelmaTiedotKielistykset, OpetussuunnitelmaOppilaitostyyppi, OpetussuunnitelmaVoimassaoloLoppu } from '@/utils/toteutustypes';
 import { Murupolku } from '@shared/stores/murupolku';
-import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
+import { getKoodistoSivutettuna, KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { Koodisto } from '@shared/api/eperusteet';
 import { Toteutus } from '@shared/utils/perusteet';
 import { $t, $kaanna, $sd } from '@shared/utils/globals';
@@ -292,12 +292,7 @@ const oatModalRef = useTemplateRef('oatModalRef');
 const oppilaitostyyppiKoodisto = new KoodistoSelectStore({
   koodisto: 'vapaasivistystyooppilaitostyyppi',
   async query(query: string, sivu = 0, koodisto) {
-    return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
-      params: {
-        sivu,
-        sivukoko: 50,
-      },
-    })).data as any;
+    return await getKoodistoSivutettuna(koodisto, query, sivu) as any;
   },
 });
 

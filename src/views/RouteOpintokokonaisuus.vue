@@ -357,7 +357,7 @@ import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpInput from '@shared/components/forms/EpInput.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
-import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
+import { getKoodistoSivutettuna, KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import EpOpintokokonaisuusArviointiImport from '@/components/EpOpintokokonaisuusArviointiImport/EpOpintokokonaisuusArviointiImport.vue';
 import EpOsaamismerkkiKappale from '@/components/EpOsaamismerkkiKappale/EpOsaamismerkkiKappale.vue';
@@ -395,12 +395,7 @@ const editointiStore = ref<EditointiStore | null>(null);
 const koodisto = new KoodistoSelectStore({
   koodisto: 'opintokokonaisuustavoitteet',
   async query(query: string, sivu = 0, koodisto) {
-    return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
-      params: {
-        sivu,
-        sivukoko: 10,
-      },
-    })).data as any;
+    return await getKoodistoSivutettuna(koodisto, query, sivu) as any;
   },
 });
 
