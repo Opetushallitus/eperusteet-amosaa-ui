@@ -218,7 +218,7 @@ import EpKoulutuksenJarjestajaSelect from '@shared/components/EpKoulutuksenJarje
 import { KuvaStore } from '@/stores/KuvaStore';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { KoulutuksenosaStore } from '@/stores/KoulutuksenosaStore';
-import { KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
+import { getKoodistoSivutettuna, KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { Koodisto } from '@shared/api/eperusteet';
 import { OpetussuunnitelmaDto, Sisaltoviitteet } from '@shared/api/amosaa';
@@ -252,12 +252,7 @@ const laajaAlaisetKoodilla = computed(() => {
 const laajaAlaisetKoodistoStore = new KoodistoSelectStore({
   koodisto: 'tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen',
   async query(query: string, sivu = 0, koodisto) {
-    return (await Koodisto.kaikkiSivutettuna(koodisto, query, {
-      params: {
-        sivu,
-        sivukoko: 25,
-      },
-    })).data as any;
+    return await getKoodistoSivutettuna(koodisto, query, sivu) as any;
   },
 });
 
