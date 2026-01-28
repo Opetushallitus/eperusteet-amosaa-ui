@@ -44,7 +44,7 @@
         <template #cell(nimi)="{value, item}">
           <ep-button
             variant="link"
-            :href="'/henkilo-ui/admin/'+item.oid"
+            :href="'/henkilo-ui/virkailija/'+item.oid"
           >
             {{ value }}
           </ep-button>
