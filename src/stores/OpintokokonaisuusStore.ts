@@ -130,7 +130,6 @@ export class OpintokokonaisuusStore implements IEditoitava {
         opintokokonaisuus: {
           ...validations.opintokokonaisuus,
           opetuksenTavoiteOtsikko: translated([kieli]),
-          ...this.tavoiteArviointiValidations(),
         },
       };
     }
