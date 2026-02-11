@@ -53,14 +53,6 @@
           </EpPerustietoData>
         </div>
       </div>
-
-      <ep-siirto-modal
-        v-if="!isOpsPohja"
-        v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
-        :toteutus="toteutus"
-        :koulutustoimija-id="koulutustoimijaId"
-        :toteutussuunnitelma="toteutussuunnitelma"
-      />
     </template>
   </div>
 </template>
@@ -70,10 +62,8 @@ import _ from 'lodash';
 import { computed, getCurrentInstance } from 'vue';
 import { Kielet } from '@shared/stores/kieli';
 import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpPerustietoData from '@shared/components/EpPerustietoData/EpPerustietoData.vue';
-import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
 import { ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
 import { buildToteutussuunnitelmaEsikatseluUrl } from '@shared/utils/esikatselu';
@@ -92,10 +82,6 @@ const julkaisukielet = computed(() => {
     return _.map(props.toteutussuunnitelma.julkaisukielet, (kieli) => Kielet.kaannaOlioTaiTeksti(kieli)).join(', ');
   }
   return undefined;
-});
-
-const koulutustoimijaId = computed((): string => {
-  return route.params.koulutustoimijaId;
 });
 
 const isOpsPohja = computed(() => {

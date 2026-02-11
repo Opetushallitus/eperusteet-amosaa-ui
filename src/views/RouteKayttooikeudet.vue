@@ -12,7 +12,7 @@
       v-else
       class="ml-3 mt-2 mr-5"
     >
-      <div class="d-flex">
+      <div class="d-flex align-items-center">
         <b-form-group :label="$t('henkilon-nimi')">
           <ep-search v-model="query" />
         </b-form-group>
@@ -30,6 +30,15 @@
             </template>
           </ep-select>
         </b-form-group>
+
+        <ep-siirto-modal
+          class="ml-auto"
+          v-if="!isOpsPohja"
+          v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+          :toteutus="toteutus"
+          :koulutustoimija-id="koulutustoimijaId"
+          :toteutussuunnitelma="toteutussuunnitelmaStore.toteutussuunnitelma.value"
+        />
       </div>
 
       <b-table
@@ -100,6 +109,10 @@ import { parsiEsitysnimi } from '@shared/utils/kayttaja';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { createLogger } from '@shared/utils/logger';
 import { $t, $success, $fail, $hasOikeus, $kaanna } from '@shared/utils/globals';
+import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
+import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/generated/amosaa';
+import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { Toteutus } from '@shared/utils/perusteet';
 
 interface KayttoOikeusText {
   value: string;
@@ -111,6 +124,8 @@ const props = defineProps<{
   kayttajaStore: KayttajaStore;
   koulutustoimijaId: string;
   toteutussuunnitelmaId: number;
+  toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
+  toteutus: Toteutus;
 }>();
 
 const sivukoko = ref(10);
@@ -230,6 +245,10 @@ const rowClass = (item: any, type: any) => {
 
   return '';
 };
+
+const isOpsPohja = computed(() => {
+  return props.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
+});
 </script>
 
 <style lang="scss" scoped>

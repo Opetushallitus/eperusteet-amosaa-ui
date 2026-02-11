@@ -57,18 +57,15 @@
 <script setup lang="ts">
 import _ from 'lodash';
 import { computed, ref, watch, useTemplateRef, getCurrentInstance } from 'vue';
-
 import { Koulutustoimijat, KoulutustoimijaYstavaDto, Opetussuunnitelmat } from '@shared/api/amosaa';
-import { fail, success } from '@shared/utils/notifications';
 import { Kielet } from '@shared/stores/kieli';
-
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { ToteutussuunnitelmaSiirtoKielistykset } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
 import { OphOrgOid } from '@/stores/kayttaja';
-import { $t, $kaanna, $filterBy, $bvModal } from '@shared/utils/globals';
+import { $t, $kaanna, $filterBy, $bvModal, $fail, $success } from '@shared/utils/globals';
 import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
 import { useRouter } from 'vue-router';
 import { onMounted } from 'vue';
@@ -100,6 +97,7 @@ const fetch = async () => {
 const fields = computed(() => {
   return [{
     key: 'nimiLocalized',
+    tdClass: 'align-middle',
     label: $t('nimi'),
   }, {
     key: 'actions',
@@ -141,7 +139,7 @@ const siirraToteutussuunnitelma = async (org: any) => {
   })) {
     try {
       await Opetussuunnitelmat.updateOpetussuunnitelmaKoulutustoimija(_.parseInt(props.toteutussuunnitelma.id), props.koulutustoimijaId, org);
-      success('siirra-toteutussuunnitelma-onnistui');
+      $success('siirra-toteutussuunnitelma-onnistui');
       router.replace({
         name: 'toteutussuunnitelmat',
         params: {
@@ -151,7 +149,7 @@ const siirraToteutussuunnitelma = async (org: any) => {
       });
     }
     catch (err) {
-      fail('siirra-toteutussuunnitelma-epaonnistui');
+      $fail('siirra-toteutussuunnitelma-epaonnistui');
     }
   }
 };
