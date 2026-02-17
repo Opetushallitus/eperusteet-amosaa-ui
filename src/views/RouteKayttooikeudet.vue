@@ -78,7 +78,7 @@
             {{ $t('oikeus-' + currentKoulutustoimijaOikeus) }}
           </div>
           <div v-else>
-            {{ $t('oikeus-'+item.oikeus) }}
+            {{ $t('oikeus-'+item.oikeus.text) }}
           </div>
         </template>
       </b-table>
