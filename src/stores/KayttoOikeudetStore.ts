@@ -67,7 +67,7 @@ export class KayttoOikeudetStore {
 
   public async updateOikeus(kayttajaId: number, kayttajaOikeus: KayttajaoikeusDto) {
     const tallennettu = (await Opetussuunnitelmat.updateOpetussuunnitelmaOikeus(this.opetussuunnitelma.value.id, kayttajaId, this.opetussuunnitelma.value.koulutustoimija.id, kayttajaOikeus)).data;
-    this.state.kayttajaOikeudet = _.filter(kayttooikeus => _.toNumber(kayttooikeus._kayttaja) !== kayttajaId);
+    this.state.kayttajaOikeudet = _.filter(this.state.kayttajaOikeudet, kayttooikeus => _.toNumber(kayttooikeus._kayttaja) !== kayttajaId);
 
     if (kayttajaOikeus.oikeus !== _.toLower(KayttajaoikeusDtoOikeusEnum.ESTETTY)) {
       this.state.kayttajaOikeudet = [...this.state.kayttajaOikeudet as any, tallennettu];
