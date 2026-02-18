@@ -16,6 +16,7 @@
                 class="mt-4 pt-2"
               >
                 <EpMultiSelect
+                  v-if="koulutustoimijat && koulutustoimijat.length > 1"
                   :model-value="selectedKoulutustoimijaForSelect"
                   :placeholder="$t('valitse-koulutustoimija')"
                   :is-editing="true"
@@ -32,6 +33,10 @@
                     {{ $kaanna(option.nimi) }}
                   </template>
                 </EpMultiSelect>
+
+                <div v-else>
+                  {{ $kaanna(selectedKoulutustoimijaForSelect?.nimi) }}
+                </div>
               </b-form-group>
 
               <b-form-group
