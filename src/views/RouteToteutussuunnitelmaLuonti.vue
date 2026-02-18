@@ -12,6 +12,29 @@
           <div class="row">
             <div class="col-sm-10 mb-4">
               <b-form-group
+                :label="$t('koulutustoimija')"
+                class="mt-4 pt-2"
+              >
+                <EpMultiSelect
+                  :model-value="selectedKoulutustoimijaForSelect"
+                  :placeholder="$t('valitse-koulutustoimija')"
+                  :is-editing="true"
+                  :options="koulutustoimijat"
+                  :multiple="false"
+                  track-by="id"
+                  :searchable="false"
+                  @update:model-value="onKoulutustoimijaChange"
+                >
+                  <template #singleLabel="{ option }">
+                    {{ $kaanna(option.nimi) }}
+                  </template>
+                  <template #option="{ option }">
+                    {{ $kaanna(option.nimi) }}
+                  </template>
+                </EpMultiSelect>
+              </b-form-group>
+
+              <b-form-group
                 v-if="pohjanValinta"
                 class="mt-4 pt-2 "
               >
@@ -212,7 +235,7 @@ import EpJotpaSelect, { OpsJotpa } from '@/components/EpJotpa/EpJotpaSelect.vue'
 
 import { notNull, requiredLokalisoituTeksti } from '@shared/validators/required';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum, PerusteDto, Perusteet } from '@shared/api/amosaa';
+import { KoulutustoimijaBaseDto, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum, PerusteDto, Perusteet } from '@shared/api/amosaa';
 import { PerusteetStore } from '@/stores/PerusteetStore';
 import { OphPohjatStore } from '@/stores/OphPohjatStore';
 import { OphOpsPohjatStore } from '@/stores/OphOpsPohjatStore';
@@ -223,6 +246,7 @@ import { createLogger } from '@shared/utils/logger';
 import { EperusteetKoulutustyyppiRyhmat, isAmmatillinenKoulutustyyppi, perusteenSuoritustapa, Toteutus } from '@shared/utils/perusteet';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { $t, $kaanna, $sd, $fail } from '@shared/utils/globals';
+import { setItem } from '@shared/utils/localstorage';
 import EpRadio from '@shared/components/forms/EpRadio.vue';
 import { JaetutOsaPerustePohjatStore } from '@/stores/JaetutOsaPerustePohjatStore';
 
@@ -234,7 +258,7 @@ const props = defineProps<{
   jaetutOsaPerustePohjatStore?: JaetutOsaPerustePohjatStore;
   pohjanTutkinnonosatStore: PohjanTutkinnonosatStore;
   kayttajaStore: KayttajaStore;
-  koulutustoimijaId: string | number;
+  koulutustoimijaId: number;
   opetussuunnitelmanTyyppi: 'ops' | 'yleinen' | 'yhteinen' | 'pohja' | 'tunnistamisraportti';
   opetussuunnitelmanSuoritustapa?: string;
   opetussuunnitelmaPohjatStore?: OpetussuunnitelmaPohjatStore;
@@ -243,6 +267,7 @@ const props = defineProps<{
 
 const router = useRouter();
 
+const selectedKoulutustoimijaId = ref<number>(props.koulutustoimijaId);
 const pohjanTyyppi = ref<'toteutussuunnitelma' | 'peruste' | 'uusi' | 'ophPohja' | 'opsPohja' | 'pohjaton' | null>(null);
 const peruste = ref<PerusteDto | null>(null);
 const toteutussuunnitelma = ref<OpetussuunnitelmaDto | null>(null);
@@ -471,6 +496,15 @@ const perusteet = computed(() => {
   return undefined;
 });
 
+const koulutustoimijat = computed(() => {
+  const kt = props.kayttajaStore.koulutustoimijat.value || [];
+  return _.sortBy(kt, k => $kaanna(k.nimi!));
+});
+
+const selectedKoulutustoimijaForSelect = computed(() =>
+  _.find(koulutustoimijat.value, k => _.toString(k.id) === _.toString(selectedKoulutustoimijaId.value)) ?? null,
+);
+
 const pohjanValinta = computed(() => {
   return props.opetussuunnitelmanTyyppi !== 'pohja';
 });
@@ -546,7 +580,7 @@ const onPerusteSearch = _.debounce(async (query: string) => {
 
 const onSave = async () => {
   try {
-    const luotu = await props.toteutussuunnitelmaStore.create(_.toString(props.koulutustoimijaId), {
+    const luotu = await props.toteutussuunnitelmaStore.create(_.toString(selectedKoulutustoimijaId.value), {
       perusteId: peruste.value ? peruste.value.id : undefined,
       perusteDiaarinumero: peruste.value ? peruste.value.diaarinumero : undefined,
       opsId: toteutussuunnitelma.value?.id,
@@ -587,13 +621,18 @@ const onRowSelected = (item: any) => {
   }
 };
 
+function fetchKoulutustoimijaPohjat() {
+  if (toteutussuunnitelmaPohjatStoreLocal.value) {
+    toteutussuunnitelmaPohjatStoreLocal.value.fetch(selectedKoulutustoimijaId.value, props.toteutus, ['luonnos', 'valmis', 'julkaistu'], tyyppi.value);
+  }
+  if (props.opetussuunnitelmaPohjatStore) {
+    props.opetussuunnitelmaPohjatStore.fetch(selectedKoulutustoimijaId.value, props.toteutus, ['valmis', 'julkaistu'], 'opsPohja');
+  }
+}
+
 onMounted(async () => {
   toteutussuunnitelmaPohjatStoreLocal.value = new OpetussuunnitelmaPohjatStore();
-  toteutussuunnitelmaPohjatStoreLocal.value.fetch(_.toNumber(props.koulutustoimijaId), props.toteutus, ['luonnos', 'valmis', 'julkaistu'], tyyppi.value);
-
-  if (props.opetussuunnitelmaPohjatStore) {
-    props.opetussuunnitelmaPohjatStore.fetch(_.toNumber(props.koulutustoimijaId), props.toteutus, ['valmis', 'julkaistu'], 'opsPohja');
-  }
+  fetchKoulutustoimijaPohjat();
 
   if (props.perusteetStore && props.toteutus !== Toteutus.AMMATILLINEN) {
     perusteetFetching.value = true;
@@ -616,6 +655,38 @@ onMounted(async () => {
   }
 });
 
+watch(() => props.koulutustoimijaId, (newVal) => {
+  selectedKoulutustoimijaId.value = _.toNumber(newVal);
+}, { immediate: true });
+
+async function onKoulutustoimijaChange(koulutustoimija: KoulutustoimijaBaseDto | null) {
+  if (koulutustoimija) {
+    selectedKoulutustoimijaId.value = _.toNumber(koulutustoimija.id);
+    const current = router.currentRoute.value as any;
+    const next = {
+      ...current,
+      params: {
+        ...current.params,
+        koulutustoimijaId: _.toString(koulutustoimija.id),
+      },
+    };
+    try {
+      await router.push(next);
+      setItem('koulutustoimija', koulutustoimija.id);
+    }
+    catch (err) {
+      // Silently ignore router push errors
+    }
+  }
+}
+
+watch(selectedKoulutustoimijaId, () => {
+  fetchKoulutustoimijaPohjat();
+  peruste.value = null;
+  toteutussuunnitelma.value = null;
+  korvaavaPeruste.value = null;
+});
+
 watch(pohjanTyyppi, () => {
   peruste.value = null;
   toteutussuunnitelma.value = null;
@@ -634,7 +705,7 @@ watch(toteutussuunnitelma, async () => {
   tutkinnonosaKoodit.value = [];
 
   if (toteutussuunnitelma.value && isAmmatillinenKoulutustyyppi(toteutussuunnitelma.value.peruste!.koulutustyyppi)) {
-    korvaavaPeruste.value = (await Perusteet.getKoulutuskoodillaKorvaavaPeruste(toteutussuunnitelma.value!.id!, _.toString(props.koulutustoimijaId))).data;
+    korvaavaPeruste.value = (await Perusteet.getKoulutuskoodillaKorvaavaPeruste(toteutussuunnitelma.value!.id!, _.toString(selectedKoulutustoimijaId.value))).data;
   }
 });
 </script>
