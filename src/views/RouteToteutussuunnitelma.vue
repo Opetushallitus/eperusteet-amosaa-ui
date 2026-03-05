@@ -519,6 +519,7 @@ import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavib
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
+import { TermitStore } from '@/stores/TermitStore';
 import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { KuvaStore } from '@/stores/KuvaStore';
@@ -533,6 +534,7 @@ import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { LinkkiHandler, routeToNode } from '@/utils/routing';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
+import { createKasiteHandler } from '@shared/components/EpContent/KasiteHandler';
 
 import { $t, $kaanna, $hasOikeus } from '@shared/utils/globals';
 
@@ -542,6 +544,7 @@ interface Props {
   koulutustoimijaId: string;
   kayttajaStore: KayttajaStore;
   toteutus: Toteutus;
+  termitStore?: TermitStore;
 }
 
 const props = defineProps<Props>();
@@ -928,6 +931,8 @@ provide('koulutustoimija', koulutustoimija);
 provide('navigation', navigationValue);
 provide('linkkiHandler', new LinkkiHandler());
 provide('kuvaHandler', createKuvaHandler(new KuvaStore(_.toNumber(props.toteutussuunnitelmaId), props.koulutustoimijaId)));
+provide('kasiteHandler', createKasiteHandler(props.termitStore!));
+
 
 // Head meta
 useHead(() => {
