@@ -107,7 +107,7 @@ const valittu = computed(() => {
 
 const osaamistasot = computed(() => {
   if (asteikot.value && valittu.value && valittu.value._arviointiAsteikko) {
-    return asteikot.value[valittu.value._arviointiAsteikko].osaamistasot || null;
+    return asteikot.value[valittu.value._arviointiAsteikko]?.osaamistasot || null;
   }
   return null;
 });
