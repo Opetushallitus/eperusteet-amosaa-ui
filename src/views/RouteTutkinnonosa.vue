@@ -49,7 +49,6 @@
           <b-form-group class="flex-grow-1 mr-5">
             <template #label>
               <div
-              
                 class="d-flex"
               >
                 <span>{{ $t('koodi') }}</span>
@@ -388,15 +387,15 @@ const laajuus = computed(() => {
 
 
 const isAmmattitaitovaatimuksetLista = computed(() => {
-  return _.size(_.get(editointiStore.value, 'omaTutkinnonosa.ammattitaitovaatimuksetLista[0].vaatimuksenKohteet')) > 0;
+  return _.size(_.get(editointiStore.value?.data, 'omaTutkinnonosa.ammattitaitovaatimuksetLista[0].vaatimuksenKohteet')) > 0;
 });
 
 const valittuArviointiTyyppi = computed(() => {
-  if (editointiStore.value?.omaTutkinnonosa?.geneerinenarviointi) {
+  if (editointiStore.value?.data?.omaTutkinnonosa?.geneerinenarviointi) {
     return 'geneerinen';
   }
 
-  if (_.size(_.get(editointiStore.value, 'omaTutkinnonosa.arviointi.arvioinninKohdealueet')) > 0) {
+  if (_.size(_.get(editointiStore.value?.data, 'omaTutkinnonosa.arviointi.arvioinninKohdealueet')) > 0) {
     return 'tutkinnonosakohtainen';
   }
 

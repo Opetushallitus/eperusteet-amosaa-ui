@@ -28,18 +28,18 @@
               :key="'osaamistasokriteeri'+index"
             >
               <b-col
-                class="pt-3"
+                class="py-3"
                 md="12"
                 lg="4"
               >
                 <span>{{ $kaanna(osaamistasot[osaamistasonKriteeri._osaamistaso].otsikko) }}</span>
               </b-col>
               <b-col
-                class="pt-3"
+                class="py-3"
                 md="12"
                 lg="8"
               >
-                <ul class="pl-3">
+                <ul class="pl-3 mb-0">
                   <li
                     v-for="(kriteeri, index) in osaamistasonKriteeri.kriteerit"
                     :key="'kriteeri'+index"
