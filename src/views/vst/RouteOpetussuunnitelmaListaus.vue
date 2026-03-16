@@ -55,12 +55,12 @@
       </div>
       <div class="d-flex">
         <EpToggle
-        v-model="query.vanhentunut"
-        checkbox
+          v-model="query.vanhentunut"
+          checkbox
         >
-        {{ $t('nayta-vanhentuneet-suunnitelmat') }}
-      </EpToggle>
-      <EpToggle
+          {{ $t('nayta-vanhentuneet-suunnitelmat') }}
+        </EpToggle>
+        <EpToggle
           v-if="toteutus === 'vapaasivistystyo'"
           v-model="query.jotpa"
           checkbox
