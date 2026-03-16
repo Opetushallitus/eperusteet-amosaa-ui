@@ -32,9 +32,9 @@
         </b-form-group>
 
         <ep-siirto-modal
-          class="ml-auto"
           v-if="!isOpsPohja"
           v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+          class="ml-auto"
           :toteutus="toteutus"
           :koulutustoimija-id="koulutustoimijaId"
           :toteutussuunnitelma="toteutussuunnitelmaStore.toteutussuunnitelma.value"
