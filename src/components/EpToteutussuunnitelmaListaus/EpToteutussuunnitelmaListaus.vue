@@ -82,8 +82,10 @@
             </template>
 
             <template #selection="{ values }">
-              <span v-if="values.length > 1">{{ $t('valittu') }} {{ values.length }} {{ $t('koulutustoimijaa') }}</span>
-              <span v-if="values.length === 1">{{ $kaanna(values[0].nimi) }}</span>
+              <div>
+                <span v-if="values.length > 1">{{ $t('valittu') }} {{ values.length }} {{ $t('koulutustoimijaa') }}</span>
+                <span v-if="values.length === 1">{{ $kaanna(values[0].nimi) }}</span>
+              </div>
             </template>
           </EpMultiSelect>
         </div>
