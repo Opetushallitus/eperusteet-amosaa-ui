@@ -28,8 +28,8 @@
             >
           </div>
 
-          <div class="d-flex flex-row-reverse">
-            <div class="align-self-center">
+          <div class="flex flex-row-reverse">
+            <div class="self-center">
               <a href="/virkailijan-tyopoyta">{{ $t('palaa-virkailijan-tyopyodalle') }}</a>
             </div>
           </div>

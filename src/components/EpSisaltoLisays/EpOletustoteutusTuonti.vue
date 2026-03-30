@@ -7,10 +7,9 @@
     >
       {{ $t('tuo-oletustoteutus') }}
     </ep-button>
-    <b-modal
-      id="tuoOletusotteutus"
+    <ep-modal
+      ref="oletustoteutusModal"
       size="lg"
-      centered
       hide-footer
     >
       <template #modal-title>
@@ -22,7 +21,7 @@
       <ep-spinner v-if="!oletustoteutukset" />
 
       <div v-else>
-        <b-table
+        <ep-table
           responsive
           striped
           hover
@@ -30,37 +29,32 @@
           :current-page="page"
           :fields="fields"
           :items="oletustoteutukset"
+          data-key="id"
           @row-clicked="selectRow"
+          @update:current-page="page = $event"
         >
           <template #head(lahde)>
             <slot name="luotu">
               {{ $t('luotu-tutkinnon-osassa') }}
             </slot>
           </template>
-        </b-table>
-        <ep-pagination
-          v-if="oletustoteutukset"
-          v-model="page"
-          :total-rows="oletustoteutukset.length"
-          :per-page="10"
-          align="center"
-          aria-controls="tuo-oletustoteutus"
-        />
+        </ep-table>
       </div>
-    </b-modal>
+    </ep-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import * as _ from 'lodash';
 
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { OletusToteutusDto } from '@shared/api/amosaa';
-import { $t, $kaanna, $bvModal } from '@shared/utils/globals';
+import { $t, $kaanna } from '@shared/utils/globals';
 
 const props = defineProps<{
   fetch: () => Promise<OletusToteutusDto[]>;
@@ -70,6 +64,7 @@ const emit = defineEmits(['lisaaOletustoteutus']);
 
 const page = ref(1);
 const oletustoteutukset = ref<OletusToteutusDto[] | null>(null);
+const oletustoteutusModal = useTemplateRef<InstanceType<typeof EpModal>>('oletustoteutusModal');
 
 const fields = computed(() => {
   return [
@@ -97,11 +92,11 @@ const selectRow = (toteutus: any) => {
     arvioinnista: { ..._.omit(toteutus.arvioinnista, ['id']) },
     vapaat: _.map(toteutus.vapaat, obj => _.omit(obj, 'id')),
   });
-  $bvModal.hide('tuoOletusotteutus');
+  oletustoteutusModal.value?.hide();
 };
 
 const openModal = async () => {
-  $bvModal.show('tuoOletusotteutus');
+  oletustoteutusModal.value?.show();
   oletustoteutukset.value = await props.fetch();
 };
 </script>

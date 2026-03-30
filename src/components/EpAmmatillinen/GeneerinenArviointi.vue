@@ -4,7 +4,7 @@
       <h4>{{ $t('arviointi') }}</h4>
     </slot>
     <div v-if="isEditing">
-      <b-form-group>
+      <ep-form-group>
         <EpRadio
           v-for="vaihtoehto in vaihtoehdot"
           :key="vaihtoehto.id"
@@ -13,33 +13,23 @@
         >
           {{ $kaanna(vaihtoehto.nimi) }}
         </EpRadio>
-      </b-form-group>
+      </ep-form-group>
     </div>
     <div v-else>
       <div v-if="valittu && osaamistasot">
         <ep-form-content class="m-3">
           <div>{{ $kaanna(valittu.kohde) }}</div>
-          <b-container
-            fluid
-            class="osaamistasot mt-3"
-          >
-            <b-row
+          <div class="w-full max-w-full osaamistasot mt-3">
+            <div
               v-for="(osaamistasonKriteeri,index) in valittu.osaamistasonKriteerit"
               :key="'osaamistasokriteeri'+index"
+              class="flex flex-wrap"
             >
-              <b-col
-                class="py-3"
-                md="12"
-                lg="4"
-              >
+              <div class="w-full lg:w-4/12 py-3 px-1 min-w-0">
                 <span>{{ $kaanna(osaamistasot[osaamistasonKriteeri._osaamistaso].otsikko) }}</span>
-              </b-col>
-              <b-col
-                class="py-3"
-                md="12"
-                lg="8"
-              >
-                <ul class="pl-3 mb-0">
+              </div>
+              <div class="w-full lg:w-8/12 py-3 px-1 min-w-0">
+                <ul class="pl-3 mb-0 list-disc list-inside">
                   <li
                     v-for="(kriteeri, index) in osaamistasonKriteeri.kriteerit"
                     :key="'kriteeri'+index"
@@ -47,14 +37,14 @@
                     {{ $kaanna(kriteeri) }}
                   </li>
                 </ul>
-              </b-col>
-            </b-row>
-          </b-container>
+              </div>
+            </div>
+          </div>
         </ep-form-content>
       </div>
       <div
         v-else
-        class="alert alert-warning"
+        class="alert alert-warning px-3 py-2"
       >
         {{ $t('arviointia-ei-valittu') }}
       </div>
@@ -122,10 +112,10 @@ onMounted(async () => {
 @import "@shared/styles/_variables.scss";
 
   .osaamistasot {
-    .row:nth-of-type(even) {
+    > div:nth-of-type(even) {
       background-color: $table-even-row-bg-color;
     }
-    .row:nth-of-type(odd) {
+    > div:nth-of-type(odd) {
       background-color: $table-odd-row-bg-color;
     }
   }

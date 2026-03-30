@@ -10,44 +10,42 @@
       </h2>
     </template>
     <template #default="{ data, data: { tuvaLaajaAlainenOsaaminen }, isEditing }">
-      <b-row>
-        <b-col md="10">
-          <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && perusteenTeksti)">
-            <template #header>
-              <h4>{{ $t('perusteen-teksti') }}</h4>
-            </template>
-            <ep-content
-              v-model="perusteenTeksti"
-              layout="normal"
-              :is-editable="false"
-            />
-            <ep-toggle
-              v-if="isEditing"
-              v-model="data.naytaPerusteenTeksti"
-              :is-editing="true"
-            >
-              {{ $t('nayta-perusteen-teksti') }}
-            </ep-toggle>
-          </EpCollapse>
-
-          <b-form-group
-            v-if="naytaPaikallinenTeksti"
-            :label="$t('paikallinen-teksti')"
+      <div class="w-full md:w-5/6 max-w-4xl min-w-0">
+        <EpCollapse v-if="isEditing || (data.naytaPerusteenTeksti && perusteenTeksti)">
+          <template #header>
+            <h4>{{ $t('perusteen-teksti') }}</h4>
+          </template>
+          <ep-content
+            v-model="perusteenTeksti"
+            layout="normal"
+            :is-editable="false"
+          />
+          <ep-toggle
+            v-if="isEditing"
+            v-model="data.naytaPerusteenTeksti"
+            :is-editing="true"
           >
-            <ep-content
-              v-if="isEditing || tuvaLaajaAlainenOsaaminen.teksti"
-              v-model="tuvaLaajaAlainenOsaaminen.teksti"
-              layout="normal"
-              :is-editable="isEditing"
-            />
-            <EpAlert
-              v-if="!isEditing && !tuvaLaajaAlainenOsaaminen.teksti"
-              :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
-              class="pb-3"
-            />
-          </b-form-group>
-        </b-col>
-      </b-row>
+            {{ $t('nayta-perusteen-teksti') }}
+          </ep-toggle>
+        </EpCollapse>
+
+        <ep-form-group
+          v-if="naytaPaikallinenTeksti"
+          :label="$t('paikallinen-teksti')"
+        >
+          <ep-content
+            v-if="isEditing || tuvaLaajaAlainenOsaaminen.teksti"
+            v-model="tuvaLaajaAlainenOsaaminen.teksti"
+            layout="normal"
+            :is-editable="isEditing"
+          />
+          <EpAlert
+            v-if="!isEditing && !tuvaLaajaAlainenOsaaminen.teksti"
+            :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
+            class="pb-3"
+          />
+        </ep-form-group>
+      </div>
     </template>
   </EpEditointi>
   <EpSpinner

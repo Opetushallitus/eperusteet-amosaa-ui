@@ -22,7 +22,7 @@
             <div class="px-3">
               <div
                 v-if="isEditing"
-                class="d-flex align-items-end"
+                class="flex items-end"
               >
                 <EpMaterialIcon class="order-handle">
                   drag_indicator
@@ -46,7 +46,7 @@
       </VueDraggable>
     </div>
 
-    <div class="d-flex">
+    <div class="flex">
       <ep-button
         v-if="isEditing"
         variant="outline-primary"

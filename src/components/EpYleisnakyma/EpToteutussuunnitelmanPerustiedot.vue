@@ -7,8 +7,8 @@
     <EpSpinner v-if="!toteutussuunnitelma" />
 
     <template v-else>
-      <div class="row">
-        <div class="col-5">
+      <div class="grid grid-cols-12 gap-2">
+        <div class="col-span-12 sm:col-span-5">
           <ep-perustieto-data
             icon="language"
             :topic="$t('julkaisukielet')"
@@ -16,11 +16,10 @@
             {{ julkaisukielet }}
           </ep-perustieto-data>
         </div>
-        <div class="col-7" />
       </div>
 
-      <div class="row">
-        <div class="col-5">
+      <div class="grid grid-cols-12 gap-2">
+        <div class="col-span-12 sm:col-span-5">
           <ep-perustieto-data
             icon="calendar_today"
             :topic="$t('luotu')"
@@ -28,7 +27,7 @@
             {{ $sdt(toteutussuunnitelma.luotu) }}
           </ep-perustieto-data>
         </div>
-        <div class="col-7">
+        <div class="col-span-12 sm:col-span-7">
           <ep-perustieto-data
             icon="calendar_today"
             :topic="$t('julkaistu')"
@@ -38,8 +37,8 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-12">
+      <div class="grid grid-cols-12 gap-2">
+        <div class="col-span-12">
           <EpPerustietoData icon="visibility">
             <template #header>
               {{ $t(kielistykset['esikatselu']) }}

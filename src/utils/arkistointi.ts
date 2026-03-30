@@ -1,9 +1,9 @@
 import { Opetussuunnitelmat } from '@shared/api/amosaa';
-import { $bvModal, $fail, $success, $t } from '@shared/utils/globals';
+import { $confirmModal, $fail, $success, $t } from '@shared/utils/globals';
 import { useRoute, useRouter } from 'vue-router';
 
 export async function vaihdaOpetussunnitelmaTilaConfirm(instance, meta) {
-  const arkistoi = await $bvModal.msgBoxConfirm($t(meta.confirm) as any, {
+  const arkistoi = await $confirmModal.msgBoxConfirm($t(meta.confirm) as any, {
     title: $t(meta.title),
     okVariant: 'primary',
     okTitle: $t('kylla') as any,

@@ -22,7 +22,7 @@
 
         <div
           v-if="!isEditing"
-          class="d-flex justify-content-end"
+          class="flex justify-end gap-2 flex-wrap"
         >
           <ep-button
             variant="outline-primary"
@@ -40,19 +40,20 @@
           </ep-button>
         </div>
 
-        <b-table
+        <ep-table
           striped
           hover
           responsive
           :items="data.suorituspolkuViitteet"
           :fields="fields"
+          data-key="id"
         >
-          <template #cell(nimi)="data">
-            <router-link :to="{ name: 'suorituspolku', params: { sisaltoviiteId: data.item.id } }">
-              {{ $kaanna(data.item.tekstiKappale.nimi) || $t('nimeton') }}
+          <template #cell(nimi)="{ item }">
+            <router-link :to="{ name: 'suorituspolku', params: { sisaltoviiteId: item.id } }">
+              {{ $kaanna(item.tekstiKappale.nimi) || $t('nimeton') }}
             </router-link>
           </template>
-        </b-table>
+        </ep-table>
       </template>
     </EpEditointi>
   </div>
@@ -69,6 +70,7 @@ import { SuorituspolutStore } from '@/stores/SuorituspolutStore';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { MatalaTyyppiEnum, SisaltoviiteMatalaDto } from '@shared/api/amosaa';

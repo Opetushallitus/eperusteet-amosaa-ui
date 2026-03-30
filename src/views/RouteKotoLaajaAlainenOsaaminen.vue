@@ -31,7 +31,7 @@
           />
         </div>
 
-        <b-form-group>
+        <ep-form-group>
           <template #label>
             <h3>{{ $t('laaja-alaisen-osaamisen-paikallinen-tarkennus') }}</h3>
           </template>
@@ -45,7 +45,7 @@
             v-if="!isEditing && !kotoLaajaAlainenOsaaminen.teksti"
             :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
           />
-        </b-form-group>
+        </ep-form-group>
       </template>
     </EpEditointi>
   </div>

@@ -13,7 +13,7 @@
         </h2>
       </template>
       <template #default="{ data, supportData, isEditing }">
-        <b-form-group
+        <ep-form-group
           v-if="isEditing"
           :label="$t('suorituspolku-nimi') +' *'"
         >
@@ -21,9 +21,9 @@
             v-model="data.tekstiKappale.nimi"
             :is-editing="true"
           />
-        </b-form-group>
+        </ep-form-group>
 
-        <b-form-group :label="$t('suorituspolku-kuvaus')">
+        <ep-form-group :label="$t('suorituspolku-kuvaus')">
           <ep-content
             v-model="data.tekstiKappale.teksti"
             layout="normal"
@@ -41,13 +41,13 @@
               {{ $t('osasuorituspolku') }}
             </EpToggle>
           </div>
-        </b-form-group>
+        </ep-form-group>
 
-        <b-form-group
+        <ep-form-group
           v-if="data.tyyppi === 'osasuorituspolku'"
           :label="$t('osasuorituspolun-kokonaislaajuus')"
         >
-          <div class="d-flex">
+          <div class="flex">
             <ep-field
               v-model="data.suorituspolku.osasuorituspolkuLaajuus"
               type="number"
@@ -60,8 +60,8 @@
               {{ $t('osaamispiste') }}
             </div>
           </div>
-        </b-form-group>
-        <b-form-group
+        </ep-form-group>
+        <ep-form-group
           v-else
           :label="$t('tutkinnon-kuvaus')"
         >
@@ -80,42 +80,42 @@
               {{ $t('nayta-kuvaus-julkisesti') }}
             </EpToggle>
           </div>
-        </b-form-group>
+        </ep-form-group>
 
         <div class="suorituspolut">
           <div class="st-header">
-            <div class="d-flex justify-content-between w-100">
-              <div class="w-75">
-                <div class="d-flex align-items-center">
-                  <div class="font-weight-bold mr-5">
+            <div class="flex justify-between w-full">
+              <div class="w-3/4">
+                <div class="flex items-center">
+                  <div class="font-bold mr-5">
                     {{ $t('rakenne') }}
                   </div>
-                  <b-button
+                  <ep-button
                     variant="link"
                     @click="toggleOpen()"
                   >
                     {{ $t('avaa-sulje-kaikki') }}
-                  </b-button>
+                  </ep-button>
                   <div class="ml-5">
-                    <b-button
+                    <ep-button
                       variant="link"
                       @click="toggleKuvaukset()"
                     >
                       {{ $t(naytaKuvaukset ? 'piilota-kuvaukset' : 'nayta-kuvaukset') }}
-                    </b-button>
+                    </ep-button>
                   </div>
                   <div class="ml-5">
-                    <b-button
+                    <ep-button
                       variant="link"
                       @click="togglePoistetut()"
                     >
                       {{
                         $t(naytaPoistetut ? 'piilota-poistetut' : 'nayta-poistetut') }}
-                    </b-button>
+                    </ep-button>
                   </div>
                 </div>
               </div>
-              <div class="w-25 text-right font-weight-bold">
+              <div class="w-1/4 text-end font-bold">
                 {{ $t('osaamispiste') }}
               </div>
             </div>
