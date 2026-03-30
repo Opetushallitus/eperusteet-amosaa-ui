@@ -1,6 +1,6 @@
 <template>
   <div class="kayttooikeudet">
-    <div class="ylapaneeli d-flex align-items-center">
+    <div class="ylapaneeli flex items-center">
       <h2 class="otsikko">
         {{ $t('ystava-organisaatioiden-kayttooikeudet') }}
       </h2>
@@ -12,12 +12,12 @@
       v-else
       class="ml-3 mt-2 mr-5"
     >
-      <div class="d-flex align-items-center">
-        <b-form-group :label="$t('henkilon-nimi')">
+      <div class="flex flex-wrap items-end gap-4">
+        <ep-form-group :label="$t('henkilon-nimi')">
           <ep-search v-model="query" />
-        </b-form-group>
+        </ep-form-group>
 
-        <b-form-group :label="$t('kayttooikeus')">
+        <ep-form-group :label="$t('kayttooikeus')">
           <ep-select
             v-model="oikeusrajaus"
             class="oikeusSelect"
@@ -29,7 +29,7 @@
               {{ $t('oikeus-'+item.text) }}
             </template>
           </ep-select>
-        </b-form-group>
+        </ep-form-group>
 
         <ep-siirto-modal
           v-if="!isOpsPohja"
@@ -41,16 +41,18 @@
         />
       </div>
 
-      <b-table
+      <ep-table
         striped
         responsive
         :items="kayttajatFilled"
         :fields="fields"
         :per-page="sivukoko"
         :current-page="sivu"
-        :tbody-tr-class="rowClass"
+        data-key="id"
+        :row-class="rowClass"
+        @update:current-page="sivu = $event"
       >
-        <template #cell(nimi)="{value, item}">
+        <template #cell(nimi)="{ value, item }">
           <ep-button
             variant="link"
             :href="'/henkilo-ui/virkailija/'+item.oid"
@@ -81,14 +83,7 @@
             {{ $t('oikeus-'+item.oikeus.text) }}
           </div>
         </template>
-      </b-table>
-
-      <ep-pagination
-        v-model="sivu"
-        :per-page="sivukoko"
-        :total-rows="kayttajat.length"
-        align="center"
-      />
+      </ep-table>
     </div>
   </div>
 </template>
@@ -102,7 +97,8 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSelect from '@shared/components/forms/EpSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { KayttoOikeudetStore } from '@/stores/KayttoOikeudetStore';
 import { parsiEsitysnimi } from '@shared/utils/kayttaja';
@@ -238,8 +234,8 @@ const updateOikeus = async (id: any, oikeus: any) => {
   }
 };
 
-const rowClass = (item: any, type: any) => {
-  if (item.self) {
+const rowClass = (data: any) => {
+  if (data?.self) {
     return 'self';
   }
 

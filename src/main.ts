@@ -1,10 +1,10 @@
-import '@shared/config/bootstrap';
 import '@shared/config/styles';
 import { createPinia } from 'pinia';
-import Vue, { createApp } from 'vue';
-import { configureCompat } from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
-import { setAppInstance } from '@shared/utils/globals';
+import { setAppInstance, $confirmModal } from '@shared/utils/globals';
+import { setPrimeVue } from '@shared/primevue';
+import ConfirmationService from 'primevue/confirmationservice';
 import router from './router/router';
 import Kaannos from '@shared/plugins/kaannos';
 import { Kieli } from '@shared/tyypit';
@@ -20,9 +20,8 @@ import { Oikeustarkastelu } from '@shared/plugins/oikeustarkastelu';
 import { Notifikaatiot } from '@shared/plugins/notifikaatiot';
 import { Kayttajat } from './stores/kayttaja';
 import VueScrollTo from 'vue-scrollto';
-import VueApexCharts from 'vue-apexcharts';
+import Vue3ApexCharts from 'vue3-apexcharts';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
-import Sticky from 'vue-sticky-directive';
 import { TekstikappaleStore } from './stores/TekstikappaleStore';
 import { TutkinnonOsaStore } from './stores/TutkinnonOsaStore';
 import { stores } from './stores';
@@ -31,20 +30,21 @@ import { SisaltoViiteStore } from './stores/SisaltoViiteStore';
 import { RakenneStore } from './stores/RakenneStore';
 import { OpintokokonaisuusStore } from './stores/OpintokokonaisuusStore';
 import { registerIconColorSchemeChange } from '@shared/utils/icon';
+import { vSticky } from '@shared/directives/vSticky';
 
 const app = createApp(App);
 
+app.directive('sticky', vSticky);
+
 registerIconColorSchemeChange();
 
-configureCompat({
-  COMPONENT_V_MODEL: false,
-});
-
 setAppInstance(app);
+app.config.globalProperties.$confirmModal = $confirmModal;
 
 app.use(createPinia());
 app.use(router);
 app.use(Kaannos);
+app.use(ConfirmationService);
 
 export const i18n = createI18n({
   legacy: false, // Set to false to use Composition API
@@ -64,6 +64,7 @@ export const i18n = createI18n({
 });
 
 app.use(i18n);
+setPrimeVue(app);
 app.use(Kielet, { i18n });
 app.use(Aikaleima);
 app.use(LoadingPlugin);
@@ -71,15 +72,13 @@ app.use(createHead());
 app.use(Oikeustarkastelu, { oikeusProvider: Kayttajat });
 app.use(Notifikaatiot);
 
-Vue.use(VueScrollTo, {
+app.use(VueScrollTo, {
   duration: 1000,
 });
-Vue.use(VueApexCharts);
-Vue.component('Apexchart', VueApexCharts);
+app.use(Vue3ApexCharts);
+app.component('Apexchart', Vue3ApexCharts);
 
 app.use(EditointiStore, { router, kayttajaProvider: Kayttajat });
-app.use(Sticky);
-
 app.use(TekstikappaleStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });
 app.use(TutkinnonOsaStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });
 app.use(SisaltoEditStore, { router, updateNavigation: () => stores.toteutussuunnitelmaStore.initNavigation() });

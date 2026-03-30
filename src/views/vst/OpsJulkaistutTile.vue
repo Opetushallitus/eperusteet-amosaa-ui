@@ -5,10 +5,10 @@
   >
     <RouterLink
       :key="ops.id"
-      class="d-block h-100"
+      class="block h-full"
       :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: ops.id, koulutustoimijaId: ops.koulutustoimija.id } }"
     >
-      <div class="opsbox__info opsbox__info--published d-flex flex-column">
+      <div class="opsbox__info opsbox__info--published flex flex-col">
         <div class="opsbox__name">
           {{ $kaanna(ops.nimi) }}
         </div>

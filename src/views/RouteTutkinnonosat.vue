@@ -10,13 +10,13 @@
     <ep-spinner v-if="!tutkinnonosat || isDeleting" />
 
     <div v-else>
-      <div class="d-flex justify-content-between mb-4">
+      <div class="flex justify-between items-start gap-4 mb-4 flex-wrap">
         <EpSearch
           v-model="queryNimi"
           :placeholder="$t('etsi')"
         />
 
-        <div class="d-flex">
+        <div class="flex items-center gap-2 flex-wrap">
           <EpButton
             variant="link"
             icon="delete"
@@ -35,12 +35,11 @@
         </div>
       </div>
 
-      <b-table
+      <ep-table
         responsive
         striped
         hover
         no-local-sorting
-        no-sort-reset
         :items="tutkinnonosatWithSelected"
         :fields="fields"
         class="vertical-middle"
@@ -81,29 +80,29 @@
             </EpMaterialIcon>
           </div>
         </template>
-        <template #cell(nimi)="data">
-          <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: data.item.tutkinnonosaViite.id } }">
-            {{ $kaanna(data.item.nimi) }}
+        <template #cell(nimi)="{ item }">
+          <router-link :to="{ name: 'tutkinnonosa', params: { sisaltoviiteId: item.tutkinnonosaViite.id } }">
+            {{ $kaanna(item.nimi) }}
             <span
-              v-if="data.item.tutkinnonosaViite.tosa.tyyppi === 'oma'"
+              v-if="item.tutkinnonosaViite.tosa.tyyppi === 'oma'"
               class="paikallinen"
             >({{ $t('tutkinnon-osa-paikallinen-merkki') }})</span>
           </router-link>
         </template>
-        <template #cell(actions)="data">
+        <template #cell(actions)=" { item }">
           <EpSpinner
-            v-if="data.item.poistossa"
+            v-if="item.poistossa"
             small
           />
           <EpButton
             v-else
             variant="link"
             icon="delete"
-            class="btn btn-link p-0"
-            @click="remove(data.item.tutkinnonosaViite.id)"
+            class="p-0"
+            @click="remove(item.tutkinnonosaViite.id)"
           />
         </template>
-      </b-table>
+      </ep-table>
     </div>
   </div>
 </template>
@@ -118,12 +117,13 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpTutkinnonosaTuonti from '@/components/EpSisaltoLisays/EpTutkinnonosaTuonti.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { Kielet } from '@shared/stores/kieli';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
 import { SisaltoviiteLaajaDto, Sisaltoviitteet } from '@shared/api/amosaa';
-import { $t, $kaanna, $sdt, $bvModal } from '@shared/utils/globals';
+import { $t, $kaanna, $sdt, $confirmModal } from '@shared/utils/globals';
 
 const props = defineProps<{
   toteutussuunnitelmaStore: ToteutussuunnitelmaStore;
@@ -212,8 +212,7 @@ const fields = computed(() => {
     key: 'actions',
     label: '',
     thStyle: { borderBottom: '0px' },
-    tdStyle: { width: '50px' },
-    tdClass: 'text-center',
+    tdClass: 'text-center w-[50px]',
   }];
 });
 
@@ -228,7 +227,7 @@ const fetch = async () => {
 };
 
 const confirm = async () => {
-  return $bvModal.msgBoxConfirm($t('tata-toimintoa-ei-voida-perua') as string, {
+  return $confirmModal.msgBoxConfirm($t('tata-toimintoa-ei-voida-perua') as string, {
     title: $t('varmista-poisto'),
     okVariant: 'primary',
     okTitle: $t('poista'),

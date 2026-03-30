@@ -1,6 +1,6 @@
 <template>
   <EpMainView>
-    <b-container>
+    <div class="w-full max-w-screen-xl mx-auto px-2">
       <EpSteps
         ref="epstepsRef"
         :steps="steps"
@@ -9,24 +9,24 @@
         @cancel="onCancel"
       >
         <template #pohja>
-          <div class="row">
-            <div class="col-sm-10 mb-4">
-              <b-form-group :label="$t(kielistykset['nimi']) +' *'">
+          <div class="flex flex-wrap">
+            <div class="w-full md:w-5/6 mb-4">
+              <ep-form-group :label="$t(kielistykset['nimi']) +' *'">
                 <ep-field
                   v-model="nimi"
                   :is-editing="true"
                   :validation="$v.nimi"
                 />
-              </b-form-group>
+              </ep-form-group>
             </div>
           </div>
 
           <div
             v-if="perusteValinta"
-            class="row"
+            class="flex flex-wrap w-full"
           >
-            <div class="col-sm-10 mb-4">
-              <b-form-group :label="$t('peruste') +' *'">
+            <div class="w-full sm:w-5/6 mb-4">
+              <ep-form-group :label="$t('peruste') +' *'">
                 <EpMultiSelect
                   v-if="perusteet"
                   v-model="peruste"
@@ -43,7 +43,7 @@
                   </template>
                 </EpMultiSelect>
                 <EpSpinner v-else />
-              </b-form-group>
+              </ep-form-group>
             </div>
           </div>
         </template>
@@ -54,7 +54,7 @@
           </span>
         </template>
       </EpSteps>
-    </b-container>
+    </div>
   </EpMainView>
 </template>
 
@@ -66,6 +66,7 @@ import * as _ from 'lodash';
 
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpField from '@shared/components/forms/EpField.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSteps, { Step } from '@shared/components/EpSteps/EpSteps.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
