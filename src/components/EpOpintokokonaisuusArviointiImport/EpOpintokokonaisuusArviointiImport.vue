@@ -3,21 +3,19 @@
     <EpButton
       variant="outline"
       icon="add"
-      @click="open()"
+      @click="open"
     >
       {{ $t('tuo-arvioinnin-kohteet-pohjan-opintokokonaisuudesta') }}
     </EpButton>
 
-    <b-modal
-      id="arviointiImportModal"
+    <ep-modal
       ref="arviointiImportModal"
       size="lg"
-      :title="$t('valitse-pohjan-opintokokonaisuus')"
-      :ok-title="$t('peruuta')"
-      :ok-only="true"
+      :header="$t('valitse-pohjan-opintokokonaisuus')"
+      hide-footer
     >
       <div v-if="pohjanOpintokokonaisuudet">
-        <b-table
+        <ep-table
           responsive
           borderless
           striped
@@ -27,27 +25,20 @@
           :fields="fields"
           :per-page="perPage"
           :current-page="currentPage"
-          :selectable="true"
+          data-key="id"
           select-mode="single"
-          selected-variant=""
           @row-selected="onRowSelected"
+          @update:current-page="currentPage = $event"
         >
           <template #cell(nimi)="{ item }">
-            <span class="btn-link">
+            <span class="text-[var(--link)] cursor-pointer">
               {{ $kaanna(item.tekstiKappale.nimi) }}
             </span>
           </template>
-        </b-table>
-        <ep-pagination
-          v-model="currentPage"
-          :total-rows="rows"
-          :per-page="perPage"
-          align="center"
-          aria-controls="arviointiImportModal"
-        />
+        </ep-table>
       </div>
       <ep-spinner v-else />
-    </b-modal>
+    </ep-modal>
   </div>
 </template>
 
@@ -58,9 +49,9 @@ import { Sisaltoviitteet } from '@shared/api/amosaa';
 import { Kielet, UiKielet } from '@shared/stores/kieli';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import EpSearch from '@shared/components/forms/EpSearch.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 import { $t, $kaanna } from '@shared/utils/globals';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
 
 const props = defineProps<{
   koulutustoimijaId: string;
@@ -72,7 +63,7 @@ const currentPage = ref(1);
 const perPage = ref(10);
 const pohjanOpintokokonaisuudet = ref<any[] | null>(null);
 
-const arviointiImportModal = useTemplateRef('arviointiImportModal');
+const arviointiImportModal = useTemplateRef<InstanceType<typeof EpModal>>('arviointiImportModal');
 
 const open = async () => {
   arviointiImportModal.value?.show();
@@ -83,18 +74,16 @@ const open = async () => {
   )).data;
 };
 
-const onRowSelected = (opintokokonaisuusViite: any) => {
-  props.addArvioinnit(_.map(opintokokonaisuusViite[0].opintokokonaisuus.arvioinnit, arviointi => {
+const onRowSelected = (rows: any[]) => {
+  if (!rows?.length) return;
+  const opintokokonaisuusViite = rows[0];
+  props.addArvioinnit(_.map(opintokokonaisuusViite.opintokokonaisuus.arvioinnit, arviointi => {
     return {
       ..._.pick(arviointi.arviointi, UiKielet),
     };
   }));
   arviointiImportModal.value?.hide();
 };
-
-const rows = computed(() => {
-  return _.size(pohjanOpintokokonaisuudet.value);
-});
 
 const fields = computed(() => {
   return [{

@@ -1,7 +1,6 @@
 <template>
   <div>
     <EpButton
-      v-b-modal.oatModal
       icon="add"
       variant="outline"
       @click="lisaaOat"
@@ -9,18 +8,16 @@
       {{ $t('lisaa-osaamisen-arvioinnin-toteutussuunnitelma') }}
     </EpButton>
 
-    <b-modal
+    <ep-modal
       ref="oatModal"
       size="lg"
     >
-      <template #modal-header>
-        <div class="row w-100">
-          <div class="col">
-            <h2>{{ oat.id ? $t('osaamisen-arvioinnin-toteutussuunnitelma') : $t('lisaa-osaamisen-arvioinnin-toteutussuunnitelma') }}</h2>
-          </div>
-          <div class="col text-right">
-            <EpKielivalinta />
-          </div>
+      <template #modal-title>
+        <div class="flex w-full flex-wrap justify-between items-center gap-4">
+          <h2 class="text-lg font-normal m-0">
+            {{ oat.id ? $t('osaamisen-arvioinnin-toteutussuunnitelma') : $t('lisaa-osaamisen-arvioinnin-toteutussuunnitelma') }}
+          </h2>
+          <EpKielivalinta />
         </div>
       </template>
 
@@ -65,49 +62,45 @@
         v-if="tyyppi === 'url'"
         class="mb-5"
       >
-        <b-form-group :label="$t('oat-nimi') + (editing ? ' *' : '')">
+        <ep-form-group :label="$t('oat-nimi') + (editing ? ' *' : '')">
           <EpField
             v-model="oat.nimi"
             :is-editing="editing"
             :show-valid-validation="false"
           />
-        </b-form-group>
-        <b-form-group :label="$t('linkki') + (editing ? ' *' : '')">
+        </ep-form-group>
+        <ep-form-group :label="$t('linkki') + (editing ? ' *' : '')">
           <EpField
             v-model="oat.url"
             :is-editing="editing"
             :show-valid-validation="false"
           />
-        </b-form-group>
+        </ep-form-group>
       </div>
 
       <template #modal-footer>
-        <div class="footer w-100 footer pt-2">
-          <div class="d-flex justify-content-end">
-            <EpButton
-              variant="link"
-              @click="sulje"
-            >
-              {{ $t('peruuta') }}
-            </EpButton>
-            <EpButton
-              variant="link"
-              icon="delete"
-              @click="poista"
-            >
-              {{ $t('poista') }}
-            </EpButton>
-            <EpButton
-              class="ml-3"
-              :disabled="!valid"
-              @click="tallenna"
-            >
-              {{ $t('tallenna') }}
-            </EpButton>
-          </div>
-        </div>
+        <EpButton
+          variant="link"
+          @click="sulje"
+        >
+          {{ $t('peruuta') }}
+        </EpButton>
+        <EpButton
+          variant="link"
+          icon="delete"
+          @click="poista"
+        >
+          {{ $t('poista') }}
+        </EpButton>
+        <EpButton
+          class="ml-3"
+          :disabled="!valid"
+          @click="tallenna"
+        >
+          {{ $t('tallenna') }}
+        </EpButton>
       </template>
-    </b-modal>
+    </ep-modal>
   </div>
 </template>
 
@@ -119,16 +112,18 @@ import * as _ from 'lodash';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
 import EpField from '@shared/components/forms/EpField.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpKielivalinta from '@shared/components/EpKielivalinta/EpKielivalinta.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import EpRadio from '@shared/components/forms/EpRadio.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
 
 import { OsaamisenArvioinninToteutussuunnitelmaDto } from '@shared/api/amosaa';
 import { OpetussuunnitelmaPohjatStore } from '@/stores/OpetussuunnitelmaPohjatStore';
 import { Toteutus } from '@shared/utils/perusteet';
 import { nimiSearchIdentity } from '@shared/utils/helpers';
-import { $t, $kaanna, $bvModal } from '@shared/utils/globals';
+import { $t, $kaanna, $confirmModal } from '@shared/utils/globals';
 
 
 const emit = defineEmits<{
@@ -201,7 +196,7 @@ const muokkaa = async (oatData: OsaamisenArvioinninToteutussuunnitelmaDto, index
 };
 
 const poista = async () => {
-  const poistaConfirm = await $bvModal.msgBoxConfirm(' ', {
+  const poistaConfirm = await $confirmModal.msgBoxConfirm(' ', {
     title: $t('poista-osaamisen-arvioinnin-toteutussuunnitelma-kysymys'),
     okVariant: 'primary',
     okTitle: $t('poista') as any,

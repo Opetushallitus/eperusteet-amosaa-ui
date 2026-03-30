@@ -1,23 +1,21 @@
 <template>
-  <div class="minfull h-100">
+  <div class="minfull h-full">
     <router-view v-if="mounted" />
     <EpNotification />
+    <EpConfirmService />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { onMounted } from 'vue';
-import { getCurrentInstance } from 'vue';
 import { Kayttajat } from '@/stores/kayttaja';
-import { delay } from '@shared/utils/delay';
 import EpNotification from '@shared/components/EpNotification/EpNotification.vue';
-import { nextTick } from 'vue';
-import { setGlobalBvModal } from '@shared/utils/globals';
+import EpConfirmService from '@shared/components/EpConfirmService/EpConfirmService.vue';
 import { useLoading } from 'vue-loading-overlay';
-import { loadingOptions } from './utils/loading';
 import { Kielet } from '@shared/stores/kieli';
 import { getKaannokset } from '@shared/api/eperusteet';
+import { loadingOptions } from '@shared/config/loading';
 
 const $loading = useLoading({
   ...loadingOptions,
@@ -27,10 +25,6 @@ const $loading = useLoading({
 const mounted = ref(false);
 
 onMounted(async () => {
-  const instance = getCurrentInstance() as any;
-  await nextTick();
-  setGlobalBvModal(instance.ctx._bv__modal);
-
   const loading = $loading.show();
   Kielet.load(await getKaannokset());
   await Kayttajat.init();

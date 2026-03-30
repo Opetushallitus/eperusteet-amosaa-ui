@@ -6,7 +6,7 @@
 
     <div
       v-else
-      class="d-flex"
+      class="flex"
     >
       <ep-small-data-box
         v-for="(sisaltoviite, index) in toteutuksenSisaltoviitteet"

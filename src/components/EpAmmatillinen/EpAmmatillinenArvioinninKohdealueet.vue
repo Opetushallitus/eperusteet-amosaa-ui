@@ -1,6 +1,6 @@
 <template>
   <ep-form-content
-    class="col-md-12"
+    class="w-full"
     name="arviointi"
   >
     <div
@@ -13,12 +13,12 @@
       </div>
 
       <div
-        v-for="(arvioinninkohde, index) in arvioinninKohdealue.arvioinninKohteet"
-        :key="'arvioinninkohde'+index"
+        v-for="(arvioinninkohde, kohdeIndex) in arvioinninKohdealue.arvioinninKohteet"
+        :key="'arvioinninkohde'+kohdeIndex"
         class="mb-5"
       >
         <div class="mb-3 mt-4">
-          <div class="font-weight-bold mb-3">
+          <div class="font-bold mb-3">
             {{ $kaanna(arvioinninkohde.otsikko) }}
           </div>
           <div class="mb-1">
@@ -27,27 +27,28 @@
           <div>{{ $kaanna(arvioinninkohde.selite) }}</div>
         </div>
 
-        <b-table
+        <ep-table
           striped
           :items="arvioinninkohde.osaamistasonKriteerit"
           :fields="osaamistasonKriteeritFields"
           responsive
+          data-key="_osaamistaso"
         >
-          <template #cell(osaamistaso)="{item}">
+          <template #cell(osaamistaso)="{ item }">
             <span v-if="item.osaamistaso"> {{ $kaanna(item.osaamistaso.otsikko) }}</span>
           </template>
 
-          <template #cell(kriteerit)="{item}">
+          <template #cell(kriteerit)="{ item }">
             <ul>
               <li
-                v-for="(kriteeri, index) in item.kriteerit"
-                :key="'kriteeri'+index"
+                v-for="(kriteeri, kriteeriIndex) in item.kriteerit"
+                :key="'kriteeri'+kriteeriIndex"
               >
                 {{ $kaanna(kriteeri) }}
               </li>
             </ul>
           </template>
-        </b-table>
+        </ep-table>
       </div>
     </div>
 
@@ -58,6 +59,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 import * as _ from 'lodash';
 import { $t, $kaanna } from '@shared/utils/globals';
 
@@ -96,7 +98,7 @@ const osaamistasonKriteeritFields = computed(() => {
   }, {
     key: 'kriteerit',
     label: $t('kriteerit') as string,
-  }] as any[];
+  }];
 });
 </script>
 

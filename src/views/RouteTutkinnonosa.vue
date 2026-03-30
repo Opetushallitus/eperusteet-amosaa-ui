@@ -16,7 +16,7 @@
       <template #default="{ data, isEditing, validation }">
         <div
           v-if="data.tutkinnonosaViite.tyyppi === 'linkki'"
-          class="alert alert-info d-flex align-items-center"
+          class="alert alert-info flex items-center"
         >
           <router-link :to="{ name: 'tutkinnonosa', params: { toteutussuunnitelmaId: data.tutkinnonosaViite.linkattuOps, sisaltoviiteId: data.tutkinnonosaViite.linkattuSisaltoViiteId } }">
             {{ $t('siirry-alkuperaiseen-toteutukseen') }}
@@ -50,9 +50,9 @@
           </ep-collapse>
         </template>
 
-        <b-form-group
+        <ep-form-group
           v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta' && isEditing"
-          class="flex-grow-1 mr-5"
+          class="grow mr-5"
           :label="$t('tutkinnon-osan-nimi') +' *'"
         >
           <ep-field
@@ -60,23 +60,23 @@
             :is-editing="isEditing"
             :validation="validation.nimi"
           />
-        </b-form-group>
+        </ep-form-group>
 
-        <b-form-group
+        <ep-form-group
           v-if="data.perusteenTutkinnonosa"
           :label="$t('koodi')"
         >
           <span>{{ data.perusteenTutkinnonosa.koodi.arvo }}</span>
-        </b-form-group>
+        </ep-form-group>
 
         <div
           v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta'"
-          class="d-flex justify-content-between"
+          class="flex justify-between"
         >
-          <b-form-group class="flex-grow-1 mr-5">
+          <ep-form-group class="grow mr-5">
             <template #label>
               <div
-                class="d-flex"
+                class="flex"
               >
                 <span>{{ $t('koodi') }}</span>
                 <EpInfoPopover
@@ -93,19 +93,19 @@
               :is-editing="isEditing"
               :validation="validation.omaTutkinnonosa.koodi"
             />
-          </b-form-group>
-          <b-form-group
+          </ep-form-group>
+          <ep-form-group
             v-if="data.omaTutkinnonosa && isEditing"
             :label="$t('laajuus')"
           >
-            <div class="d-flex align-items-center">
+            <div class="flex items-center">
               <ep-field
                 v-model="data.omaTutkinnonosa.laajuus"
                 type="number"
                 :is-editing="isEditing"
               />
             </div>
-          </b-form-group>
+          </ep-form-group>
         </div>
 
         <div v-if="data.perusteenTutkinnonosa">
@@ -136,7 +136,8 @@
           :key="'vapaatk'+index"
           :border-bottom="false"
           :collapsable="!isEditing"
-          :class="{'pt-0 pb-0': isEditing}"
+          class="mb-3"
+          :use-padding="false"
         >
           <template #header>
             <h3 v-if="!isEditing">
@@ -166,7 +167,7 @@
 
           <div
             v-if="isEditing"
-            class="d-flex justify-content-between pt-3"
+            class="flex justify-between pt-3"
           >
             <ep-button
               v-if="index+1 === data.tutkinnonosaViite.tosa.vapaat.length"
@@ -190,7 +191,7 @@
 
         <ep-button
           v-if="isEditing && data.tutkinnonosaViite.tosa.vapaat.length === 0"
-          class="pb-4 pt-3"
+          class="my-2"
           variant="outline-primary"
           icon="add"
           @click="lisaaTekstikappale(data.tutkinnonosaViite.tosa)"
@@ -222,11 +223,11 @@
         <div v-else-if="tutkinnonosaPerusteesta && data.perusteenTutkinnonosa.tyyppi === 'tutke2'">
           {{ $t('vanhoja-perustetyyppeja-ei-tueta') }}
         </div>
-        <b-tabs
+        <ep-tabs
           v-else
-          class="ml-0 pl-0 mt-4"
+          content-class="mt-4 ml-0 pl-0"
         >
-          <b-tab :title="$t('paikallinen-toteutus')">
+          <ep-tab :title="$t('paikallinen-toteutus')">
             <h3 class="mt-4">
               {{ $t('toteutukset') }}
             </h3>
@@ -236,9 +237,9 @@
               :is-editing="isEditing && data.tutkinnonosaViite.tyyppi !== 'linkki'"
               :tyyppi="data.tutkinnonosaViite.tyyppi"
             />
-          </b-tab>
+          </ep-tab>
 
-          <b-tab
+          <ep-tab
             v-if="tutkinnonosaPerusteesta"
             :title="$t('perusteen-sisalto')"
           >
@@ -246,13 +247,13 @@
               :tutkinnonosa="data.perusteenTutkinnonosa"
               :arviointiasteikot="data.arviointiasteikot"
             />
-          </b-tab>
+          </ep-tab>
 
-          <b-tab
+          <ep-tab
             v-else
             :title="$t('sisalto')"
           >
-            <b-form-group>
+            <ep-form-group>
               <template #label>
                 <h3 class="pt-3">
                   {{ $t('ammattitaitovaatimukset') }}
@@ -270,9 +271,9 @@
                 v-model="data.omaTutkinnonosa.ammattitaitovaatimukset"
                 :is-editing="isEditing"
               />
-            </b-form-group>
+            </ep-form-group>
 
-            <b-form-group>
+            <ep-form-group>
               <template #label>
                 <h3 class="pt-3">
                   {{ $t('arviointi') }}
@@ -312,9 +313,9 @@
               >
                 {{ $t('poista-geneerinen-arviointi') }}
               </EpButton>
-            </b-form-group>
+            </ep-form-group>
 
-            <b-form-group>
+            <ep-form-group>
               <template #label>
                 <h3 class="pt-3">
                   {{ $t('ammattitaidon-osoittamistavat') }}
@@ -325,9 +326,9 @@
                 layout="normal"
                 :is-editable="isEditing"
               />
-            </b-form-group>
-          </b-tab>
-        </b-tabs>
+            </ep-form-group>
+          </ep-tab>
+        </ep-tabs>
       </template>
     </EpEditointi>
   </div>
@@ -355,6 +356,9 @@ import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimuk
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
 import EpArvioinninKohdeAlueet from '@shared/components/EpArviointi/EpArvioinninKohdeAlueet.vue';
 import EpInfoPopover from '@shared/components/EpInfoPopover/EpInfoPopover.vue';
+import EpTabs from '@shared/components/EpTabs/EpTabs.vue';
+import EpTab from '@shared/components/EpTabs/EpTab.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
