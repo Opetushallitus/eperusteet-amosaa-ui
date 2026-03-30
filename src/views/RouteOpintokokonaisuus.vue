@@ -23,13 +23,13 @@
         </h2>
       </template>
       <template #default="{ data, isEditing, validation, data: { opintokokonaisuus }, data: { opintokokonaisuus: { tyyppi } } }">
-        <b-row>
-          <b-col
+        <div class="flex flex-wrap">
+          <div
             v-if="tyyppi === TyyppiSource.OMA || tyyppi === TyyppiSource.PERUSTEESTA && !isEditing"
-            md="7"
+            class="w-full md:w-7/12 min-w-0 pr-2"
           >
-            <b-form-group
-              :label="$t(tyyppikielistys['nimiotsikko']) + (isEditing ? ' *' : '')"
+            <ep-form-group
+              :label="$t(tyyppikielistys['nimiotsikko'])"
               required
             >
               <EpField
@@ -42,32 +42,36 @@
                 :is-editing="isEditing"
                 :validation="validation.tekstiKappale.nimi"
               />
-            </b-form-group>
-          </b-col>
-          <b-col md="3">
-            <b-form-group :label="$t('laajuus')">
+            </ep-form-group>
+          </div>
+          <div class="w-full md:w-1/4 min-w-0">
+            <ep-form-group :label="$t('laajuus')">
               <EpLaajuusYksikkoInput
                 v-model="data.opintokokonaisuus"
                 :is-editing="isEditing"
                 :validation="validation.opintokokonaisuus"
               />
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col md="10">
-            <b-form-group>
+            </ep-form-group>
+          </div>
+        </div>
+        <div class="flex flex-wrap">
+          <div class="w-full md:w-5/6 min-w-0">
+            <ep-form-group>
               <template #label>
-                <div class="d-flex align-items-center">
+                <div class="flex items-center">
                   <div>{{ $t('opintokokonaisuuden-koodi') }}</div>
-                  <div
-                    v-b-popover.hover.right="$t('opintokokonaisuus-koodi-selite')"
-                    class="ml-4 default-icon clickable"
-                  >
-                    <EpMaterialIcon icon-shape="outlined">
-                      info
-                    </EpMaterialIcon>
-                  </div>
+                  <EpPopover :triggers="['hover']">
+                    <template #trigger>
+                      <div
+                        class="ml-4 default-icon clickable inline-flex"
+                      >
+                        <EpMaterialIcon icon-shape="outlined">
+                          info
+                        </EpMaterialIcon>
+                      </div>
+                    </template>
+                    {{ $t('opintokokonaisuus-koodi-selite') }}
+                  </EpPopover>
                 </div>
               </template>
               <div v-if="opintokokonaisuus.koodiArvo">
@@ -79,14 +83,14 @@
               >
                 {{ $t('koodi-generoidaan-julkaisussa') }}
               </div>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col md="10">
-            <b-form-group
-              :label="$t('kuvaus') + (isEditing && tyyppi === TyyppiSource.OMA ? ' *' : '')"
-              required
+            </ep-form-group>
+          </div>
+        </div>
+        <div class="flex flex-wrap">
+          <div class="w-full md:w-5/6 min-w-0">
+            <ep-form-group
+              :label="$t('kuvaus')"
+              :required="tyyppi === TyyppiSource.OMA"
             >
               <EpContent
                 v-model="opintokokonaisuus.kuvaus"
@@ -94,225 +98,228 @@
                 :is-editable="isEditing && tyyppi === TyyppiSource.OMA"
                 :validation="validation.opintokokonaisuus.kuvaus"
               />
-            </b-form-group>
-          </b-col>
-        </b-row>
+            </ep-form-group>
+          </div>
+        </div>
         <hr>
         <h3 class="pt-3">
           {{ $t(tyyppikielistys['tavoiteotsikko']) }}
         </h3>
-        <b-row>
-          <b-col md="10">
-            <b-form-group
-              :label="$t('tavoitteiden-otsikko') + (isEditing && !isOpsPohja ? ' *' : '')"
-              required
+        <div class="flex flex-wrap">
+          <div class="w-full md:w-5/6 min-w-0">
+            <ep-form-group
+              :label="$t('tavoitteiden-otsikko')"
+              :required="!isOpsPohja"
             >
               <ep-input
                 v-model="opintokokonaisuus.opetuksenTavoiteOtsikko"
                 :is-editing="isEditing"
                 :validation="validation.opintokokonaisuus.opetuksenTavoiteOtsikko"
               />
-            </b-form-group>
+            </ep-form-group>
             <h4 class="pb-2">
               {{ $t('tavoitteiden-kuvaus') }}
             </h4>
-            <b-form-group v-if="isEditing || opintokokonaisuus.tavoitteidenKuvaus && !isEditing">
+            <ep-form-group v-if="isEditing || opintokokonaisuus.tavoitteidenKuvaus && !isEditing">
               <EpContent
                 v-model="opintokokonaisuus.tavoitteidenKuvaus"
                 layout="normal"
                 :is-editable="isEditing"
               />
-            </b-form-group>
+            </ep-form-group>
             <EpAlert
               v-if="!opintokokonaisuus.tavoitteidenKuvaus && !isEditing"
               :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
               class="pb-3"
             />
-          </b-col>
-        </b-row>
-        <b-form-group
-          :label="$t('tavoitteet') + (isEditing && !isOpsPohja ? ' *' : '')"
-          required
-        >
-          <div v-if="isEditing">
-            <VueDraggable
-              v-bind="tavoitteetOptions"
-              v-model="opintokokonaisuus.tavoitteet"
-              tag="div"
-            >
-              <b-row
-                v-for="(tavoiteItem, index) in opintokokonaisuus.tavoitteet"
-                :key="tavoiteItem.id"
-                class="pb-2"
+          </div>
+        </div>
+
+        <div class="w-full md:w-5/6 min-w-0">
+          <ep-form-group
+            :label="$t('tavoitteet')"
+            required
+          >
+            <div v-if="isEditing">
+              <VueDraggable
+                v-bind="tavoitteetOptions"
+                v-model="opintokokonaisuus.tavoitteet"
+                tag="div"
               >
-                <b-col
-                  cols="11"
-                  md="10"
+                <div
+                  v-for="(tavoiteItem, index) in opintokokonaisuus.tavoitteet"
+                  :key="tavoiteItem.id"
+                  class="flex flex-wrap pb-2 gap-2"
                 >
-                  <VaatimusField
-                    ref="koodistoSelect"
-                    v-model="opintokokonaisuus.tavoitteet[index]"
-                    nimi-key="tavoite"
-                    :koodisto="koodisto"
-                    :is-editing="isEditing"
-                    :validation="validation.opintokokonaisuus.tavoitteet?.$each?.$response.$data[index]?.tavoite"
-                    @add="updateTavoiteByIndex($event, index)"
-                  />
-                </b-col>
-                <b-col
-                  v-if="isEditing && !tavoiteItem.perusteesta"
-                  cols="1"
-                >
-                  <div
-                    class="default-icon clickable mt-2"
-                    @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"
-                  >
-                    <EpMaterialIcon icon-shape="outlined">
-                      delete
-                    </EpMaterialIcon>
+                  <div class="w-full md:w-7/8 min-w-0 grow">
+                    <VaatimusField
+                      ref="koodistoSelect"
+                      v-model="opintokokonaisuus.tavoitteet[index]"
+                      nimi-key="tavoite"
+                      :koodisto="koodisto"
+                      :is-editing="isEditing"
+                      :validation="validation.opintokokonaisuus.tavoitteet?.$each?.$response.$data[index]?.tavoite"
+                      @add="updateTavoiteByIndex($event, index)"
+                    />
                   </div>
-                </b-col>
-              </b-row>
-            </VueDraggable>
-            <EpButton
-              v-if="isEditing"
-              variant="outline"
-              icon="add"
-              @click="addTavoite()"
-            >
-              {{ $t('lisaa-tavoite') }}
-            </EpButton>
-          </div>
-          <div v-else>
-            <ul>
-              <li
-                v-for="tavoiteItem in opintokokonaisuus.tavoitteet"
-                :key="tavoiteItem.id"
+                  <div
+                    v-if="isEditing && !tavoiteItem.perusteesta"
+                    class="shrink-0 pt-1"
+                  >
+                    <ep-button
+                      variant="link"
+                      @click="onRemoveListItem(tavoiteItem, 'tavoitteet')"
+                    >
+                      <EpMaterialIcon icon-shape="outlined">
+                        delete
+                      </EpMaterialIcon>
+                    </ep-button>
+                  </div>
+                </div>
+              </VueDraggable>
+              <EpButton
+                v-if="isEditing"
+                variant="outline"
+                icon="add"
+                @click="addTavoite()"
               >
-                {{ $kaanna(tavoiteItem.tavoite) }}
-              </li>
-            </ul>
-          </div>
-        </b-form-group>
+                {{ $t('lisaa-tavoite') }}
+              </EpButton>
+            </div>
+            <div v-else>
+              <ul>
+                <li
+                  v-for="tavoiteItem in opintokokonaisuus.tavoitteet"
+                  :key="tavoiteItem.id"
+                >
+                  {{ $kaanna(tavoiteItem.tavoite) }}
+                </li>
+              </ul>
+            </div>
+          </ep-form-group>
+        </div>
         <hr>
         <h3 class="py-3">
           {{ $t('keskeiset-sisallot') }}
         </h3>
-        <b-row>
-          <b-col md="10">
-            <b-form-group v-if="isEditing || opintokokonaisuus.keskeisetSisallot && !isEditing">
+        <div class="flex flex-wrap">
+          <div class="w-full md:w-5/6 min-w-0">
+            <ep-form-group v-if="isEditing || opintokokonaisuus.keskeisetSisallot && !isEditing">
               <EpContent
                 v-model="opintokokonaisuus.keskeisetSisallot"
                 layout="normal"
                 :is-editable="isEditing"
               />
-            </b-form-group>
+            </ep-form-group>
             <EpAlert
               v-if="!opintokokonaisuus.keskeisetSisallot && !isEditing"
               :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
               class="pb-3"
             />
-          </b-col>
-        </b-row>
+          </div>
+        </div>
         <hr>
         <h3 class="pt-3">
           {{ $t('arviointi') }}
         </h3>
-        <b-row>
-          <b-col
-            md="10"
-            class="py-3"
+        <div class="flex flex-wrap">
+          <div
+            class="w-full md:w-5/6 min-w-0 py-3"
           >
             <h4 class="pb-2">
               {{ $t('arvioinnin-kuvaus') }}
             </h4>
-            <b-form-group v-if="isEditing || opintokokonaisuus.arvioinninKuvaus && !isEditing">
+            <ep-form-group v-if="isEditing || opintokokonaisuus.arvioinninKuvaus && !isEditing">
               <EpContent
                 v-model="opintokokonaisuus.arvioinninKuvaus"
                 layout="normal"
                 :is-editable="isEditing"
               />
-            </b-form-group>
+            </ep-form-group>
             <EpAlert
               v-if="!opintokokonaisuus.arvioinninKuvaus && !isEditing"
               :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
               class="pb-3"
             />
-          </b-col>
-        </b-row>
-        <b-form-group
-          :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet') + (isEditing && !isOpsPohja ? ' *' : '')"
-          required
-        >
-          <div v-if="isEditing">
-            <VueDraggable
-              v-bind="arvioinnitOptions"
-              v-model="opintokokonaisuus.arvioinnit"
-              tag="div"
-            >
-              <b-row
-                v-for="(arviointiItem, index) in opintokokonaisuus.arvioinnit"
-                :key="arviointiItem.id"
-                class="pb-2"
-              >
-                <b-col md="10">
-                  <EpInput
-                    v-model="arviointiItem.arviointi"
-                    :is-editing="isEditing"
-                    :disabled="arviointiItem.perusteesta"
-                    :validation="validation.opintokokonaisuus.arvioinnit?.$each?.$response.$data[index]?.arviointi"
-                  >
-                    <template #left>
-                      <div class="order-handle m-2">
-                        <EpMaterialIcon>drag_indicator</EpMaterialIcon>
-                      </div>
-                    </template>
-                  </EpInput>
-                </b-col>
-                <b-col
-                  v-if="isEditing && !arviointiItem.perusteesta"
-                  cols="1"
-                >
-                  <div
-                    class="default-icon clickable mt-2"
-                    @click="onRemoveListItem(arviointiItem, 'arvioinnit')"
-                  >
-                    <EpMaterialIcon icon-shape="outlined">
-                      delete
-                    </EpMaterialIcon>
-                  </div>
-                </b-col>
-              </b-row>
-            </VueDraggable>
+          </div>
+        </div>
 
-            <div class="d-flex">
-              <EpButton
-                v-if="isEditing"
-                variant="outline"
-                icon="add"
-                @click="addArviointi()"
+        <div class="w-full md:w-5/6 min-w-0">
+
+          <ep-form-group
+            :label="$t('opiskelijan-osaamisen-arvioinnin-kohteet')"
+            :required="!isOpsPohja"
+          >
+            <div v-if="isEditing">
+              <VueDraggable
+                v-bind="arvioinnitOptions"
+                v-model="opintokokonaisuus.arvioinnit"
+                tag="div"
               >
-                {{ $t('lisaa-arvioinnin-kohde') }}
-              </EpButton>
-              <EpOpintokokonaisuusArviointiImport
-                v-if="isEditing && hasPohja"
-                :toteutussuunnitelma-id="toteutussuunnitelmaId"
-                :koulutustoimija-id="koulutustoimijaId"
-                :add-arvioinnit="addPohjanArvioinnit"
-              />
+                <div
+                  v-for="(arviointiItem, index) in opintokokonaisuus.arvioinnit"
+                  :key="arviointiItem.id"
+                  class="flex flex-wrap pb-2 gap-2"
+                >
+                  <div class="w-full md:w-5/6 min-w-0 grow">
+                    <EpInput
+                      v-model="arviointiItem.arviointi"
+                      :is-editing="isEditing"
+                      :disabled="arviointiItem.perusteesta"
+                      :validation="validation.opintokokonaisuus.arvioinnit?.$each?.$response.$data[index]?.arviointi"
+                    >
+                      <template #left>
+                        <div class="order-handle m-1">
+                          <EpMaterialIcon>drag_indicator</EpMaterialIcon>
+                        </div>
+                      </template>
+                    </EpInput>
+                  </div>
+                  <div
+                    v-if="isEditing && !arviointiItem.perusteesta"
+                    class="shrink-0"
+                  >
+                    <div
+                      class="default-icon clickable mt-1"
+                      @click="onRemoveListItem(arviointiItem, 'arvioinnit')"
+                    >
+                      <EpMaterialIcon icon-shape="outlined">
+                        delete
+                      </EpMaterialIcon>
+                    </div>
+                  </div>
+                </div>
+              </VueDraggable>
+
+              <div class="flex">
+                <EpButton
+                  v-if="isEditing"
+                  variant="outline"
+                  icon="add"
+                  @click="addArviointi()"
+                >
+                  {{ $t('lisaa-arvioinnin-kohde') }}
+                </EpButton>
+                <EpOpintokokonaisuusArviointiImport
+                  v-if="isEditing && hasPohja"
+                  :toteutussuunnitelma-id="toteutussuunnitelmaId"
+                  :koulutustoimija-id="koulutustoimijaId"
+                  :add-arvioinnit="addPohjanArvioinnit"
+                />
+              </div>
             </div>
-          </div>
-          <div v-else>
-            <ul>
-              <li
-                v-for="arviointiItem in opintokokonaisuus.arvioinnit"
-                :key="arviointiItem.id"
-              >
-                {{ $kaanna(arviointiItem.arviointi) }}
-              </li>
-            </ul>
-          </div>
-        </b-form-group>
+            <div v-else>
+              <ul>
+                <li
+                  v-for="arviointiItem in opintokokonaisuus.arvioinnit"
+                  :key="arviointiItem.id"
+                >
+                  {{ $kaanna(arviointiItem.arviointi) }}
+                </li>
+              </ul>
+            </div>
+          </ep-form-group>
+        </div>
         <hr>
         <h3 class="pt-3 py-3">
           {{ $t('kansalliset-perustaitojen-osaamismerkit') }}
@@ -359,8 +366,10 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import { getKoodistoSivutettuna, KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpPopover from '@shared/components/EpPopover/EpPopover.vue';
 import EpOpintokokonaisuusArviointiImport from '@/components/EpOpintokokonaisuusArviointiImport/EpOpintokokonaisuusArviointiImport.vue';
 import EpOsaamismerkkiKappale from '@/components/EpOsaamismerkkiKappale/EpOsaamismerkkiKappale.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { Koodisto } from '@shared/api/eperusteet';

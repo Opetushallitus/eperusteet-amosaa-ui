@@ -3,7 +3,7 @@ import createVuePlugin  from '@vitejs/plugin-vue';
 import commonjs from 'vite-plugin-commonjs';
 import { fileURLToPath, URL } from 'node:url';
 import { cspReportOnlyPlugin } from './eperusteet-frontend-utils/vue/src/plugins/vite-plugin-csp-report-only.js';
-
+import tailwindcss from '@tailwindcss/vite';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
 
@@ -14,16 +14,9 @@ export default defineConfig(({ mode }) => {
     base: env.NODE_ENV === 'production' ? '/eperusteet-amosaa-service/ui' : '/',
     plugins: [
       cspReportOnlyPlugin(),
-      createVuePlugin({
-        template: {
-          compilerOptions: {
-            compatConfig: {
-              MODE: 2,
-            },
-          },
-        },
-      }),
+      createVuePlugin(),
       commonjs(),
+      tailwindcss(),
     ],
     define: {
       'process.env.BUILD': JSON.stringify(env.BUILD), // Define the BUILD environment variable
@@ -44,7 +37,6 @@ export default defineConfig(({ mode }) => {
         '@assets': fileURLToPath(new URL('./eperusteet-frontend-utils/vue/public', import.meta.url)),
         '&': fileURLToPath(new URL('./tests', import.meta.url)),
         '~': fileURLToPath(new URL('./node_modules', import.meta.url)),
-        vue: '@vue/compat',
       },
     },
     server: {

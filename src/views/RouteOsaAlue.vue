@@ -5,7 +5,7 @@
   >
     <EpEditointi :store="editointiStore">
       <template #header>
-        <div class="d-flex">
+        <div class="flex">
           <h2 class="m-0">
             <span v-if="perusteenOsaAlue">{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
             <span v-else-if="osaAlueValue.nimi">{{ $kaanna(osaAlueValue.nimi) }}</span>
@@ -32,10 +32,10 @@
           {{ $t('osa-alue-piilotettu-julkisesta-suunnitelmasta') }}
         </div>
 
-        <div class="d-flex flex-lg-wrap justify-content-between">
-          <b-form-group
+        <div class="flex flex-nowrap lg:flex-wrap justify-between">
+          <ep-form-group
             v-if="isEditing"
-            class="flex-grow-1 mr-6"
+            class="grow mr-6"
             :label="$t('osa-alueen-nimi')"
           >
             <ep-field
@@ -44,23 +44,23 @@
               :is-editing="isEditing"
             />
             <span v-else>{{ $kaanna(perusteenOsaAlue.nimi) }}</span>
-          </b-form-group>
+          </ep-form-group>
 
-          <b-form-group
+          <ep-form-group
             v-if="perusteenOsaAlue"
-            class="flex-grow-1 mr-6"
+            class="grow mr-6"
             :label="$t('koodi')"
           >
             <span>{{ perusteenOsaAlue.koodi.arvo }}</span>
-          </b-form-group>
+          </ep-form-group>
         </div>
 
         <div
           v-if="tyyppi === 'paikallinen'"
-          class="d-flex flex-lg-wrap justify-content-between"
+          class="flex flex-nowrap lg:flex-wrap justify-between"
         >
-          <b-form-group
-            class="flex-grow-1 mr-6"
+          <ep-form-group
+            class="grow mr-6"
             :label="$t('koodi')"
           >
             <ep-field
@@ -68,17 +68,17 @@
               type="string"
               :is-editing="isEditing"
             />
-          </b-form-group>
+          </ep-form-group>
         </div>
 
-        <b-form-group
+        <ep-form-group
           v-if="supportData.tutkinnonOsa"
           :label="$t('tutkinnon-osa')"
         >
           <router-link :to="{ name: 'tutkinnonosa' }">
             {{ $kaanna(supportData.tutkinnonOsa.nimi) }}
           </router-link>
-        </b-form-group>
+        </ep-form-group>
 
         <h3 v-if="isEditing">
           {{ $t('paikallinen-tarkennus') }}
@@ -100,10 +100,13 @@
           :is-editing="isEditing"
         />
 
-        <b-tabs class="ml-0 pl-0 mt-4">
-          <b-tab
+        <ep-tabs
+          :key="isEditing"
+          class="ml-0 pl-0 mt-4"
+          content-class="mt-4 ml-0 pl-0"
+        >
+          <ep-tab
             :title="$t('paikallinen-toteutus')"
-            class="mt-4"
           >
             <h3 class="mt-4 mb-4">
               {{ $t('toteutukset') }}
@@ -112,9 +115,9 @@
               v-model="data.osaAlueet[osaAlueIdx].toteutukset"
               :is-editing="isEditing"
             />
-          </b-tab>
+          </ep-tab>
 
-          <b-tab
+          <ep-tab
             v-if="tyyppi === 'paikallinen'"
             :title="$t('sisalto')"
           >
@@ -122,13 +125,13 @@
               {{ $t('sisalto') }}
             </h3>
 
-            <b-form-group>
+            <ep-form-group>
               <template #label>
                 <h4 class="pt-3">
                   {{ $t('laajuus') }}
                 </h4>
               </template>
-              <div class="d-flex align-items-center">
+              <div class="flex items-center">
                 <ep-field
                   v-model="data.osaAlueet[osaAlueIdx].laajuus"
                   type="number"
@@ -138,9 +141,9 @@
                   {{ $t('osaamispiste') }}
                 </div>
               </div>
-            </b-form-group>
+            </ep-form-group>
 
-            <b-form-group>
+            <ep-form-group>
               <template #label>
                 <h4 class="pt-3">
                   {{ $t('osaamistavoitteet') }}
@@ -160,17 +163,17 @@
                 :show-kohde="false"
                 :is-editing="isEditing"
               />
-            </b-form-group>
+            </ep-form-group>
 
-            <b-form-group>
+            <ep-form-group>
               <GeneerinenArviointi
                 v-model="data.osaAlueet[osaAlueIdx].geneerinenarviointi"
                 :is-editing="isEditing"
               />
-            </b-form-group>
-          </b-tab>
+            </ep-form-group>
+          </ep-tab>
 
-          <b-tab
+          <ep-tab
             v-else
             :title="$t('perusteen-sisalto')"
           >
@@ -180,8 +183,8 @@
               :tyyppi="tyyppi"
               :peruste-data="perusteenOsaAlue"
             />
-          </b-tab>
-        </b-tabs>
+          </ep-tab>
+        </ep-tabs>
       </template>
     </EpEditointi>
   </div>
@@ -199,6 +202,9 @@ import EpAmmattitaitovaatimukset from '@shared/components/EpAmmattitaitovaatimuk
 import GeneerinenArviointi from '@/components/EpAmmatillinen/GeneerinenArviointi.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
+import EpTabs from '@shared/components/EpTabs/EpTabs.vue';
+import EpTab from '@shared/components/EpTabs/EpTab.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';

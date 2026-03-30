@@ -10,31 +10,31 @@
       </h2>
     </template>
     <template #default="{ isEditing, data: { koulutuksenosa } }">
-      <b-row>
-        <b-col>
-          <b-form-group :label="$t('laajuus')">
+      <div class="flex flex-wrap w-full">
+        <div class="w-full">
+          <ep-form-group :label="$t('laajuus')">
             {{ perusteenOsa.laajuusMinimi }} - {{ perusteenOsa.laajuusMaksimi }} {{ $t('viikkoa') }}
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col md="10">
-          <b-form-group :label="$t('kuvaus')">
+          </ep-form-group>
+        </div>
+      </div>
+      <div class="flex flex-wrap w-full">
+        <div class="w-full md:w-5/6">
+          <ep-form-group :label="$t('kuvaus')">
             <EpContent
               v-model="perusteenOsa.kuvaus"
               layout="normal"
               :is-editable="false"
             />
-          </b-form-group>
-        </b-col>
-      </b-row>
+          </ep-form-group>
+        </div>
+      </div>
       <hr>
-      <b-row>
-        <b-col md="10">
+      <div class="flex flex-wrap w-full">
+        <div class="w-full md:w-5/6">
           <h3 class="mb-4">
             {{ $t('tavoitteet') }}
           </h3>
-          <b-form-group :label="$t('opiskelija')">
+          <ep-form-group :label="$t('opiskelija')">
             <template v-if="perusteenOsa.tavoitteet.length > 0">
               <ul class="mb-0">
                 <li
@@ -53,9 +53,9 @@
                 {{ $t('lisaa-tavoite') }}
               </EpSortableTextList>
             </template>
-          </b-form-group>
+          </ep-form-group>
           <template v-if="koulutuksenosa.paikallinenTarkennus && !paikallisetTavoitteetListana">
-            <b-form-group :label="$t('paikallinen-teksti')">
+            <ep-form-group :label="$t('paikallinen-teksti')">
               <ep-content
                 v-if="isEditing || koulutuksenosa.paikallinenTarkennus.tavoitteetKuvaus"
                 v-model="koulutuksenosa.paikallinenTarkennus.tavoitteetKuvaus"
@@ -66,14 +66,14 @@
                 v-if="!isEditing && !koulutuksenosa.paikallinenTarkennus.tavoitteetKuvaus"
                 :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
               />
-            </b-form-group>
+            </ep-form-group>
           </template>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
       <hr>
-      <b-row>
-        <b-col md="10">
-          <b-form-group>
+      <div class="flex flex-wrap w-full">
+        <div class="w-full md:w-5/6">
+          <ep-form-group>
             <template #label>
               <h3>{{ $t('laaja-alainen-osaaminen') }}</h3>
             </template>
@@ -83,7 +83,7 @@
               layout="normal"
               :is-editable="false"
             />
-          </b-form-group>
+          </ep-form-group>
           <template v-if="koulutuksenosa.paikallinenTarkennus">
             <EpKoodistoTekstillaSelect
               v-model="koulutuksenosa.paikallinenTarkennus.laajaalaisetosaamiset"
@@ -107,12 +107,12 @@
               :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
             />
           </template>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
       <hr>
-      <b-row>
-        <b-col md="10">
-          <b-form-group>
+      <div class="flex flex-wrap w-full">
+        <div class="w-full md:w-5/6">
+          <ep-form-group>
             <template #label>
               <h3>
                 {{ $t('keskeinen-sisalto') }}
@@ -124,9 +124,9 @@
               layout="normal"
               :is-editable="false"
             />
-          </b-form-group>
+          </ep-form-group>
           <template v-if="koulutuksenosa.paikallinenTarkennus">
-            <b-form-group :label="$t('paikallinen-teksti')">
+            <ep-form-group :label="$t('paikallinen-teksti')">
               <ep-content
                 v-if="isEditing || koulutuksenosa.paikallinenTarkennus.keskeinenSisalto"
                 v-model="koulutuksenosa.paikallinenTarkennus.keskeinenSisalto"
@@ -137,14 +137,14 @@
                 v-if="!isEditing && !koulutuksenosa.paikallinenTarkennus.keskeinenSisalto"
                 :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
               />
-            </b-form-group>
+            </ep-form-group>
           </template>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
       <hr>
-      <b-row>
-        <b-col md="10">
-          <b-form-group>
+      <div class="flex flex-wrap w-full">
+        <div class="w-full md:w-5/6">
+          <ep-form-group>
             <template #label>
               <h3>
                 {{ $t('arviointi-teksti') }}
@@ -156,9 +156,9 @@
               layout="normal"
               :is-editable="false"
             />
-          </b-form-group>
+          </ep-form-group>
           <template v-if="koulutuksenosa.paikallinenTarkennus">
-            <b-form-group :label="$t('paikallinen-teksti')">
+            <ep-form-group :label="$t('paikallinen-teksti')">
               <ep-content
                 v-if="isEditing || koulutuksenosa.paikallinenTarkennus.arvioinninKuvaus"
                 v-model="koulutuksenosa.paikallinenTarkennus.arvioinninKuvaus"
@@ -169,15 +169,15 @@
                 v-if="!isEditing && !koulutuksenosa.paikallinenTarkennus.arvioinninKuvaus"
                 :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
               />
-            </b-form-group>
+            </ep-form-group>
           </template>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
       <template v-if="koulutuksenosa.paikallinenTarkennus && (isEditing || koulutuksenosa.paikallinenTarkennus.koulutuksenJarjestajat.length > 0)">
         <hr>
-        <b-row>
-          <b-col md="10">
-            <b-form-group>
+        <div class="flex flex-wrap w-full">
+          <div class="w-full md:w-5/6">
+            <ep-form-group>
               <template #label>
                 <h3>
                   {{ $t('koulutuksen-jarjestajat') }}
@@ -188,9 +188,9 @@
                 v-model="koulutuksenosa.paikallinenTarkennus.koulutuksenJarjestajat"
                 :is-editing="isEditing"
               />
-            </b-form-group>
-          </b-col>
-        </b-row>
+            </ep-form-group>
+          </div>
+        </div>
       </template>
     </template>
   </EpEditointi>
@@ -208,12 +208,11 @@ import * as _ from 'lodash';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
-import EpInput from '@shared/components/forms/EpInput.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpKoodistoTekstillaSelect from '@shared/components/EpKoodistoSelect/EpKoodistoTekstillaSelect.vue';
 import EpSortableTextList from '@shared/components/EpSortableTextList/EpSortableTextList.vue';
 import EpKoulutuksenJarjestajaSelect from '@shared/components/EpKoulutuksenJarjestajaSelect/EpKoulutuksenJarjestajaSelect.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 
 import { KuvaStore } from '@/stores/KuvaStore';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
@@ -246,7 +245,15 @@ const versionumero = computed(() => {
 });
 
 const laajaAlaisetKoodilla = computed(() => {
-  return _.keyBy(laajaAlaisetOsaamiset.value, 'tuvaLaajaAlainenOsaaminen.nimiKoodi');
+  return _.chain(laajaAlaisetOsaamiset.value)
+    .map(lao => {
+      return {
+        ...lao,
+        perusteteksti: lao.perusteteksti || lao.tuvaLaajaAlainenOsaaminen.teksti,
+      };
+    })
+    .keyBy('tuvaLaajaAlainenOsaaminen.nimiKoodi')
+    .value();
 });
 
 const laajaAlaisetKoodistoStore = new KoodistoSelectStore({

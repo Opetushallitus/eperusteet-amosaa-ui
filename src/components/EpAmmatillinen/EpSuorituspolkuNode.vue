@@ -2,15 +2,15 @@
   <div>
     <div
       v-if="depth > 0"
-      class="d-flex"
+      class="flex"
     >
-      <div class="w-100">
+      <div class="w-full">
         <div
           class="rakenne"
           :style="style"
         >
           <div
-            class="d-flex w-100 justify-content-between"
+            class="flex w-full justify-between"
             :class="{'kuvaukseton': !node.kuvaus}"
           >
             <div
@@ -25,26 +25,29 @@
               </EpMaterialIcon>
             </div>
             <div
-              class="w-75"
+              class="w-3/4"
               :class="{'ml-3' : node.osat && node.osat.length > 0}"
             >
               <slot name="nimi">
                 <span v-if="isRyhma" />
                 <span v-else>
-                  <ep-color-indicator
-                    :id="'node-' + node.tunniste"
-                    :tooltip="false"
-                    :kind="node.pakollinen ? 'pakollinen' : 'valinnainen'"
-                    class="mr-2"
-                  />
-                  <b-popover
-                    :target="'node-' + node.tunniste"
-                    :placement="'bottom'"
-                    triggers="hover"
+                  <EpPopover
+                    :triggers="['hover']"
+                    popover-class="max-w-xs"
                   >
+                    <template #trigger>
+                      <span class="inline-flex">
+                        <ep-color-indicator
+                          :id="'node-' + node.tunniste"
+                          :tooltip="false"
+                          :kind="node.pakollinen ? 'pakollinen' : 'valinnainen'"
+                          class="mr-2"
+                        />
+                      </span>
+                    </template>
                     <span v-if="node.pakollinen">{{ $t('pakollinen-tutkinnon-osa') }}</span>
                     <span v-if="!node.pakollinen">{{ $t('valinnainen-tutkinnon-osa') }}</span>
-                  </b-popover>
+                  </EpPopover>
                 </span>
                 <span :style="{ 'text-decoration': paikallinen.piilotettu ? 'line-through' : '' }">
                   {{ $kaanna(info.nimi) }}
@@ -55,7 +58,7 @@
                 </span>
               </slot>
             </div>
-            <div class="w-25 text-right">
+            <div class="flex gap-4">
               <span v-if="isRyhma">
                 <span :class="{'text-warning': osienLaajuus < info.minimi}">
                   {{ info.minimi }} - {{ info.maksimi }}
@@ -66,21 +69,18 @@
               </span>
               <div
                 v-if="isEditing"
-                class="btn-group"
+                class="flex gap-2"
               >
-                <button
-                  v-if="!paikallinen.piilotettu"
-                  class="btn btn-link"
+                <ep-button
+                  variant="link"
                   @click="muokkaa()"
-                >
-                  <EpMaterialIcon>edit</EpMaterialIcon>
-                </button>
-                <button
-                  class="btn btn-link"
+                  icon="edit"
+                />
+                <ep-button
+                  variant="link"
                   @click="toggleNode()"
-                >
-                  <EpMaterialIcon>delete</EpMaterialIcon>
-                </button>
+                  icon="delete"
+                />
               </div>
             </div>
           </div>
@@ -94,7 +94,7 @@
           </div>
           <div
             v-if="(node.kuvaus || paikallinen.kuvaus) && (showKuvaus || naytaKuvaukset)"
-            class="kuvaus"
+            class="kuvaus pb-2"
           >
             <div v-html="$kaanna(node.kuvaus)" />
             <div
@@ -156,27 +156,26 @@
         </div>
       </div>
     </div>
-    <b-modal
-      :id="'suorituspolku-modal-' + node.tunniste"
+    <ep-modal
       ref="muokkausModal"
       size="lg"
-      :title="$t('muokkaa') + ': ' + $kaanna(info.nimi)"
-      :hide-footer="true"
+      :header="$t('muokkaa') + ': ' + $kaanna(info.nimi)"
     >
       <div v-if="modalData">
-        <b-form-group :label="$t('kuvaus')">
+        <ep-form-group :label="$t('kuvaus')">
           <ep-content
             v-model="modalData.kuvaus"
             layout="normal"
             :is-editable="true"
           />
-        </b-form-group>
+        </ep-form-group>
         <div v-if="node.rooli === 'määrittelemätön'">
-          <b-table
+          <ep-table
             responsive
             striped
             :items="tutkinnonOsaArvot"
             :fields="tutkinnonOsaFields"
+            data-key="koodi"
           >
             <template #cell(nimi)="{ item }">
               <div
@@ -198,24 +197,23 @@
                 <span>{{ item.nimi }} ({{ item.koodiArvo }})</span>
               </div>
             </template>
-          </b-table>
+          </ep-table>
         </div>
       </div>
-      <div class="float-right">
-        <button
-          class="btn btn-link"
+      <template #modal-footer>
+        <ep-button
+          variant="link"
           @click="peruuta()"
         >
           {{ $t('peruuta') }}
-        </button>
-        <button
-          class="btn btn-primary"
+        </ep-button>
+        <ep-button
           @click="tallenna()"
         >
           {{ $t('tallenna') }}
-        </button>
-      </div>
-    </b-modal>
+        </ep-button>
+      </template>
+    </ep-modal>
   </div>
 </template>
 
@@ -225,7 +223,12 @@ import _ from 'lodash';
 
 import EpColorIndicator from '@shared/components/EpColorIndicator/EpColorIndicator.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpPopover from '@shared/components/EpPopover/EpPopover.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
+import EpButton from '@shared/components/EpButton/EpButton.vue';
 
 import { rakenneNodecolor } from '@shared/utils/perusterakenne';
 import { $t, $kaanna } from '@shared/utils/globals';
@@ -530,10 +533,6 @@ watch(() => props.naytaRakenne, () => {
     margin-top: 20px;
     background-color: $white;
     cursor: pointer;
-
-    .kuvaus {
-      padding: 20px;
-    }
 
     .kuvaukseton {
       padding-bottom: 20px;

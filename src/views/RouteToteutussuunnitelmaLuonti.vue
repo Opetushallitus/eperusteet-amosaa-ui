@@ -1,6 +1,6 @@
 <template>
   <EpMainView>
-    <b-container>
+    <div class="w-full max-w-screen-xl mx-auto px-2">
       <EpSteps
         ref="epsteps"
         :steps="steps"
@@ -9,9 +9,9 @@
         @cancel="onCancel"
       >
         <template #toteutussuunnitelma>
-          <div class="row">
-            <div class="col-sm-10 mb-4">
-              <b-form-group
+          <div class="flex flex-wrap">
+            <div class="w-full md:w-5/6 mb-4">
+              <ep-form-group
                 :label="$t('koulutustoimija')"
                 class="mt-4 pt-2"
               >
@@ -37,37 +37,38 @@
                 <div v-else>
                   {{ $kaanna(selectedKoulutustoimijaForSelect?.nimi) }}
                 </div>
-              </b-form-group>
+              </ep-form-group>
 
-              <b-form-group
+              <ep-form-group
                 v-if="pohjanValinta"
                 class="mt-4 pt-2 "
               >
                 <template #label>
-                  <div class="d-flex">
+                  <div class="flex items-center flex-wrap gap-1">
                     <span>{{ $t('kayta-pohjana')+' *' }}</span>
-                    <div
-                      id="infopopup"
-                      class="ml-2 default-icon clickable"
-                    >
-                      <EpMaterialIcon icon-shape="outlined">
-                        info
-                      </EpMaterialIcon>
-                    </div>
-                    <b-popover
+                    <EpPopover
                       v-if="tyypinRadioButtons"
-                      target="infopopup"
-                      triggers="hover click blur"
+                      :triggers="['hover', 'click']"
                     >
+                      <template #trigger>
+                        <div
+                          id="infopopup"
+                          class="ml-2 default-icon clickable inline-flex"
+                        >
+                          <EpMaterialIcon icon-shape="outlined">
+                            info
+                          </EpMaterialIcon>
+                        </div>
+                      </template>
                       <div
                         v-for="(radiobutton, index) in tyypinRadioButtons"
                         :key="'infopopup'+index"
                         class="mb-3"
                       >
-                        <span class="font-weight-bold">{{ $t(radiobutton.text) }}: </span>
+                        <span class="font-bold">{{ $t(radiobutton.text) }}: </span>
                         <span>{{ $t('uusi-opetussuunnitelma-ohje-' + radiobutton.text) }}</span>
                       </div>
-                    </b-popover>
+                    </EpPopover>
                   </div>
                 </template>
                 <EpRadio
@@ -80,10 +81,10 @@
                 >
                   {{ $t(radiobutton.text) }}
                 </EpRadio>
-              </b-form-group>
+              </ep-form-group>
 
               <template v-if="pohjanTyyppi !== 'pohjaton'">
-                <b-form-group
+                <ep-form-group
                   v-if="pohjanTyyppi && pohjanTyyppi !== 'uusi'"
                   :label="$t(kaannokset[pohjanTyyppi].pohjaLabel) +' *'"
                 >
@@ -135,10 +136,10 @@
                     </EpMultiSelect>
                     <EpSpinner v-else />
                   </div>
-                </b-form-group>
+                </ep-form-group>
               </template>
 
-              <b-form-group
+              <ep-form-group
                 v-if="pohjanTyyppi || !pohjanValinta"
                 :label="$t(kaannokset.nimiLabel) +' *'"
               >
@@ -147,7 +148,7 @@
                   :is-editing="true"
                   :validation="$v.nimi"
                 />
-              </b-form-group>
+              </ep-form-group>
 
               <div
                 v-if="korvaavaPeruste"
@@ -163,13 +164,13 @@
                 {{ $t('kopioi-yhteisen-osuuden-tiedot') }}
               </EpToggle>
 
-              <b-form-group
+              <ep-form-group
                 v-if="tutkinnonosatValinta"
                 :label="$t(kaannokset.tutkinnonosatLabel) +' *'"
               >
                 <ep-spinner v-if="!tutkinnonosat" />
 
-                <b-table
+                <ep-table
                   v-else
                   responsive
                   borderless
@@ -178,9 +179,8 @@
                   hover
                   :items="tutkinnonosat"
                   :fields="tutkinnonosatFields"
-                  :selectable="true"
                   select-mode="single"
-                  selected-variant=""
+                  data-key="koodi"
                   @row-selected="onRowSelected"
                 >
                   <template #cell(nimi)="{ item }">
@@ -198,8 +198,8 @@
                     </EpMaterialIcon>
                     {{ $kaanna(item.nimi) }}
                   </template>
-                </b-table>
-              </b-form-group>
+                </ep-table>
+              </ep-form-group>
 
               <EpJotpaSelect
                 v-if="pohjanTyyppi && pohjanTyyppi === 'pohjaton'"
@@ -218,7 +218,7 @@
           </span>
         </template>
       </EpSteps>
-    </b-container>
+    </div>
   </EpMainView>
 </template>
 
@@ -253,7 +253,10 @@ import { KayttajaStore } from '@/stores/kayttaja';
 import { $t, $kaanna, $sd, $fail } from '@shared/utils/globals';
 import { setItem } from '@shared/utils/localstorage';
 import EpRadio from '@shared/components/forms/EpRadio.vue';
+import EpPopover from '@shared/components/EpPopover/EpPopover.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 import { JaetutOsaPerustePohjatStore } from '@/stores/JaetutOsaPerustePohjatStore';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 
 const props = defineProps<{
   toteutussuunnitelmaStore: ToteutussuunnitelmaStore;

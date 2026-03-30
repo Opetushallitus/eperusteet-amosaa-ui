@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-row>
-      <b-col md="10">
-        <b-form-group
+    <div class="flex flex-wrap w-full mb-4">
+      <div class="w-full md:w-5/6 min-w-0">
+        <ep-form-group
           :label="$t('osaamismerkkien-suorittaminen')"
           required
         >
@@ -12,12 +12,12 @@
             :is-editable="isEditing"
             :kuva-handler="kuvaHandler"
           />
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="10">
-        <b-form-group :label="$t('osaamismerkit')">
+        </ep-form-group>
+      </div>
+    </div>
+    <div class="flex flex-wrap w-full">
+      <div class="w-full md:w-5/6 min-w-0">
+        <ep-form-group :label="$t('osaamismerkit')">
           <div
             v-for="(merkki, idx) in osaamismerkkiKoodit"
             :key="'koodi-'+idx"
@@ -25,9 +25,9 @@
           >
             <div
               v-if="isEditing"
-              class="d-flex"
+              class="flex"
             >
-              <div class="d-flex">
+              <div class="flex">
                 <span>{{ $kaanna(merkki.nimi) }} ({{ merkki.koodi }})</span>
                 <span
                   v-if="merkki.vanhentunut"
@@ -45,7 +45,7 @@
             </div>
             <div v-else>
               <EpLinkki :url="merkki.url">
-                <div class="d-flex">
+                <div class="flex">
                   <span>{{ $kaanna(merkki.nimi) }} ({{ merkki.koodi }})</span>
                   <span
                     v-if="merkki.vanhentunut"
@@ -64,18 +64,14 @@
             @add="onAddListItem($event)"
           >
             <template #default="{ open }">
-              <b-input-group>
-                <b-input-group-append>
-                  <EpButton
-                    v-if="isEditing"
-                    variant="outline"
-                    icon="add"
-                    @click="open"
-                  >
-                    {{ $t('lisaa-osaamismerkkeja') }}
-                  </EpButton>
-                </b-input-group-append>
-              </b-input-group>
+              <EpButton
+                v-if="isEditing"
+                variant="outline"
+                icon="add"
+                @click="open"
+              >
+                {{ $t('lisaa-osaamismerkkeja') }}
+              </EpButton>
             </template>
             <template #empty>
               <div v-if="innerModel.osaamismerkkiKoodit && innerModel.osaamismerkkiKoodit.length > 0" />
@@ -84,15 +80,16 @@
               </div>
             </template>
           </EpKoodistoSelect>
-        </b-form-group>
-      </b-col>
-    </b-row>
+        </ep-form-group>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
 import { getKoodistoSivutettuna, KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { Koodisto } from '@shared/api/eperusteet';
@@ -105,6 +102,7 @@ import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
 import { $t, $kaanna } from '@shared/utils/globals';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpInputGroup from '@shared/components/EpInputGroup/EpInputGroup.vue';
 
 
 const props = defineProps<{
@@ -151,18 +149,19 @@ const onAddListItem = (merkit: any) => {
     ...innerModel.value,
     osaamismerkkiKoodit: [
       ...innerModel.value.osaamismerkkiKoodit,
-      ...addMerkit(merkit),
+      ..._.chain(merkit)
+        .filter(merkki => !_.includes(_.map(innerModel.value.osaamismerkkiKoodit, 'koodi'), merkki.arvo))
+        .map(addMerkit)
+        .value(),
     ],
   };
 };
 
-const addMerkit = (merkit: any) => {
-  return _.map(merkit, merkki => {
-    return {
-      nimi: merkki.nimi,
-      koodi: merkki.arvo,
-    };
-  });
+const addMerkit = (merkki: any) => {
+  return {
+    nimi: merkki.nimi,
+    koodi: merkki.arvo,
+  };
 };
 
 const onRemoveListItem = (poistettavaRivi: any) => {

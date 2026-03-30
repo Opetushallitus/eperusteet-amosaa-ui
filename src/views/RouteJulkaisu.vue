@@ -1,37 +1,33 @@
 <template>
   <div class="p-4">
-    <div class="d-flex justify-content-between">
+    <div class="flex justify-between">
       <h2>{{ $t('julkaisunakyma') }}</h2>
       <div
         v-if="$isAdmin()"
-        class="d-flex flex-column"
+        class="flex flex-col"
       >
         <EpSpinner v-if="hallintaLoading" />
-        <b-dropdown
+        <EpDropdown
           v-else
           class="asetukset"
-          size="lg"
-          variant="link"
-          dropleft
-          toggle-class="text-decoration-none"
           no-caret
+          right
         >
           <template #button-content>
-            {{ $t('hallinta') }}
-            <EpMaterialIcon
-              icon-shape="outlined"
-              class="hallinta"
-            >
-              settings
-            </EpMaterialIcon>
+            <span class="text-inherit no-underline inline-flex items-center gap-1">
+              {{ $t('hallinta') }}
+              <EpMaterialIcon
+                icon-shape="outlined"
+                class="hallinta"
+              >
+                settings
+              </EpMaterialIcon>
+            </span>
           </template>
-          <EpButton
-            variant="link"
-            @click="poistaJulkaisut"
-          >
+          <EpDropdownItem @click="poistaJulkaisut">
             {{ $t('poista-julkaisut') }}
-          </EpButton>
-        </b-dropdown>
+          </EpDropdownItem>
+        </EpDropdown>
       </div>
     </div>
 
@@ -60,7 +56,7 @@
         <div v-else>
           <div
             v-if="isValid"
-            class="d-flex"
+            class="flex"
           >
             <EpMaterialIcon class="no-errors">
               check_circle
@@ -71,7 +67,7 @@
           </div>
           <div
             v-else
-            class="d-flex"
+            class="flex"
           >
             <EpMaterialIcon class="errors">
               info
@@ -102,27 +98,23 @@
 
       <template v-if="suunnitelma">
         <h3>{{ $t('suunnitelman-tiedot') }}</h3>
-        <b-container fluid>
-          <b-row no-gutters>
-            <b-col>
-              <b-form-group :label="$t('opetussuunnitelman-nimi')">
-                <EpInput v-model="suunnitelma.nimi" />
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row no-gutters>
-            <b-col>
-              <b-form-group :label="$t('tiivistelma')">
-                <EpContent
-                  v-model="suunnitelma.kuvaus"
-                  layout="full"
-                />
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row no-gutters>
-            <b-col lg="6">
-              <b-form-group :label="$t('paatosnumero')">
+        <div class="w-full max-w-full">
+          <div class="w-full">
+            <ep-form-group :label="$t('opetussuunnitelman-nimi')">
+              <EpInput v-model="suunnitelma.nimi" />
+            </ep-form-group>
+          </div>
+          <div class="w-full">
+            <ep-form-group :label="$t('tiivistelma')">
+              <EpContent
+                v-model="suunnitelma.kuvaus"
+                layout="full"
+              />
+            </ep-form-group>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-x-4">
+            <div class="w-full min-w-0">
+              <ep-form-group :label="$t('paatosnumero')">
                 <EpInput
                   v-if="suunnitelma.paatosnumero"
                   v-model="suunnitelma.paatosnumero"
@@ -131,17 +123,15 @@
                 <template v-else>
                   -
                 </template>
-              </b-form-group>
-            </b-col>
-            <b-col lg="6">
-              <b-form-group :label="$t('paatospaivamaara')">
+              </ep-form-group>
+            </div>
+            <div class="w-full min-w-0">
+              <ep-form-group :label="$t('paatospaivamaara')">
                 <EpDatepicker v-model="suunnitelma.paatospaivamaara" />
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row no-gutters>
-            <b-col lg="6">
-              <b-form-group :label="$t('hyvaksyja')">
+              </ep-form-group>
+            </div>
+            <div class="w-full min-w-0">
+              <ep-form-group :label="$t('hyvaksyja')">
                 <EpInput
                   v-if="suunnitelma.hyvaksyja"
                   v-model="suunnitelma.hyvaksyja"
@@ -150,25 +140,21 @@
                 <template v-else>
                   -
                 </template>
-              </b-form-group>
-            </b-col>
-            <b-col lg="6">
-              <b-form-group :label="$t('voimassaolo')">
-                <div class="d-flex align-items-center">
+              </ep-form-group>
+            </div>
+            <div class="w-full min-w-0">
+              <ep-form-group :label="$t('voimassaolo')">
+                <div class="flex items-center flex-wrap gap-2">
                   <EpDatepicker v-model="suunnitelma.voimaantulo" />
                   <template v-if="suunnitelma.voimassaoloLoppuu">
-                    <div class="ml-2 mr-2">
-                      -
-                    </div>
+                    <span>-</span>
                     <EpDatepicker v-model="suunnitelma.voimassaoloLoppuu" />
                   </template>
                 </div>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row no-gutters>
-            <b-col lg="6">
-              <b-form-group :label="$t('julkaisukielet')">
+              </ep-form-group>
+            </div>
+            <div class="w-full min-w-0">
+              <ep-form-group :label="$t('julkaisukielet')">
                 <div
                   v-if="suunnitelma.julkaisukielet.length > 0"
                   class="text-nowrap"
@@ -176,7 +162,6 @@
                   <span
                     v-for="(kieli, idx) in suunnitelma.julkaisukielet"
                     :key="kieli"
-                    :value="kieli"
                   >
                     {{ $t(kieli) }}<span
                       v-if="idx < suunnitelma.julkaisukielet.length - 1"
@@ -187,13 +172,13 @@
                 <template v-else>
                   -
                 </template>
-              </b-form-group>
-            </b-col>
-            <b-col
+              </ep-form-group>
+            </div>
+            <div
               v-if="!isOpsPohja"
-              lg="6"
+              class="w-full min-w-0"
             >
-              <b-form-group :label="$t('esikatselu')">
+              <ep-form-group :label="$t('esikatselu')">
                 <EpExternalLink
                   v-if="julkaisut && julkaisut.length > 0"
                   :url="esikatseluUrl"
@@ -203,16 +188,16 @@
                 <template v-else>
                   -
                 </template>
-              </b-form-group>
-            </b-col>
-          </b-row>
-        </b-container>
+              </ep-form-group>
+            </div>
+          </div>
+        </div>
 
         <hr class="mt-4 mb-4">
 
         <div v-if="julkaisuMahdollinen && julkaisut">
           <h3>{{ $t('uusi-julkaisu') }}</h3>
-          <b-form-group :label="$t('julkaisun-tiedote')">
+          <ep-form-group :label="$t('julkaisun-tiedote')">
             <div class="font-size-08 mb-2">
               {{ $t('tiedote-naytetaan-tyoryhmalle-taman-sivun-julkaisuhistoriassa') }}
             </div>
@@ -227,7 +212,7 @@
               :julkaise="julkaiseHandler"
               :julkaisu-kesken="julkaisuKesken"
             />
-          </b-form-group>
+          </ep-form-group>
         </div>
 
         <EpJulkaisuHistoria
@@ -258,13 +243,15 @@ import EpInput from '@shared/components/forms/EpInput.vue';
 import EpDatepicker from '@shared/components/forms/EpDatepicker.vue';
 import EpExternalLink from '@shared/components/EpExternalLink/EpExternalLink.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpJulkaisuHistoria from '@shared/components/EpJulkaisuHistoria/EpJulkaisuHistoria.vue';
 import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButton.vue';
 import EpJulkaisuValidointi from '@shared/components/EpJulkaisuValidointi/EpJulkaisuValidointi.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpDropdown from '@shared/components/EpDropdown/EpDropdown.vue';
+import EpDropdownItem from '@shared/components/EpDropdown/EpDropdownItem.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 
 import { buildEsikatseluUrl, buildKatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';

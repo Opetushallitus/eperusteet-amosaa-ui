@@ -31,7 +31,7 @@
 
       <div
         v-if="isEditing"
-        class="d-flex justify-content-between mt-1"
+        class="flex justify-between mt-1"
       >
         <ep-button
           v-if="index+1 === modelValue.length"
@@ -57,6 +57,7 @@
 
     <ep-button
       v-if="isEditing && modelValue.length === 0"
+      class="mt-2"
       variant="outline-primary"
       icon="add"
       @click="lisaaTekstikappale()"

@@ -14,60 +14,58 @@
         </h2>
       </template>
       <template #default="{ data, isEditing, validation }">
-        <b-form-group :label="$t(kielistykset['nimi'])">
+        <ep-form-group :label="$t(kielistykset['nimi'])">
           <ep-field
             v-model="data.opetussuunnitelma.nimi"
             :is-editing="isEditing"
             :validation="validation.opetussuunnitelma.nimi"
           />
-        </b-form-group>
+        </ep-form-group>
 
-        <b-form-group :label="$t(kielistykset['tiivistelma'])">
+        <ep-form-group :label="$t(kielistykset['tiivistelma'])">
           <ep-content
             v-model="data.opetussuunnitelma.kuvaus"
             layout="normal"
             :is-editable="isEditing"
           />
-        </b-form-group>
+        </ep-form-group>
 
-        <b-container fluid>
-          <b-row>
-            <b-col>
-              <b-form-group :label="$t('paatosnumero')">
+        <div class="w-full">
+          <div class="flex flex-wrap gap-4 w-full">
+            <div class="w-full md:flex-1 min-w-0">
+              <ep-form-group :label="$t('paatosnumero')">
                 <ep-field
                   v-model="data.opetussuunnitelma.paatosnumero"
                   :is-editing="isEditing"
                   type="string"
                 />
-              </b-form-group>
-            </b-col>
-            <b-col>
-              <b-form-group :label="$t('paatospaivamaara')">
-                <div class="d-flex align-items-center">
-                  <ep-datepicker
-                    v-model="data.opetussuunnitelma.paatospaivamaara"
-                    :is-editing="isEditing"
-                    type="sd"
-                    :validation="validation.opetussuunnitelma.paatospaivamaara"
-                  />
-                </div>
-              </b-form-group>
-            </b-col>
-          </b-row>
+              </ep-form-group>
+            </div>
+            <div class="w-full md:flex-1 min-w-0">
+              <ep-form-group :label="$t('paatospaivamaara')">
+                <ep-datepicker
+                  v-model="data.opetussuunnitelma.paatospaivamaara"
+                  :is-editing="isEditing"
+                  type="sd"
+                  :validation="validation.opetussuunnitelma.paatospaivamaara"
+                />
+              </ep-form-group>
+            </div>
+          </div>
 
-          <b-row>
-            <b-col>
-              <b-form-group :label="$t('hyvaksyja')">
+          <div class="flex flex-wrap gap-4 w-full">
+            <div class="w-full md:flex-1 min-w-0">
+              <ep-form-group :label="$t('hyvaksyja')">
                 <ep-field
                   v-model="data.opetussuunnitelma.hyvaksyja"
                   :is-editing="isEditing"
                   type="string"
                 />
-              </b-form-group>
-            </b-col>
-            <b-col>
-              <b-form-group :label="$t('voimassaolo-alkaa')">
-                <div class="d-flex align-content-around flex-wrap">
+              </ep-form-group>
+            </div>
+            <div class="w-full md:flex-1 min-w-0">
+              <ep-form-group :label="$t('voimassaolo-alkaa')">
+                <div class="flex content-around flex-wrap">
                   <ep-datepicker
                     v-model="data.opetussuunnitelma.voimaantulo"
                     :is-editing="isEditing"
@@ -88,13 +86,13 @@
                     />
                   </template>
                 </div>
-              </b-form-group>
-            </b-col>
-          </b-row>
+              </ep-form-group>
+            </div>
+          </div>
 
-          <b-row>
-            <b-col>
-              <b-form-group :label="$t('julkaisukielet')">
+          <div class="flex flex-wrap gap-4 w-full">
+            <div class="w-full md:flex-1 min-w-0">
+              <ep-form-group :label="$t('julkaisukielet')">
                 <EpToggleGroup
                   v-if="isEditing"
                   v-model="data.opetussuunnitelma.julkaisukielet"
@@ -122,9 +120,12 @@
                     >,</span>
                   </span>
                 </div>
-              </b-form-group>
-            </b-col>
-            <b-col v-if="!isOpsPohja">
+              </ep-form-group>
+            </div>
+            <div
+              v-if="!isOpsPohja"
+              class="w-full md:flex-1 min-w-0"
+            >
               <EpEsikatselu
                 v-model="data.opetussuunnitelma"
                 toteutussuunnitelma
@@ -137,16 +138,19 @@
                   {{ $t(kielistykset['salliEsikatselu']) }}
                 </template>
               </EpEsikatselu>
-            </b-col>
-          </b-row>
+            </div>
+          </div>
 
-          <b-row>
-            <b-col v-if="showOpetussuunnitelmaOppilaitostyyppi">
-              <b-form-group :label="$t('oppilaitoksen-tyyppi')">
+          <div class="flex flex-wrap gap-4 w-full">
+            <div
+              v-if="showOpetussuunnitelmaOppilaitostyyppi"
+              class="w-full md:flex-1 min-w-0"
+            >
+              <ep-form-group :label="$t('oppilaitoksen-tyyppi')">
                 {{ $kaanna(data.opetussuunnitelma.koulutustoimija.oppilaitostyyppi) }}
-              </b-form-group>
-            </b-col>
-          </b-row>
+              </ep-form-group>
+            </div>
+          </div>
 
           <EpJotpaSelect
             v-model="data.opetussuunnitelma"
@@ -154,15 +158,18 @@
             :is-editing="isEditing"
           />
 
-          <b-row v-if="showOatValinta">
-            <b-col>
-              <b-form-group :label="$t('osaamisen-arvioinnin-toteutussuunnitelma')">
+          <div
+            v-if="showOatValinta"
+            class="flex flex-wrap gap-4 w-full"
+          >
+            <div class="w-full min-w-0">
+              <ep-form-group :label="$t('osaamisen-arvioinnin-toteutussuunnitelma')">
                 <div
                   v-for="(oat, index) in data.opetussuunnitelma.osaamisenArvioinninToteutussuunnitelmat"
                   :key="'oat' + index"
                   class="mb-2"
                 >
-                  <div class="d-flex">
+                  <div class="flex">
                     <router-link
                       v-if="oat.oatOpetussuunnitelma"
                       :to="{ name: 'toteutussuunnitelma', params: { koulutustoimijaId: koulutustoimijaId, toteutussuunnitelmaId: oat.oatOpetussuunnitelma.id } }"
@@ -193,42 +200,45 @@
                   @tallenna-oat="tallennaOat"
                   @poista-oat="poistaOat"
                 />
-              </b-form-group>
-            </b-col>
-          </b-row>
-        </b-container>
+              </ep-form-group>
+            </div>
+          </div>
+        </div>
 
         <div v-if="data.peruste">
           <hr>
           <h3>{{ $t('perusteen-tiedot') }}</h3>
 
-          <b-container fluid>
-            <b-row>
-              <b-col>
-                <b-form-group :label="$t(kielistykset['perustetyyppi'])">
+          <div class="w-full">
+            <div class="flex flex-wrap gap-4 w-full">
+              <div class="w-full md:flex-1 min-w-0">
+                <ep-form-group :label="$t(kielistykset['perustetyyppi'])">
                   <div>{{ $kaanna(data.peruste.nimi) }}</div>
                   <div>({{ data.peruste.diaarinumero }})</div>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group :label="$t('voimassaolo')">
+                </ep-form-group>
+              </div>
+              <div class="w-full md:flex-1 min-w-0">
+                <ep-form-group :label="$t('voimassaolo')">
                   <div><span v-if="data.peruste.voimassaoloAlkaa">{{ $sd(data.peruste.voimassaoloAlkaa) }}</span> - <span v-if="data.peruste.voimassaoloLoppuu">{{ $sd(data.peruste.voimassaoloLoppuu) }}</span></div>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row v-if="ammatillinenToteutus">
-              <b-col>
-                <b-form-group :label="$t('koulutukset')">
+                </ep-form-group>
+              </div>
+            </div>
+            <div
+              v-if="ammatillinenToteutus"
+              class="flex flex-wrap gap-4 w-full mt-4"
+            >
+              <div class="w-full min-w-0">
+                <ep-form-group :label="$t('koulutukset')">
                   <div
                     v-for="(koulutus, index) in data.peruste.koulutukset"
                     :key="'koulutus'+index"
                   >
                     {{ $kaanna(koulutus.nimi) }} ({{ koulutus.koulutuskoodiArvo }})
                   </div>
-                </b-form-group>
-              </b-col>
-            </b-row>
-          </b-container>
+                </ep-form-group>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div
@@ -265,6 +275,7 @@ import EpJotpaSelect from '@/components/EpJotpa/EpJotpaSelect.vue';
 import EpOatValintaModal from '@/components/EpAmmatillinen/EpOatValintaModal.vue';
 import EpEsikatselu from '@shared/components/EpEsikatselu/EpEsikatselu.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';

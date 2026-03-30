@@ -1,7 +1,7 @@
 <template>
   <ep-main-view>
     <template #header>
-      <div class="d-flex justify-content-between">
+      <div class="flex justify-between">
         <h1>{{ $t('otsikko') }}</h1>
       </div>
     </template>

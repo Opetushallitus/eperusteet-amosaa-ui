@@ -33,7 +33,7 @@
 
             <div v-if="hierarkia">
               <!-- Värien merkitys ohjeet -->
-              <ul class="colors-menu d-flex flex-row justify-content-end mb-2">
+              <ul class="colors-menu flex flex-row justify-end mb-2">
                 <li class="oma">
                   {{ $t('oma-organisaatio') }}
                 </li>
@@ -74,7 +74,7 @@
           <div v-if="hasMuut">
             <div v-if="!isMuutEmpty">
               <!-- Värien merkitys ohjeet -->
-              <ul class="colors-menu d-flex flex-row justify-content-end mb-2">
+              <ul class="colors-menu flex flex-row justify-end mb-2">
                 <li class="odotetaan">
                   {{ $t('yhteistyo-kysytty') }}
                 </li>
@@ -110,10 +110,9 @@
             {{ $t('laheta-yhteistyopyynto') }}
           </ep-button>
 
-          <b-modal
-            id="laheta-yhteistyopyynto-modal"
+          <ep-modal
             ref="lahetaYhteistyopyyntoModalRef"
-            :title="$t('tee-yhteistyopyynto')"
+            :header="$t('tee-yhteistyopyynto')"
             :hide-footer="true"
             size="lg"
           >
@@ -125,13 +124,12 @@
               class="mb-3"
             />
 
-            <b-table
+            <ep-table
               responsive
               striped
-              :items="yhteistyoKoulutustoimijatFormatted"
+              :items="paginatedYhteistyoKoulutustoimijat"
               :fields="fields"
-              :per-page="perPage"
-              :current-page="currentPage"
+              data-key="organisaatio"
             >
               <template #cell(actions)="row">
                 <div class="float-right">
@@ -156,16 +154,15 @@
                   </ep-button>
                 </div>
               </template>
-            </b-table>
+            </ep-table>
 
-            <ep-pagination
+            <ep-b-pagination
               v-model="currentPage"
-              :total-rows="rows"
-              :per-page="perPage"
-              align="center"
+              :total="rows"
+              :items-per-page="perPage"
               aria-controls="laheta-yhteistyopyynto-modal"
             />
-          </b-modal>
+          </ep-modal>
         </div>
       </template>
     </ep-editointi>
@@ -176,7 +173,6 @@
 import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import _, { get } from 'lodash';
 
-import { fail, success } from '@shared/utils/notifications';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { Koulutustoimijat, OrganisaatioHierarkiaDto, KoulutustoimijaYstavaDto, KoulutustoimijaBaseDto } from '@shared/api/amosaa';
 import { createLogger } from '@shared/utils/logger';
@@ -195,9 +191,11 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpOrganizationTree from '@/components/EpOrganizationTree/EpOrganizationTree.vue';
 import EpOrganizationNode from '@/components/EpOrganizationTree/EpOrganizationNode.vue';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
-import { $t, $fail, $kaanna, $filterBy, $bvModal, $success } from '@shared/utils/globals';
+import { $t, $fail, $kaanna, $filterBy, $confirmModal, $success } from '@shared/utils/globals';
 
 const logger = createLogger('RouteOrganisaatio');
 
@@ -330,6 +328,15 @@ const yhteistyoKoulutustoimijatFormatted = computed(() => {
   return undefined;
 });
 
+const paginatedYhteistyoKoulutustoimijat = computed(() => {
+  const all = yhteistyoKoulutustoimijatFormatted.value;
+  if (!all) {
+    return [];
+  }
+  const start = (currentPage.value - 1) * perPage.value;
+  return all.slice(start, start + perPage.value);
+});
+
 const hasYhteistyoKoulutustoimijatFormatted = computed(() => {
   return !_.isEmpty(yhteistyoKoulutustoimijatFormatted.value);
 });
@@ -360,7 +367,7 @@ const fetch = async () => {
 };
 
 const peruutaYhteistyopyynto = async (event: any) => {
-  if (await $bvModal.msgBoxConfirm($t('varmista-yhteistyopyynto-perutus', { nimi: $kaanna(event.nimi) }) as string, {
+  if (await $confirmModal.msgBoxConfirm($t('varmista-yhteistyopyynto-perutus', { nimi: $kaanna(event.nimi) }) as string, {
     title: $t('peruuta-yhteistyopyynto') as string,
     okVariant: 'primary',
     okTitle: $t('kylla') as string,
@@ -388,7 +395,7 @@ const peruutaYhteistyopyynto = async (event: any) => {
 };
 
 const hylkaaYhteistyopyynto = async (event: any) => {
-  if (await $bvModal.msgBoxConfirm($t('varmista-hylkaa-yhteistyopyynto', { nimi: $kaanna(event.nimi) }) as string, {
+  if (await $confirmModal.msgBoxConfirm($t('varmista-hylkaa-yhteistyopyynto', { nimi: $kaanna(event.nimi) }) as string, {
     title: $t('hylkaa-yhteistyopyynto') as string,
     okVariant: 'primary',
     okTitle: $t('hylkaa-yhteistyopyynto') as string,
@@ -413,7 +420,7 @@ const hylkaaYhteistyopyynto = async (event: any) => {
 };
 
 const hyvaksyYhteistyopyynto = async (event: any) => {
-  if (await $bvModal.msgBoxConfirm($t('varmista-hyvaksy-yhteistyopyynto', { nimi: $kaanna(event.nimi) }) as string, {
+  if (await $confirmModal.msgBoxConfirm($t('varmista-hyvaksy-yhteistyopyynto', { nimi: $kaanna(event.nimi) }) as string, {
     title: $t('hyvaksy-yhteistyopyynto') as string,
     okVariant: 'primary',
     okTitle: $t('hyvaksy-yhteistyopyynto') as string,
@@ -445,7 +452,7 @@ const hyvaksyYhteistyopyynto = async (event: any) => {
 };
 
 const lopetaYhteistyo = async (event: any) => {
-  if (await $bvModal.msgBoxConfirm($t('varmista-lopeta-yhteistyopyynto', { nimi: $kaanna(event.nimi) }) as string, {
+  if (await $confirmModal.msgBoxConfirm($t('varmista-lopeta-yhteistyopyynto', { nimi: $kaanna(event.nimi) }) as string, {
     title: $t('lopeta-yhteistyo') as string,
     okVariant: 'primary',
     okTitle: $t('lopeta-yhteistyo') as string,
@@ -474,7 +481,7 @@ const lopetaYhteistyo = async (event: any) => {
 };
 
 const lahetaYhteistyopyynto = async (event: any) => {
-  if (await $bvModal.msgBoxConfirm($t('varmista-laheta-yhteistyopyynto', { nimi: $kaanna(event.nimi) }) as string, {
+  if (await $confirmModal.msgBoxConfirm($t('varmista-laheta-yhteistyopyynto', { nimi: $kaanna(event.nimi) }) as string, {
     title: $t('laheta-yhteistyopyynto') as string,
     okVariant: 'primary',
     okTitle: $t('laheta-yhteistyopyynto') as string,
@@ -492,13 +499,12 @@ const lahetaYhteistyopyynto = async (event: any) => {
           ...event,
           status: 'odotetaan',
         });
-        success('yhteistyopyynto-lahetetty');
+        $success($t('yhteistyopyynto-lahetetty'));
         return;
       }
     }
     catch (err) {
-      console.
-        logger.error('yhteistyopyynto-lahetys-epaonnistui', err);
+      logger.error('yhteistyopyynto-lahetys-epaonnistui', err);
     }
     $fail('yhteistyopyynto-lahetys-epaonnistui');
     fetch(); // Näkymän sisältö muuttunut välissä? Ladataan näkymän sisältö uudestaan.

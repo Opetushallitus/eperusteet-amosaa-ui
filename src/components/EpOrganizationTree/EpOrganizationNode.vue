@@ -1,14 +1,14 @@
 <template>
-  <div class="d-flex align-content-stretch mb-3 organisaatio-box-container">
+  <div class="flex content-stretch mb-3 organisaatio-box-container">
     <div
       class="organisaatio-box-color"
       :style="nodeStyle"
     />
-    <div class="d-flex justify-content-between align-items-center organisaatio-box">
+    <div class="flex justify-between items-center organisaatio-box">
       <div class="p-3">
         {{ $kaanna(value.nimi) }}
       </div>
-      <div v-if="!isEditing && !value.oid">
+      <div v-if="!isEditing && !value.oid" class="mr-2">
         <div v-if="status === 'oma'" />
         <ep-button
           v-else-if="status === 'odotetaan'"

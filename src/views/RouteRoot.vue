@@ -1,28 +1,28 @@
 <template>
   <div
     class="home-container minfull"
-    sticky-container
   >
     <EpTestiymparisto />
 
     <div class="view-container">
+      <EpNavbar
+        :class="toteutus"
+        :style="headerStyle"
+        :kayttaja="kayttaja"
+        :koulutustoimija="koulutustoimija"
+        :koulutustoimijat="koulutustoimijatOikeuksilla"
+        :root-navigation="rootNavigation"
+        :sovellus-oikeudet="sovellusOikeudet"
+        :logout-href="logoutHref"
+        :sticky="routeStickyNavi"
+      />
       <div
         id="scroll-anchor"
         ref="headerRef"
         class="header"
-        :style="headerStyle"
         :class="toteutus"
+        :style="headerStyle"
       >
-        <EpNavbar
-          :class="toteutus"
-          :kayttaja="kayttaja"
-          :koulutustoimija="koulutustoimija"
-          :koulutustoimijat="koulutustoimijatOikeuksilla"
-          :root-navigation="rootNavigation"
-          :sovellus-oikeudet="sovellusOikeudet"
-          :logout-href="logoutHref"
-          :sticky="routeStickyNavi"
-        />
         <div id="headerExtension" />
       </div>
       <RouterView />
@@ -36,12 +36,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useHead } from '@unhead/vue';
 import { useRoute } from 'vue-router';
 import _ from 'lodash';
-import Sticky from 'vue-sticky-directive';
-
 import { KayttajaStore } from '@/stores/kayttaja';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
@@ -52,7 +50,8 @@ import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
 import { Koulutustoimijat, KoulutustoimijaDto, baseURL } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
-import { $t } from '@shared/utils/globals';
+import { $t, setConfirmModal } from '@shared/utils/globals';
+import { useConfirm } from 'primevue/useconfirm';
 
 const props = withDefaults(defineProps<{
   kayttajaStore: KayttajaStore;
@@ -156,6 +155,10 @@ watch(() => props.koulutustoimijaId, async (newValue, oldValue) => {
     koulutustoimija.value = (await Koulutustoimijat.getKoulutustoimija(props.koulutustoimijaId)).data;
   }
 }, { immediate: true });
+
+onMounted(() => {
+  setConfirmModal(useConfirm());
+});
 </script>
 
 <style lang="scss" scoped>
@@ -166,13 +169,14 @@ watch(() => props.koulutustoimijaId, async (newValue, oldValue) => {
   display: flex;
   flex-direction: column;
 
-  .header {
+  .header, :deep(.topbar) {
     color: white;
+    // background-image: url('@assets/img/banners/header.svg');
+    background-attachment: fixed;
     background-position: 100% 0;
-    background-repeat: none;
-    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: 100% 200px;
     @media only screen and (min-width: 2503px)  {
-      background-size: 100%;
     }
   }
 }
