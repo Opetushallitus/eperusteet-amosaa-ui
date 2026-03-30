@@ -28,8 +28,8 @@
             >
           </div>
 
-          <div class="d-flex flex-row-reverse">
-            <div class="align-self-center">
+          <div class="flex flex-row-reverse">
+            <div class="self-center">
               <a href="/virkailijan-tyopoyta">{{ $t('palaa-virkailijan-tyopyodalle') }}</a>
             </div>
           </div>
@@ -56,6 +56,10 @@ import { localhostOrigin } from '@shared/utils/esikatselu';
 import { Toteutus } from '@shared/utils/perusteet';
 import { $t } from '@shared/utils/globals';
 import { defaultToteutus } from '@/utils/toteutustypes';
+import { watch } from 'vue';
+import { Kielet } from '@shared/stores/kieli';
+import { updatePrimeVueLocale } from '@shared/utils/primevueUtils';
+import { usePrimeVue } from 'primevue/config';
 
 const virhekuva = new URL('@assets/img/images/virhe.png', import.meta.url).href;
 
@@ -66,6 +70,7 @@ const props = defineProps<{
 const route = useRoute();
 const router = useRouter();
 const header = useTemplateRef('header');
+const primevue = usePrimeVue();
 
 const koulutustoimijaId = ref<null | number>(null);
 
@@ -93,6 +98,10 @@ const rootNavigation = computed(() => {
     },
   };
 });
+
+watch(() => Kielet.uiKieli.value, () => {
+  updatePrimeVueLocale(primevue);
+}, { immediate: true });
 
 onMounted(async () => {
   // Ohjataan käyttäjän koulutustoimijan etusivulle

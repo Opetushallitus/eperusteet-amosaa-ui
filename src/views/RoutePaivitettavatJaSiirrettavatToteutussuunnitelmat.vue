@@ -9,13 +9,14 @@
     >
       {{ $t('toteutussuunnitelmat-eivat-vaadi-paivitysta') }}
     </div>
-    <b-table
+    <ep-table
       v-else
       responsive
       striped
       borderless
       :items="vanhentuneetToteutussuunnitelmat"
       :fields="vanhentuneetFields"
+      data-key="opetussuunnitelma.id"
     >
       <template #cell(nimi)="{ item }">
         <router-link :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: item.opetussuunnitelma.id } }">
@@ -31,7 +32,7 @@
           {{ $t('paivita') }}
         </ep-button>
       </template>
-    </b-table>
+    </ep-table>
 
     <h2 class="mt-5">
       {{ $t('siirra-toteutussuunnitelmat-aiemmasta-organisaatiosta') }}
@@ -44,13 +45,14 @@
     >
       {{ $t('yhtaan-vanhaa-toteutussuunnitelmaa-ei-loytynyt') }}
     </div>
-    <b-table
+    <ep-table
       v-else
       responsive
       striped
       borderless
       :items="historialiitoksienToteutussuunnitelmat"
       :fields="historiaFields"
+      data-key="opetussuunnitelma.id"
     >
       <template #cell(nimi)="{ item }">
         <router-link :to="{ name: 'toteutussuunnitelma', params: { toteutussuunnitelmaId: item.opetussuunnitelma.id } }">
@@ -66,7 +68,7 @@
           {{ $t('siirra') }}
         </ep-button>
       </template>
-    </b-table>
+    </ep-table>
   </ep-main-view>
 </template>
 
@@ -77,6 +79,7 @@ import * as _ from 'lodash';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { $t, $success, $fail, $kaanna, $sdt, $sd } from '@shared/utils/globals';

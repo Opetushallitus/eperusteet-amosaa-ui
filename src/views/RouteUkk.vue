@@ -2,12 +2,12 @@
   <ep-main-view :container="true">
     <template #icon />
     <template #header>
-      <div class="text-left">
+      <div class="text-start">
         <h1>{{ $t('usein-kysytyt-kysymykset') }}</h1>
         <p>{{ $t('ukk-kuvaus-nakyma') }}</p>
         <ep-spinner v-if="isLoading" />
         <div v-else>
-          <div class="d-flex justify-content-between align-items-end pb-3">
+          <div class="flex justify-between items-end pb-3">
             <ep-search v-model="rajain" />
 
             <ep-button
@@ -18,7 +18,7 @@
               {{ $t('lisaa-uusi-kysymys') }}
             </ep-button>
           </div>
-          <b-form-group
+          <ep-form-group
             :label="$t('nayta-sisalto-jonka-on-luonut')"
             class="w-50"
           >
@@ -38,7 +38,7 @@
                 {{ $kaanna(option.nimi) }}
               </template>
             </ep-multi-select>
-          </b-form-group>
+          </ep-form-group>
         </div>
       </div>
     </template>
@@ -48,22 +48,22 @@
         <div
           v-for="(ohje, index) in filteredOhjeet"
           :key="'ohje'+index"
-          class="row"
+          class="flex flex-wrap w-full mt-3"
         >
-          <div class="col text-left">
+          <div class="w-full min-w-0 text-start">
             <div class="float-right">
-              <button
-                class="btn btn-link"
+              <ep-button
+                variant="link"
                 @click="startKysymysModal(ohje)"
               >
                 <EpMaterialIcon>edit</EpMaterialIcon>
-              </button>
-              <button
-                class="btn btn-link"
+              </ep-button>
+              <ep-button
+                variant="link"
                 @click="startRemoveKysymys(ohje)"
               >
                 <EpMaterialIcon>delete</EpMaterialIcon>
-              </button>
+              </ep-button>
             </div>
             <div>
               <div
@@ -76,7 +76,7 @@
               <div class="text-secondary">
                 <ep-content
                   layout="normal"
-                  :value="ohje.lokalisoituVastaus"
+                  :model-value="ohje.lokalisoituVastaus"
                 />
               </div>
               <hr>
@@ -87,20 +87,16 @@
     </template>
 
     <template #after>
-      <b-modal
-        id="createUpdateKysymys"
+      <ep-modal
         ref="createUpdateKysymys"
-        class="backdrop"
-        :no-close-on-backdrop="true"
-        :no-enforce-focus="true"
-        :lazy="true"
-        :ok-disabled="v$.$invalid"
+        content-class="backdrop"
         size="lg"
-        @ok="createUpdateKysymysHandler"
       >
         <template #modal-title>
-          <span class="mr-2">{{ !ohje.id ? $t('lisaa-uusi-kysymys') : $t('muokkaa-kysymys') }}</span>
-          <ep-kielivalinta />
+          <div class="flex w-full justify-between items-center">
+            <span class="mr-2">{{ !ohje.id ? $t('lisaa-uusi-kysymys') : $t('muokkaa-kysymys') }}</span>
+            <ep-kielivalinta />
+          </div>
         </template>
         <ep-form-content name="kysymys-nimi">
           <ep-content
@@ -121,50 +117,68 @@
           />
         </ep-form-content>
         <ep-form-content name="nayta-organisaatioissa">
-          <b-form-checkbox
+          <EpToggle
             v-model="valitseKaikkiOrganisaatiot"
             class="pb-2"
-            @change="valitseKaikkiOrganisaatiotChange"
+            checkbox
+            @update:model-value="valitseKaikkiOrganisaatiotChange"
           >
             {{ $t('valitse-kaikki') }}
-          </b-form-checkbox>
-          <b-form-checkbox-group
+          </EpToggle>
+          <EpToggleGroup
             v-model="ohje.koulutustoimijat"
+            :items="koulutustoimijat"
             stacked
           >
-            <b-form-checkbox
-              v-for="(koulutustoimija, index) in koulutustoimijat"
-              :key="'modalktvalinta'+index"
-              :value="koulutustoimija"
-            >
-              {{ $kaanna(koulutustoimija.nimi) }}
-            </b-form-checkbox>
-          </b-form-checkbox-group>
+            <template #default="{ item }">
+              {{ $kaanna(item.nimi) }}
+            </template>
+          </EpToggleGroup>
         </ep-form-content>
-        <template #modal-cancel>
-          {{ $t('peruuta') }}
+        <template #modal-footer>
+          <div class="flex justify-end gap-4 items-center w-full flex-wrap">
+            <ep-button
+              variant="link"
+              @click="createUpdateKysymys?.hide()"
+            >
+              {{ $t('peruuta') }}
+            </ep-button>
+            <ep-button
+              :disabled="v$.$invalid"
+              @click="submitKysymys"
+            >
+              {{ !ohje.id ? $t('lisaa-kysymys') : $t('tallenna') }}
+            </ep-button>
+          </div>
         </template>
-        <template #modal-ok>
-          {{ !ohje.id ? $t('lisaa-kysymys') : $t('tallenna') }}
-        </template>
-      </b-modal>
+      </ep-modal>
 
-      <b-modal
-        id="removeKysymys"
+      <ep-modal
         ref="removeKysymys"
-        class="backdrop"
-        :lazy="true"
+        content-class="backdrop"
         size="lg"
-        @ok="deleteKysymys"
       >
-        <span class="mr-2">{{ $t('haluatko-poistaa-kysymyksen') }}</span>
-        <template #modal-cancel>
-          {{ $t('peruuta') }}
-        </template>
-        <template #modal-ok>
+        <template #modal-title>
           {{ $t('poista') }}
         </template>
-      </b-modal>
+        <span class="mr-2">{{ $t('haluatko-poistaa-kysymyksen') }}</span>
+        <template #modal-footer>
+          <div class="flex justify-end gap-4 items-center w-full flex-wrap">
+            <ep-button
+              variant="link"
+              @click="removeKysymys?.hide()"
+            >
+              {{ $t('peruuta') }}
+            </ep-button>
+            <ep-button
+              variant="primary"
+              @click="confirmRemoveKysymys"
+            >
+              {{ $t('poista') }}
+            </ep-button>
+          </div>
+        </template>
+      </ep-modal>
     </template>
   </ep-main-view>
 </template>
@@ -181,9 +195,12 @@ import EpKielivalinta from '@shared/components/EpKielivalinta/EpKielivalinta.vue
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpFormContent from '@shared/components/forms/EpFormContent.vue';
-import EpListSelect from '@shared/components/forms/EpListSelect.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpToggle from '@shared/components/forms/EpToggle.vue';
+import EpToggleGroup from '@shared/components/forms/EpToggleGroup.vue';
 
 import { OhjeetStore } from '@/stores/OhjeetStore';
 import { OhjeDto } from '@shared/api/amosaa';
@@ -251,6 +268,7 @@ const koulutustoimijat = computed(() => {
 });
 
 const startKysymysModal = (ohjeParam: OhjeDto | null) => {
+  console.log('startKysymysModal', ohjeParam);
   valitseKaikkiOrganisaatiot.value = false;
 
   if (ohjeParam) {
@@ -259,6 +277,8 @@ const startKysymysModal = (ohjeParam: OhjeDto | null) => {
   else {
     Object.assign(ohje, {
       koulutustoimijat: [],
+      lokalisoituKysymys: { [Kielet.getSisaltoKieli.value]: '' },
+      lokalisoituVastaus: { [Kielet.getSisaltoKieli.value]: '' },
     });
   }
   createUpdateKysymys.value?.show();
@@ -269,8 +289,7 @@ const startRemoveKysymys = (ohjeParam: OhjeDto) => {
   removeKysymys.value?.show();
 };
 
-const createUpdateKysymysHandler = async (event: any) => {
-  event.preventDefault(); // Piilotetaan modaali myöhemmin
+const submitKysymys = async () => {
   await props.ohjeetStore.save({
     ...ohje,
     toteutus: props.toteutus as any,
@@ -278,12 +297,13 @@ const createUpdateKysymysHandler = async (event: any) => {
   createUpdateKysymys.value?.hide();
 };
 
-const deleteKysymys = async () => {
+const confirmRemoveKysymys = async () => {
   if (!ohje || !ohje.id) {
     return;
   }
 
   await props.ohjeetStore.delete(ohje);
+  removeKysymys.value?.hide();
 };
 
 const nimiSearchIdentity = (obj: any) => {

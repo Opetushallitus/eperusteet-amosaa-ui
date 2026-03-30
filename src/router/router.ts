@@ -46,9 +46,10 @@ import { BrowserStore } from '@shared/stores/BrowserStore';
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { Kielet } from '@shared/stores/kieli';
 import { useLoading } from 'vue-loading-overlay';
-import { loadingOptions } from '@/utils/loading';
+import { loadingOptions } from '@shared/config/loading';
 import { JaetutOsaPerustePohjatStore } from '@/stores/JaetutOsaPerustePohjatStore';
-import { $bvModal } from '@shared/utils/globals';
+import { $confirmModal } from '@shared/utils/globals';
+import { applyToteutusPrimePrimaryTheme } from '@/utils/applyToteutusPrimePrimaryTheme';
 
 const props = (route: any) => {
   return {
@@ -60,6 +61,12 @@ const props = (route: any) => {
 
 const router = createRouter({
   history: createWebHashHistory(),
+  scrollBehavior(to, _from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    }
+    return { top: 0, left: 0 };
+  },
   routes: [{
     path: '',
     alias: '/',
@@ -388,7 +395,7 @@ const router = createRouter({
       component: RouteOpsPohjaLuonti,
       props,
     }, {
-      path: '*',
+      path: '/:catchAll(.*)*',
       redirect: (to) => {
         return {
           name: 'virhe',
@@ -432,7 +439,7 @@ router.beforeEach((to, from, next) => {
 // Estetään tilan vaihtaminen muokkaustilassa
 router.beforeEach(async (to, from, next) => {
   if (EditointiStore.anyEditing()) {
-    const value = await $bvModal.msgBoxConfirm(
+    const value = await $confirmModal.msgBoxConfirm(
       Kielet.kaannaOlioTaiTeksti('poistumisen-varmistusteksti-dialogi'), {
         title: Kielet.kaannaOlioTaiTeksti('haluatko-poistua-tallentamatta'),
         okTitle: Kielet.kaannaOlioTaiTeksti('poistu-tallentamatta'),
@@ -457,30 +464,6 @@ router.beforeEach(async (to, from, next) => {
 router.beforeEach((to, from, next) => {
   if (!!from.params.toteutus && !!to.params.toteutus && from.params.toteutus !== to.params.toteutus) {
     window.location.reload();
-  }
-  else {
-    next();
-  }
-});
-
-router.beforeEach(async (to, from, next) => {
-  if (EditointiStore.anyEditing()) {
-    const value = await $bvModal.msgBoxConfirm(
-      Kielet.kaannaOlioTaiTeksti('poistumisen-varmistusteksti-dialogi'), {
-        title: Kielet.kaannaOlioTaiTeksti('haluatko-poistua-tallentamatta'),
-        okTitle: Kielet.kaannaOlioTaiTeksti('poistu-tallentamatta'),
-        cancelTitle: Kielet.kaannaOlioTaiTeksti('peruuta'),
-        size: 'lg',
-      });
-
-    if (value) {
-      try {
-        await EditointiStore.cancelAll();
-      }
-      finally {
-        next();
-      }
-    }
   }
   else {
     next();
@@ -526,7 +509,8 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-router.afterEach(() => {
+router.afterEach((to) => {
+  applyToteutusPrimePrimaryTheme(to.params.toteutus);
   hideLoading();
   BrowserStore.changeLocation(location.href);
 });

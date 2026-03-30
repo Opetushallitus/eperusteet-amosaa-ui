@@ -1,7 +1,10 @@
 <template>
-  <b-row v-if="toteutus === 'vapaasivistystyo' && !model.peruste">
-    <b-col :cols="asRows ? 12 : 6">
-      <b-form-group :label="$t('jotpa-koulutus')">
+  <div
+    v-if="toteutus === 'vapaasivistystyo' && !model.peruste"
+    class="flex flex-wrap w-full gap-4"
+  >
+    <div :class="asRows ? 'w-full' : 'w-full md:w-1/2'">
+      <ep-form-group :label="$t('jotpa-koulutus')">
         <EpToggle
           v-if="isEditing"
           v-model="jotpaSelect"
@@ -15,10 +18,10 @@
         <div v-if="!isEditing && model.jotpatyyppi">
           {{ $t('koulutus-on-jotpa-rahoitteinen') }}
         </div>
-      </b-form-group>
-    </b-col>
-    <b-col :cols="asRows ? 12 : 6">
-      <b-form-group v-if="jotpaSelect">
+      </ep-form-group>
+    </div>
+    <div :class="asRows ? 'w-full' : 'w-full md:w-1/2'">
+      <ep-form-group v-if="jotpaSelect">
         <template #label>
           <div>{{ $t('onko-kyseessa-vapaan-sivistystyon-jotpa-koulutus') }} <span v-if="isEditing">*</span></div>
         </template>
@@ -35,14 +38,15 @@
         <div v-else>
           {{ $t(jotpaValinnatValueAsKey[model.jotpatyyppi].text) }}
         </div>
-      </b-form-group>
-    </b-col>
-  </b-row>
+      </ep-form-group>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import * as _ from 'lodash';
 import { computed } from 'vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import { Toteutus } from '@shared/utils/perusteet';
 import { OpetussuunnitelmaBaseDtoJotpatyyppiEnum } from '@shared/generated/amosaa';

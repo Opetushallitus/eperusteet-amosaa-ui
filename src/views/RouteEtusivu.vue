@@ -6,8 +6,8 @@
     >
       <div class="container">
         <div class="container-fluid">
-          <div class="row no-gutters">
-            <div class="col my-4 px-3 px-md-0">
+          <div class="flex flex-wrap gap-0">
+            <div class="w-full my-4 px-3 md:px-0">
               <h1>{{ $t(tervetuloaTeksti, { nimi }) }}</h1>
               <p>{{ $t(tervetuloaTekstiKuvaus) }}</p>
             </div>
@@ -16,7 +16,7 @@
       </div>
     </Teleport>
     <div class="container tile-container">
-      <div class="d-flex flex-row flex-wrap justify-content-center">
+      <div class="flex flex-row flex-wrap justify-center">
         <component
           v-bind="tile.props"
           :is="tile.component"
