@@ -8,7 +8,7 @@
       <EpCollapse
         v-for="(toteutus, toteutusIndex) in model"
         :key="'toteutus'+toteutusIndex"
-        class="toteutus p-3 mb-4 w-100"
+        class="toteutus p-3 mb-4 w-full"
         :border-bottom="false"
         :collapsable="!isEditing"
         :use-padding="false"
@@ -22,7 +22,7 @@
           </h4>
         </template>
 
-        <div class="d-flex">
+        <div class="flex">
           <div class="order-handle mr-3">
             <EpMaterialIcon v-if="isEditing">
               drag_indicator
@@ -42,7 +42,7 @@
       </EpCollapse>
     </VueDraggable>
 
-    <div class="d-flex">
+    <div class="flex">
       <ep-button
         v-if="isEditing"
         variant="outline"

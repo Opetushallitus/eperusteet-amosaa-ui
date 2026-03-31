@@ -1,7 +1,6 @@
 <template>
   <div
     class="home-container minfull"
-    sticky-container
   >
     <EpTestiymparisto />
 
@@ -36,12 +35,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useHead } from '@unhead/vue';
 import { useRoute } from 'vue-router';
 import _ from 'lodash';
-import Sticky from 'vue-sticky-directive';
-
 import { KayttajaStore } from '@/stores/kayttaja';
 import EpNavbar from '@shared/components/EpNavbar/EpNavbar.vue';
 import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
@@ -52,7 +49,8 @@ import { toteutusBanner } from '@shared/utils/bannerIcons';
 import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
 import { Koulutustoimijat, KoulutustoimijaDto, baseURL } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
-import { $t } from '@shared/utils/globals';
+import { $t, setConfirmModal } from '@shared/utils/globals';
+import { useConfirm } from 'primevue/useconfirm';
 
 const props = withDefaults(defineProps<{
   kayttajaStore: KayttajaStore;
@@ -156,6 +154,10 @@ watch(() => props.koulutustoimijaId, async (newValue, oldValue) => {
     koulutustoimija.value = (await Koulutustoimijat.getKoulutustoimija(props.koulutustoimijaId)).data;
   }
 }, { immediate: true });
+
+onMounted(() => {
+  setConfirmModal(useConfirm());
+});
 </script>
 
 <style lang="scss" scoped>

@@ -10,7 +10,7 @@
       :kayttaja-store="kayttajaStore"
     >
       <template #header>
-        <div class="d-flex justify-content-between">
+        <div class="flex justify-between">
           <h2>{{ $t(topic) }}</h2>
 
           <div>

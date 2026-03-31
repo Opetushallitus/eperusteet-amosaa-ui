@@ -8,12 +8,11 @@
       {{ $t(kielistykset['siirratoteutusystavaorganisaatiolle']) }}
     </ep-button>
 
-    <b-modal
-      id="epsiirtomodaali"
+    <ep-modal
       ref="epsiirtomodaali"
       size="lg"
-      :title="$t(kielistykset['siirratoteutusystavaorganisaatiolle'])"
-      :hide-footer="true"
+      :header="$t(kielistykset['siirratoteutusystavaorganisaatiolle'])"
+      hide-footer
     >
       <p>{{ $t('siirra-kuvaus') }}</p>
       <div v-if="ystavatFormatted">
@@ -22,13 +21,15 @@
           :placeholder="$t('etsi-organisaatiota')"
           class="mb-3"
         />
-        <b-table
+        <ep-table
           responsive
           striped
           :items="ystavatFormatted"
           :fields="fields"
           :per-page="perPage"
           :current-page="currentPage"
+          data-key="organisaatio"
+          @update:current-page="currentPage = $event"
         >
           <template #cell(actions)="row">
             <ep-button
@@ -40,23 +41,16 @@
               {{ $t(kielistykset['siirratoteutus']) }}
             </ep-button>
           </template>
-        </b-table>
-        <ep-pagination
-          v-model="currentPage"
-          :total-rows="rows"
-          :per-page="perPage"
-          align="center"
-          aria-controls="epsiirtomodaali"
-        />
+        </ep-table>
       </div>
       <ep-spinner v-else />
-    </b-modal>
+    </ep-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import _ from 'lodash';
-import { computed, ref, watch, useTemplateRef, getCurrentInstance } from 'vue';
+import { computed, ref, watch, useTemplateRef } from 'vue';
 import { Koulutustoimijat, KoulutustoimijaYstavaDto, Opetussuunnitelmat } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
@@ -65,8 +59,10 @@ import EpSearch from '@shared/components/forms/EpSearch.vue';
 import { ToteutussuunnitelmaSiirtoKielistykset } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
 import { OphOrgOid } from '@/stores/kayttaja';
-import { $t, $kaanna, $filterBy, $bvModal, $fail, $success } from '@shared/utils/globals';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import { $t, $kaanna, $filterBy, $confirmModal, $fail, $success } from '@shared/utils/globals';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
+import type { TableField } from '@shared/components/EpTable/EpTable.vue';
 import { useRouter } from 'vue-router';
 import { onMounted } from 'vue';
 
@@ -94,7 +90,7 @@ const fetch = async () => {
   ystavat.value = (await Koulutustoimijat.getOmatYstavat(props.koulutustoimijaId)).data;
 };
 
-const fields = computed(() => {
+const fields = computed((): TableField[] => {
   return [{
     key: 'nimiLocalized',
     tdClass: 'align-middle',
@@ -116,20 +112,13 @@ const ystavatFormatted = computed(() => {
     .value();
 });
 
-const rows = computed(() => {
-  if (ystavatFormatted.value) {
-    return ystavatFormatted.value.length;
-  }
-  return undefined;
-});
-
 const kieli = computed(() => {
   return Kielet.uiKieli;
 });
 
 const siirraToteutussuunnitelma = async (org: any) => {
   epsiirtomodaali.value?.hide();
-  if (await $bvModal.msgBoxConfirm($t('siirra-toteutussuunnitelma-varmistus', { nimi: $kaanna(props.toteutussuunnitelma.nimi) }) as string, {
+  if (await $confirmModal.msgBoxConfirm($t('siirra-toteutussuunnitelma-varmistus', { nimi: $kaanna(props.toteutussuunnitelma.nimi) }) as string, {
     title: $t('siirra-toteutussuunnitelma') as string,
     okVariant: 'primary',
     okTitle: $t('siirra-toteutussuunnitelma') as string,

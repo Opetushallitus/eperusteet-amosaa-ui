@@ -1,6 +1,6 @@
 <template>
   <div class="poistetutsisallot">
-    <div class="ylapaneeli d-flex align-items-center">
+    <div class="ylapaneeli flex items-center">
       <h2 class="otsikko">
         {{ $t('poistetut-sisallot') }}
       </h2>
@@ -13,27 +13,27 @@
     >
       {{ $t('yhtaan-palautettavaa-sisaltoa-ei-loytynyt') }}
     </div>
-    <b-tabs
+    <ep-tabs
       v-else
-      class="mt-3 ml-2"
+      content-class="mt-3 ml-2"
     >
-      <b-tab
+      <ep-tab
         v-for="(valilehti, index) in poistetutsisallotValilehdet"
         :key="'valilehti'+index"
-        class="ml-2"
         :title="$t(valilehti.otsikko)"
       >
         <ep-search
           v-model="query"
-          class="mt-3"
+          class="mt-3 ml-2"
         />
 
         <div v-if="valilehti.poistetut.length > 0">
-          <b-table
+          <ep-table
             :items="valilehti.poistetut"
             :fields="fields"
             :current-page="pages[valilehti.otsikko]"
             :per-page="perPage"
+            data-key="id"
           >
             <template #cell(palauta)="{ item }">
               <ep-button
@@ -44,23 +44,17 @@
                 {{ $t('palauta') }}
               </ep-button>
             </template>
-          </b-table>
-
-          <ep-pagination
-            v-model="pages[valilehti.otsikko]"
-            :per-page="perPage"
-            :total-rows="valilehti.poistetut.length"
-          />
+          </ep-table>
         </div>
 
         <div
           v-else
-          class="mt-4 disabled-text"
+          class="mt-4 disabled-text ml-2"
         >
           {{ $t('ei-palautettavaa-sisaltoa-annetuilla-hakuehdoilla') }}
         </div>
-      </b-tab>
-    </b-tabs>
+      </ep-tab>
+    </ep-tabs>
   </div>
 </template>
 
@@ -71,7 +65,9 @@ import _ from 'lodash';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpTabs from '@shared/components/EpTabs/EpTabs.vue';
+import EpTab from '@shared/components/EpTabs/EpTab.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { PoistetutStore } from '@/stores/PoistetutStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
@@ -92,6 +88,7 @@ const pages = reactive({
   tutkinnonosat: 1,
   tekstikappaleet: 1,
   suorituspolut: 1,
+  opintokokonaisuudet: 1,
 });
 
 const poistetutsisallot = computed(() => {

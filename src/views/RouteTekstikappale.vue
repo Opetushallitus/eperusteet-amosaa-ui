@@ -63,7 +63,7 @@
               </ep-toggle>
             </EpCollapse>
 
-            <b-form-group
+            <ep-form-group
               v-if="naytaPaikallinenTeksti"
               :label="$t('paikallinen-teksti')"
             >
@@ -79,11 +79,11 @@
                 :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
                 class="pb-3"
               />
-            </b-form-group>
+            </ep-form-group>
           </div>
 
           <div v-else>
-            <b-form-group
+            <ep-form-group
               v-if="isEditing"
               :label="$t('otsikko')"
             >
@@ -91,9 +91,9 @@
                 v-model="data.tekstiKappale.nimi"
                 :is-editing="isEditing"
               />
-            </b-form-group>
+            </ep-form-group>
 
-            <b-form-group
+            <ep-form-group
               :label="$t('kappaleen-teksti')"
               :label-sr-only="!isEditing"
             >
@@ -103,7 +103,7 @@
                 :is-editable="isEditing"
                 :kuva-handler="kuvaHandler"
               />
-            </b-form-group>
+            </ep-form-group>
           </div>
         </div>
       </template>

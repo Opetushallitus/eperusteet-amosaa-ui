@@ -4,7 +4,7 @@
       <h1 class="mb-3">
         {{ $t(kaannoksetValue['otsikko']) }}
       </h1>
-      <div class="d-md-flex justify-content-between">
+      <div class="flex flex-col gap-3 md:flex-row md:justify-between md:items-start">
         <p class="mt-2">
           {{ $t(kaannoksetValue['kuvaus']) }}
         </p>
@@ -15,21 +15,21 @@
           @restore="onRestoreOps"
         />
       </div>
-      <div class="d-flex align-items-center">
-        <b-form-group
+      <div class="flex items-center">
+        <ep-form-group
           :label="$t('nimi')"
-          class="col-6 m-0"
+          class="w-full md:w-1/2 m-0"
         >
           <EpSearch
             v-model="query.nimi"
             max-width
             :placeholder="$t('etsi')"
           />
-        </b-form-group>
-        <b-form-group
+        </ep-form-group>
+        <ep-form-group
           v-if="$isAdmin()"
           :label="$t('koulutustoimija')"
-          class="col-6 m-0"
+          class="w-full md:w-1/2 m-0"
         >
           <EpMultiSelect
             v-model="valitutKoulutustoimijat"
@@ -53,9 +53,9 @@
               </div>
             </template>
           </EpMultiSelect>
-        </b-form-group>
+        </ep-form-group>
       </div>
-      <div class="d-flex">
+      <div class="flex">
         <EpToggle
           v-model="query.vanhentunut"
           checkbox
@@ -72,133 +72,126 @@
       </div>
     </template>
     <template #custom-content>
-      <b-container
-        fluid
-        class="mt-4 pl-0"
-      >
-        <b-row>
-          <b-col>
-            <div class="ops">
-              <div class="d-flex">
-                <h2>{{ $t(kaannoksetValue['keskeneraiset']) }}</h2>
-                <EpSpinner v-if="!opetussuunnitelmat || isUpdatingOpsSivu" />
-              </div>
-              <div class="d-flex flex-wrap">
-                <div
-                  v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'opetussuunnitelma' }"
-                  class="opsbox"
-                >
-                  <RouterLink
-                    :to="{ name: kaannoksetValue['uusiRoute'] }"
-                  >
-                    <div class="opsbox__new">
-                      <div class="opsbox__plus-icon">
-                        <EpMaterialIcon size="60px">
-                          add
-                        </EpMaterialIcon>
-                      </div>
-                      <div class="opsbox__text">
-                        {{ $t('luo-uusi') }}
-                      </div>
-                    </div>
-                  </RouterLink>
-                </div>
-                <OpsKeskeneraisetTile
-                  v-for="ops in opetussuunnitelmat"
-                  :key="ops.id"
-                  :ops="ops"
-                  :toteutus="toteutus"
-                />
-                <div
-                  v-if="(query.nimi || query.jotpa) && opetussuunnitelmat && opetussuunnitelmat.length === 0"
-                  class="ops__info mt-4 ml-4"
-                >
-                  <EpAlert
-                    :ops="true"
-                    :text="$t('ei-hakutuloksia')"
-                    class="mt-4"
-                  />
-                </div>
-              </div>
-
-              <ep-pagination
-                v-model="opsSivu"
-                class="mt-3"
-                :total-rows="opetussuunnitelmatKokonaismaara"
-                :per-page="9"
-                align="center"
-              />
+      <div class="w-full max-w-full mt-4 pl-0">
+        <div class="w-full">
+          <div class="ops">
+            <div class="flex">
+              <h2>{{ $t(kaannoksetValue['keskeneraiset']) }}</h2>
+              <EpSpinner v-if="!opetussuunnitelmat || isUpdatingOpsSivu" />
             </div>
-
-            <div class="ops mt-4">
-              <div class="d-flex">
-                <h2>{{ $t(kaannoksetValue['julkaistut']) }}</h2>
-                <EpSpinner v-if="!julkaistut || isUpdatingJulkaistutSivu" />
-              </div>
+            <div class="flex flex-wrap">
               <div
-                v-if="julkaistut && julkaistut.length === 0"
-                class="info"
+                v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'opetussuunnitelma' }"
+                class="opsbox"
+              >
+                <RouterLink
+                  :to="{ name: kaannoksetValue['uusiRoute'] }"
+                >
+                  <div class="opsbox__new">
+                    <div class="opsbox__plus-icon">
+                      <EpMaterialIcon size="60px">
+                        add
+                      </EpMaterialIcon>
+                    </div>
+                    <div class="opsbox__text">
+                      {{ $t('luo-uusi') }}
+                    </div>
+                  </div>
+                </RouterLink>
+              </div>
+              <OpsKeskeneraisetTile
+                v-for="ops in opetussuunnitelmat"
+                :key="ops.id"
+                :ops="ops"
+                :toteutus="toteutus"
+              />
+              <div
+                v-if="(query.nimi || query.jotpa) && opetussuunnitelmat && opetussuunnitelmat.length === 0"
+                class="ops__info mt-4 ml-4"
               >
                 <EpAlert
                   :ops="true"
-                  :text="$t(kaannoksetValue['eiJulkaistuja'])"
+                  :text="$t('ei-hakutuloksia')"
                   class="mt-4"
                 />
               </div>
+            </div>
 
-              <div class="d-flex flex-wrap">
-                <OpsJulkaistutTile
-                  v-for="ops in julkaistut"
-                  :key="'julkaistu-' + ops.id"
-                  :ops="ops"
-                />
-              </div>
-              <ep-pagination
-                v-model="julkaisutSivu"
-                class="mt-3"
-                :total-rows="julkaistutKokonaismaara"
-                :per-page="10"
-                align="center"
+            <ep-b-pagination
+              v-model="opsSivu"
+              class="mt-3"
+              :total="opetussuunnitelmatKokonaismaara"
+              :items-per-page="9"
+            />
+          </div>
+
+          <div class="ops mt-4">
+            <div class="flex">
+              <h2>{{ $t(kaannoksetValue['julkaistut']) }}</h2>
+              <EpSpinner v-if="!julkaistut || isUpdatingJulkaistutSivu" />
+            </div>
+            <div
+              v-if="julkaistut && julkaistut.length === 0"
+              class="info"
+            >
+              <EpAlert
+                :ops="true"
+                :text="$t(kaannoksetValue['eiJulkaistuja'])"
+                class="mt-4"
               />
             </div>
 
-            <div
-              v-if="ystavienKeskeneraiset.length > 0"
-              class="ops"
-            >
-              <h2 class="mt-4">
-                {{ $t(kaannoksetValue['ystavien'] + '-keskeneraiset') }}
-              </h2>
-
-              <div class="d-flex flex-wrap">
-                <OpsKeskeneraisetTile
-                  v-for="ops in ystavienKeskeneraiset"
-                  :key="'ystava-keskenerainen-' + ops.id"
-                  :ops="ops"
-                  :toteutus="toteutus"
-                />
-              </div>
+            <div class="flex flex-wrap">
+              <OpsJulkaistutTile
+                v-for="ops in julkaistut"
+                :key="'julkaistu-' + ops.id"
+                :ops="ops"
+              />
             </div>
+            <ep-b-pagination
+              v-model="julkaisutSivu"
+              class="mt-3"
+              :total="julkaistutKokonaismaara"
+              :items-per-page="10"
+            />
+          </div>
 
-            <div
-              v-if="ystavienJulkaistut.length > 0"
-              class="ops"
-            >
-              <h2 class="mt-4">
-                {{ $t(kaannoksetValue['ystavien'] + '-julkaistut') }}
-              </h2>
+          <div
+            v-if="ystavienKeskeneraiset.length > 0"
+            class="ops"
+          >
+            <h2 class="mt-4">
+              {{ $t(kaannoksetValue['ystavien'] + '-keskeneraiset') }}
+            </h2>
 
-              <div class="d-flex flex-wrap">
-                <OpsJulkaistutTile
-                  v-for="ops in ystavienJulkaistut"
-                  :key="'ystava-julkaistu-' + ops.id"
-                  :ops="ops"
-                />
-              </div>
+            <div class="flex flex-wrap">
+              <OpsKeskeneraisetTile
+                v-for="ops in ystavienKeskeneraiset"
+                :key="'ystava-keskenerainen-' + ops.id"
+                :ops="ops"
+                :toteutus="toteutus"
+              />
             </div>
-          </b-col>
-        </b-row>
-      </b-container>
+          </div>
+
+          <div
+            v-if="ystavienJulkaistut.length > 0"
+            class="ops"
+          >
+            <h2 class="mt-4">
+              {{ $t(kaannoksetValue['ystavien'] + '-julkaistut') }}
+            </h2>
+
+            <div class="flex flex-wrap">
+              <OpsJulkaistutTile
+                v-for="ops in ystavienJulkaistut"
+                :key="'ystava-julkaistu-' + ops.id"
+                :ops="ops"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </template>
   </EpMainView>
 </template>
@@ -219,7 +212,7 @@ import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import OpsKeskeneraisetTile from './OpsKeskeneraisetTile.vue';
 import OpsJulkaistutTile from './OpsJulkaistutTile.vue';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
 
 import { ArkistointiTekstit, OpetussuunnitelmalistausKielistykset, ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';

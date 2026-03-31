@@ -17,7 +17,7 @@
         <div
           v-for="(osaalue, idx) in pakollisetOsaAlueet"
           :key="'pakollinen-' + idx"
-          class="osaalue d-flex"
+          class="osaalue flex"
         >
           <div
             v-if="isEditing"
@@ -57,7 +57,7 @@
         <div
           v-for="(osaalue, idx) in valinnaisetOsaAlueet"
           :key="'valinnainen-' + idx"
-          class="osaalue d-flex"
+          class="osaalue flex"
           :class="{ 'piilotettu': osaalue.piilotettu }"
         >
           <div
@@ -100,7 +100,7 @@
         <div
           v-for="(osaalue, idx) in paikallisetOsaAlueet"
           :key="'paikallinen-' + idx"
-          class="osaalue d-flex"
+          class="osaalue flex"
         >
           <div
             v-if="isEditing"

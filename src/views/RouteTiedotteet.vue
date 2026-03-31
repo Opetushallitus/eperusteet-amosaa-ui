@@ -8,11 +8,10 @@
       />
     </template>
     <template #pagination>
-      <EpPagination
+      <EpBPagination
         v-model="currentPage"
-        :total-rows="totalRows"
-        :per-page="perPage"
-        align="center"
+        :total="totalRows"
+        :items-per-page="perPage"
         @update:model-value="pageChanged"
       />
     </template>
@@ -30,7 +29,7 @@ import { KieliStore } from '@shared/stores/kieli';
 import { TiedotteetStore } from '@/stores/TiedotteetStore';
 import { TiedoteJulkaisupaikka } from '@/utils/toteutustypes';
 import { Toteutus } from '@shared/utils/perusteet';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
 
 const props = defineProps<{
   tiedotteetStore: TiedotteetStore;
