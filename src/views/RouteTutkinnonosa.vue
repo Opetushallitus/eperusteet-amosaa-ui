@@ -16,12 +16,39 @@
       <template #default="{ data, isEditing, validation }">
         <div
           v-if="data.tutkinnonosaViite.tyyppi === 'linkki'"
-          class="alert alert-info"
+          class="alert alert-info d-flex align-items-center"
         >
           <router-link :to="{ name: 'tutkinnonosa', params: { toteutussuunnitelmaId: data.tutkinnonosaViite.linkattuOps, sisaltoviiteId: data.tutkinnonosaViite.linkattuSisaltoViiteId } }">
             {{ $t('siirry-alkuperaiseen-toteutukseen') }}
           </router-link>
+          <EpInfoPopover class="ml-2">
+            {{ $t('tutkinnon-osa-on-linkitetty') }}
+          </EpInfoPopover>
         </div>
+
+        <template
+          v-if="linkatutSisaltoviitteet.length"
+        >
+          <ep-collapse
+            :border-bottom="false"
+            :use-padding="false"
+            class="mb-4 alert alert-info"
+            :expandedByDefault="false"
+          >
+            <template #header>
+              {{ $t('toteutussuunnitelmat-joihin-tutkinnon-osa-on-linkattu') }}
+            </template>
+
+            <router-link
+              v-for="(linkattuSisaltoviite) in linkatutSisaltoviitteet"
+              :key="'linkittava-sv-' + (linkattuSisaltoviite.id)"
+              class="pb-1 d-block"
+              :to="linkattuSisaltoviite.to"
+            >
+              {{ $kaanna(linkattuSisaltoviite.opetussuunnitelma.nimi) }}
+            </router-link>
+          </ep-collapse>
+        </template>
 
         <b-form-group
           v-if="data.tutkinnonosaViite.tosa.tyyppi !== 'perusteesta' && isEditing"
@@ -307,7 +334,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { computed, getCurrentInstance, onMounted, ref, unref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 import _ from 'lodash';
@@ -331,9 +358,10 @@ import EpInfoPopover from '@shared/components/EpInfoPopover/EpInfoPopover.vue';
 
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
-import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto } from '@shared/api/amosaa';
+import { VapaaTekstiDto, TutkinnonosaToteutusDto, TutkinnonosaDto, Matala, MatalaTyyppiEnum } from '@shared/api/amosaa';
 import { koodiValidator, requiredOneLang } from '@shared/validators/required';
 import { $t, $kaanna } from '@shared/utils/globals';
+import type { RouteLocationRaw } from 'vue-router';
 
 const props = defineProps<{
   koulutustoimijaId: string;
@@ -443,6 +471,21 @@ const lisaaOsaAlue = async () => {
     });
   }
 };
+
+const linkatutSisaltoviitteet = computed(() => {
+  return _.map(editointiStore.value?.supportData?.sisaltoviitteetLinkittainLinkkiKohteeseen, (sisaltoviite) => {
+    return {
+      ...sisaltoviite,
+      to: {
+        name: sisaltoviite.linkattuTyyppi,
+        params: {
+          toteutussuunnitelmaId: _.toString(sisaltoviite._owner),
+          sisaltoviiteId: _.toString(sisaltoviite.id),
+        },
+      },
+    };
+  });
+});
 
 const poistaGeneerinenaArviointi = () => {
   editointiStore.value?.setData({
