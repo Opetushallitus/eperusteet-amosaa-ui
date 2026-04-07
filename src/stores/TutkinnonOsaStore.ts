@@ -1,4 +1,4 @@
-import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto, OmaOsaAlueDtoTyyppiEnum } from '@shared/api/amosaa';
+import { Perusteet, Sisaltoviitteet, Koodistot, Arviointiasteikot, SisaltoviiteMatalaDto, OmaOsaAlueDtoTyyppiEnum, Matala, SisaltoViiteLinkittavaDto } from '@shared/api/amosaa';
 import * as _ from 'lodash';
 import { IEditoitava, EditoitavaFeatures } from '@shared/components/EpEditointi/EditointiStore';
 import { Revision } from '@shared/tyypit';
@@ -44,16 +44,19 @@ export class TutkinnonOsaStore implements IEditoitava {
   async history() {
   }
 
-  async load() {
+  async load(supportDataProvider?: (data: any) => void) {
     let tutkinnonosaViite: any = {};
     let arviointiasteikot: any = {};
     let perusteenTutkinnonosaViite;
     let perusteenTutkinnonosa;
+    let sisaltoviitteetLinkittainLinkkiKohteeseen: SisaltoViiteLinkittavaDto[] = [];
 
-    [tutkinnonosaViite, arviointiasteikot] = _.map(await (Promise.all([
-      this.getTutkinnonosaViite(),
-      Arviointiasteikot.getAllArviointiasteikot(),
-    ])), 'data');
+
+    [tutkinnonosaViite, arviointiasteikot, sisaltoviitteetLinkittainLinkkiKohteeseen] = await Promise.all([
+      this.getTutkinnonosaViite().then(r => r.data),
+      Arviointiasteikot.getAllArviointiasteikot().then(r => r.data),
+      Sisaltoviitteet.getSisaltoviitteetLinkittainLinkkiKohteeseen(this.opetussuunnitelmaId, this.tutkinnonosaId, this.koulutustoimijaId).then(r => r.data),
+    ]);
 
     if (tutkinnonosaViite.linkattuPeruste) {
       this.perusteId = tutkinnonosaViite.linkattuPeruste;
@@ -77,6 +80,10 @@ export class TutkinnonOsaStore implements IEditoitava {
     else {
       this.setArvioinnit(tutkinnonosaViite.tosa.omatutkinnonosa, arviointiasteikot);
     }
+
+    supportDataProvider?.({
+      sisaltoviitteetLinkittainLinkkiKohteeseen,
+    });
 
     return {
       tutkinnonosaViite: {
