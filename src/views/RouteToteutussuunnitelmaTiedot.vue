@@ -162,7 +162,7 @@
                   :key="'oat' + index"
                   class="mb-2"
                 >
-                  <div class="d-flex">
+                  <div class="d-flex align-items-center">
                     <router-link
                       v-if="oat.oatOpetussuunnitelma"
                       :to="{ name: 'toteutussuunnitelma', params: { koulutustoimijaId: koulutustoimijaId, toteutussuunnitelmaId: oat.oatOpetussuunnitelma.id } }"
@@ -178,8 +178,7 @@
                     <EpButton
                       v-if="isEditing"
                       icon="edit"
-                      size="sm"
-                      class="no-padding ml-4"
+                      class="ml-5"
                       variant="link"
                       @click="muokkaaOat(oat, index)"
                     >

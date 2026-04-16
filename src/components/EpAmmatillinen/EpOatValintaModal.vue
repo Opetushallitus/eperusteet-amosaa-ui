@@ -159,7 +159,7 @@ const oatit = computed(() => {
 
 const valid = computed(() => {
   if (tyyppi.value === 'oat') {
-    return _.has(oat.value, 'oatOpetussuunnitelma.id');
+    return !!oat.value?.oatOpetussuunnitelma?.id;
   }
   else if (tyyppi.value === 'url') {
     return (oat.value as any).nimi && (oat.value as any).url;
