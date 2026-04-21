@@ -33,7 +33,7 @@
             :border-bottom="false"
             :use-padding="false"
             class="mb-4 alert alert-info"
-            :expandedByDefault="false"
+            :expanded-by-default="false"
           >
             <template #header>
               {{ $t('toteutussuunnitelmat-joihin-tutkinnon-osa-on-linkattu') }}

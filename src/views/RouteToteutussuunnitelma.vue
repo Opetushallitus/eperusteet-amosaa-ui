@@ -104,247 +104,207 @@
             :query="query"
           >
             <template #header>
-              <div class="heading">
-                <div class="menu-item">
-                  <router-link
-                    :to="{ name: 'toteutussuunnitelma' }"
-                    exact
-                  >
-                    {{ $t('yleisnakyma') }}
-                  </router-link>
-                </div>
-              </div>
+              <router-link
+                :to="{ name: 'toteutussuunnitelma' }"
+                exact
+              >
+                {{ $t('yleisnakyma') }}
+              </router-link>
             </template>
 
             <template #tutkinnonosat="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'tutkinnonosat' }"
-                  :node="item"
-                >
-                  {{ $t('tutkinnonosat') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'tutkinnonosat' }"
+                :node="item"
+              >
+                {{ $t('tutkinnonosat') }}
+              </EpNavigationLabel>
             </template>
 
             <template #tutkinnonosat_pakolliset>
-              <div class="menu-item">
-                {{ $t('tutkinnonosat-pakolliset') }}
-              </div>
+              {{ $t('tutkinnonosat-pakolliset') }}
             </template>
 
             <template #tutkinnonosat_paikalliset>
-              <div class="menu-item clickable">
+              <div class="clickable">
                 {{ $t('tutkinnonosat-paikalliset') }}
               </div>
             </template>
 
             <template #tutkinnonosat_tuodut>
-              <div class="menu-item">
-                {{ $t('tutkinnonosat-tuodut') }}
-              </div>
+              {{ $t('tutkinnonosat-tuodut') }}
             </template>
 
             <template #pakolliset_osaalueet>
-              <div class="menu-item faded pb-0">
+              <div class="faded pb-0">
                 {{ $t('pakolliset-osa-alueet') }}
               </div>
             </template>
 
             <template #valinnaiset_osaalueet>
-              <div class="menu-item mt-4 faded pb-0">
+              <div class="mt-4 faded pb-0">
                 {{ $t('valinnaiset-osa-alueet') }}
               </div>
             </template>
 
             <template #paikalliset_osaalueet>
-              <div class="menu-item mt-4 faded pb-0">
+              <div class="mt-4 faded pb-0">
                 {{ $t('paikalliset-osa-alueet') }}
               </div>
             </template>
 
             <template #suorituspolut="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $t('suorituspolut') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'suorituspolut', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $t('suorituspolut') }}
+              </EpNavigationLabel>
             </template>
 
             <template #linkki="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) }}
+              </EpNavigationLabel>
             </template>
 
             <template #tutkinnonosa="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) || $t('nimeton-tutkinnonosa') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'tutkinnonosa', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) || $t('nimeton-tutkinnonosa') }}
+              </EpNavigationLabel>
             </template>
 
             <template #suorituspolku="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) || $t('nimeton-suorituspolku') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) || $t('nimeton-suorituspolku') }}
+              </EpNavigationLabel>
             </template>
 
             <template #osasuorituspolku="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) || $t('nimeton-osasuorituspolku') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'suorituspolku', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) || $t('nimeton-osasuorituspolku') }}
+              </EpNavigationLabel>
             </template>
 
             <template #tekstikappale="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  <span
-                    v-if="isVapaaSivistystyo"
-                    class="text-muted mr-1"
-                  >{{ item.chapter }}</span>
-                  {{ $kaanna(item.label) || $t('nimetön-tekstikappale') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                <span
+                  v-if="isVapaaSivistystyo"
+                  class="text-muted mr-1"
+                >{{ item.chapter }}</span>
+                {{ $kaanna(item.label) || $t('nimetön-tekstikappale') }}
+              </EpNavigationLabel>
             </template>
 
             <template #opintokokonaisuus="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  <span
-                    v-if="isVapaaSivistystyo"
-                    class="text-muted mr-1"
-                  >{{ item.chapter }}</span>
-                  {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                <span
+                  v-if="isVapaaSivistystyo"
+                  class="text-muted mr-1"
+                >{{ item.chapter }}</span>
+                {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
+              </EpNavigationLabel>
             </template>
 
             <template #osaamismerkki="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'osaamismerkkikappale', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  <span
-                    v-if="isVapaaSivistystyo"
-                    class="text-muted mr-1"
-                  >{{ item.chapter }}</span>
-                  {{ $t('kansalliset-perustaitojen-osaamismerkit') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'osaamismerkkikappale', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                <span
+                  v-if="isVapaaSivistystyo"
+                  class="text-muted mr-1"
+                >{{ item.chapter }}</span>
+                {{ $t('kansalliset-perustaitojen-osaamismerkit') }}
+              </EpNavigationLabel>
             </template>
 
             <template #koulutuksenosat="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'koulutuksenosat', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $t('koulutuksenosat') }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'koulutuksenosat', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $t('koulutuksenosat') }}
+              </EpNavigationLabel>
             </template>
 
             <template #koulutuksenosa="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) }} <span v-if="item.koodi">({{ item.koodi }})</span>
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) }} <span v-if="item.koodi">({{ item.koodi }})</span>
+              </EpNavigationLabel>
             </template>
 
             <template #laajaalainenosaaminen="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) }}
+              </EpNavigationLabel>
             </template>
 
             <template #koto_kielitaitotaso="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'koto_kielitaitotaso', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'koto_kielitaitotaso', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) }}
+              </EpNavigationLabel>
             </template>
 
             <template #koto_opinto="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'koto_opinto', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'koto_opinto', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) }}
+              </EpNavigationLabel>
             </template>
 
             <template #koto_laajaalainenosaaminen="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) }}
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'koto_laajaalainenosaaminen', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) }}
+              </EpNavigationLabel>
             </template>
 
             <template #osaalue="{ item }">
-              <div class="menu-item">
-                <EpNavigationLabel
-                  :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }"
-                  :node="item"
-                >
-                  {{ $kaanna(item.label) }} <span
-                    v-if="item.koodi"
-                    class="faded"
-                  >({{ item.koodi.toUpperCase() }})</span>
-                </EpNavigationLabel>
-              </div>
+              <EpNavigationLabel
+                :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) }} <span
+                  v-if="item.koodi"
+                  class="faded"
+                >({{ item.koodi.toUpperCase() }})</span>
+              </EpNavigationLabel>
             </template>
 
             <template #new>
-              <div class="mb-3">
+              <div class="mb-3 ml-3">
                 <EpTekstikappaleLisays
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :tallenna="tallennaUusiTekstikappale"
