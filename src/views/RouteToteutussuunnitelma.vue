@@ -126,9 +126,7 @@
             </template>
 
             <template #tutkinnonosat_paikalliset>
-              <div class="clickable">
-                {{ $t('tutkinnonosat-paikalliset') }}
-              </div>
+              {{ $t('tutkinnonosat-paikalliset') }}
             </template>
 
             <template #tutkinnonosat_tuodut>
@@ -203,10 +201,6 @@
                 :to="{ name: 'tekstikappale', params: {sisaltoviiteId: item.id} }"
                 :node="item"
               >
-                <span
-                  v-if="isVapaaSivistystyo"
-                  class="text-muted mr-1"
-                >{{ item.chapter }}</span>
                 {{ $kaanna(item.label) || $t('nimetön-tekstikappale') }}
               </EpNavigationLabel>
             </template>
@@ -216,10 +210,6 @@
                 :to="{ name: 'opintokokonaisuus', params: {sisaltoviiteId: item.id} }"
                 :node="item"
               >
-                <span
-                  v-if="isVapaaSivistystyo"
-                  class="text-muted mr-1"
-                >{{ item.chapter }}</span>
                 {{ $kaanna(item.label) || $t('nimeton-opintokokonaisuus') }}
               </EpNavigationLabel>
             </template>
@@ -229,10 +219,6 @@
                 :to="{ name: 'osaamismerkkikappale', params: {sisaltoviiteId: item.id} }"
                 :node="item"
               >
-                <span
-                  v-if="isVapaaSivistystyo"
-                  class="text-muted mr-1"
-                >{{ item.chapter }}</span>
                 {{ $t('kansalliset-perustaitojen-osaamismerkit') }}
               </EpNavigationLabel>
             </template>
@@ -312,7 +298,7 @@
                   :paatasovalinta="true"
                 >
                   <template #default="{tekstikappale}: any">
-                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).meta?.numerointi }}</span>
                     {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
@@ -339,7 +325,7 @@
                     {{ $t('opintokokonaisuuden-sijainti') }}
                   </template>
                   <template #default="{tekstikappale}: any">
-                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).meta?.numerointi }}</span>
                     {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
@@ -366,7 +352,7 @@
                     {{ $t('osaamismerkki-kappaleen-sijainti') }}
                   </template>
                   <template #default="{tekstikappale}: any">
-                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).meta?.numerointi }}</span>
                     {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
@@ -395,7 +381,7 @@
                     {{ $t('suorituspolun-sijainti') }}
                   </template>
                   <template #default="{tekstikappale}: any">
-                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).meta?.numerointi }}</span>
                     {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
@@ -424,7 +410,7 @@
                     {{ $t('tutkinnonosan-sijainti') }}
                   </template>
                   <template #default="{tekstikappale}: any">
-                    <span class="text-muted mr-1">{{ (tekstikappale as any).chapter }}</span>
+                    <span class="text-muted mr-1">{{ (tekstikappale as any).meta?.numerointi }}</span>
                     {{ $kaanna((tekstikappale as any).label) }}
                   </template>
                 </EpTekstikappaleLisays>
