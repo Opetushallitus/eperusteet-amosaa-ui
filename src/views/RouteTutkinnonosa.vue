@@ -10,7 +10,7 @@
     >
       <template #header="{ data }">
         <h2 class="m-0">
-          {{ $kaanna(data.tutkinnonosaViite.tekstiKappale.nimi) }}<span v-if="laajuus">, {{ laajuus }} {{ $t('osaamispiste') }}</span>
+          {{ $kaanna(data.tutkinnonosaViite.nimi) }}<span v-if="laajuus">, {{ laajuus }} {{ $t('osaamispiste') }}</span>
         </h2>
       </template>
       <template #default="{ data, isEditing, validation }">
@@ -399,10 +399,6 @@ const tutkinnonosaPerusteesta = computed(() => {
     return editointiStore.value.data.tutkinnonosaViite.tosa.tyyppi === 'perusteesta';
   }
   return undefined;
-});
-
-const nimi = computed(() => {
-  return editointiStore.value?.data?.tutkinnonosaViite.tekstiKappale.nimi;
 });
 
 const omaTutkinnonosa = computed(() => {

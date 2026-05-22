@@ -154,7 +154,7 @@ const tutkinnonosat = computed(() => {
       .map(tutkinnonosa => {
         return {
           ...tutkinnonosa,
-          nimi: _.has(tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi, Kielet.getSisaltoKieli.value) ? tutkinnonosa.tutkinnonosaViite.tekstiKappale.nimi : $t('uusi-tutkinnonosa'),
+          nimi: _.has(tutkinnonosa.tutkinnonosaViite.nimi, Kielet.getSisaltoKieli.value) ? tutkinnonosa.tutkinnonosaViite.nimi : $t('uusi-tutkinnonosa'),
           poistossa: _.includes(poistossa.value, tutkinnonosa.tutkinnonosaViite.id),
         };
       })
