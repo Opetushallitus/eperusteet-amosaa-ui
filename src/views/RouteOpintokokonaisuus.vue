@@ -157,7 +157,16 @@
                     :is-editing="isEditing"
                     :validation="validation.opintokokonaisuus.tavoitteet?.$each?.$response.$data[index]?.tavoite"
                     @add="updateTavoiteByIndex($event, index)"
-                  />
+                  >
+                    <template #modal-footer="{ cancel }">
+                      <EpButton
+                        variant="link"
+                        @click="cancel()"
+                      >
+                        {{ $t('sulje-haku-ja-lisaa-uusi-tavoite') }}
+                      </EpButton>
+                    </template>
+                  </VaatimusField>
                 </b-col>
                 <b-col
                   v-if="isEditing && !tavoiteItem.perusteesta"
