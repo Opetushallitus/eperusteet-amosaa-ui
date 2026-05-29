@@ -237,7 +237,7 @@
                 :to="{ name: 'koulutuksenosa', params: {sisaltoviiteId: item.id} }"
                 :node="item"
               >
-                {{ $kaanna(item.label) }} <span v-if="item.koodi">({{ item.koodi }})</span>
+                {{ $kaanna(item.label) }}
               </EpNavigationLabel>
             </template>
 
@@ -282,15 +282,12 @@
                 :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }"
                 :node="item"
               >
-                {{ $kaanna(item.label) }} <span
-                  v-if="item.koodi"
-                  class="faded"
-                >({{ item.koodi.toUpperCase() }})</span>
+                {{ $kaanna(item.label) }}
               </EpNavigationLabel>
             </template>
 
             <template #new>
-              <div class="mb-3 ml-3">
+              <div class="mb-3 ml-3 mt-2 pl-1">
                 <EpTekstikappaleLisays
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :tallenna="tallennaUusiTekstikappale"
