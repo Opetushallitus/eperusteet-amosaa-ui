@@ -37,22 +37,6 @@
           </ep-perustieto-data>
         </div>
       </div>
-
-      <div class="row">
-        <div class="col-12">
-          <EpPerustietoData icon="visibility">
-            <template #header>
-              {{ $t(kielistykset['esikatselu']) }}
-            </template>
-            <template v-if="!toteutussuunnitelma.esikatseltavissa">
-              {{ $t('et-ole-sallinut-esikatselua') }}
-            </template>
-            <template v-else>
-              <ep-external-link :url="esikatseluUrl" />
-            </template>
-          </EpPerustietoData>
-        </div>
-      </div>
     </template>
   </div>
 </template>
@@ -96,9 +80,6 @@ const kielistykset = computed(() => {
   return ToteutussuunnitelmaTiedotKielistykset[opetussuunnitelmaTyyppi.value];
 });
 
-const esikatseluUrl = computed(() => {
-  return buildToteutussuunnitelmaEsikatseluUrl(props.toteutussuunnitelma, props.toteutus);
-});
 </script>
 
 <style scoped lang="scss">
