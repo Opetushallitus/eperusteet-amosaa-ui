@@ -35,6 +35,16 @@
                 <span class="ml-2 mr-2">|</span>
               </template>
 
+              <template v-if="!isOpsPohja">
+                <EpEsikatseluLinkkiMetaInfo
+                  :tyyppi="esikatseluTyyppi"
+                  :model="toteutussuunnitelma"
+                  :toteutus="toteutus"
+                  :salli-esikatselu="salliEsikatselu"
+                />
+                <span class="ml-2 mr-2">|</span>
+              </template>
+
               <b-dropdown
                 class="asetukset"
                 size="sm"
@@ -446,16 +456,15 @@ import { computed, ref, watch, provide, inject, getCurrentInstance } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useHead } from '@unhead/vue';
 import _ from 'lodash';
-
 import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpValidStatus from '@shared/components/EpValidStatus/EpValidStatus.vue';
+import EpEsikatseluLinkkiMetaInfo from '@shared/components/EpEsikatseluLinkkiMetaInfo/EpEsikatseluLinkkiMetaInfo.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import EpNavigationLabel from '@shared/components/EpTreeNavibar/EpNavigationLabel.vue';
-
 import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';
 import { SisaltoEditStore } from '@/stores/SisaltoEditStore';
@@ -465,10 +474,8 @@ import { OpintokokonaisuusStore } from '@/stores/OpintokokonaisuusStore';
 import { KayttajaStore } from '@/stores/kayttaja';
 import { KuvaStore } from '@/stores/KuvaStore';
 import { OsaamismerkkiKappaleStore } from '@/stores/OsaamismerkkiKappaleStore';
-
-import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { MatalaTyyppiEnum, SisaltoviiteMatalaDto, NavigationNodeDtoTypeEnum, OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum, Opetussuunnitelmat } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
-
 import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
@@ -476,7 +483,6 @@ import { LinkkiHandler, routeToNode } from '@/utils/routing';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { createKasiteHandler } from '@shared/components/EpContent/KasiteHandler';
-
 import { $t, $kaanna, $hasOikeus } from '@shared/utils/globals';
 
 interface Props {
@@ -545,6 +551,10 @@ const isJaettuOsa = computed(() => {
 
 const isOpsPohja = computed(() => {
   return toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
+});
+
+const esikatseluTyyppi = computed(() => {
+  return isAmmatillinen.value ? 'toteutussuunnitelma' : 'opetussuunnitelma';
 });
 
 const julkaisut = computed(() => {
@@ -845,6 +855,15 @@ const validoi = async () => {
   isValidating.value = true;
   await props.toteutussuunnitelmaStore.updateCurrent();
   isValidating.value = false;
+};
+
+const salliEsikatselu = async () => {
+  await Opetussuunnitelmat.updateOpetussuunnitelma(
+    props.toteutussuunnitelmaId,
+    props.koulutustoimijaId,
+    { ...toteutussuunnitelma.value!, esikatseltavissa: true },
+  );
+  await props.toteutussuunnitelmaStore.fetchOpetussuunnitelma(props.koulutustoimijaId, props.toteutussuunnitelmaId);
 };
 
 const ratasClick = (clickFn: any, meta: any) => {
