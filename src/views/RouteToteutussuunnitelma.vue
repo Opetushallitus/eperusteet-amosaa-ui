@@ -5,8 +5,8 @@
       to="#headerExtension"
     >
       <div class="portal-menu d-flex">
-        <div class="upper-left d-flex justify-content-center">
-          <EpValidPopover
+        <div class="upper-left mt-2">
+          <EpValidStatus
             :validoitava="toteutussuunnitelma"
             :validoinnit="validoinnit"
             :julkaisemattomia-muutoksia="onkoJulkaisemattomiaMuutoksia"
@@ -19,7 +19,7 @@
           />
         </div>
 
-        <div class="flex-grow-1 align-self-center">
+        <div class="flex-grow-1 toteutussuunnitelma-header">
           <div
             v-if="toteutussuunnitelma"
             class="mb-5 p-2"
@@ -449,12 +449,10 @@ import _ from 'lodash';
 
 import EpSidebar from '@shared/components/EpSidebar/EpSidebar.vue';
 import EpTreeNavibar from '@shared/components/EpTreeNavibar/EpTreeNavibar.vue';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
-import EpProgressPopover from '@shared/components/EpProgressPopover/EpProgressPopover.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
-import EpValidPopover from '@shared/components/EpValidPopover/EpValidPopover.vue';
+import EpValidStatus from '@shared/components/EpValidStatus/EpValidStatus.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import EpNavigationLabel from '@shared/components/EpTreeNavibar/EpNavigationLabel.vue';
 
@@ -908,11 +906,15 @@ useHead(() => {
   }
 
 .portal-menu {
-  height: 140px;
+  height: 160px;
 
   h1 {
     margin: 0;
     padding: 0;
+  }
+
+  .toteutussuunnitelma-header {
+    margin-top: 13px;
   }
 
   .asetukset {

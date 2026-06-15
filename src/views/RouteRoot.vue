@@ -169,11 +169,9 @@ watch(() => props.koulutustoimijaId, async (newValue, oldValue) => {
   .header {
     color: white;
     background-position: 100% 0;
-    background-repeat: none;
-    background-size: cover;
-    @media only screen and (min-width: 2503px)  {
-      background-size: 100%;
-    }
+    background-repeat: no-repeat;
+    background-size: auto 216px;
+    background-attachment: fixed;
   }
 }
 
