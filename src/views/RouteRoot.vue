@@ -48,7 +48,7 @@ import EpFooter from '@shared/components/EpFooter/EpFooter.vue';
 import EpTestiymparisto from '@shared/components/EpTestiymparisto/EpTestiymparisto.vue';
 import EpPalauteLinkki from '@shared/components/EpPalauteLinkki/EpPalauteLinkki.vue';
 
-import { toteutusBanner } from '@shared/utils/bannerIcons';
+import { toteutusBanner, tileColors } from '@shared/utils/bannerIcons';
 import { FrontpageHeaderStyles, SovellusTitle } from '@/utils/toteutustypes';
 import { Koulutustoimijat, KoulutustoimijaDto, baseURL } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
@@ -90,9 +90,11 @@ const koulutustoimijatOikeuksilla = computed(() => {
 });
 
 const headerStyle = computed(() => {
+  const colors = tileColors[props.toteutus] || tileColors.ammatillinen;
   return {
     ...toteutusBanner(props.toteutus),
     ...FrontpageHeaderStyles[props.toteutus],
+    'background-color': colors[1],
   };
 });
 
