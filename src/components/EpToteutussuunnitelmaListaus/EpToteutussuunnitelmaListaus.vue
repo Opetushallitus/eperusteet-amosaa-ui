@@ -2,7 +2,7 @@
   <div>
     <div class="header">
       <slot name="header">
-        <h1 class="bg-danger">
+        <h1 class="toteutussuunnitelma-listaus-slot-placeholder">
           slot: header
         </h1>
       </slot>
@@ -12,8 +12,8 @@
       v-if="items"
       class="filters"
     >
-      <div class="row align-items-end">
-        <div class="col-12 col-md-3 mt-2 mb-2 mr-2">
+      <div class="flex flex-wrap items-end">
+        <div class="w-full md:w-1/4 mt-2 mb-2 mr-2">
           <label>{{ $t(nameLabel) }}</label>
           <EpSearch
             v-model="query.nimi"
@@ -23,7 +23,7 @@
         </div>
         <div
           v-if="filtersInclude('tyyppi')"
-          class="col-12 col-lg-2 col-md-3 m-2"
+          class="w-full md:w-1/4 lg:w-1/6 m-2"
         >
           <label>{{ $t('tyyppi') }}</label>
           <EpMultiSelect
@@ -43,7 +43,7 @@
         </div>
         <div
           v-if="filtersInclude('voimassaolo')"
-          class="col-12 col-lg-2 col-md-3 m-2"
+          class="w-full md:w-1/4 lg:w-1/6 m-2"
         >
           <label>{{ $t('voimassaolo') }}</label>
           <EpMultiSelect
@@ -63,7 +63,7 @@
         </div>
         <div
           v-if="$isAdmin()"
-          class="col-12 col-lg-2 col-md-3 m-2"
+          class="w-full md:w-1/4 lg:w-1/6 m-2"
         >
           <label>{{ $t('koulutustoimija') }}</label>
           <EpMultiSelect
@@ -94,66 +94,64 @@
         </div>
       </div>
 
-      <div class="row align-items-end">
+      <div class="flex flex-wrap items-end">
         <div
           v-if="filtersInclude('tila')"
-          class="col m-2"
+          class="grow m-2"
         >
-          <b-form-checkbox-group v-model="tila">
-            <EpToggleGroup
-              v-model="tila"
-              :items="vaihtoehdotTilat"
-            >
-              <template #default="{ item }">
-                {{ $t(item) }}
-              </template>
-            </EpToggleGroup>
-          </b-form-checkbox-group>
+          <EpToggleGroup
+            v-model="tila"
+            :items="vaihtoehdotTilat"
+          >
+            <template #default="{ item }">
+              {{ $t(item) }}
+            </template>
+          </EpToggleGroup>
         </div>
       </div>
 
       <div v-if="items.data.length > 0">
-        <b-table
-          v-model:sort-by="sort.sortBy"
-          v-model:sort-desc="sort.sortDesc"
+        <ep-table
+          :sort-by="sortState.sortBy"
+          :sort-desc="sortState.sortDesc"
           striped
           hover
           responsive
+          no-local-sorting
           :items="items.data"
           :fields="fields"
-          no-local-sorting
-          no-sort-reset
+          data-key="id"
           @sort-changed="sortingChanged"
         >
-          <template #cell(nimi)="data">
-            <router-link :to="{ name: 'toteutussuunnitelma', params: { koulutustoimijaId: data.item.koulutustoimija.id, toteutussuunnitelmaId: data.item.id } }">
-              {{ $kaanna(data.item.nimi) }}
+          <template #cell(nimi)="{ item }">
+            <router-link :to="{ name: 'toteutussuunnitelma', params: { koulutustoimijaId: item.koulutustoimija.id, toteutussuunnitelmaId: item.id } }">
+              {{ $kaanna(item.nimi) }}
             </router-link>
           </template>
-          <template #cell(tila)="data">
-            <div class="d-flex">
-              {{ $t(data.item.tila) }}
+          <template #cell(tila)="{ item }">
+            <div class="flex">
+              {{ $t(item.tila) }}
               <ep-button
-                v-if="data.item.tila === 'poistettu'"
+                v-if="item.tila === 'poistettu'"
                 v-oikeustarkastelu="{ oikeus: 'tilanvaihto' }"
                 variant="link py-0"
                 icon="keyboard_return"
-                @click="restore(data.item)"
+                @click="restore(item)"
               >
                 {{ $t('palauta') }}
               </ep-button>
             </div>
           </template>
-        </b-table>
-        <ep-pagination
+        </ep-table>
+        <ep-b-pagination
           v-model="sivu"
-          :per-page="perPage"
-          :total-rows="total"
+          :items-per-page="perPage"
+          :total="total"
         />
       </div>
       <div
         v-else
-        class="m-2 alert alert-info"
+        class="alert alert-info m-2 px-3 py-2"
       >
         {{ $t('ei-hakutuloksia') }}
       </div>
@@ -166,10 +164,10 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import * as _ from 'lodash';
-import { BvTableFieldArray } from 'bootstrap-vue';
-
+import type { TableField } from '@shared/components/EpTable/EpTable.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
@@ -203,7 +201,15 @@ const tyyppi = ref<string | null>('ops');
 const voimassaolo = ref<string | null>(null);
 const tila = ref<string[] | null>(['luonnos', 'julkaistu']);
 const isLoading = ref(false);
-const sort = ref({});
+const sort = ref<{ sortBy?: string; sortDesc?: boolean }>({
+  sortBy: 'nimi',
+  sortDesc: false,
+});
+
+const sortState = computed(() => ({
+  sortBy: sort.value.sortBy,
+  sortDesc: sort.value.sortDesc ?? false,
+}));
 
 const query = reactive({
   sivu: 0,
@@ -283,8 +289,8 @@ const onTyyppiChange = (tyyppiParam: string) => {
   });
 };
 
-const sortingChanged = (sortParam: any) => {
-  sort.value = sortParam;
+const sortingChanged = (sortParam: { sortBy: string; sortDesc: boolean }) => {
+  sort.value = { sortBy: sortParam.sortBy, sortDesc: sortParam.sortDesc };
   Object.assign(query, {
     ...query,
     sivu: 0,
@@ -348,7 +354,7 @@ const fields = computed(() => {
   return _.filter(initialFields.value, (field: any) => !props.fieldKeys || _.includes(props.fieldKeys, field.key));
 });
 
-const initialFields = computed((): BvTableFieldArray => {
+const initialFields = computed((): TableField[] => {
   const dateFormatter = (value: Date) => {
     return value
       ? $sd(value)
@@ -465,6 +471,12 @@ watch(tyyppi, onTyyppiChange);
 </script>
 
 <style lang="scss" scoped>
+@import "@shared/styles/_variables.scss";
+
+.toteutussuunnitelma-listaus-slot-placeholder {
+  background-color: $alias-error;
+  color: $white;
+}
 
 .upper {
   margin-bottom: 3rem;

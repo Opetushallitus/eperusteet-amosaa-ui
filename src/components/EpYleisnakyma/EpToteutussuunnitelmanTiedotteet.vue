@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div class="d-flex justify-content-between">
+    <div class="flex justify-between">
       <h3 class="mb-4">
         {{ $t('tiedotteet') }}
       </h3>

@@ -10,10 +10,10 @@
       :kayttaja-store="kayttajaStore"
     >
       <template #header>
-        <div class="d-flex justify-content-between">
+        <div class="flex justify-between">
           <h2>{{ $t(topic) }}</h2>
 
-          <div>
+          <div class="flex gap-2">
             <router-link
               v-oikeustarkastelu="{ oikeus: 'luonti'}"
               :to="luontiRoute"

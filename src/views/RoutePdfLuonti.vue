@@ -1,6 +1,6 @@
 <template>
   <div class="dokumentit">
-    <div class="ylapaneeli d-flex align-items-center">
+    <div class="ylapaneeli flex items-center">
       <h2 class="otsikko">
         {{ $t('luo-pdf') }}
       </h2>
@@ -20,9 +20,9 @@
       <div
         v-for="(kuva, index) in kuvat"
         :key="'kuva'+index"
-        class="row"
+        class="flex flex-wrap w-full gap-4"
       >
-        <div class="col kuvalataus">
+        <div class="grow min-w-0 kuvalataus">
           <EpPdfKuvalataus
             :tyyppi="kuva.tyyppi"
             :kuva-url="kuva.url"
@@ -30,7 +30,7 @@
             @remove-image="removeImage"
           />
         </div>
-        <div class="col-4 text-center sijaintikuva">
+        <div class="w-full sm:w-1/3 shrink-0 text-center sijaintikuva">
           <div class="sijainti-topic">
             <span v-if="kuva.first">{{ $t('sijainti') }}</span>
           </div>

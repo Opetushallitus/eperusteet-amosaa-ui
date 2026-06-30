@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div class="d-flex justify-content-between">
+    <div class="flex justify-between">
       <h3>{{ $t('aikataulu') }}</h3>
       <EpAikatauluModal
         ref="aikataulumodalRef"

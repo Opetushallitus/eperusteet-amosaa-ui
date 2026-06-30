@@ -1,14 +1,15 @@
 <template>
-  <b-dropdown
-    variant="link"
-    toggle-class="text-decoration-none"
+  <EpDropdown
     no-caret
+    content-class="ml-[15px] text-sm"
   >
     <template #button-content>
-      + {{ $t('lisaa-sisaltoa') }}
+      <span class="text-inherit no-underline text-[0.8rem] pb-0">
+        + {{ $t('lisaa-sisaltoa') }}
+      </span>
     </template>
 
-    <b-dropdown-item>
+    <EpDropdownItem>
       <ep-tekstikappale-lisays
         :tekstikappaleet="tekstikappaleet"
         :paatasovalinta="true"
@@ -18,42 +19,42 @@
           {{ $kaanna(tekstikappale.label) }}
         </template>
       </ep-tekstikappale-lisays>
-    </b-dropdown-item>
+    </EpDropdownItem>
 
     <div v-if="!opsYhteinenOsuus">
-      <b-dropdown-item>
-        <span @click="lisaaUusiTutkinnonosa">{{ $t('uusi-tutkinnon-osa') }}</span>
-      </b-dropdown-item>
+      <EpDropdownItem @click="lisaaUusiTutkinnonosa">
+        {{ $t('uusi-tutkinnon-osa') }}
+      </EpDropdownItem>
 
-      <hr class="mt-1 mb-1">
+      <EpDropdownDivider />
 
-      <b-dropdown-item>
-        <span @click="lisaaUusiSuorituspolku">{{ $t('uusi-suorituspolku') }}</span>
-      </b-dropdown-item>
+      <EpDropdownItem @click="lisaaUusiSuorituspolku">
+        {{ $t('uusi-suorituspolku') }}
+      </EpDropdownItem>
 
-      <b-dropdown-item>
-        <span @click="lisaaUusiOsaSuorituspolku">{{ $t('uusi-osasuorituspolku') }}</span>
-      </b-dropdown-item>
+      <EpDropdownItem @click="lisaaUusiOsaSuorituspolku">
+        {{ $t('uusi-osasuorituspolku') }}
+      </EpDropdownItem>
 
-      <hr class="mt-1 mb-1">
+      <EpDropdownDivider />
 
-      <b-dropdown-item>
+      <EpDropdownItem>
         <ep-sisallon-tuonti
           v-if="toteutussuunnitelma"
           :opetussuunnitelma-id="toteutussuunnitelma.id"
           :koulutustoimija-id="koulutustoimijaId"
           :update-navigation="updateNavigation"
         />
-      </b-dropdown-item>
+      </EpDropdownItem>
     </div>
-  </b-dropdown>
+  </EpDropdown>
 </template>
 
 <script setup lang="ts">
 import _ from 'lodash';
-import { computed, getCurrentInstance } from 'vue';
-import EpButton from '@shared/components/EpButton/EpButton.vue';
+import { computed } from 'vue';
 import EpTekstikappaleLisays from '@shared/components/EpTekstikappaleLisays/EpTekstikappaleLisays.vue';
+import { EpDropdown, EpDropdownItem, EpDropdownDivider } from '@shared/components/EpDropdown';
 import { SisaltoViiteStore } from '@/stores/SisaltoViiteStore';
 import { SisaltoviiteMatalaDto, MatalaTyyppiEnum, SisaltoViiteKevytDtoTyyppiEnum, NavigationNodeDto, OpetussuunnitelmaDto, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
@@ -67,8 +68,6 @@ const props = defineProps<{
   updateNavigation: () => Promise<void>;
   toteutussuunnitelma: OpetussuunnitelmaDto;
 }>();
-
-const instance = getCurrentInstance();
 
 const navigationChildren = (navigations: NavigationNodeDto[]): NavigationNodeDto[] => {
   return _.flatten(_.map(navigations, navigation => {
@@ -165,22 +164,3 @@ const opsYhteinenOsuus = computed(() => {
 });
 
 </script>
-
-<style scoped lang="scss">
-
-  :deep(.dropdown-toggle) {
-    font-size: 0.8rem !important;
-    padding-bottom: 0px;
-  }
-
-  :deep(.dropdown-item) {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  :deep(.dropdown-menu) {
-    margin-left: 15px;
-    font-size: 0.8rem;
-  }
-
-</style>
