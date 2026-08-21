@@ -499,7 +499,7 @@ const lahetaYhteistyopyynto = async (event: any) => {
           ...event,
           status: 'odotetaan',
         });
-        $success($t('yhteistyopyynto-lahetetty'));
+        $success('yhteistyopyynto-lahetetty');
         return;
       }
     }

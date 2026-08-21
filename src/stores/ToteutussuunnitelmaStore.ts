@@ -1,10 +1,8 @@
-import Vue from 'vue';
 import { OpetussuunnitelmaDto, Opetussuunnitelmat, NavigationNodeDto, OpetussuunnitelmaLuontiDto, Validointi, JulkaisuBaseDto, Julkaisut, VanhentunutPohjaperusteDto, OpetussuunnitelmaBaseDto, JulkaisuBaseDtoTilaEnum } from '@shared/api/amosaa';
 import _ from 'lodash';
 import { createLogger } from '@shared/utils/logger';
 import { delay } from '@shared/utils/delay';
-import { reactive } from 'vue';
-import { computed } from 'vue';
+import { reactive, computed } from 'vue';
 
 const logger = createLogger('Toteutussuunnitelma');
 

@@ -268,7 +268,6 @@ const koulutustoimijat = computed(() => {
 });
 
 const startKysymysModal = (ohjeParam: OhjeDto | null) => {
-  console.log('startKysymysModal', ohjeParam);
   valitseKaikkiOrganisaatiot.value = false;
 
   if (ohjeParam) {
