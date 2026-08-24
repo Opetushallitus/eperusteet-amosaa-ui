@@ -8,14 +8,14 @@
     >
       <h2>{{ $t(perustePaivitysKielistys['otsikko']) }}</h2>
       <div v-html="$t(perustePaivitysKielistys['teksti'])" />
-      <div class="d-flex justify-content-between">
+      <div class="flex justify-between">
         <EpExternalLink
           :url="perusteLinkki"
           class="mt-2"
         >
           {{ $kaanna(peruste.nimi) }}
         </EpExternalLink>
-        <div class="d-flex align-items-center">
+        <div class="flex items-center">
           <div
             v-if="toteutussuunnitelma.perustePaivitettyPvm"
             class="mr-3 disabled-text font-size-08"
@@ -32,8 +32,8 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col p-0">
+    <div class="flex w-full">
+      <div class="min-w-0 grow p-0">
         <ep-toteutussuunnitelma-aikataulu
           class="info-box"
           :aikataulu-store="aikatauluStore"
@@ -42,8 +42,8 @@
       </div>
     </div>
 
-    <div class="row pt-0">
-      <div class="col-lg-12 col-xl-6 p-0">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-0 pt-0 w-full">
+      <div class="min-w-0 p-0">
         <ep-toteutussuunnitelman-tiedotteet
           v-if="peruste"
           class="info-box"
@@ -61,7 +61,7 @@
           :toteutus="toteutus"
         />
       </div>
-      <div class="col-lg-12 col-xl-6 p-0 pl-2">
+      <div class="min-w-0 p-0 xl:pl-2">
         <ep-viimeaikainen-toiminta
           class="info-box"
           :muokkaustieto-store="muokkaustietoStore"
@@ -162,10 +162,6 @@ onMounted(async () => {
   height: 100%;
   background-color: $gray-lighten-5;
   padding: 10px;
-
-  .row {
-    margin: 0px;
-  }
 
   .info-box {
     margin-bottom: 10px;

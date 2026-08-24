@@ -1,20 +1,20 @@
 <template>
-  <div class="content text-left">
+  <div class="content text-start">
     <h3>{{ $t('viimeaikainen-toiminta') }}</h3>
 
     <ep-spinner v-if="!muokkaustiedot || !peruste" />
 
     <div
       v-else
-      class="container text-center"
+      class="muokkaustieto-wrap text-center"
     >
       <div
         v-for="(muokkaustieto, index) in muokkaustiedotRouted"
         :key="index"
-        class="row muokkaustieto"
+        class="flex w-full muokkaustieto"
       >
-        <div class="col col-auto ikoni-col center-block">
-          <div class="ikoni d-inline-block">
+        <div class="shrink-0 ikoni-col center-block">
+          <div class="ikoni inline-block">
             <EpMaterialIcon :class="muokkaustieto.iconClass">
               {{ muokkaustieto.icon }}
             </EpMaterialIcon>
@@ -27,17 +27,17 @@
           </div>
         </div>
 
-        <div class="col router-col text-left">
+        <div class="flex-1 min-w-0 router-col text-start">
           <div v-if="muokkaustieto.poistettu">
             <div
               class="router-box"
               :class="{ 'router-box-poistettu': muokkaustieto.poistettu }"
             >
-              <div class="row">
-                <div class="col nimi">
+              <div class="flex flex-wrap justify-between gap-2">
+                <div class="nimi min-w-0">
                   {{ muokkaustieto.kayttajaNimi }}
                 </div>
-                <div class="col aika text-right">
+                <div class="aika text-end shrink-0">
                   {{ $ago(muokkaustieto.luotu) }}
                 </div>
               </div>
@@ -54,11 +54,11 @@
               class="router-box"
               :class="{ 'router-box-poistettu': muokkaustieto.poistettu }"
             >
-              <div class="row">
-                <div class="col nimi">
+              <div class="flex flex-wrap justify-between gap-2">
+                <div class="nimi min-w-0">
                   {{ muokkaustieto.kayttajaNimi }}
                 </div>
-                <div class="col aika text-right">
+                <div class="aika text-end shrink-0">
                   {{ $ago(muokkaustieto.luotu) }}
                 </div>
               </div>
@@ -171,7 +171,7 @@ const muokkaustiedotRouted = computed(() => {
 <style scoped lang="scss">
 @import "@/styles/_variables.scss";
 
-  .container {
+  .muokkaustieto-wrap {
     margin-top: 40px;
     margin-bottom: 20px;
     min-width: 450px;
@@ -228,7 +228,6 @@ const muokkaustiedotRouted = computed(() => {
 
       .router-col {
         padding: 0;
-        width: 0;
 
         .router-box {
           line-height: 1;

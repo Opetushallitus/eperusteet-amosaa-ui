@@ -1,22 +1,27 @@
 <template>
   <div>
-    <div class="d-flex mb-4">
+    <div class="flex items-center mb-4">
       <h2>{{ $t('laaja-alainen-osaaminen') }}</h2>
-      <div
-        v-b-popover.hover.right="$t('koto-laaja-alainen-osaaminen-paikallinen-tarkennus-selite')"
-        class="ml-4 default-icon clickable"
+      <EpPopover
+        :triggers="['hover']"
+        class="ml-4"
       >
-        <EpMaterialIcon icon-shape="outlined">
-          info
-        </EpMaterialIcon>
-      </div>
+        <template #trigger>
+          <div class="default-icon clickable inline-flex">
+            <EpMaterialIcon icon-shape="outlined">
+              info
+            </EpMaterialIcon>
+          </div>
+        </template>
+        {{ $t('koto-laaja-alainen-osaaminen-paikallinen-tarkennus-selite') }}
+      </EpPopover>
     </div>
 
     <div
       v-for="(lao, index) in laajaAlaisetOsaamiset"
       :key="'lao' + index"
     >
-      <div class="d-flex align-items-center justify-content-between">
+      <div class="flex items-center justify-between">
         <h3>{{ $kaanna(perusteenLaotByUri[lao.koodiUri].koodi.nimi) }}</h3>
         <ep-button
           v-if="isEditing"
@@ -34,7 +39,7 @@
         :is-editable="false"
       />
 
-      <b-form-group class="mb-4">
+      <ep-form-group class="mb-4">
         <template #label>
           <h4>{{ $t('paikallinen-teksti') }}</h4>
         </template>
@@ -43,24 +48,27 @@
           layout="normal"
           :is-editable="isEditing"
         />
-      </b-form-group>
+      </ep-form-group>
     </div>
 
-    <b-dropdown
+    <EpDropdown
       v-if="isEditing"
-      :text="$t('lisaa-laaja-alaisen-osaamisen-kuvaus')"
-      variant="primary"
       class="mb-4"
     >
-      <b-dropdown-item-button
+      <template #button-content>
+        <ep-button variant="primary">
+          {{ $t('lisaa-laaja-alaisen-osaamisen-kuvaus') }}
+        </ep-button>
+      </template>
+      <EpDropdownItem
         v-for="(perusteenLao, index) in perusteenLaajaAlaisetOsaamiset"
         :key="index+'addlaaja'"
         :disabled="laotByUri[perusteenLao.koodi.uri] !== undefined"
         @click="addLaajaAlainenOsaaminen(perusteenLao)"
       >
         {{ perusteenLao.koodi.arvo + '. ' + $kaanna(perusteenLao.koodi.nimi) }}
-      </b-dropdown-item-button>
-    </b-dropdown>
+      </EpDropdownItem>
+    </EpDropdown>
 
     <EpAlert
       v-if="!isEditing && laajaAlaisetOsaamiset.length === 0"
@@ -78,6 +86,10 @@ import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpPopover from '@shared/components/EpPopover/EpPopover.vue';
+import EpDropdown from '@shared/components/EpDropdown/EpDropdown.vue';
+import EpDropdownItem from '@shared/components/EpDropdown/EpDropdownItem.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import { $t, $kaanna } from '@shared/utils/globals';
 
 const props = defineProps<{

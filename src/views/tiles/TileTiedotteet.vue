@@ -14,14 +14,14 @@
           <div
             v-for="(tiedote, idx) in tiedotteetFormatted"
             :key="idx"
-            class="tiedote row justify-content-center text-left"
+            class="tiedote grid grid-cols-12 gap-x-2 gap-y-1 text-start max-w-full"
           >
-            <div class="col-3">
+            <div class="col-span-12 sm:col-span-3">
               {{ $sd(tiedote.luotu) }}
             </div>
             <div
-              class="col-7 otsikko"
-              :class="{'font-weight-bold': tiedote.uusi}"
+              class="col-span-12 sm:col-span-9 min-w-0 otsikko"
+              :class="{'font-bold': tiedote.uusi}"
             >
               {{ $kaanna(tiedote.otsikko) }}
             </div>

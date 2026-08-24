@@ -8,7 +8,7 @@
     >
       <div
         v-if="isEditing"
-        class="font-weight-bold mb-2"
+        class="font-bold mb-2"
       >
         {{ $t('otsikko') }}
       </div>
@@ -30,22 +30,22 @@
       <div v-else>
         <div
           v-if="isEditing"
-          class="font-weight-bold mb-2"
+          class="font-bold mb-2"
         >
           {{ $t('vaatimukset') }}
         </div>
         <div
           v-for="(vaatimus, index) in vaatimuksenKohde.vaatimukset"
           :key="'vaatimus' + kohdeIndex + index"
-          class="d-flex ml-2 mb-2 w-100 justify-content-between align-items-center"
+          class="flex ml-2 mb-2 w-full justify-between items-center"
         >
           <ep-field
             v-model="vaatimus.selite"
             :is-editing="true"
-            class="w-100"
+            class="w-full"
           />
-          <div class="d-flex ml-5">
-            <div class="d-flex align-items-center">
+          <div class="flex ml-5">
+            <div class="flex items-center">
               {{ $t('koodi') }}
             </div>
             <ep-input
@@ -62,7 +62,7 @@
           </div>
         </div>
 
-        <div class="d-flex justify-content-between">
+        <div class="flex justify-between">
           <ep-button
             variant="outline"
             icon="add"

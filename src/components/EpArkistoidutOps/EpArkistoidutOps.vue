@@ -1,25 +1,24 @@
 <template>
   <div>
     <EpButton
-      v-b-modal.arkistoidutopetussuunnitelmatmodal
       variant="link"
+      @click="openModal"
     >
       <EpMaterialIcon class="mr-2">
         folder
       </EpMaterialIcon>
       <span>{{ $t(title) }}</span>
     </EpButton>
-    <b-modal
-      id="arkistoidutopetussuunnitelmatmodal"
+    <ep-modal
       ref="arkistoidutOpsModal"
       size="lg"
-      :title="$t(title) + ' (' + arkistoidut.length + ')'"
-      :hide-footer="true"
+      :header="$t(title) + ' (' + arkistoidut.length + ')'"
+      hide-footer
     >
       <div class="search">
         <EpSearch v-model="query" />
       </div>
-      <b-table
+      <ep-table
         responsive
         borderless
         striped
@@ -27,45 +26,41 @@
         :fields="fields"
         :current-page="currentPage"
         :per-page="perPage"
+        data-key="id"
+        @update:current-page="currentPage = $event"
       >
-        <template #cell(nimi)="data">
-          {{ $kaanna(data.value) }}
+        <template #cell(nimi)="{ value }">
+          {{ $kaanna(value) }}
         </template>
-        <template #cell(muokattu)="data">
-          {{ $sdt(data.value) }}
+        <template #cell(muokattu)="{ value }">
+          {{ $sdt(value) }}
         </template>
-        <template #cell(siirtyminen)="data">
+        <template #cell(siirtyminen)="{ item }">
           <EpButton
             v-if="$hasOikeus('luonti') || $isAdmin()"
             variant="link"
             icon="keyboard_return"
-            @click="emit('restore', data.item)"
+            @click="emit('restore', item)"
           >
             {{ $t('palauta') }}
           </EpButton>
         </template>
-      </b-table>
-      <ep-pagination
-        v-model="currentPage"
-        :total-rows="arkistoidut.length"
-        :per-page="perPage"
-        aria-controls="arkistoidut-opetussuunnitelmat"
-        align="center"
-      />
-    </b-modal>
+      </ep-table>
+    </ep-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import _ from 'lodash';
-import { computed, ref } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 import { $t, $kaanna, $sdt, $hasOikeus, $isAdmin } from '@shared/utils/globals';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
 
 const props = defineProps<{
   opetussuunnitelmat?: OpetussuunnitelmaDto[];
@@ -77,6 +72,7 @@ const emit = defineEmits(['restore']);
 const query = ref('');
 const currentPage = ref(1);
 const perPage = ref(10);
+const arkistoidutOpsModal = useTemplateRef<InstanceType<typeof EpModal>>('arkistoidutOpsModal');
 
 const arkistoidut = computed(() => {
   return _.chain(props.opetussuunnitelmat)
@@ -98,10 +94,11 @@ const fields = computed(() => {
     label: '',
   }];
 });
+
+function openModal() {
+  arkistoidutOpsModal.value?.show();
+}
 </script>
 
 <style lang="scss" scoped>
-:deep(.b-table.table-borderless thead th) {
-  border: none;
-}
 </style>

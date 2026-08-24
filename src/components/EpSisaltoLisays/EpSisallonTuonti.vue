@@ -1,58 +1,53 @@
 <template>
   <div>
-    <div v-b-modal.sisallontuonti>
-      <span @click="openModal">
-        {{ $t(kaannokset['tuoBtn']) }}
+    <div @click="openModal">
+      <span class="cursor-pointer">
+        {{ $t(sisaltoTuontiKaannokset['tuoBtn']) }}
       </span>
     </div>
-    <b-modal
-      id="sisallontuonti"
+    <ep-modal
       ref="sisallontuontiModal"
       size="lg"
-      centered
-      @close="clear"
+      :header="$t('tuo-sisaltoa')"
+      @cancel="onModalCancel"
     >
-      <template #modal-title>
-        {{ $t('tuo-sisaltoa') }}
-      </template>
-
       <div v-if="!toteutussuunnitelma">
-        <p>{{ $t(kaannokset['topicNoOps']) }}</p>
+        <p>{{ $t(sisaltoTuontiKaannokset['topicNoOps']) }}</p>
         <ep-search
           v-model="query.nimi"
-          :placeholder="$t(kaannokset['searchPlaceholder'])"
+          :placeholder="$t(sisaltoTuontiKaannokset['searchPlaceholder'])"
         />
         <ep-spinner v-if="!opetussuunnitelmatpage" />
 
         <div v-else>
-          <b-table
+          <ep-table
             responsive
             striped
             :items="opetussuunnitelmatFiltered"
             :fields="opetussuunnitelmaFields"
+            data-key="id"
           >
-            <template #cell(nimi)="data">
+            <template #cell(nimi)="{ item }">
               <ep-button
                 variant="link"
-                @click="valitseToteutussuunnitelma(data.item)"
+                @click="valitseToteutussuunnitelma(item)"
               >
-                {{ $kaanna(data.item.nimi) }}
+                {{ $kaanna(item.nimi) }}
               </ep-button>
             </template>
-          </b-table>
+          </ep-table>
 
-          <ep-pagination
+          <ep-b-pagination
             v-model="page"
-            :total-rows="totalRows"
-            :per-page="query.sivukoko"
-            align="center"
+            :total="totalRows"
+            :items-per-page="query.sivukoko"
             aria-controls="tuo-sisaltoa-modaali"
           />
         </div>
       </div>
 
       <div v-else>
-        <p>{{ $t(kaannokset['topicOps']) }} {{ $kaanna(toteutussuunnitelma.nimi) }}</p>
+        <p>{{ $t(sisaltoTuontiKaannokset['topicOps']) }} {{ $kaanna(toteutussuunnitelma.nimi) }}</p>
         <ep-spinner v-if="!sisaltoviitteet" />
 
         <div v-else>
@@ -60,13 +55,15 @@
             v-for="(sisaltoTaulu, index) in sisaltoTaulut"
             :key="'sisaltotaulu'+index"
           >
-            <b-table
+            <ep-table
               responsive
               striped
               :items="sisaltoTaulu.items"
               :fields="sisaltoTaulu.fields"
               :per-page="sisaltoSivuKoko"
               :current-page="sisaltoPages[sisaltoTaulu.page]"
+              data-key="id"
+              @update:current-page="(p) => setSisaltoPage(sisaltoTaulu.page, p)"
             >
               <template #cell(nimi)="{ item }">
                 <div
@@ -88,15 +85,7 @@
                   <span>{{ $kaanna(item.tekstiKappale.nimi) }}</span>
                 </div>
               </template>
-            </b-table>
-            <ep-pagination
-              v-if="sisaltoTaulu.items.length > sisaltoSivuKoko"
-              v-model="sisaltoPages[sisaltoTaulu.page]"
-              :total-rows="sisaltoTaulu.items.length"
-              :per-page="sisaltoSivuKoko"
-              align="center"
-              aria-controls="tuo-sisaltoa-tekstikappaleet"
-            />
+            </ep-table>
           </div>
         </div>
       </div>
@@ -122,24 +111,26 @@
           {{ $t('tuo-valitut-sisallot') }}
         </ep-button>
       </template>
-    </b-modal>
+    </ep-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import { computed, inject, onMounted, ref, watch, useTemplateRef } from 'vue';
 import _ from 'lodash';
 
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { OpetussuunnitelmaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import { SisaltotuontiStore } from '@/stores/SisaltotuontiStore';
-import { $t, $kaanna, $success, $bvModal } from '@shared/utils/globals';
+import { $t, $kaanna, $success } from '@shared/utils/globals';
 
 const kaannokset = {
   default: {
@@ -165,11 +156,13 @@ const props = defineProps<{
 const koulutustoimija = inject<any>('koulutustoimija');
 
 const query = ref<any>({});
-const sisaltoPages = ref<any>({});
+const sisaltoPages = ref<Record<string, number>>({});
 const sisaltoSivuKoko = ref(5);
 const sisaltotuontiStore = ref<SisaltotuontiStore | null>(null);
 const toteutussuunnitelma = ref<OpetussuunnitelmaDto | null>(null);
 const valitutSisaltoviitteet = ref<number[]>([]);
+
+const sisallontuontiModal = useTemplateRef<InstanceType<typeof EpModal>>('sisallontuontiModal');
 
 const defaults = () => {
   query.value = {
@@ -246,10 +239,6 @@ const page = computed({
   },
 });
 
-const okDisabled = computed(() => {
-  return true;
-});
-
 const opetussuunnitelmaFields = computed(() => {
   let tableFields: any[] = [{
     key: 'nimi',
@@ -318,12 +307,22 @@ const sisaltoTaulut = computed(() => {
   ];
 });
 
-const kaannoksetValue = computed(() => {
+const sisaltoTuontiKaannokset = computed(() => {
   return kaannokset[koulutustoimija?.organisaatioRyhma ? 'organisaatioRyhma' : 'default'];
 });
 
+function setSisaltoPage(pageKey: string, p: number) {
+  sisaltoPages.value = { ...sisaltoPages.value, [pageKey]: p };
+}
+
+function onModalCancel() {
+  toteutussuunnitelma.value = null;
+  valitutSisaltoviitteet.value = [];
+  sisaltotuontiStore.value!.clear();
+}
+
 const openModal = async () => {
-  $bvModal.show('sisallontuonti');
+  sisallontuontiModal.value?.show();
   defaults();
   await sisaltotuontiStore.value!.fetch(query.value);
 };
@@ -359,10 +358,8 @@ const back = () => {
 };
 
 const clear = () => {
-  toteutussuunnitelma.value = null;
-  valitutSisaltoviitteet.value = [];
-  sisaltotuontiStore.value!.clear();
-  $bvModal.hide('sisallontuonti');
+  onModalCancel();
+  sisallontuontiModal.value?.hide();
 };
 
 onMounted(() => {

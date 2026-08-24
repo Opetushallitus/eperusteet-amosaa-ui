@@ -31,7 +31,7 @@
           />
         </div>
 
-        <b-form-group>
+        <ep-form-group>
           <template #label>
             <h3>{{ $t('laaja-alaisen-osaamisen-paikallinen-tarkennus') }}</h3>
           </template>
@@ -45,7 +45,7 @@
             v-if="!isEditing && !kotoLaajaAlainenOsaaminen.teksti"
             :text="$t('ei-sisaltoa') + '. ' + $t('kirjoita-sisaltoa-valitsemalla-muokkaa') + '.'"
           />
-        </b-form-group>
+        </ep-form-group>
       </template>
     </EpEditointi>
   </div>
@@ -59,6 +59,7 @@ import * as _ from 'lodash';
 import EpEditointi from '@shared/components/EpEditointi/EpEditointi.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpAlert from '@shared/components/EpAlert/EpAlert.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 
 import { EditointiStore } from '@shared/components/EpEditointi/EditointiStore';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';

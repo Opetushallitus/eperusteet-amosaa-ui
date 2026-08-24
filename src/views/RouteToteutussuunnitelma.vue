@@ -4,8 +4,8 @@
       defer
       to="#headerExtension"
     >
-      <div class="portal-menu d-flex">
-        <div class="upper-left mt-2">
+      <div class="portal-menu flex">
+        <div class="upper-left flex justify-center">
           <EpValidStatus
             :validoitava="toteutussuunnitelma"
             :validoinnit="validoinnit"
@@ -19,7 +19,7 @@
           />
         </div>
 
-        <div class="flex-grow-1 toteutussuunnitelma-header">
+        <div class="grow toteutussuunnitelma-header">
           <div
             v-if="toteutussuunnitelma"
             class="mb-5 p-2"
@@ -45,14 +45,12 @@
                 <span class="ml-2 mr-2">|</span>
               </template>
 
-              <b-dropdown
+              <EpDropdown
                 class="asetukset"
-                size="sm"
                 no-caret
-                variant="transparent"
               >
                 <template #button-content>
-                  <span>{{ $t('lisatoiminnot') }}</span>
+                  <span class="text-inherit no-underline">{{ $t('lisatoiminnot') }}</span>
                   <EpMaterialIcon
                     icon-shape="outlined"
                     class="hallinta"
@@ -68,29 +66,35 @@
                 >
                   <hr
                     v-if="(ratasvalinta as any).separator"
-                    class="mt-2 mb-2"
+                    class="mt-2 mb-2 border-0 border-t border-solid border-gray-200"
                   >
-                  <b-dropdown-item
+                  <EpDropdownItem
                     v-if="(ratasvalinta as any).route"
                     :to="{ name: (ratasvalinta as any).route }"
                   >
-                    <EpMaterialIcon icon-shape="outlined">
+                    <EpMaterialIcon
+                      icon-shape="outlined"
+                      class="mr-2"
+                    >
                       {{ (ratasvalinta as any).icon }}
                     </EpMaterialIcon>
                     {{ $t((ratasvalinta as any).text) }}
-                  </b-dropdown-item>
+                  </EpDropdownItem>
 
-                  <b-dropdown-item
+                  <EpDropdownItem
                     v-if="(ratasvalinta as any).click"
                     @click="ratasClick((ratasvalinta as any).click, (ratasvalinta as any).meta)"
                   >
-                    <EpMaterialIcon icon-shape="outlined">
+                    <EpMaterialIcon
+                      icon-shape="outlined"
+                      class="mr-2"
+                    >
                       {{ (ratasvalinta as any).icon }}
                     </EpMaterialIcon>
                     {{ $t((ratasvalinta as any).text) }}
-                  </b-dropdown-item>
+                  </EpDropdownItem>
                 </div>
-              </b-dropdown>
+              </EpDropdown>
             </div>
           </div>
         </div>
@@ -297,8 +301,9 @@
             </template>
 
             <template #new>
-              <div class="mb-3 ml-3 mt-2 pl-1">
+              <div class="mb-3 ml-3.5">
                 <EpTekstikappaleLisays
+                  class="mb-1"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :tallenna="tallennaUusiTekstikappale"
                   :tekstikappaleet="perusteenOsat"
@@ -312,6 +317,7 @@
 
                 <EpTekstikappaleLisays
                   v-if="isVapaaSivistystyo"
+                  class="mb-1"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :tallenna="tallennaUusiOpintokokonaisuus"
                   :tekstikappaleet="perusteenOsat"
@@ -339,6 +345,7 @@
 
                 <EpTekstikappaleLisays
                   v-if="isVapaaSivistystyo"
+                  class="mb-1"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :tallenna="tallennaUusiOsaamismerkkiKappale"
                   :tekstikappaleet="perusteenOsat"
@@ -366,6 +373,7 @@
 
                 <EpTekstikappaleLisays
                   v-if="isAmmatillinen && !isYhteinen && !isJaettuOsa"
+                  class="mb-1"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :hide-taso="true"
                   :tallenna="lisaaUusiSuorituspolku"
@@ -395,6 +403,7 @@
 
                 <EpTekstikappaleLisays
                   v-if="isAmmatillinen && !isYhteinen"
+                  class="mb-1"
                   v-oikeustarkastelu="{ oikeus: 'luonti', kohde: 'toteutussuunnitelma' }"
                   :tallenna="lisaaUusiTutkinnonOsa"
                   :hide-taso="true"
@@ -464,6 +473,8 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpValidStatus from '@shared/components/EpValidStatus/EpValidStatus.vue';
 import EpEsikatseluLinkkiMetaInfo from '@shared/components/EpEsikatseluLinkkiMetaInfo/EpEsikatseluLinkkiMetaInfo.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
+import EpDropdown from '@shared/components/EpDropdown/EpDropdown.vue';
+import EpDropdownItem from '@shared/components/EpDropdown/EpDropdownItem.vue';
 import EpNavigationLabel from '@shared/components/EpTreeNavibar/EpNavigationLabel.vue';
 import { EpTreeNavibarStore } from '@shared/components/EpTreeNavibar/EpTreeNavibarStore';
 import { TekstikappaleStore } from '@/stores/TekstikappaleStore';

@@ -7,12 +7,9 @@
     >
       {{ $t('tuo-tutkinnon-osa') }}
     </ep-button>
-    <b-modal
-      id="tuotutkinnonosa"
+    <ep-modal
       ref="tuotutkinnonosaModal"
       size="xl"
-      centered
-      @close="close"
     >
       <template #modal-title>
         {{ $t('tuo-tutkinnon-osa') }}
@@ -22,19 +19,19 @@
         {{ $t('tutkinnon-osa-tuonti-modal-selite') }}
       </div>
 
-      <div class="d-flex">
-        <b-form-group
-          class="w-50"
+      <div class="flex flex-wrap gap-4 w-full">
+        <ep-form-group
+          class="w-full md:w-1/2 min-w-0"
           :label="$t('tutkinnon-osan-nimi')"
         >
           <ep-search
             v-model="query.nimi"
             :placeholder="$t('etsi-tutkinnon-osaa')"
           />
-        </b-form-group>
+        </ep-form-group>
 
-        <b-form-group
-          class="ml-auto w-50"
+        <ep-form-group
+          class="w-full md:w-1/2 min-w-0 md:ml-auto"
           :label="$t('toteutussuunnitelma-jaettu-tai-yhteinen-osa')"
         >
           <ep-spinner v-if="!toteutussuunnitelmat" />
@@ -53,7 +50,7 @@
               {{ $kaanna(option.nimi) }}
             </template>
           </EpMultiSelect>
-        </b-form-group>
+        </ep-form-group>
       </div>
 
       <ep-spinner v-if="!tutkinnonosat" />
@@ -63,16 +60,16 @@
       </div>
 
       <div v-else>
-        <b-table
-          v-model:sort-by="sortBy"
-          v-model:sort-desc="query.sortDesc"
+        <ep-table
+          :sort-by="sortBy"
+          :sort-desc="query.sortDesc"
+          data-key="id"
           responsive
           striped
           hover
           :items="tutkinnonosatWithSelected"
           no-local-sorting
           :fields="tutkinnonosatFields"
-          no-sort-reset
           @sort-changed="sortingChanged"
           @row-clicked="selectRow"
         >
@@ -114,29 +111,29 @@
           <template #cell(nimi)="{ item }">
             <span>{{ $kaanna(item.tekstiKappale.nimi) }}</span>
           </template>
-        </b-table>
-        <ep-pagination
+        </ep-table>
+        <ep-b-pagination
           v-if="totalRows > sisaltoSivuKoko"
           v-model="page"
-          :total-rows="totalRows"
-          :per-page="sisaltoSivuKoko"
-          align="center"
+          :total="totalRows"
+          :items-per-page="sisaltoSivuKoko"
           aria-controls="tuo-tutkinnon-osa"
         />
       </div>
 
       <div v-if="selectedTutkinnonosat.length > 0">
         <h3>{{ $t('valittu') }} {{ selectedTutkinnonosat.length }} {{ $t('kpl') }}</h3>
-        <b-table
+        <ep-table
           responsive
           striped
           :items="selectedTutkinnonosat"
           :fields="valittuFields"
+          data-key="id"
         >
           <template #cell(nimi)="{ item }">
             <span>{{ $kaanna(item.tekstiKappale.nimi) }}</span>
           </template>
-        </b-table>
+        </ep-table>
       </div>
 
       <template #modal-footer>
@@ -153,25 +150,28 @@
           {{ $t('tuo-valitut-sisallot') }}
         </ep-button>
       </template>
-    </b-modal>
+    </ep-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, useTemplateRef } from 'vue';
 import _ from 'lodash';
 
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
+import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
-import EpPagination from '@shared/components/EpPagination/EpPagination.vue';
+import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
+import EpModal from '@shared/components/EpModal/EpModal.vue';
+import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { SisaltoviiteLaajaDto } from '@shared/api/amosaa';
 import { Kielet } from '@shared/stores/kieli';
 import { TutkinnonosatTuontiStore } from '@/stores/TutkinnonosatTuontiStore';
-import { $t, $kaanna, $sd, $success, $bvModal } from '@shared/utils/globals';
+import { $t, $kaanna, $sd, $success } from '@shared/utils/globals';
 
 const props = defineProps<{
   tutkinnonosatTuontiStore: TutkinnonosatTuontiStore;
@@ -181,6 +181,7 @@ const props = defineProps<{
 }>();
 
 const query = ref<any>({});
+const tuotutkinnonosaModal = useTemplateRef<InstanceType<typeof EpModal>>('tuotutkinnonosaModal');
 const sivu = ref(0);
 const sisaltoSivuKoko = ref(10);
 const valitseKaikki = ref(false);
@@ -242,9 +243,7 @@ const page = computed({
   },
 });
 
-const sortBy = computed(() => {
-  return 'tekstiKappale.nimi';
-});
+const sortBy = 'tekstiKappale.nimi';
 
 const tutkinnonosatFields = computed(() => {
   return [
@@ -339,7 +338,7 @@ const queryFetch = async () => {
 };
 
 const openModal = async () => {
-  $bvModal.show('tuotutkinnonosa');
+  tuotutkinnonosaModal.value?.show();
   defaults();
   await props.tutkinnonosatTuontiStore!.fetchOpetussuunnitelmat(props.koulutustoimijaId);
 };
@@ -353,7 +352,7 @@ const save = async () => {
 };
 
 const close = () => {
-  $bvModal.hide('tuotutkinnonosa');
+  tuotutkinnonosaModal.value?.hide();
 };
 
 const selectRow = (item: any) => {
