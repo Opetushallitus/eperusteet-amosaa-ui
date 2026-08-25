@@ -37,7 +37,7 @@
 
               <template v-if="!isOpsPohja">
                 <EpEsikatseluLinkkiMetaInfo
-                  :tyyppi="esikatseluTyyppi"
+                  :tyyppi="'toteutussuunnitelma'"
                   :model="toteutussuunnitelma"
                   :toteutus="toteutus"
                   :salli-esikatselu="salliEsikatselu"
@@ -551,10 +551,6 @@ const isJaettuOsa = computed(() => {
 
 const isOpsPohja = computed(() => {
   return toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA);
-});
-
-const esikatseluTyyppi = computed(() => {
-  return isAmmatillinen.value ? 'toteutussuunnitelma' : 'opetussuunnitelma';
 });
 
 const julkaisut = computed(() => {
