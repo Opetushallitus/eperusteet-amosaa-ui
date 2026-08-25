@@ -266,7 +266,7 @@ import EpJulkaisuButton from '@shared/components/EpJulkaisuButton/EpJulkaisuButt
 import EpJulkaisuValidointi from '@shared/components/EpJulkaisuValidointi/EpJulkaisuValidointi.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 
-import { buildEsikatseluUrl, buildKatseluUrl } from '@shared/utils/esikatselu';
+import { buildEsikatseluUrl, buildKatseluUrl, buildToteutussuunnitelmaEsikatseluUrl, esikatselutoteutus } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum, Maintenance } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
@@ -385,7 +385,7 @@ const opintopolkuKatseluUrl = (julkaisu: any) => {
     revision = null;
   }
 
-  return buildKatseluUrl(Kielet.getSisaltoKieli.value,  `/toteutussuunnitelma/${props.toteutussuunnitelmaId}`, revision, `/${props.toteutus}`);
+  return buildKatseluUrl(Kielet.getSisaltoKieli.value,  `/toteutussuunnitelma/${props.toteutussuunnitelmaId}`, revision, `/${esikatselutoteutus(suunnitelma.value!, props.toteutus)}`);
 };
 
 onMounted(async () => {
