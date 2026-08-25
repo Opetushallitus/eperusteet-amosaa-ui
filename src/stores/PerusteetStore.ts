@@ -1,11 +1,27 @@
 import Vue from 'vue';
-import { Arviointiasteikot, Ulkopuoliset, PerusteDtoKoulutustyyppiEnum, PerusteKevytDto } from '@shared/api/amosaa';
+import { Arviointiasteikot, Ulkopuoliset, PerusteKevytDto } from '@shared/api/amosaa';
 import _ from 'lodash';
-import { EperusteetKoulutustyyppiRyhmat, Toteutus } from '@shared/utils/perusteet';
+import { AmmatillisetKoulutustyypit, Toteutus } from '@shared/utils/perusteet';
 import { Koulutustyyppi } from '@shared/tyypit';
 import { reactive } from 'vue';
 import { computed } from 'vue';
 import { Kielet } from '@shared/stores/kieli';
+
+export const TuetutPerusteenKoulutustyypit = {
+  [Toteutus.AMMATILLINEN]: AmmatillisetKoulutustyypit,
+  [Toteutus.VAPAASIVISTYSTYO]: [
+    'koulutustyyppi_10',
+  ],
+  [Toteutus.TUTKINTOONVALMENTAVA]: [
+    'koulutustyyppi_40',
+  ],
+  [Toteutus.KOTOUTUMISKOULUTUS]: [
+    'koulutustyyppi_30',
+  ],
+  [Toteutus.KIELIKAANTAJATUTKINTO]: [
+    'koulutustyyppi_500',
+  ],
+};
 
 export class PerusteetStore {
   private state = reactive({
@@ -57,6 +73,6 @@ export class PerusteetStore {
 
   public async fetchJulkaistutPerusteet(nimi?: string) {
     this.state.perusteetKevyt = null;
-    this.state.perusteetKevyt = (await Ulkopuoliset.getPerusteet(EperusteetKoulutustyyppiRyhmat[this.toteutus.value!], nimi, Kielet.getSisaltoKieli.value)).data;
+    this.state.perusteetKevyt = (await Ulkopuoliset.getPerusteet(TuetutPerusteenKoulutustyypit[this.toteutus.value!], nimi, Kielet.getSisaltoKieli.value)).data;
   }
 }
