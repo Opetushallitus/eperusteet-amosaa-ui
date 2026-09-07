@@ -54,11 +54,10 @@
     <EpDropdown
       v-if="isEditing"
       class="mb-4"
+      variant="primary"
     >
       <template #button-content>
-        <ep-button variant="primary">
-          {{ $t('lisaa-laaja-alaisen-osaamisen-kuvaus') }}
-        </ep-button>
+        {{ $t('lisaa-laaja-alaisen-osaamisen-kuvaus') }}
       </template>
       <EpDropdownItem
         v-for="(perusteenLao, index) in perusteenLaajaAlaisetOsaamiset"
