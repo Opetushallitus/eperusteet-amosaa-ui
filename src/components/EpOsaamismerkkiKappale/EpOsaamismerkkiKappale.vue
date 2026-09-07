@@ -102,8 +102,6 @@ import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
 import { $t, $kaanna } from '@shared/utils/globals';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
-import EpInputGroup from '@shared/components/EpInputGroup/EpInputGroup.vue';
-
 
 const props = defineProps<{
   modelValue: any;

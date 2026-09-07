@@ -35,6 +35,7 @@
             :current-page="pages[valilehti.otsikko]"
             :per-page="perPage"
             data-key="id"
+            @update:current-page="pages[valilehti.otsikko] = $event"
           >
             <template #cell(palauta)="{ item }">
               <ep-button
