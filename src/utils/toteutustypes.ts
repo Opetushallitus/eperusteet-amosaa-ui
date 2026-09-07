@@ -89,8 +89,10 @@ export const FrontpageHeaderStyles = {
 };
 
 export const TileBackground = {
-  [Toteutus.VAPAASIVISTYSTYO]: { 'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][0] + ' 0%, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][1] + ' 100%)' },
-  [Toteutus.TUTKINTOONVALMENTAVA]: { 'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.TUTKINTOONVALMENTAVA][0] + ' 0%, ' + tileColors[Toteutus.TUTKINTOONVALMENTAVA][1] + ' 100%)' },
+  [Toteutus.VAPAASIVISTYSTYO]: {
+    'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][0] + ' 0%, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][1] + ' 100%)' },
+  [Toteutus.TUTKINTOONVALMENTAVA]: {
+    'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.TUTKINTOONVALMENTAVA][0] + ' 0%, ' + tileColors[Toteutus.TUTKINTOONVALMENTAVA][1] + ' 100%)' },
   [Toteutus.KOTOUTUMISKOULUTUS]: {
     'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.KOTOUTUMISKOULUTUS][0] + ' 0%, ' + tileColors[Toteutus.KOTOUTUMISKOULUTUS][1] + ' 100%)',
     ...FrontpageHeaderStyles[Toteutus.KOTOUTUMISKOULUTUS],

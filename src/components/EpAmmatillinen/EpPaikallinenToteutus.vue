@@ -1,5 +1,5 @@
 <template>
-  <div class="paikallinentoteutus w-100 pl-3">
+  <div class="paikallinentoteutus w-full pl-3">
     <ep-field
       v-if="isEditing"
       v-model="toteutus.otsikko"
@@ -28,6 +28,7 @@
       <hr v-if="toteutus.vapaat.length > 0">
 
       <EpVapaatTekstit
+        class="mt-3"
         v-model="toteutus.vapaat"
         :is-editing="isEditing"
       />
@@ -35,7 +36,7 @@
 
     <div
       v-if="isEditing"
-      class="d-flex justify-content-between align-items-center pt-3"
+      class="flex justify-between items-center pt-3"
     >
       <EpToggle
         v-if="isEditing"

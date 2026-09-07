@@ -20,7 +20,7 @@
 
       <div
         v-else
-        class="text-left ml-5"
+        class="text-start ml-5"
       >
         <div
           v-for="(vanhaJaHistoria, index) in rajatut"
