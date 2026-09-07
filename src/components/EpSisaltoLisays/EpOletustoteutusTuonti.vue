@@ -19,7 +19,7 @@
 
       <ep-spinner v-if="!oletustoteutukset" />
 
-      <div v-if="oletustoteutukset && oletustoteutukset.length === 0">
+      <div v-else-if="oletustoteutukset.length === 0">
         {{ $t('ei-oletustoteutuksia') }}
       </div>
 
