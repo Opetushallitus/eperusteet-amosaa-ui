@@ -6,7 +6,7 @@
 
     <div class="view-container">
       <EpNavbar
-        :class="toteutus"
+        :class="[toteutus, { light: toteutus === Toteutus.KOTOUTUMISKOULUTUS }]"
         :style="headerStyle"
         :kayttaja="kayttaja"
         :koulutustoimija="koulutustoimija"
@@ -52,6 +52,9 @@ import { Koulutustoimijat, KoulutustoimijaDto, baseURL } from '@shared/api/amosa
 import { Toteutus } from '@shared/utils/perusteet';
 import { $t, setConfirmModal } from '@shared/utils/globals';
 import { useConfirm } from 'primevue/useconfirm';
+import { Kielet } from '@shared/stores/kieli';
+import { updatePrimeVueLocale } from '@shared/utils/primevueUtils';
+import { usePrimeVue } from 'primevue/config';
 
 const props = withDefaults(defineProps<{
   kayttajaStore: KayttajaStore;
@@ -156,6 +159,10 @@ watch(() => props.koulutustoimijaId, async (newValue, oldValue) => {
   if (newValue && newValue !== oldValue) {
     koulutustoimija.value = (await Koulutustoimijat.getKoulutustoimija(props.koulutustoimijaId)).data;
   }
+}, { immediate: true });
+
+watch(() => Kielet.uiKieli.value, () => {
+  updatePrimeVueLocale(usePrimeVue());
 }, { immediate: true });
 
 onMounted(() => {

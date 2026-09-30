@@ -52,13 +52,13 @@
         :row-class="rowClass"
         @update:current-page="sivu = $event"
       >
-        <template #cell(nimi)="{ value, item }">
-          <ep-button
+        <template #cell(nimi)="{ formattedValue, item }">
+          <ep-linkki
             variant="link"
-            :href="'/henkilo-ui/virkailija/'+item.oid"
+            :url="'/henkilo-ui/virkailija/'+item.oid"
           >
-            {{ value }}
-          </ep-button>
+            {{ formattedValue }}
+          </ep-linkki>
         </template>
 
         <template #cell(kayttooikeus)="{ item }">
@@ -109,6 +109,7 @@ import EpSiirtoModal from '@/components/EpSiirtoModal/EpSiirtoModal.vue';
 import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/generated/amosaa';
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { Toteutus } from '@shared/utils/perusteet';
+import EpLinkki from '@shared/components/EpLinkki/EpLinkki.vue';
 
 interface KayttoOikeusText {
   value: string;
@@ -266,6 +267,10 @@ const isOpsPohja = computed(() => {
 
     .oikeusSelect {
       width: 200px;
+    }
+
+    :deep(.ep-table .p-datatable .p-datatable-tbody > tr > td) {
+      vertical-align: middle;
     }
 
   }

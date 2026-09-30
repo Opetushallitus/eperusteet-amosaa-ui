@@ -8,7 +8,7 @@
       <div class="p-3">
         {{ $kaanna(value.nimi) }}
       </div>
-      <div v-if="!isEditing && !value.oid" class="mr-2">
+      <div v-if="!isEditing && !value.oid" class="mr-2 flex gap-2 items-center">
         <div v-if="status === 'oma'" />
         <ep-button
           v-else-if="status === 'odotetaan'"
@@ -17,7 +17,7 @@
         >
           {{ $t('peruuta-yhteistyopyynto') }}
         </ep-button>
-        <div v-else-if="status === 'pyynto'">
+        <div v-else-if="status === 'pyynto'" class="flex gap-2 items-center">
           <ep-button
             variant="link"
             @click="OrgEventBus.$emit('hylkaa-yhteistyopyynto', value)"
