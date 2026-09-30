@@ -35,7 +35,7 @@ export class TiedotteetStore implements ITiedotteetProvider {
   public async changeLang(kieli) {
     if (this.state.options) {
       this.state.options!.sivu = 0;
-      this.state.options!.kieli = kieli;
+      this.state.options!.kieli = [kieli];
       await this.fetch();
     }
   }

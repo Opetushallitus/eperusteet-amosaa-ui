@@ -73,6 +73,7 @@ const pageChanged = (value: any) => {
 onMounted(async () => {
   props.tiedotteetStore.init({
     sivu: currentPage.value - 1,
+    kieli: [sisaltoKieli.value],
     sivukoko: 10,
     tiedoteJulkaisuPaikka: [
       TiedoteJulkaisupaikka[props.toteutus],
@@ -80,10 +81,8 @@ onMounted(async () => {
   });
 });
 
-watch(sisaltoKieli, async (newValue: string, oldValue: string) => {
-  if (newValue && newValue !== oldValue) {
-    currentPage.value = 1;
-    props.tiedotteetStore.changeLang(newValue);
-  }
-}, { immediate: true });
+watch(sisaltoKieli, () => {
+  currentPage.value = 1;
+  props.tiedotteetStore.changeLang(sisaltoKieli.value);
+});
 </script>
