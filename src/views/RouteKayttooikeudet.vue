@@ -69,6 +69,7 @@
             :items="oikeusVaihtoehdot"
             :is-editing="true"
             :enable-empty-option="false"
+            append-to="body"
             @update:model-value="updateOikeus(item.id, item.oikeus.value)"
           >
             <template #default="{ item }">
