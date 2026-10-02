@@ -549,7 +549,7 @@ const isTutkintoonValmentava = computed((): boolean => {
 });
 
 const isKoto = computed((): boolean => {
-  return props.toteutus === Toteutus.KOTOUTUMISKOULUTUS;
+  return props.toteutus === Toteutus.KOTOUTUMINEN;
 });
 
 const isYhteinen = computed(() => {
