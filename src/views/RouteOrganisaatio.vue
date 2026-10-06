@@ -305,7 +305,7 @@ const fields = computed(() => {
 });
 
 const rows = computed(() => {
-  return yhteistyoKoulutustoimijat.value ? yhteistyoKoulutustoimijat.value.length : 0;
+  return yhteistyoKoulutustoimijatFormatted.value ? yhteistyoKoulutustoimijatFormatted.value.length : 0;
 });
 
 const yhteistyoKoulutustoimijatFormatted = computed(() => {
@@ -335,6 +335,10 @@ const paginatedYhteistyoKoulutustoimijat = computed(() => {
   }
   const start = (currentPage.value - 1) * perPage.value;
   return all.slice(start, start + perPage.value);
+});
+
+watch(nimiFilter, () => {
+  currentPage.value = 1;
 });
 
 const hasYhteistyoKoulutustoimijatFormatted = computed(() => {
