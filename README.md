@@ -40,9 +40,9 @@ Käyttöliittymät:
 
 ### koto
 
-- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-service/ui/#/kotoutumiskoulutus/fi)
-- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-service/ui/#/kotoutumiskoulutus/fi)
-- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-service/ui/#/kotoutumiskoulutus/fi)
+- [untuva](https://virkailija.untuvaopintopolku.fi/eperusteet-amosaa-service/ui/#/kotoutuminen/fi)
+- [hahtuva](https://virkailija.hahtuvaopintopolku.fi/eperusteet-amosaa-service/ui/#/kotoutuminen/fi)
+- [QA eli pallero](https://virkailija.testiopintopolku.fi/eperusteet-amosaa-service/ui/#/kotoutuminen/fi)
 
 ### 3.2. Continuous integration
 

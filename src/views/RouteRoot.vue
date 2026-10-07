@@ -6,7 +6,7 @@
 
     <div class="view-container">
       <EpNavbar
-        :class="[toteutus, { light: toteutus === Toteutus.KOTOUTUMISKOULUTUS }]"
+        :class="[toteutus, { light: toteutus === Toteutus.KOTOUTUMINEN }]"
         :style="headerStyle"
         :kayttaja="kayttaja"
         :koulutustoimija="koulutustoimija"
@@ -190,7 +190,7 @@ onMounted(() => {
 }
 
 .header {
-  &.kotoutumiskoulutus {
+  &.kotoutuminen {
     :deep(.navbar .breadcrumb .breadcrumb-item),
     :deep(.navbar .breadcrumb .breadcrumb-item::before),
     :deep(.navbar .breadcrumb .breadcrumb-item a),

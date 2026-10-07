@@ -19,7 +19,7 @@ export const ToteutuksenKoulutustyypit = {
   [Toteutus.VAPAASIVISTYSTYO]: EperusteetKoulutustyyppiRyhmat.vapaasivistystyo,
   [Toteutus.AMMATILLINEN]: EperusteetKoulutustyyppiRyhmat.ammatillinen,
   [Toteutus.TUTKINTOONVALMENTAVA]: EperusteetKoulutustyyppiRyhmat.tutkintoonvalmentava,
-  [Toteutus.KOTOUTUMISKOULUTUS]: EperusteetKoulutustyyppiRyhmat.kotoutumiskoulutus,
+  [Toteutus.KOTOUTUMINEN]: EperusteetKoulutustyyppiRyhmat.kotoutuminen,
 };
 
 export const ToteutusSovellusRole = (toteutus) => 'ROLE_' + ToteutusSovellus[toteutus];
@@ -28,28 +28,28 @@ export const ToteutusSovellus = {
   [Toteutus.VAPAASIVISTYSTYO]: 'APP_EPERUSTEET_VST',
   [Toteutus.AMMATILLINEN]: 'APP_EPERUSTEET_AMOSAA',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'APP_EPERUSTEET_TUVA',
-  [Toteutus.KOTOUTUMISKOULUTUS]: 'APP_EPERUSTEET_KOTO',
+  [Toteutus.KOTOUTUMINEN]: 'APP_EPERUSTEET_KOTO',
 };
 
 export const SovellusTitle = {
   [Toteutus.VAPAASIVISTYSTYO]: 'eperusteet-vst',
   [Toteutus.AMMATILLINEN]: 'eperusteet-amosaa',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'eperusteet-tuva',
-  [Toteutus.KOTOUTUMISKOULUTUS]: 'eperusteet-koto',
+  [Toteutus.KOTOUTUMINEN]: 'eperusteet-koto',
 };
 
 export const TervetuloaTeksti = {
   [Toteutus.VAPAASIVISTYSTYO]: 'amosaa-vst-tervetuloa',
   [Toteutus.AMMATILLINEN]: 'amosaa-tervetuloa',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'amosaa-tuva-tervetuloa',
-  [Toteutus.KOTOUTUMISKOULUTUS]: 'amosaa-koto-tervetuloa',
+  [Toteutus.KOTOUTUMINEN]: 'amosaa-koto-tervetuloa',
 };
 
 export const TervetuloaTekstiKuvaus = {
   [Toteutus.VAPAASIVISTYSTYO]: 'amosaa-vst-tervetuloa-kuvaus',
   [Toteutus.AMMATILLINEN]: 'amosaa-tervetuloa-kuvaus',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'amosaa-tuva-tervetuloa-kuvaus',
-  [Toteutus.KOTOUTUMISKOULUTUS]: 'amosaa-koto-tervetuloa-kuvaus',
+  [Toteutus.KOTOUTUMINEN]: 'amosaa-koto-tervetuloa-kuvaus',
 };
 
 export const OpetussuunnitelmaTyyppi = {
@@ -57,35 +57,35 @@ export const OpetussuunnitelmaTyyppi = {
   [Toteutus.AMMATILLINEN]: 'toteutussuunnitelma',
   [OpetussuunnitelmaDtoTyyppiEnum.OPSPOHJA]: 'pohja',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'toteutussuunnitelma',
-  [Toteutus.KOTOUTUMISKOULUTUS]: 'opetussuunnitelma',
+  [Toteutus.KOTOUTUMINEN]: 'opetussuunnitelma',
 };
 
 export const OpetussuunnitelmaOppilaitostyyppi = {
   [Toteutus.VAPAASIVISTYSTYO]: true,
   [Toteutus.AMMATILLINEN]: false,
   [Toteutus.TUTKINTOONVALMENTAVA]: false,
-  [Toteutus.KOTOUTUMISKOULUTUS]: false,
+  [Toteutus.KOTOUTUMINEN]: false,
 };
 
 export const OpetussuunnitelmaVoimassaoloLoppu = {
   [Toteutus.VAPAASIVISTYSTYO]: true,
   [Toteutus.AMMATILLINEN]: false,
   [Toteutus.TUTKINTOONVALMENTAVA]: false,
-  [Toteutus.KOTOUTUMISKOULUTUS]: false,
+  [Toteutus.KOTOUTUMINEN]: false,
 };
 
 export const Tutkintorakennepalaute = {
   [Toteutus.VAPAASIVISTYSTYO]: false,
   [Toteutus.AMMATILLINEN]: true,
   [Toteutus.TUTKINTOONVALMENTAVA]: false,
-  [Toteutus.KOTOUTUMISKOULUTUS]: false,
+  [Toteutus.KOTOUTUMINEN]: false,
 };
 
 export const FrontpageHeaderStyles = {
   [Toteutus.VAPAASIVISTYSTYO]: { 'color': '#ffffff' },
   [Toteutus.AMMATILLINEN]: { 'color': '#ffffff' },
   [Toteutus.TUTKINTOONVALMENTAVA]: { 'color': '#ffffff' },
-  [Toteutus.KOTOUTUMISKOULUTUS]: { 'color': '#000000' },
+  [Toteutus.KOTOUTUMINEN]: { 'color': '#000000' },
 };
 
 export const TileBackground = {
@@ -93,9 +93,9 @@ export const TileBackground = {
     'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][0] + ' 0%, ' + tileColors[Toteutus.VAPAASIVISTYSTYO][1] + ' 100%)' },
   [Toteutus.TUTKINTOONVALMENTAVA]: {
     'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.TUTKINTOONVALMENTAVA][0] + ' 0%, ' + tileColors[Toteutus.TUTKINTOONVALMENTAVA][1] + ' 100%)' },
-  [Toteutus.KOTOUTUMISKOULUTUS]: {
-    'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.KOTOUTUMISKOULUTUS][0] + ' 0%, ' + tileColors[Toteutus.KOTOUTUMISKOULUTUS][1] + ' 100%)',
-    ...FrontpageHeaderStyles[Toteutus.KOTOUTUMISKOULUTUS],
+  [Toteutus.KOTOUTUMINEN]: {
+    'background': 'linear-gradient(180deg, ' + tileColors[Toteutus.KOTOUTUMINEN][0] + ' 0%, ' + tileColors[Toteutus.KOTOUTUMINEN][1] + ' 100%)',
+    ...FrontpageHeaderStyles[Toteutus.KOTOUTUMINEN],
   },
 };
 
@@ -103,7 +103,7 @@ export const TotetusOpetussuunnitelmaRoute = {
   [Toteutus.VAPAASIVISTYSTYO]: 'opetussuunnitelmaListaus',
   [Toteutus.AMMATILLINEN]: 'toteutussuunnitelmat',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'opetussuunnitelmaListaus',
-  [Toteutus.KOTOUTUMISKOULUTUS]: 'opetussuunnitelmaListaus',
+  [Toteutus.KOTOUTUMINEN]: 'opetussuunnitelmaListaus',
 
 };
 
@@ -322,7 +322,7 @@ const tutkintoonvalmentavatiles = (stores, { koulutustoimijaId, toteutus }) => {
   ];
 };
 
-const kotoutumiskoulutusTiles = (stores, { koulutustoimijaId, toteutus }) => {
+const kotoutuminenTiles = (stores, { koulutustoimijaId, toteutus }) => {
   return [
     {
       component: TileToteutussuunnitelmat,
@@ -401,7 +401,7 @@ export const YleisnakymaSisaltoviitteTiedot = {
     title: 'rakenne',
     sisaltoviitetyypit: ['tekstikappale', 'koulutuksenosa'],
   },
-  [Toteutus.KOTOUTUMISKOULUTUS]: {
+  [Toteutus.KOTOUTUMINEN]: {
     title: 'rakenne',
     sisaltoviitetyypit: ['tekstikappale'],
   },
@@ -437,7 +437,7 @@ export const ToteutussuunnitelmaTiedotKielistykset = {
     esikatselu: 'esikatsele-toteutussuunnitelmaa',
     tiivistelma: 'opetussuunnitelma-tiivistelma',
   },
-  [Toteutus.KOTOUTUMISKOULUTUS]: {
+  [Toteutus.KOTOUTUMINEN]: {
     title: 'opetussuunnitelman-tiedot',
     nimi: 'opetussuunnitelman-nimi',
     perustetyyppi: 'peruste',
@@ -451,21 +451,21 @@ export const ToteutusTiles = {
   [Toteutus.VAPAASIVISTYSTYO]: vapaasivistystyoTiles,
   [Toteutus.AMMATILLINEN]: ammatillinenTiles,
   [Toteutus.TUTKINTOONVALMENTAVA]: tutkintoonvalmentavatiles,
-  [Toteutus.KOTOUTUMISKOULUTUS]: kotoutumiskoulutusTiles,
+  [Toteutus.KOTOUTUMINEN]: kotoutuminenTiles,
 };
 
 export const TiedoteJulkaisupaikka = {
   [Toteutus.VAPAASIVISTYSTYO]: 'vst',
   [Toteutus.AMMATILLINEN]: 'amosaa',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'tuva',
-  [Toteutus.KOTOUTUMISKOULUTUS]: 'koto',
+  [Toteutus.KOTOUTUMINEN]: 'koto',
 };
 
 export const ToteutusTekstikappaleStore = {
   [Toteutus.VAPAASIVISTYSTYO]: new TekstikappaleStore(),
   [Toteutus.AMMATILLINEN]: new TekstikappaleStore(),
   [Toteutus.TUTKINTOONVALMENTAVA]: new TuvaTekstikappaleStore(),
-  [Toteutus.KOTOUTUMISKOULUTUS]: new TekstikappaleStore(),
+  [Toteutus.KOTOUTUMINEN]: new TekstikappaleStore(),
 };
 
 export const ArkistointiTekstit = {
@@ -508,7 +508,7 @@ export const ArkistointiTekstit = {
         reroute: 'opetussuunnitelmaListaus',
       },
     },
-    [Toteutus.KOTOUTUMISKOULUTUS]: {
+    [Toteutus.KOTOUTUMINEN]: {
       text: 'arkistoi-opetussuunnitelma',
       meta: {
         title: 'arkistoi-opetussuunnitelma',
@@ -553,7 +553,7 @@ export const ArkistointiTekstit = {
         tila: 'LUONNOS',
       },
     },
-    [Toteutus.KOTOUTUMISKOULUTUS]: {
+    [Toteutus.KOTOUTUMINEN]: {
       text: 'palauta-ops',
       meta: {
         title: 'palauta-ops',
@@ -617,7 +617,7 @@ export const OpetussuunnitelmalistausKielistykset = {
       ystavien: 'ystavien-opetussuunnitelmat',
     },
   },
-  [Toteutus.KOTOUTUMISKOULUTUS]: {
+  [Toteutus.KOTOUTUMINEN]: {
     ops: {
       otsikko: 'opetussuunnitelmat',
       kuvaus: 'opetussuunnitelmat-kuvaus',
@@ -715,7 +715,7 @@ export const OpetussuunnitelmaLuontiKielistykset = {
       },
     ],
   },
-  [Toteutus.KOTOUTUMISKOULUTUS]: {
+  [Toteutus.KOTOUTUMINEN]: {
     stepName: 'luo-uusi-opetussuunnitelma',
     peruste: {
       pohjaLabel: 'perusteprojekti',
@@ -771,7 +771,7 @@ export const JulkaisuKielistykset = {
     julkaisuOnnistui: 'toteutussuunnitelma-julkaistu',
     esikatselu: 'esikatsele-toteutussuunnitelmaa',
   },
-  [Toteutus.KOTOUTUMISKOULUTUS]: {
+  [Toteutus.KOTOUTUMINEN]: {
     julkaisuBtn: 'julkaise-opetussuunnitelma',
     julkaisuOnnistui: 'opetussuunnitelma-julkaistu',
     esikatselu: 'esikatsele-opetussuunnitelmaa',
@@ -791,7 +791,7 @@ export const ToteutussuunnitelmaSiirtoKielistykset = {
     siirratoteutusystavaorganisaatiolle: 'siirra-toteutussuunnitelma-ystavaorganisaatiolle',
     siirratoteutus: 'siirra-toteutussuunnitelma',
   },
-  [Toteutus.KOTOUTUMISKOULUTUS]: {
+  [Toteutus.KOTOUTUMINEN]: {
     siirratoteutusystavaorganisaatiolle: 'siirra-opetussuunnitelma-ystavaorganisaatiolle',
     siirratoteutus: 'siirra-opetussuunnitelma',
   },
@@ -810,7 +810,7 @@ export const ToteutussuunnitelmaPerustePaivitysKielistykset = {
     otsikko: 'paivita-koulutuksen-perusteet-toteutussuunnitelmaasi',
     teksti: 'paivita-koulutuksen-perusteet-toteutussuunnitelmiisi-huomioteksti',
   },
-  [Toteutus.KOTOUTUMISKOULUTUS]: {
+  [Toteutus.KOTOUTUMINEN]: {
     otsikko: 'paivita-perusteet-opetussuunnitelmiisi',
     teksti: 'paivita-perusteet-opetussuunnitelmiisi-huomioteksti',
   },
@@ -820,7 +820,7 @@ export const PdfLuontiSelite = {
   [Toteutus.VAPAASIVISTYSTYO]: 'luo-pdf-selite',
   [Toteutus.AMMATILLINEN]: 'luo-pdf-selite-amosaa',
   [Toteutus.TUTKINTOONVALMENTAVA]: 'luo-pdf-selite',
-  [Toteutus.KOTOUTUMISKOULUTUS]: 'luo-pdf-selite',
+  [Toteutus.KOTOUTUMINEN]: 'luo-pdf-selite',
 };
 
 export const defaultToteutus = () => {

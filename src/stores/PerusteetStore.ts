@@ -15,8 +15,9 @@ export const TuetutPerusteenKoulutustyypit = {
   [Toteutus.TUTKINTOONVALMENTAVA]: [
     'koulutustyyppi_40',
   ],
-  [Toteutus.KOTOUTUMISKOULUTUS]: [
+  [Toteutus.KOTOUTUMINEN]: [
     'koulutustyyppi_30',
+    'koulutustyyppi_31',
   ],
   [Toteutus.KIELIKAANTAJATUTKINTO]: [
     'koulutustyyppi_500',

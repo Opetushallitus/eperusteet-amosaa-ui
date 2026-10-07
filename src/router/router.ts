@@ -430,6 +430,21 @@ router.beforeEach((to, from, next) => {
 });
 
 router.beforeEach((to, from, next) => {
+  const segments = to.path.split('/');
+  if (_.includes(segments, 'kotoutumiskoulutus')) {
+    next({
+      path: _.map(segments, segment => segment === 'kotoutumiskoulutus' ? 'kotoutuminen' : segment).join('/'),
+      query: to.query,
+      hash: to.hash,
+      replace: true,
+    });
+  }
+  else {
+    next();
+  }
+});
+
+router.beforeEach((to, from, next) => {
   if (!EditointiStore.anyEditing()) {
     loaders.push($loading.show());
   }

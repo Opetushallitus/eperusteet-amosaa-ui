@@ -1,8 +1,15 @@
 import Vue from 'vue';
 import { Ohjeet, OhjeDto } from '@shared/api/amosaa';
+import { Toteutus } from '@shared/utils/perusteet';
 import _ from 'lodash';
 import { reactive } from 'vue';
 import { computed } from 'vue';
+
+const backendToteutus = {
+  [Toteutus.KOTOUTUMINEN]: 'kotoutumiskoulutus',
+};
+
+const toBackendToteutus = (toteutus) => backendToteutus[toteutus] || toteutus;
 
 export class OhjeetStore {
   private state = reactive({
@@ -12,12 +19,17 @@ export class OhjeetStore {
   public readonly ohjeet = computed(() => this.state.ohjeet);
 
   public async fetch(toteutus) {
-    this.state.ohjeet = (await Ohjeet.getOhjeet(toteutus)).data as any;
+    this.state.ohjeet = (await Ohjeet.getOhjeet(toBackendToteutus(toteutus))).data as any;
   }
 
   public async save(ohje: OhjeDto) {
-    if (ohje.id) {
-      const tallennettu = (await Ohjeet.editOhje(ohje.id, ohje)).data;
+    const tallennettava = {
+      ...ohje,
+      toteutus: toBackendToteutus(ohje.toteutus) as any,
+    };
+
+    if (tallennettava.id) {
+      const tallennettu = (await Ohjeet.editOhje(tallennettava.id, tallennettava)).data;
       this.state.ohjeet = _.map(this.state.ohjeet, ohje => {
         if (ohje.id === tallennettu.id) {
           return tallennettu;
@@ -26,7 +38,7 @@ export class OhjeetStore {
       });
     }
     else {
-      const tallennettu = (await Ohjeet.addOhje(ohje)).data;
+      const tallennettu = (await Ohjeet.addOhje(tallennettava)).data;
       this.state.ohjeet?.push(tallennettu);
     }
   }
