@@ -127,12 +127,15 @@
             <ep-table
               responsive
               striped
-              :items="paginatedYhteistyoKoulutustoimijat"
+              :items="yhteistyoKoulutustoimijatFormatted"
               :fields="fields"
+              :per-page="perPage"
+              :current-page="currentPage"
               data-key="organisaatio"
+              @update:current-page="currentPage = $event"
             >
               <template #cell(actions)="row">
-                <div class="float-right">
+                <div class="flex justify-start">
                   <ep-button
                     v-if="row.item.status"
                     v-oikeustarkastelu="{ oikeus: 'hallinta' }"
@@ -155,13 +158,6 @@
                 </div>
               </template>
             </ep-table>
-
-            <ep-b-pagination
-              v-model="currentPage"
-              :total="rows"
-              :items-per-page="perPage"
-              aria-controls="laheta-yhteistyopyynto-modal"
-            />
           </ep-modal>
         </div>
       </template>
@@ -191,7 +187,6 @@ import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpOrganizationTree from '@/components/EpOrganizationTree/EpOrganizationTree.vue';
 import EpOrganizationNode from '@/components/EpOrganizationTree/EpOrganizationNode.vue';
-import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
 import EpModal from '@shared/components/EpModal/EpModal.vue';
 import EpTable from '@shared/components/EpTable/EpTable.vue';
 
@@ -304,10 +299,6 @@ const fields = computed(() => {
   }];
 });
 
-const rows = computed(() => {
-  return yhteistyoKoulutustoimijat.value ? yhteistyoKoulutustoimijat.value.length : 0;
-});
-
 const yhteistyoKoulutustoimijatFormatted = computed(() => {
   if (yhteistyoMap.value) {
     return _(yhteistyoKoulutustoimijat.value)
@@ -328,13 +319,8 @@ const yhteistyoKoulutustoimijatFormatted = computed(() => {
   return undefined;
 });
 
-const paginatedYhteistyoKoulutustoimijat = computed(() => {
-  const all = yhteistyoKoulutustoimijatFormatted.value;
-  if (!all) {
-    return [];
-  }
-  const start = (currentPage.value - 1) * perPage.value;
-  return all.slice(start, start + perPage.value);
+watch(nimiFilter, () => {
+  currentPage.value = 1;
 });
 
 const hasYhteistyoKoulutustoimijatFormatted = computed(() => {
