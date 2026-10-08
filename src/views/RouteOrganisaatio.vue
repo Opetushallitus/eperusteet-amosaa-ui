@@ -295,8 +295,7 @@ const fields = computed(() => {
   }, {
     key: 'actions',
     label: $t('toiminto'),
-    thClass: 'toiminto-cell',
-    tdClass: 'toiminto-cell',
+    class: 'toiminto-cell',
   }];
 });
 
