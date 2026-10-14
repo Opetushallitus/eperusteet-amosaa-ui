@@ -6,6 +6,90 @@
       :is-editing="isEditing"
     />
 
+    <div
+      v-if="naytaTutkintonimikkeetJaOsaamisalat"
+      class="mt-3"
+    >
+      <h4 class="mt-3">
+        {{ $t('tutkintonimikkeet-ja-osaamisalat') }}
+      </h4>
+      <table class="w-full">
+        <thead>
+          <tr class="text-left">
+            <th class="p-2">
+              {{ $t('nimi') }}
+            </th>
+            <th class="p-2">
+              {{ $t('koodi') }}
+            </th>
+            <th
+              v-if="isEditing"
+              class="p-2"
+            />
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="koodi in tutkintonimikkeetJaOsaamisalat"
+            :key="koodi.koodiUri"
+          >
+            <td class="p-2">
+              {{ $kaanna(koodi.nimi) }}
+            </td>
+            <td class="p-2">
+              {{ koodi.koodiArvo }}
+            </td>
+            <td
+              v-if="isEditing"
+              class="p-2 text-right"
+            >
+              <EpButton
+                variant="link"
+                icon="delete"
+                :aria-label="$t('poista')"
+                @click="poistaKoodi(koodi.koodiUri)"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div
+        v-if="isEditing"
+        class="flex flex-wrap gap-2 mt-2"
+      >
+        <EpKoodistoSelect
+          :store="tutkintonimikeKoodisto"
+          :is-editing="isEditing"
+          @add="lisaaKoodi"
+        >
+          <template #default="{ open }">
+            <EpButton
+              variant="outline"
+              icon="add"
+              @click="open"
+            >
+              {{ $t('lisaa-tutkintonimike') }}
+            </EpButton>
+          </template>
+        </EpKoodistoSelect>
+        <EpKoodistoSelect
+          :store="osaamisalaKoodisto"
+          :is-editing="isEditing"
+          @add="lisaaKoodi"
+        >
+          <template #default="{ open }">
+            <EpButton
+              variant="outline"
+              icon="add"
+              @click="open"
+            >
+              {{ $t('lisaa-osaamisala') }}
+            </EpButton>
+          </template>
+        </EpKoodistoSelect>
+      </div>
+    </div>
+
     <div class="mt-3">
       <h4 class="mt-3">
         {{ $t('tavat-ja-ymparisto') }}
@@ -62,14 +146,17 @@
 
 <script setup lang="ts">
 import _ from 'lodash';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
+import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
+import { getKoodistoSivutettuna, KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
+import { Koodistot } from '@shared/api/amosaa';
 import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
-import { $t } from '@shared/utils/globals';
+import { $kaanna, $t } from '@shared/utils/globals';
 
 const props = defineProps<{
   isEditing?: boolean;
@@ -86,6 +173,60 @@ const toteutus = computed({
     emit('update:modelValue', value);
   },
 });
+
+const naytaTutkintonimikkeetJaOsaamisalat = ref((props.modelValue?.koodit?.length || 0) > 0);
+const tutkintonimikkeetJaOsaamisalat = ref<any[]>([]);
+let koodienLatausId = 0;
+
+const tutkintonimikeKoodisto = new KoodistoSelectStore({
+  koodisto: 'tutkintonimikkeet',
+  async query(query, sivu = 0, koodisto) {
+    return await getKoodistoSivutettuna(koodisto, query, sivu) as any;
+  },
+});
+
+const osaamisalaKoodisto = new KoodistoSelectStore({
+  koodisto: 'osaamisala',
+  async query(query, sivu = 0, koodisto) {
+    return await getKoodistoSivutettuna(koodisto, query, sivu) as any;
+  },
+});
+
+watch(() => props.modelValue?.koodit, async (koodit: string[] = []) => {
+  const latausId = ++koodienLatausId;
+  const ladatutKoodit = await Promise.all(koodit.map(async uri => {
+    try {
+      const koodi = (await Koodistot.getKoodistoKoodiByUri(uri)).data;
+      return {
+        ...koodi,
+        nimi: _.mapValues(_.keyBy(koodi.metadata, metadata => _.toLower(metadata.kieli)), metadata => metadata.nimi),
+      };
+    }
+    catch (e) {
+      return { koodiUri: uri, koodiArvo: uri };
+    }
+  }));
+
+  if (latausId === koodienLatausId) {
+    tutkintonimikkeetJaOsaamisalat.value = ladatutKoodit;
+  }
+}, { immediate: true });
+
+const lisaaKoodi = (koodi: { uri: string }) => {
+  if (!_.includes(toteutus.value.koodit, koodi.uri)) {
+    toteutus.value = {
+      ...toteutus.value,
+      koodit: [...(toteutus.value.koodit || []), koodi.uri],
+    };
+  }
+};
+
+const poistaKoodi = (uri: string) => {
+  toteutus.value = {
+    ...toteutus.value,
+    koodit: _.reject(toteutus.value.koodit, koodiUri => koodiUri === uri),
+  };
+};
 
 const poistaToteutus = () => {
   emit('poista');
