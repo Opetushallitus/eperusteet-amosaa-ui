@@ -16,6 +16,13 @@ interface OpintokokonaisuusStoreConfig {
   updateNavigation: () => Promise<void>;
 }
 
+export function isOpintokokonaisuusLaajuusValid(value: unknown): boolean {
+  if (value == null || value === '') return true;
+
+  const numValue = Number(value);
+  return Number.isFinite(numValue) && numValue >= 0.01 && Number(numValue.toFixed(2)) === numValue;
+}
+
 export class OpintokokonaisuusStore implements IEditoitava {
   protected static config: OpintokokonaisuusStoreConfig;
 
@@ -108,9 +115,7 @@ export class OpintokokonaisuusStore implements IEditoitava {
           }),
           'min-value': (value: any, parent: any) => {
             if (!parent?.laajuusYksikko) return true;
-            if (value == null || value === '' || value === undefined) return true;
-            const numValue = Number(value);
-            return !isNaN(numValue) && numValue >= 0.5 && numValue % 0.5 === 0;
+            return isOpintokokonaisuusLaajuusValid(value);
           },
         },
         laajuusYksikko: {
