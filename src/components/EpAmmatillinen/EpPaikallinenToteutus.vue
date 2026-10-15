@@ -58,7 +58,7 @@
         class="flex flex-wrap gap-2 mt-2"
       >
         <EpKoodistoSelect
-          :store="tutkintonimikeKoodisto"
+          koodisto="tutkintonimikkeet"
           :is-editing="isEditing"
           @add="lisaaKoodi"
         >
@@ -73,7 +73,7 @@
           </template>
         </EpKoodistoSelect>
         <EpKoodistoSelect
-          :store="osaamisalaKoodisto"
+          koodisto="osaamisala"
           :is-editing="isEditing"
           @add="lisaaKoodi"
         >
@@ -112,8 +112,8 @@
       <hr v-if="toteutus.vapaat.length > 0">
 
       <EpVapaatTekstit
-        class="mt-3"
         v-model="toteutus.vapaat"
+        class="mt-3"
         :is-editing="isEditing"
       />
     </div>
@@ -146,14 +146,13 @@
 
 <script setup lang="ts">
 import _ from 'lodash';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpToggle from '@shared/components/forms/EpToggle.vue';
 import EpContent from '@shared/components/EpContent/EpContent.vue';
 import EpCollapse from '@shared/components/EpCollapse/EpCollapse.vue';
 import EpField from '@shared/components/forms/EpField.vue';
 import EpKoodistoSelect from '@shared/components/EpKoodistoSelect/EpKoodistoSelect.vue';
-import { getKoodistoSivutettuna, KoodistoSelectStore } from '@shared/components/EpKoodistoSelect/KoodistoSelectStore';
 import { Koodistot } from '@shared/api/amosaa';
 import EpVapaatTekstit from '@/components/common/EpVapaatTekstit.vue';
 import { $kaanna, $t } from '@shared/utils/globals';
@@ -174,26 +173,12 @@ const toteutus = computed({
   },
 });
 
-const naytaTutkintonimikkeetJaOsaamisalat = ref((props.modelValue?.koodit?.length || 0) > 0);
+const naytaTutkintonimikkeetJaOsaamisalat = ref(false);
 const tutkintonimikkeetJaOsaamisalat = ref<any[]>([]);
-let koodienLatausId = 0;
 
-const tutkintonimikeKoodisto = new KoodistoSelectStore({
-  koodisto: 'tutkintonimikkeet',
-  async query(query, sivu = 0, koodisto) {
-    return await getKoodistoSivutettuna(koodisto, query, sivu) as any;
-  },
-});
-
-const osaamisalaKoodisto = new KoodistoSelectStore({
-  koodisto: 'osaamisala',
-  async query(query, sivu = 0, koodisto) {
-    return await getKoodistoSivutettuna(koodisto, query, sivu) as any;
-  },
-});
-
-watch(() => props.modelValue?.koodit, async (koodit: string[] = []) => {
-  const latausId = ++koodienLatausId;
+onMounted(async () => {
+  const koodit: string[] = props.modelValue?.koodit || [];
+  naytaTutkintonimikkeetJaOsaamisalat.value = koodit.length > 0;
   const ladatutKoodit = await Promise.all(koodit.map(async uri => {
     try {
       const koodi = (await Koodistot.getKoodistoKoodiByUri(uri)).data;
@@ -206,14 +191,20 @@ watch(() => props.modelValue?.koodit, async (koodit: string[] = []) => {
       return { koodiUri: uri, koodiArvo: uri };
     }
   }));
+  tutkintonimikkeetJaOsaamisalat.value = ladatutKoodit;
+});
 
-  if (latausId === koodienLatausId) {
-    tutkintonimikkeetJaOsaamisalat.value = ladatutKoodit;
-  }
-}, { immediate: true });
-
-const lisaaKoodi = (koodi: { uri: string }) => {
+const lisaaKoodi = (koodi: { uri: string; arvo: string; nimi: Record<string, string> }) => {
   if (!_.includes(toteutus.value.koodit, koodi.uri)) {
+    naytaTutkintonimikkeetJaOsaamisalat.value = true;
+    tutkintonimikkeetJaOsaamisalat.value = [
+      ...tutkintonimikkeetJaOsaamisalat.value,
+      {
+        koodiUri: koodi.uri,
+        koodiArvo: koodi.arvo,
+        nimi: koodi.nimi,
+      },
+    ];
     toteutus.value = {
       ...toteutus.value,
       koodit: [...(toteutus.value.koodit || []), koodi.uri],
@@ -222,6 +213,7 @@ const lisaaKoodi = (koodi: { uri: string }) => {
 };
 
 const poistaKoodi = (uri: string) => {
+  tutkintonimikkeetJaOsaamisalat.value = _.reject(tutkintonimikkeetJaOsaamisalat.value, koodi => koodi.koodiUri === uri);
   toteutus.value = {
     ...toteutus.value,
     koodit: _.reject(toteutus.value.koodit, koodiUri => koodiUri === uri),
