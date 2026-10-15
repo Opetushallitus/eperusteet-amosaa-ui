@@ -41,7 +41,12 @@
                   :model="toteutussuunnitelma"
                   :toteutus="toteutus"
                   :salli-esikatselu="salliEsikatselu"
-                />
+                >
+                  <template #link-text>
+                    {{ $t('esikatsele-' + esikatseluTyyppi) }}
+                  </template>
+
+                </EpEsikatseluLinkkiMetaInfo>
                 <span class="ml-2 mr-2">|</span>
               </template>
 
@@ -713,6 +718,10 @@ const ratasvalinnat = computed(() => {
 
 const onkoJulkaisemattomiaMuutoksia = computed(() => {
   return props.toteutussuunnitelmaStore.julkaisemattomiaMuutoksia.value;
+});
+
+const esikatseluTyyppi = computed(() => {
+  return isAmmatillinen.value ? 'toteutussuunnitelma' : 'opetussuunnitelma';
 });
 
 // Methods
