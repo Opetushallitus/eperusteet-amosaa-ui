@@ -34,6 +34,7 @@ import RouteKoulutuksenOsat from '@/views/RouteKoulutuksenOsat.vue';
 import RouteKotoKielitaitotaso from '@/views/RouteKotoKielitaitotaso.vue';
 import RouteKotoLaajaAlainenOsaaminen from '@/views/RouteKotoLaajaAlainenOsaaminen.vue';
 import RouteKotoOpinto from '@/views/RouteKotoOpinto.vue';
+import RouteLukutaitokoulutusTavoitteetJaSisaltoalueet from '@/views/RouteLukutaitokoulutusTavoitteetJaSisaltoalueet.vue';
 import RouteOsaAlue from '@/views/RouteOsaAlue.vue';
 
 import { stores } from '@/stores/index';
@@ -365,6 +366,11 @@ const router = createRouter({
         path: 'kotopinto/:sisaltoviiteId',
         name: 'koto_opinto',
         component: RouteKotoOpinto,
+        props,
+      }, {
+        path: 'lukutaitotavoitteetjasisaltoalueet/:sisaltoviiteId',
+        name: 'lukutaitokoulutus_tavoitteetjasisaltoalueet',
+        component: RouteLukutaitokoulutusTavoitteetJaSisaltoalueet,
         props,
       },
       ] }, {
