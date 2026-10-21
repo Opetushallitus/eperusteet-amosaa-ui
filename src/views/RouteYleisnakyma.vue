@@ -1,31 +1,21 @@
 <template>
   <div class="yleisnakyma">
     <EpSpinner v-if="vanhentunutPeruste === null" />
-    <div
-      v-else-if="vanhentunutPeruste && !perustePaivitetty"
-      v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
-      class="info-box sync-box"
-    >
-      <h2>{{ $t(perustePaivitysKielistys['otsikko']) }}</h2>
-      <div v-html="$t(perustePaivitysKielistys['teksti'])" />
+    <div v-else-if="(vanhentunutPeruste || siirtymaPaattynyt) && !perustePaivitetty"
+      v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }" class="info-box sync-box">
+      <h2>{{ $t(siirtymaPaattynyt ? 'siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma' :
+        perustePaivitysKielistys['otsikko']) }}</h2>
+      <div
+        v-html="$t(siirtymaPaattynyt ? 'siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma-huomioteksti' : perustePaivitysKielistys['teksti'])" />
       <div class="flex justify-between">
-        <EpExternalLink
-          :url="perusteLinkki"
-          class="mt-2"
-        >
+        <EpExternalLink :url="perusteLinkki" class="mt-2">
           {{ $kaanna(peruste.nimi) }}
         </EpExternalLink>
         <div class="flex items-center">
-          <div
-            v-if="toteutussuunnitelma.perustePaivitettyPvm"
-            class="mr-3 disabled-text font-size-08"
-          >
+          <div v-if="toteutussuunnitelma.perustePaivitettyPvm" class="mr-3 disabled-text font-size-08">
             {{ $t('viimeisin-synkronisointi-pvm') }} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
           </div>
-          <ep-button
-            :show-spinner="syncing"
-            @click="paivitaPeruste"
-          >
+          <ep-button v-if="!siirtymaPaattynyt" :show-spinner="syncing" @click="paivitaPeruste">
             {{ $t('paivita') }}
           </ep-button>
         </div>
@@ -34,38 +24,22 @@
 
     <div class="flex w-full">
       <div class="min-w-0 grow p-0">
-        <ep-toteutussuunnitelma-aikataulu
-          class="info-box"
-          :aikataulu-store="aikatauluStore"
-          :toteutussuunnitelma="toteutussuunnitelma"
-        />
+        <ep-toteutussuunnitelma-aikataulu class="info-box" :aikataulu-store="aikatauluStore"
+          :toteutussuunnitelma="toteutussuunnitelma" />
       </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-0 pt-0 w-full">
       <div class="min-w-0 p-0">
-        <ep-toteutussuunnitelman-tiedotteet
-          v-if="peruste"
-          class="info-box"
-          :tiedotteet-store="toteutussuunnitelmaTiedotteetStore"
-        />
-        <ep-toteutussuunnitelman-perustiedot
-          class="info-box"
-          :toteutussuunnitelma="toteutussuunnitelma"
-          :toteutus="toteutus"
-        />
-        <ep-toteutussuunnitelman-sisaltoviitteet
-          v-if="!isYhteinen"
-          class="info-box"
-          :opetussuunnitelma="toteutussuunnitelma"
-          :toteutus="toteutus"
-        />
+        <ep-toteutussuunnitelman-tiedotteet v-if="peruste" class="info-box"
+          :tiedotteet-store="toteutussuunnitelmaTiedotteetStore" />
+        <ep-toteutussuunnitelman-perustiedot class="info-box" :toteutussuunnitelma="toteutussuunnitelma"
+          :toteutus="toteutus" />
+        <ep-toteutussuunnitelman-sisaltoviitteet v-if="!isYhteinen" class="info-box"
+          :opetussuunnitelma="toteutussuunnitelma" :toteutus="toteutus" />
       </div>
       <div class="min-w-0 p-0 xl:pl-2">
-        <ep-viimeaikainen-toiminta
-          class="info-box"
-          :muokkaustieto-store="muokkaustietoStore"
-        />
+        <ep-viimeaikainen-toiminta class="info-box" :muokkaustieto-store="muokkaustietoStore" />
       </div>
     </div>
   </div>
@@ -121,6 +95,12 @@ const vanhentunutPeruste = computed(() => {
   return props.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
 });
 
+const siirtymaPaattynyt = computed(() => {
+  const paattynytBackendissa = vanhentunutPeruste.value?.siirtymaPaattynyt === true;
+  const paattymispaiva = peruste.value?.siirtymaPaattyy;
+  return paattynytBackendissa || (paattymispaiva != null && new Date(paattymispaiva).getTime() < Date.now());
+});
+
 const perustePaivitysKielistys = computed(() => {
   return ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus];
 });
@@ -165,10 +145,10 @@ onMounted(async () => {
 
   .info-box {
     margin-bottom: 10px;
-    padding:20px;
+    padding: 20px;
     background-color: #fff;
     border-radius: 0.5rem;
-    box-shadow: 1px 1px 5px 0px rgba(0,26,88,0.1);
+    box-shadow: 1px 1px 5px 0px rgba(0, 26, 88, 0.1);
     min-width: 370px;
   }
 
@@ -177,5 +157,4 @@ onMounted(async () => {
   }
 
 }
-
 </style>
