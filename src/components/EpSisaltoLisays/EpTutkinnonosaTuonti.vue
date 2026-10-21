@@ -19,9 +19,8 @@
         {{ $t('tutkinnon-osa-tuonti-modal-selite') }}
       </div>
 
-      <div class="flex flex-wrap gap-4 w-full">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         <ep-form-group
-          class="w-full md:w-1/2 min-w-0"
           :label="$t('tutkinnon-osan-nimi')"
         >
           <ep-search
@@ -31,7 +30,6 @@
         </ep-form-group>
 
         <ep-form-group
-          class="w-full md:w-1/2 min-w-0 md:ml-auto"
           :label="$t('toteutussuunnitelma-jaettu-tai-yhteinen-osa')"
         >
           <ep-spinner v-if="!toteutussuunnitelmat" />
