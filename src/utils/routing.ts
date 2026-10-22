@@ -77,22 +77,14 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
   case 'koto_kielitaitotaso':
     return {
       type: 'koto_kielitaitotaso',
-      id: Number(route.params?.sisaltoviiteId),
     };
   case 'koto_laajaalainenosaaminen':
     return {
       type: 'koto_laajaalainenosaaminen',
-      id: Number(route.params?.sisaltoviiteId),
     };
   case 'koto_opinto':
     return {
       type: 'koto_opinto',
-      id: Number(route.params?.sisaltoviiteId),
-    };
-  case 'lukutaitokoulutus_tavoitteetjasisaltoalueet':
-    return {
-      type: 'lukutaitokoulutus_tavoitteetjasisaltoalueet',
-      id: Number(route.params?.sisaltoviiteId),
     };
 
   default:
@@ -197,13 +189,6 @@ export function nodeToRoute(node: NavigationNodeDto): Location | null {
   case 'laajaalainenosaaminen':
     return {
       name: 'laajaalainenosaaminen',
-      params: {
-        sisaltoviiteId: _.toString(node.id),
-      },
-    };
-  case 'lukutaitokoulutus_tavoitteetjasisaltoalueet':
-    return {
-      name: 'lukutaitokoulutus_tavoitteetjasisaltoalueet',
       params: {
         sisaltoviiteId: _.toString(node.id),
       },

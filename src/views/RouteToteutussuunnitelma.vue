@@ -296,15 +296,6 @@
               </EpNavigationLabel>
             </template>
 
-            <template #lukutaitokoulutus_tavoitteetjasisaltoalueet="{ item }">
-              <EpNavigationLabel
-                :to="{ name: 'lukutaitokoulutus_tavoitteetjasisaltoalueet', params: {sisaltoviiteId: item.id} }"
-                :node="item"
-              >
-                {{ $kaanna(item.label) }}
-              </EpNavigationLabel>
-            </template>
-
             <template #osaalue="{ item }">
               <EpNavigationLabel
                 :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }"
