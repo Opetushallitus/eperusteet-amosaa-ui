@@ -25,6 +25,9 @@
             striped
             :items="opetussuunnitelmatFiltered"
             :fields="opetussuunnitelmaFields"
+            :per-page="query.sivukoko"
+            :total-rows="totalRows"
+            v-model:current-page="page"
             data-key="id"
           >
             <template #cell(nimi)="{ item }">
@@ -36,13 +39,6 @@
               </ep-button>
             </template>
           </ep-table>
-
-          <ep-b-pagination
-            v-model="page"
-            :total="totalRows"
-            :items-per-page="query.sivukoko"
-            aria-controls="tuo-sisaltoa-modaali"
-          />
         </div>
       </div>
 
@@ -123,7 +119,7 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
-import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
+
 import EpModal from '@shared/components/EpModal/EpModal.vue';
 import EpTable from '@shared/components/EpTable/EpTable.vue';
 
