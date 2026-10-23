@@ -1,36 +1,60 @@
 <template>
   <div class="yleisnakyma">
     <EpSpinner v-if="vanhentunutPeruste === null" />
-    <div
-      v-else-if="vanhentunutPeruste && !perustePaivitetty"
-      v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
-      class="info-box sync-box"
-    >
-      <h2>{{ $t(perustePaivitysKielistys['otsikko']) }}</h2>
-      <div v-html="$t(perustePaivitysKielistys['teksti'])" />
-      <div class="flex justify-between">
-        <EpExternalLink
-          :url="perusteLinkki"
-          class="mt-2"
-        >
-          {{ $kaanna(peruste.nimi) }}
-        </EpExternalLink>
-        <div class="flex items-center">
+    <template v-else>
+      <div
+        v-if="vanhentunutPeruste && !perustePaivitetty"
+        v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+        class="info-box sync-box"
+      >
+        <h2>{{ $t(perustePaivitysKielistys['otsikko']) }}</h2>
+        <div v-html="$t(perustePaivitysKielistys['teksti'])" />
+        <div class="flex justify-between">
+          <EpExternalLink
+            :url="perusteLinkki"
+            class="mt-2"
+          >
+            {{ $kaanna(peruste.nimi) }}
+          </EpExternalLink>
+          <div class="flex items-center">
+            <div
+              v-if="toteutussuunnitelma.perustePaivitettyPvm"
+              class="mr-3 disabled-text font-size-08"
+            >
+              {{ $t('viimeisin-synkronisointi-pvm') }} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
+            </div>
+            <ep-button
+              :show-spinner="syncing"
+              @click="paivitaPeruste"
+            >
+              {{ $t('paivita') }}
+            </ep-button>
+          </div>
+        </div>
+      </div>
+      <div
+        v-if="siirtymaPaattynyt && !perustePaivitetty"
+        v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+        class="info-box sync-box"
+      >
+        <h2>{{ $t('siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma') }}</h2>
+        <div v-html="$t('siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma-huomioteksti')" />
+        <div class="flex justify-between">
+          <EpExternalLink
+            :url="perusteLinkki"
+            class="mt-2"
+          >
+            {{ $kaanna(peruste.nimi) }}
+          </EpExternalLink>
           <div
             v-if="toteutussuunnitelma.perustePaivitettyPvm"
             class="mr-3 disabled-text font-size-08"
           >
             {{ $t('viimeisin-synkronisointi-pvm') }} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
           </div>
-          <ep-button
-            :show-spinner="syncing"
-            @click="paivitaPeruste"
-          >
-            {{ $t('paivita') }}
-          </ep-button>
         </div>
       </div>
-    </div>
+    </template>
 
     <div class="flex w-full">
       <div class="min-w-0 grow p-0">
@@ -121,6 +145,11 @@ const vanhentunutPeruste = computed(() => {
   return props.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
 });
 
+const siirtymaPaattynyt = computed(() => {
+  const paattymispaiva = peruste.value?.siirtymaPaattyy;
+  return paattymispaiva != null && new Date(paattymispaiva).getTime() < Date.now();
+});
+
 const perustePaivitysKielistys = computed(() => {
   return ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus];
 });
@@ -165,10 +194,10 @@ onMounted(async () => {
 
   .info-box {
     margin-bottom: 10px;
-    padding:20px;
+    padding: 20px;
     background-color: #fff;
     border-radius: 0.5rem;
-    box-shadow: 1px 1px 5px 0px rgba(0,26,88,0.1);
+    box-shadow: 1px 1px 5px 0px rgba(0, 26, 88, 0.1);
     min-width: 370px;
   }
 
@@ -177,5 +206,4 @@ onMounted(async () => {
   }
 
 }
-
 </style>
