@@ -120,6 +120,9 @@
           no-local-sorting
           :items="items.data"
           :fields="fields"
+          :per-page="perPage"
+          :total-rows="total"
+          v-model:current-page="sivu"
           data-key="id"
           @sort-changed="sortingChanged"
         >
@@ -143,11 +146,6 @@
             </div>
           </template>
         </ep-table>
-        <ep-b-pagination
-          v-model="sivu"
-          :items-per-page="perPage"
-          :total="total"
-        />
       </div>
       <div
         v-else
@@ -167,7 +165,7 @@ import * as _ from 'lodash';
 import type { TableField } from '@shared/components/EpTable/EpTable.vue';
 import EpTable from '@shared/components/EpTable/EpTable.vue';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
-import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
+
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
