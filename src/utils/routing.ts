@@ -86,6 +86,11 @@ export function routeToNode(route: Location): NavigationNodeDto | null {
     return {
       type: 'koto_opinto',
     };
+  case 'tavoitesisaltoalue':
+    return {
+      type: 'tavoitesisaltoalue',
+      id: Number(route.params?.sisaltoviiteId),
+    };
 
   default:
     console.error('Unknown route', route.name, route);
@@ -189,6 +194,13 @@ export function nodeToRoute(node: NavigationNodeDto): Location | null {
   case 'laajaalainenosaaminen':
     return {
       name: 'laajaalainenosaaminen',
+      params: {
+        sisaltoviiteId: _.toString(node.id),
+      },
+    };
+  case 'tavoitesisaltoalue':
+    return {
+      name: 'tavoitesisaltoalue',
       params: {
         sisaltoviiteId: _.toString(node.id),
       },
