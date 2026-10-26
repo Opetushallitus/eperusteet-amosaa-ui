@@ -33,8 +33,7 @@
         </div>
       </div>
       <div
-        v-if="siirtymaPaattynyt && !perustePaivitetty"
-        v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
+        v-if="siirtymaPaattynyt"
         class="info-box sync-box"
       >
         <h2>{{ $t('siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma') }}</h2>
@@ -146,8 +145,7 @@ const vanhentunutPeruste = computed(() => {
 });
 
 const siirtymaPaattynyt = computed(() => {
-  const paattymispaiva = peruste.value?.siirtymaPaattyy;
-  return paattymispaiva != null && new Date(paattymispaiva).getTime() < Date.now();
+  return vanhentunutPeruste.value?.siirtymaPaattynyt === true;
 });
 
 const perustePaivitysKielistys = computed(() => {

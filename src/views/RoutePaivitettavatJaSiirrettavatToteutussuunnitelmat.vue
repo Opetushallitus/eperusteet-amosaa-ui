@@ -26,18 +26,10 @@
 
       <template #cell(paivita)="{ item }">
         <ep-button
-          v-if="!item.siirtymaPaattynyt"
           :show-spinner="spinning(item.opetussuunnitelma.id)"
           @click="paivita(item.opetussuunnitelma.id)"
         >
           {{ $t('paivita') }}
-        </ep-button>
-        <ep-button
-          v-else
-          :show-spinner="spinning(item.opetussuunnitelma.id)"
-          @click="arkistoi(item.opetussuunnitelma.id)"
-        >
-          {{ $t('arkistoi') }}
         </ep-button>
       </template>
     </ep-table>
@@ -83,7 +75,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import * as _ from 'lodash';
-import { useRoute, useRouter } from 'vue-router';
 
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
@@ -92,7 +83,6 @@ import EpTable from '@shared/components/EpTable/EpTable.vue';
 
 import { PaivitettavatJaSiirrettavatTotsStore } from '@/stores/PaivitettavatJaSiirrettavatTotsStore';
 import { $t, $success, $fail, $kaanna, $sdt, $sd } from '@shared/utils/globals';
-import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 
 const props = defineProps<{
   paivitettavatJaSiirrettavatTotsStore: PaivitettavatJaSiirrettavatTotsStore;
@@ -100,8 +90,6 @@ const props = defineProps<{
 }>();
 
 const spinners = ref<number[]>([]);
-const route = useRoute();
-const router = useRouter();
 
 const vanhentuneetToteutussuunnitelmat = computed(() => {
   return props.paivitettavatJaSiirrettavatTotsStore.vanhentuneetToteutussuunnitelmat.value;
@@ -123,25 +111,6 @@ const paivita = async (toteutussuunnitelmaId: number) => {
   }
   catch (e) {
     $fail($t('virhe-palvelu-virhe') as string);
-  }
-};
-
-const arkistoi = async (toteutussuunnitelmaId: number) => {
-  spinners.value = [...spinners.value, toteutussuunnitelmaId];
-  try {
-    await vaihdaOpetussunnitelmaTilaConfirm(
-      { $t, $kaanna, route, router },
-      {
-        title: 'arkistoi-toteutussuunnitelma',
-        confirm: 'arkistoi-toteutussuunnitelma-vahvistus',
-        tila: 'POISTETTU',
-        toteutussuunnitelmaId,
-        callback: () => props.paivitettavatJaSiirrettavatTotsStore.fetch(props.koulutustoimijaId),
-      },
-    );
-  }
-  finally {
-    spinners.value = _.without(spinners.value, toteutussuunnitelmaId);
   }
 };
 
