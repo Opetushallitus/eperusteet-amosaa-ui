@@ -296,6 +296,15 @@
               </EpNavigationLabel>
             </template>
 
+            <template #tavoitesisaltoalue="{ item }">
+              <EpNavigationLabel
+                :to="{ name: 'tavoitesisaltoalue', params: {sisaltoviiteId: item.id} }"
+                :node="item"
+              >
+                {{ $kaanna(item.label) }}
+              </EpNavigationLabel>
+            </template>
+
             <template #osaalue="{ item }">
               <EpNavigationLabel
                 :to="{ name: 'osaalue', params: { sisaltoviiteId: item.meta.sisaltoviiteId, osaalueId: item.id } }"
