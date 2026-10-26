@@ -21,13 +21,13 @@
 
         <div v-else>
           <ep-table
+            v-model:current-page="page"
             responsive
             striped
             :items="opetussuunnitelmatFiltered"
             :fields="opetussuunnitelmaFields"
             :per-page="query.sivukoko"
             :total-rows="totalRows"
-            v-model:current-page="page"
             data-key="id"
           >
             <template #cell(nimi)="{ item }">
@@ -119,7 +119,6 @@ import EpButton from '@shared/components/EpButton/EpButton.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
-
 import EpModal from '@shared/components/EpModal/EpModal.vue';
 import EpTable from '@shared/components/EpTable/EpTable.vue';
 

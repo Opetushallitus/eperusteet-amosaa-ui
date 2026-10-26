@@ -60,6 +60,7 @@
       <div v-else>
         <ep-table
           :sort-by="sortBy"
+          v-model:current-page="page"
           :sort-desc="query.sortDesc"
           data-key="id"
           responsive
@@ -70,7 +71,6 @@
           :fields="tutkinnonosatFields"
           :per-page="sisaltoSivuKoko"
           :total-rows="totalRows"
-          v-model:current-page="page"
           @sort-changed="sortingChanged"
           @row-clicked="selectRow"
         >
@@ -158,7 +158,6 @@ import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
-
 import EpModal from '@shared/components/EpModal/EpModal.vue';
 import EpTable from '@shared/components/EpTable/EpTable.vue';
 
