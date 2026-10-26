@@ -29,7 +29,7 @@
 
         <ep-form-group>
           <template #label>
-            <h3>{{ $t('tavoitesisaltoalueen-paikallinen-tarkennus') }}</h3>
+            <h3>{{ $t('paikallinen-tarkennus') }}</h3>
           </template>
           <EpContent
             v-if="isEditing || tavoitesisaltoalue.paikallinenTarkennus"
