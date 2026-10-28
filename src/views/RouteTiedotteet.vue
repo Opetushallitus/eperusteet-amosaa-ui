@@ -8,6 +8,7 @@
       />
     </template>
     <template #pagination>
+      <!-- Not changed: The list and its paginator live in the shared EpTiedoteView component. Not changed here. -->
       <EpBPagination
         v-model="currentPage"
         :total="totalRows"
