@@ -3,7 +3,7 @@
     <EpSpinner v-if="vanhentunutPeruste === null" />
     <template v-else>
       <div
-        v-if="vanhentunutPeruste && !perustePaivitetty"
+        v-if="vanhentunutPeruste && !perustePaivitetty && !siirtymaPaattynyt"
         v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
         class="info-box sync-box"
       >
@@ -145,7 +145,8 @@ const vanhentunutPeruste = computed(() => {
 });
 
 const siirtymaPaattynyt = computed(() => {
-  return vanhentunutPeruste.value?.siirtymaPaattynyt === true;
+  const siirtymaPaattyy = vanhentunutPeruste.value?.perusteVanha?.siirtymaPaattyy;
+  return !!siirtymaPaattyy && new Date(siirtymaPaattyy) < new Date();
 });
 
 const perustePaivitysKielistys = computed(() => {
