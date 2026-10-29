@@ -99,23 +99,12 @@
                   </div>
                 </RouterLink>
               </div>
-              <EpTable
-                :items="opetussuunnitelmat"
-                :fields="[{ key: 'id' }]"
-                :show-headers="false"
-                borderless
-                :per-page="9"
-                :total-rows="opetussuunnitelmatKokonaismaara"
-                :current-page="opsSivu"
-                @update:current-page="opsSivu = $event"
-              >
-                <template #cell(id)="{ item }">
-                  <OpsKeskeneraisetTile
-                    :ops="item"
-                    :toteutus="toteutus"
-                  />
-                </template>
-              </EpTable>
+              <OpsKeskeneraisetTile
+                v-for="ops in opetussuunnitelmat"
+                :key="ops.id"
+                :ops="ops"
+                :toteutus="toteutus"
+              />
               <div
                 v-if="(query.nimi || query.jotpa) && opetussuunnitelmat && opetussuunnitelmat.length === 0"
                 class="ops__info mt-4 ml-4"
@@ -127,6 +116,14 @@
                 />
               </div>
             </div>
+
+            <ep-b-pagination
+              v-if="opetussuunnitelmatKokonaismaara > 9"
+              v-model="opsSivu"
+              class="mt-3"
+              :total="opetussuunnitelmatKokonaismaara"
+              :items-per-page="9"
+            />
           </div>
 
           <div class="ops mt-4">
@@ -146,23 +143,19 @@
             </div>
 
             <div class="flex flex-wrap">
-              <EpTable
-                :items="julkaistut"
-                :fields="[{ key: 'id' }]"
-                :show-headers="false"
-                borderless
-                :per-page="10"
-                :total-rows="julkaistutKokonaismaara"
-                :current-page="julkaisutSivu"
-                @update:current-page="julkaisutSivu = $event"
-              >
-                <template #cell(id)="{ item }">
-                  <OpsJulkaistutTile
-                    :ops="item"
-                  />
-                </template>
-              </EpTable>
+              <OpsJulkaistutTile
+                v-for="ops in julkaistut"
+                :key="'julkaistu-' + ops.id"
+                :ops="ops"
+              />
             </div>
+            <ep-b-pagination
+              v-if="julkaistutKokonaismaara > 10"
+              v-model="julkaisutSivu"
+              class="mt-3"
+              :total="julkaistutKokonaismaara"
+              :items-per-page="10"
+            />
           </div>
 
           <div
@@ -222,7 +215,7 @@ import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
 import OpsKeskeneraisetTile from './OpsKeskeneraisetTile.vue';
 import OpsJulkaistutTile from './OpsJulkaistutTile.vue';
-import EpTable from '@shared/components/EpTable/EpTable.vue';
+import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
 
 import { ArkistointiTekstit, OpetussuunnitelmalistausKielistykset, ToteutuksenKoulutustyypit } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
