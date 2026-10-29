@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import _ from 'lodash';
 
 import EpToteutussuunnitelmaAikataulu from '@/components/EpYleisnakyma/EpToteutussuunnitelmaAikataulu.vue';
@@ -111,7 +111,7 @@ import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/Toteutussuunnitelma
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import { koulutustyyppiTheme, Toteutus } from '@shared/utils/perusteet';
-import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDtoTyyppiEnum, Perusteet, PerusteDto } from '@shared/api/amosaa';
 import { buildKatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { $t, $kaanna, $sdt, $success, $fail } from '@shared/utils/globals';
@@ -142,11 +142,20 @@ const vanhentunutPeruste = computed(() => {
   return props.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
 });
 
+// pakko hakea, koska tämänhetkinen tapa liittyy vain vanhentuneisiin perusteisiin
+const perusteTiedot = ref<PerusteDto | null>(null);
+
+watch(() => peruste.value?.id, async (id) => {
+  if (id) {
+    perusteTiedot.value = (await Perusteet.getPeruste(id)).data;
+  }
+}, { immediate: true });
+
 const siirtymaPaattynyt = computed(() => {
-  return vanhentunutPeruste.value?.perusteVanha?.siirtymaPaattyy
-    ? new Date(vanhentunutPeruste.value.perusteVanha.siirtymaPaattyy) < new Date()
-    : false;
+  const siirtymaPaattyy = perusteTiedot.value?.siirtymaPaattyy;
+  return !!siirtymaPaattyy && new Date(siirtymaPaattyy) < new Date();
 });
+
 const perustePaivitysKielistys = computed(() => ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus]);
 
 const isYhteinen = computed(() => {
