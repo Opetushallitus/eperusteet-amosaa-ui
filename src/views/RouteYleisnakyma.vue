@@ -23,12 +23,32 @@
             {{ $t('viimeisin-synkronisointi-pvm') }} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
           </div>
           <ep-button
-            v-if="!siirtymaPaattynyt"
             :show-spinner="syncing"
             @click="paivitaPeruste"
           >
             {{ $t('paivita') }}
           </ep-button>
+        </div>
+      </div>
+    </div>
+    <div
+      v-if="siirtymaPaattynyt"
+      class="info-box sync-box"
+    >
+      <h2>{{ $t('siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma') }}</h2>
+      <div v-html="$t('siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma-huomioteksti')" />
+      <div class="flex justify-between">
+        <EpExternalLink
+          :url="perusteLinkki"
+          class="mt-2"
+        >
+          {{ $kaanna(peruste.nimi) }}
+        </EpExternalLink>
+        <div
+          v-if="toteutussuunnitelma.perustePaivitettyPvm"
+          class="mr-3 disabled-text font-size-08"
+        >
+          {{ $t('viimeisin-synkronisointi-pvm') }} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
         </div>
       </div>
     </div>
@@ -123,19 +143,11 @@ const vanhentunutPeruste = computed(() => {
 });
 
 const siirtymaPaattynyt = computed(() => {
-  const siirtymaPaattyy = vanhentunutPeruste.value?.perusteVanha?.siirtymaPaattyy;
-  return !!siirtymaPaattyy && new Date(siirtymaPaattyy) < new Date();
+  return vanhentunutPeruste.value?.perusteVanha?.siirtymaPaattyy
+    ? new Date(vanhentunutPeruste.value.perusteVanha.siirtymaPaattyy) < new Date()
+    : false;
 });
-
-const perustePaivitysKielistys = computed(() => {
-  if (siirtymaPaattynyt.value) {
-    return {
-      otsikko: 'siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma',
-      teksti: 'siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma-huomioteksti',
-    };
-  }
-  return ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus];
-});
+const perustePaivitysKielistys = computed(() => ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus]);
 
 const isYhteinen = computed(() => {
   return props.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
