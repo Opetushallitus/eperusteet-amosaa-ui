@@ -31,6 +31,27 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="siirtymaPaattynyt"
+      class="info-box sync-box"
+    >
+      <h2>{{ $t('siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma') }}</h2>
+      <div v-html="$t('siirtymaajan-paattyminen-arkistoi-toteutussuunnitelma-huomioteksti')" />
+      <div class="flex justify-between">
+        <EpExternalLink
+          :url="perusteLinkki"
+          class="mt-2"
+        >
+          {{ $kaanna(peruste.nimi) }}
+        </EpExternalLink>
+        <div
+          v-if="toteutussuunnitelma.perustePaivitettyPvm"
+          class="mr-3 disabled-text font-size-08"
+        >
+          {{ $t('viimeisin-synkronisointi-pvm') }} {{ $sdt(toteutussuunnitelma.perustePaivitettyPvm) }}
+        </div>
+      </div>
+    </div>
 
     <div class="flex w-full">
       <div class="min-w-0 grow p-0">
@@ -72,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import _ from 'lodash';
 
 import EpToteutussuunnitelmaAikataulu from '@/components/EpYleisnakyma/EpToteutussuunnitelmaAikataulu.vue';
@@ -90,7 +111,7 @@ import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/Toteutussuunnitelma
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import { koulutustyyppiTheme, Toteutus } from '@shared/utils/perusteet';
-import { OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { OpetussuunnitelmaDtoTyyppiEnum, Perusteet, PerusteDto } from '@shared/api/amosaa';
 import { buildKatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { $t, $kaanna, $sdt, $success, $fail } from '@shared/utils/globals';
@@ -121,9 +142,21 @@ const vanhentunutPeruste = computed(() => {
   return props.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
 });
 
-const perustePaivitysKielistys = computed(() => {
-  return ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus];
+// pakko hakea, koska tämänhetkinen tapa liittyy vain vanhentuneisiin perusteisiin
+const perusteTiedot = ref<PerusteDto | null>(null);
+
+watch(() => peruste.value?.id, async (id) => {
+  if (id) {
+    perusteTiedot.value = (await Perusteet.getPeruste(id)).data;
+  }
+}, { immediate: true });
+
+const siirtymaPaattynyt = computed(() => {
+  const siirtymaPaattyy = perusteTiedot.value?.siirtymaPaattyy;
+  return !!siirtymaPaattyy && new Date(siirtymaPaattyy) < new Date();
 });
+
+const perustePaivitysKielistys = computed(() => ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus]);
 
 const isYhteinen = computed(() => {
   return props.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
