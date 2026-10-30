@@ -112,6 +112,7 @@
 
       <div v-if="items.data.length > 0">
         <ep-table
+          v-model:current-page="sivu"
           :sort-by="sortState.sortBy"
           :sort-desc="sortState.sortDesc"
           striped
@@ -120,6 +121,8 @@
           no-local-sorting
           :items="items.data"
           :fields="fields"
+          :per-page="perPage"
+          :total-rows="total"
           data-key="id"
           @sort-changed="sortingChanged"
         >
@@ -143,11 +146,6 @@
             </div>
           </template>
         </ep-table>
-        <ep-b-pagination
-          v-model="sivu"
-          :items-per-page="perPage"
-          :total="total"
-        />
       </div>
       <div
         v-else
@@ -167,7 +165,6 @@ import * as _ from 'lodash';
 import type { TableField } from '@shared/components/EpTable/EpTable.vue';
 import EpTable from '@shared/components/EpTable/EpTable.vue';
 import EpMainView from '@shared/components/EpMainView/EpMainView.vue';
-import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
 import EpSearch from '@shared/components/forms/EpSearch.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';

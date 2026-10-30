@@ -60,6 +60,7 @@
       <div v-else>
         <ep-table
           :sort-by="sortBy"
+          v-model:current-page="page"
           :sort-desc="query.sortDesc"
           data-key="id"
           responsive
@@ -68,6 +69,8 @@
           :items="tutkinnonosatWithSelected"
           no-local-sorting
           :fields="tutkinnonosatFields"
+          :per-page="sisaltoSivuKoko"
+          :total-rows="totalRows"
           @sort-changed="sortingChanged"
           @row-clicked="selectRow"
         >
@@ -110,13 +113,6 @@
             <span>{{ $kaanna(item.tekstiKappale.nimi) }}</span>
           </template>
         </ep-table>
-        <ep-b-pagination
-          v-if="totalRows > sisaltoSivuKoko"
-          v-model="page"
-          :total="totalRows"
-          :items-per-page="sisaltoSivuKoko"
-          aria-controls="tuo-tutkinnon-osa"
-        />
       </div>
 
       <div v-if="selectedTutkinnonosat.length > 0">
@@ -162,7 +158,6 @@ import EpFormGroup from '@shared/components/forms/EpFormGroup.vue';
 import EpSpinner from '@shared/components/EpSpinner/EpSpinner.vue';
 import EpMultiSelect from '@shared/components/forms/EpMultiSelect.vue';
 import EpMaterialIcon from '@shared/components/EpMaterialIcon/EpMaterialIcon.vue';
-import EpBPagination from '@shared/components/EpBPagination/EpBPagination.vue';
 import EpModal from '@shared/components/EpModal/EpModal.vue';
 import EpTable from '@shared/components/EpTable/EpTable.vue';
 
