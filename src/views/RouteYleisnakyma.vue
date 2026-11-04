@@ -1,6 +1,6 @@
 <template>
   <div class="yleisnakyma">
-    <EpSpinner v-if="vanhentunutPeruste === null" />
+    <EpSpinner v-if="vanhentunutPeruste === null || siirtymaLadataan" />
     <div
       v-else-if="vanhentunutPeruste && !perustePaivitetty"
       v-oikeustarkastelu="{ oikeus: 'muokkaus', kohde: 'toteutussuunnitelma' }"
@@ -111,7 +111,7 @@ import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/Toteutussuunnitelma
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import { koulutustyyppiTheme, Toteutus } from '@shared/utils/perusteet';
-import { OpetussuunnitelmaDtoTyyppiEnum, Perusteet, PerusteDto } from '@shared/api/amosaa';
+import { Api, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { buildKatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { $t, $kaanna, $sdt, $success, $fail } from '@shared/utils/globals';
@@ -129,6 +129,8 @@ const props = withDefaults(defineProps<{
 
 const syncing = ref(false);
 const perustePaivitetty = ref(false);
+const siirtymaLadataan = ref(false);
+const siirtymaPaattyy = ref<Date | null>(null);
 
 const toteutussuunnitelma = computed(() => {
   return props.toteutussuunnitelmaStore.toteutussuunnitelma.value;
@@ -142,21 +144,27 @@ const vanhentunutPeruste = computed(() => {
   return props.toteutussuunnitelmaStore.vanhentunutPohjaperusteDto.value;
 });
 
-// pakko hakea, koska tämänhetkinen tapa liittyy vain vanhentuneisiin perusteisiin
-const perusteTiedot = ref<PerusteDto | null>(null);
-
 watch(() => peruste.value?.id, async (id) => {
-  if (id) {
-    perusteTiedot.value = (await Perusteet.getPeruste(id)).data;
+  siirtymaPaattyy.value = null;
+  if (!id) {
+    return;
+  }
+
+  siirtymaLadataan.value = true;
+  try {
+    const { data } = await Api.get<number | null>(`/api/perusteet/${id}/kentta/siirtymaPaattyy`);
+    siirtymaPaattyy.value = data === null ? null : new Date(data);
+  }
+  finally {
+    siirtymaLadataan.value = false;
   }
 }, { immediate: true });
 
-const siirtymaPaattynyt = computed(() => {
-  const siirtymaPaattyy = perusteTiedot.value?.siirtymaPaattyy;
-  return !!siirtymaPaattyy && new Date(siirtymaPaattyy) < new Date();
-});
+const siirtymaPaattynyt = computed(() => !!siirtymaPaattyy.value && siirtymaPaattyy.value < new Date());
 
-const perustePaivitysKielistys = computed(() => ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus]);
+const perustePaivitysKielistys = computed(() => {
+  return ToteutussuunnitelmaPerustePaivitysKielistykset[props.toteutus];
+});
 
 const isYhteinen = computed(() => {
   return props.toteutussuunnitelmaStore.toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.YHTEINEN);
