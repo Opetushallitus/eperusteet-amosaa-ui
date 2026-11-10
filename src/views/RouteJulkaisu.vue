@@ -258,6 +258,7 @@ import { Kielet } from '@shared/stores/kieli';
 import { JulkaisuBaseDtoTilaEnum, OpetussuunnitelmaDtoTilaEnum, OpetussuunnitelmaDtoTyyppiEnum, Maintenance } from '@shared/api/amosaa';
 import { Toteutus } from '@shared/utils/perusteet';
 import { nodeToRoute } from '@/utils/routing';
+import { mapValidointiKohdat } from '@/utils/validointi';
 import { $t, $success, $fail, $isAdmin } from '@shared/utils/globals';
 
 const props = defineProps<{
@@ -282,13 +283,14 @@ const esikatseluUrl = computed(() => {
 });
 
 const validoinnit = computed(() => {
-  if (props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
-    return _.map(props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value, validointi => {
+  const status = props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value;
+  if (status) {
+    return _.map(status, validointi => {
       return {
         ...validointi,
-        virheet: listNodeToRoute(validointi.virheet),
-        huomautukset: listNodeToRoute(validointi.huomautukset),
-        huomiot: listNodeToRoute(validointi.huomiot),
+        virheet: listNodeToRoute(mapValidointiKohdat(validointi.kategoria, validointi.virheet)),
+        huomautukset: listNodeToRoute(mapValidointiKohdat(validointi.kategoria, validointi.huomautukset)),
+        huomiot: listNodeToRoute(mapValidointiKohdat(validointi.kategoria, validointi.huomiot)),
       };
     });
   }

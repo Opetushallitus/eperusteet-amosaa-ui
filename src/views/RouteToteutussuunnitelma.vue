@@ -505,6 +505,7 @@ import { Murupolku } from '@shared/stores/murupolku';
 import { ArkistointiTekstit, OpetussuunnitelmaTyyppi, ToteutussuunnitelmaTiedotKielistykset } from '@/utils/toteutustypes';
 import { vaihdaOpetussunnitelmaTilaConfirm } from '@/utils/arkistointi';
 import { LinkkiHandler, routeToNode } from '@/utils/routing';
+import { flatValidointiKuvaukset } from '@/utils/validointi';
 import { chapterStringSort } from '@shared/utils/NavigationBuilder';
 import { createKuvaHandler } from '@shared/components/EpContent/KuvaHandler';
 import { createKasiteHandler } from '@shared/components/EpContent/KasiteHandler';
@@ -636,18 +637,11 @@ const perusteenOsat = computed(() => {
 });
 
 const validoinnit = computed(() => {
-  if (props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value) {
+  const status = props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value;
+  if (status) {
     return {
-      virheet: _.chain(props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value)
-        .map('virheet')
-        .flatMap()
-        .map('kuvaus')
-        .value(),
-      huomautukset: _.chain(props.toteutussuunnitelmaStore.toteutussuunnitelmaStatus.value)
-        .map('huomautukset')
-        .flatMap()
-        .map('kuvaus')
-        .value(),
+      virheet: flatValidointiKuvaukset(status, 'virheet'),
+      huomautukset: flatValidointiKuvaukset(status, 'huomautukset'),
     };
   }
 
