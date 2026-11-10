@@ -43,8 +43,7 @@ export class PerusteetStore {
 
   public readonly toteutus = computed(() => this.state.toteutus);
 
-  public init(toteutus) {
-    this.state.perusteetKevyt = null;
+  public setToteutus(toteutus) {
     this.state.toteutus = toteutus;
   }
 
