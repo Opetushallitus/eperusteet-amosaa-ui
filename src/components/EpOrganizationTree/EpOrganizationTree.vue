@@ -28,20 +28,25 @@ import { computed } from 'vue';
 import EpOrganizationNode from '@/components/EpOrganizationTree/EpOrganizationNode.vue';
 import { $kaanna } from '@shared/utils/globals';
 
+const poistettavatOrganisaatiotyypit = [
+  'VARHAISKASVATUKSEN_TOIMIPAIKKA',
+];
+
 const props = defineProps<{
   value: any;
   isEditing: boolean;
   yhteistyoMap?: any[];
 }>();
 
-const hasChildren = computed(() => {
-  return !_.isEmpty(props.value.children);
-});
-
 const children = computed(() => {
   return _(props.value.children)
+    .filter(node => _.isEmpty(_.intersection(node?.organisaatiotyypit, poistettavatOrganisaatiotyypit)))
     .sortBy(node => $kaanna(node.nimi))
     .value();
+});
+
+const hasChildren = computed(() => {
+  return !_.isEmpty(children.value);
 });
 </script>
 
