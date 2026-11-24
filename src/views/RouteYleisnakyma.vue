@@ -111,7 +111,7 @@ import { ToteutussuunnitelmaTiedotteetStore } from '@/stores/Toteutussuunnitelma
 import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { ToteutussuunnitelmaPerustePaivitysKielistykset } from '@/utils/toteutustypes';
 import { koulutustyyppiTheme, Toteutus } from '@shared/utils/perusteet';
-import { Api, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
+import { Perusteet, OpetussuunnitelmaDtoTyyppiEnum } from '@shared/api/amosaa';
 import { buildKatseluUrl } from '@shared/utils/esikatselu';
 import { Kielet } from '@shared/stores/kieli';
 import { $t, $kaanna, $sdt, $success, $fail } from '@shared/utils/globals';
@@ -152,8 +152,8 @@ watch(() => peruste.value?.id, async (id) => {
 
   siirtymaLadataan.value = true;
   try {
-    const { data } = await Api.get<number | null>(`/api/perusteet/${id}/kentta/siirtymaPaattyy`);
-    siirtymaPaattyy.value = data === null ? null : new Date(data);
+    const { data } = await Perusteet.getPeruste(id);
+    siirtymaPaattyy.value = data.siirtymaPaattyy ? new Date(data.siirtymaPaattyy) : null;
   }
   finally {
     siirtymaLadataan.value = false;
