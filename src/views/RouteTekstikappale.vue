@@ -160,7 +160,7 @@ const toteutussuunnitelma = computed(() => {
 });
 
 const naytaPaikallinenTeksti = computed(() => {
-  return toteutussuunnitelma.value?.koulutustyyppi as any !== Koulutustyyppi.tutkintoonvalmentava
+  return !_.includes([Koulutustyyppi.tutkintoonvalmentava, Koulutustyyppi.telmavalmentava], toteutussuunnitelma.value?.koulutustyyppi)
     || toteutussuunnitelma.value?.tyyppi === _.toLower(OpetussuunnitelmaDtoTyyppiEnum.OPS)
     || perusteteksti.value;
 });
