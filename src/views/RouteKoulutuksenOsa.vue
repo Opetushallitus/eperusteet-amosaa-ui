@@ -13,7 +13,7 @@
       <div class="flex flex-wrap w-full">
         <div class="w-full">
           <ep-form-group :label="$t('laajuus')">
-            {{ perusteenOsa.laajuusMinimi }} - {{ perusteenOsa.laajuusMaksimi }} {{ $t('viikkoa') }}
+            {{ perusteenOsa.laajuusMinimi }} - {{ perusteenOsa.laajuusMaksimi }} {{ $t(koulutuksenOsaLaajuusYksikko(koulutustyyppi)) }}
           </ep-form-group>
         </div>
       </div>
@@ -32,7 +32,7 @@
       <div class="flex flex-wrap w-full">
         <div class="w-full md:w-5/6">
           <h3 class="mb-4">
-            {{ $t('tavoitteet') }}
+            {{ $t(koulutuksenOsaTavoitteetOtsikko(koulutustyyppi)) }}
           </h3>
           <ep-form-group :label="$t('opiskelija')">
             <template v-if="perusteenOsa.tavoitteet.length > 0">
@@ -222,6 +222,7 @@ import { ToteutussuunnitelmaStore } from '@/stores/ToteutussuunnitelmaStore';
 import { Koodisto } from '@shared/api/eperusteet';
 import { OpetussuunnitelmaDto, Sisaltoviitteet } from '@shared/api/amosaa';
 import { $t, $kaanna } from '@shared/utils/globals';
+import { koulutuksenOsaLaajuusYksikko, koulutuksenOsaTavoitteetOtsikko } from '@shared/utils/perusteet';
 
 const props = defineProps<{
   koulutustoimijaId: string;
@@ -300,6 +301,8 @@ watch(versionumero, () => {
 watch(toteutussuunnitelma, () => {
   fetch();
 }, { immediate: true });
+const koulutustyyppi = computed(() => toteutussuunnitelma.value?.koulutustyyppi);
+
 </script>
 
 <style scoped lang="scss">
