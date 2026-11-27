@@ -144,7 +144,7 @@ const onSave = async () => {
     const luotu = await props.toteutussuunnitelmaStore.create(_.toString(props.koulutustoimijaId), {
       tyyppi: OpetussuunnitelmaLuontiDtoTyyppiEnum.OPSPOHJA,
       suoritustapa: 'reformi',
-      koulutustyyppi: OpetussuunnitelmaPohjaLuontiStepSetups[props.toteutus]['koulutustyyppi'] as any,
+      koulutustyyppi: (peruste.value?.koulutustyyppi || OpetussuunnitelmaPohjaLuontiStepSetups[props.toteutus]['koulutustyyppi']) as any,
       nimi: nimi.value,
       perusteId: peruste.value?.id,
     });
